@@ -21,6 +21,7 @@ import 'package:balaji_points/services/user_service.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/cart_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
+import 'package:balaji_points/services/user_points_sync_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:balaji_points/core/theme/design_token.dart';
@@ -63,12 +64,8 @@ class _HomePageState extends State<HomePage>
   int _cartItemCount = 0;
   StreamSubscription<int>? _cartSubscription;
 
-  // Live user points / tier subscription so Home reflects real-time updates
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-  _userPointsSubscription;
-
-  // User id (phone) for points stream – kept in sync with wallet page logic
-  String? _pointsUserId;
+  final UserPointsSyncService _userPointsSyncService = UserPointsSyncService();
+  VoidCallback? _userPointsListener;
 
   // App version (mirrors profile page)
   String _appVersion = '';
@@ -90,6 +87,7 @@ class _HomePageState extends State<HomePage>
   bool _isCarpenter = false;
   // ignore: unused_field
   String? _currentUserId;
+  String? _currentUserDocId;
   // ignore: unused_field
   String? _userRole;
 
@@ -194,17 +192,9 @@ class _HomePageState extends State<HomePage>
 
     _productHeroPageController = PageController(viewportFraction: 0.9);
 
-    _loadPointsUserId();
     _loadAppVersion();
+    _startGlobalPointsSync();
     _loadInitialData();
-  }
-
-  Future<void> _loadPointsUserId() async {
-    final userDocId = await _resolveCurrentUserDocId();
-    if (!mounted) return;
-    setState(() {
-      _pointsUserId = userDocId;
-    });
   }
 
   Future<void> _loadAppVersion() async {
@@ -229,11 +219,7 @@ class _HomePageState extends State<HomePage>
     await _loadUserData();
 
     // Load other data in parallel for better performance
-    await Future.wait([
-      _loadOffers(),
-      _loadTopCarpenters(),
-      _loadCurrentUserRank(),
-    ]);
+    await Future.wait([_loadOffers(), _refreshRankings()]);
     _refreshCurrentUserRankFuture();
   }
 
@@ -246,11 +232,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _reloadOnResume() async {
     await _loadUserData();
-    await Future.wait([
-      _loadOffers(),
-      _loadTopCarpenters(),
-      _loadCurrentUserRank(),
-    ]);
+    await Future.wait([_loadOffers(), _refreshRankings()]);
     _refreshCurrentUserRankFuture();
   }
 
@@ -265,10 +247,33 @@ class _HomePageState extends State<HomePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _cartSubscription?.cancel();
-    _userPointsSubscription?.cancel();
+    if (_userPointsListener != null) {
+      _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
+    }
     _confettiController.dispose();
     _productHeroPageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _startGlobalPointsSync() async {
+    _userPointsListener ??= () {
+      if (!mounted) return;
+      final data = _userPointsSyncService.pointsData.value;
+      if (data == null) return;
+      final newPoints = _asInt(data['totalPoints']);
+      setState(() {
+        _currentUserPoints = newPoints;
+        _currentUserData = {...?_currentUserData, ...data};
+      });
+      unawaited(() async {
+        await _refreshRankings();
+        _refreshCurrentUserRankFuture();
+      }());
+    };
+    _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
+    _userPointsSyncService.pointsData.addListener(_userPointsListener!);
+    await _userPointsSyncService.start();
+    _userPointsListener?.call();
   }
 
   // ------------------ Offers ------------------
@@ -310,59 +315,7 @@ class _HomePageState extends State<HomePage>
   Future<void> _loadTopCarpenters() async {
     setState(() => _isLoadingCarpenters = true);
     try {
-      // Fetch all carpenters (without orderBy to avoid index requirement)
-      final qs = await FirebaseFirestore.instance
-          .collection('users')
-          .where('role', isEqualTo: 'carpenter')
-          .get();
-
-      final carpenters = <CarpenterRank>[];
-      final currentUserId = await _sessionService.getUserId();
-
-      // Process all carpenters
-      for (var doc in qs.docs) {
-        final data = doc.data() as Map<String, dynamic>? ?? {};
-        final firstName = (data['firstName'] ?? '') as String;
-        final lastName = (data['lastName'] ?? '') as String;
-        final name = ('$firstName $lastName').trim().isEmpty
-            ? 'Carpenter'
-            : ('$firstName $lastName').trim();
-        final points = (data['totalPoints'] ?? 0) as int;
-        final imageUrl = (data['profileImage'] ?? '') as String?;
-        final userId = doc.id;
-
-        carpenters.add(
-          CarpenterRank(
-            rank: 0, // Will be set after sorting
-            name: name,
-            points: points,
-            imageUrl: imageUrl,
-            userId: userId,
-            isCurrentUser: userId == currentUserId,
-          ),
-        );
-      }
-
-      // Sort by points descending (in memory - no index needed)
-      carpenters.sort((a, b) => b.points.compareTo(a.points));
-
-      // Assign ranks after sorting - create new list with ranks
-      final rankedCarpenters = <CarpenterRank>[];
-      for (var i = 0; i < carpenters.length; i++) {
-        final carpenter = carpenters[i];
-        rankedCarpenters.add(
-          CarpenterRank(
-            rank: i + 1,
-            name: carpenter.name,
-            points: carpenter.points,
-            imageUrl: carpenter.imageUrl,
-            userId: carpenter.userId,
-            isCurrentUser: carpenter.isCurrentUser,
-          ),
-        );
-      }
-
-      // Take top 10 for display
+      final rankedCarpenters = await _fetchRankedCarpenters();
       final top10 = rankedCarpenters.take(10).toList();
 
       if (mounted)
@@ -376,12 +329,66 @@ class _HomePageState extends State<HomePage>
     }
   }
 
+  Future<List<CarpenterRank>> _fetchRankedCarpenters() async {
+    final qs = await FirebaseFirestore.instance.collection('users').get();
+
+    final resolvedCurrentUserDocId =
+        _currentUserDocId ?? (await _resolveCurrentUserDoc())?.id;
+    final carpenters = <CarpenterRank>[];
+
+    for (final doc in qs.docs) {
+      final data = doc.data();
+      final role = data['role'] as String?;
+      if (role == 'admin') {
+        continue;
+      }
+      if (role != null && role.isNotEmpty && role != 'carpenter') {
+        continue;
+      }
+
+      final firstName = (data['firstName'] as String? ?? '').trim();
+      final lastName = (data['lastName'] as String? ?? '').trim();
+      final displayName = ('$firstName $lastName').trim();
+
+      carpenters.add(
+        CarpenterRank(
+          rank: 0,
+          name: displayName.isEmpty ? 'Carpenter' : displayName,
+          points: _asInt(data['totalPoints']),
+          imageUrl: data['profileImage'] as String?,
+          userId: doc.id,
+          isCurrentUser: doc.id == resolvedCurrentUserDocId,
+        ),
+      );
+    }
+
+    carpenters.sort((a, b) => b.points.compareTo(a.points));
+
+    return List<CarpenterRank>.generate(carpenters.length, (index) {
+      final carpenter = carpenters[index];
+      return CarpenterRank(
+        rank: index + 1,
+        name: carpenter.name,
+        points: carpenter.points,
+        imageUrl: carpenter.imageUrl,
+        userId: carpenter.userId,
+        isCurrentUser: carpenter.isCurrentUser,
+      );
+    });
+  }
+
+  Future<void> _refreshRankings() async {
+    await _loadTopCarpenters();
+    await _loadCurrentUserRank();
+  }
+
   // ------------------ Current user data ------------------
   Future<void> _loadUserData() async {
     try {
       // Prefer unified UserService so Home/Profile use same source of truth
       final data = await _user_service_getCurrentUserDataSafe();
       final userId = await _sessionService.getUserId();
+      final currentUserDoc = await _resolveCurrentUserDoc();
 
       if (mounted) {
         setState(() {
@@ -389,11 +396,13 @@ class _HomePageState extends State<HomePage>
           _isCarpenter = (data?['role'] ?? '') == 'carpenter';
           _userRole = (data?['role'] ?? '') as String?;
           _currentUserId = userId;
+          _currentUserDocId = currentUserDoc?.id ?? userId;
+          _currentUserPoints = _asInt(data?['totalPoints']);
         });
         if (userId != null) {
           _subscribeCartCount(userId);
         }
-        _subscribeUserPointsForCurrentUser();
+        await _startGlobalPointsSync();
       }
     } catch (e) {
       debugPrint('Error loading current user data: $e');
@@ -401,17 +410,20 @@ class _HomePageState extends State<HomePage>
       try {
         final data = await _user_service_getCurrentUserDataSafe();
         final errorFallbackUserId = await _sessionService.getUserId();
+        final currentUserDoc = await _resolveCurrentUserDoc();
         if (mounted) {
           setState(() {
             _currentUserData = data;
             _isCarpenter = (data?['role'] ?? '') == 'carpenter';
             _userRole = (data?['role'] ?? '') as String?;
             _currentUserId = errorFallbackUserId;
+            _currentUserDocId = currentUserDoc?.id ?? errorFallbackUserId;
+            _currentUserPoints = _asInt(data?['totalPoints']);
           });
           if (errorFallbackUserId != null) {
             _subscribeCartCount(errorFallbackUserId);
           }
-          _subscribeUserPointsForCurrentUser();
+          await _startGlobalPointsSync();
         }
       } catch (e2) {
         debugPrint('Error in fallback user data load: $e2');
@@ -465,98 +477,30 @@ class _HomePageState extends State<HomePage>
     return null;
   }
 
-  Future<String?> _resolveCurrentUserDocId() async {
-    final userDoc = await _resolveCurrentUserDoc();
-    return userDoc?.id;
-  }
-
-  Future<DocumentReference<Map<String, dynamic>>?>
-      _resolveCurrentUserPointsDocRef() async {
-    final firestore = FirebaseFirestore.instance;
-    final userId = await _sessionService.getUserId();
-    final phoneNumber = await _sessionService.getPhoneNumber();
-    final candidateIds = <String>{
-      if (userId != null && userId.isNotEmpty) userId,
-      if (phoneNumber != null && phoneNumber.isNotEmpty) phoneNumber,
-    };
-
-    for (final candidateId in candidateIds) {
-      final docRef = firestore.collection('user_points').doc(candidateId);
-      final snapshot = await docRef.get();
-      if (snapshot.exists) return docRef;
-    }
-
-    for (final candidateId in candidateIds) {
-      final query = await firestore
-          .collection('user_points')
-          .where('userId', isEqualTo: candidateId)
-          .limit(1)
-          .get();
-      if (query.docs.isNotEmpty) {
-        return query.docs.first.reference;
-      }
-    }
-
-    return null;
-  }
-
-  Future<void> _subscribeUserPointsForCurrentUser() async {
-    final pointsDocRef = await _resolveCurrentUserPointsDocRef();
-    if (pointsDocRef == null) return;
-
-    _userPointsSubscription?.cancel();
-    _userPointsSubscription = pointsDocRef.snapshots().listen((snapshot) {
-      if (!mounted) return;
-      final data = snapshot.data();
-      if (data == null) return;
-
-      final newPoints = (data['totalPoints'] ?? 0) as int;
-
-      setState(() {
-        _currentUserPoints = newPoints;
-        // Merge latest Firestore data into current user data so tier/name etc. stay fresh
-        _currentUserData = {...?_currentUserData, ...data};
-      });
-    });
-  }
-
   // ------------------ Current user rank ------------------
   Future<void> _loadCurrentUserRank() async {
     try {
-      final userDoc = await _resolveCurrentUserDoc();
-      final userData = userDoc?.data();
-      if (userData == null) {
+      final currentUserDocId =
+          _currentUserDocId ?? (await _resolveCurrentUserDoc())?.id;
+      if (currentUserDocId == null) {
         if (mounted) setState(() => _currentUserRank = null);
         return;
       }
 
-      // Check if user is a carpenter
-      if (userData['role'] != 'carpenter') {
+      final rankedCarpenters = await _fetchRankedCarpenters();
+      final currentUserRank = rankedCarpenters.firstWhere(
+        (carpenter) => carpenter.userId == currentUserDocId,
+        orElse: () => CarpenterRank(rank: -1, name: '', points: 0, userId: ''),
+      );
+
+      if (currentUserRank.rank <= 0) {
         if (mounted) setState(() => _currentUserRank = null);
         return;
-      }
-
-      final userPoints = (userData['totalPoints'] ?? 0) as int;
-
-      // Fetch all carpenters and calculate rank in memory (avoids index requirement)
-      final allCarpenters = await FirebaseFirestore.instance
-          .collection('users')
-          .where('role', isEqualTo: 'carpenter')
-          .get();
-
-      // Count how many have more points than current user
-      int rank = 1;
-      for (var doc in allCarpenters.docs) {
-        final data = doc.data();
-        final points = (data['totalPoints'] ?? 0) as int;
-        if (points > userPoints) {
-          rank++;
-        }
       }
 
       if (mounted)
         setState(() {
-          _currentUserRank = rank;
+          _currentUserRank = currentUserRank.rank;
         });
     } catch (e, st) {
       debugPrint('Error computing user rank: $e\n$st');
@@ -573,9 +517,13 @@ class _HomePageState extends State<HomePage>
   }
 
   String _getUserTier() => _currentUserData?['tier'] ?? 'Bronze';
-  int _getUserPoints() => _currentUserPoints;
   String? _getUserProfileImage() =>
       _currentUserData?['profileImage'] as String?;
+
+  int _asInt(dynamic value) {
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
 
   /// Check if user profile is complete (has firstName, lastName, and profileImage)
   bool _isProfileComplete() {
@@ -610,21 +558,7 @@ class _HomePageState extends State<HomePage>
       height: 1.05,
     );
 
-    if (_pointsUserId == null) {
-      return Text(nf.format(0), style: valueStyle);
-    }
-
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(_pointsUserId)
-          .snapshots(),
-      builder: (context, snapshot) {
-        final data = snapshot.data?.data();
-        final points = (data?['totalPoints'] ?? 0) as int;
-        return Text(nf.format(points), style: valueStyle);
-      },
-    );
+    return Text(nf.format(_currentUserPoints), style: valueStyle);
   }
 
   /// Static gold coin beside hero points (no animation — avoids jank & hot-reload init issues).
@@ -671,7 +605,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<CarpenterRank?> _buildCurrentUserAsCarpenterRank() async {
-    final currentUserId = await _sessionService.getUserId();
+    final currentUserId = _currentUserDocId ?? await _sessionService.getUserId();
     if (currentUserId == null || _currentUserRank == null) return null;
 
     // Check if current user is already in top 10

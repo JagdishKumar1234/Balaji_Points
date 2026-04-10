@@ -9,6 +9,7 @@ import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/user_service.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
+import 'package:balaji_points/services/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/providers/theme_provider.dart';
 import 'package:balaji_points/presentation/providers/locale_provider.dart';
 import 'package:balaji_points/presentation/widgets/home_nav_bar.dart';
@@ -28,9 +29,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   final UserService _userService = UserService();
   final SessionService _sessionService = SessionService();
   final FCMService _fcmService = FCMService();
+  final UserPointsSyncService _userPointsSyncService = UserPointsSyncService();
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
   String _appVersion = '';
+  VoidCallback? _userPointsListener;
 
   @override
   void initState() {
@@ -38,10 +41,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     WidgetsBinding.instance.addObserver(this);
     _loadUserData();
     _loadAppVersion();
+    _subscribeUserPoints();
   }
 
   Future<void> _handleRefresh() async {
     await _loadUserData();
+    await _subscribeUserPoints();
   }
 
   Future<void> _loadAppVersion() async {
@@ -69,12 +74,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     // Reload user data when app comes to foreground
     if (state == AppLifecycleState.resumed) {
       _loadUserData();
+      _subscribeUserPoints();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    if (_userPointsListener != null) {
+      _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
+    }
     super.dispose();
   }
 
@@ -111,6 +120,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         });
       }
     }
+  }
+
+  Future<void> _subscribeUserPoints() async {
+    _userPointsListener ??= () {
+      if (!mounted) return;
+      final data = _userPointsSyncService.pointsData.value;
+      if (data == null) return;
+
+      setState(() {
+        _userData = {...?_userData, ...data};
+      });
+    };
+    _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
+    _userPointsSyncService.pointsData.addListener(_userPointsListener!);
+    await _userPointsSyncService.start();
+    _userPointsListener?.call();
   }
 
   String _getUserDisplayName() {

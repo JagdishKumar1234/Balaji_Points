@@ -29,7 +29,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 200,
+          height: 220,
           child: PageView.builder(
             controller: _pageController,
             onPageChanged: (index) {
@@ -121,27 +121,34 @@ class _OffersCarouselState extends State<OffersCarousel> {
             Padding(
               padding: const EdgeInsets.all(DesignToken.paddingXL),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (offer.title.isNotEmpty)
                     Text(
                       offer.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: DesignToken.textBold.copyWith(
                         color: DesignToken.white,
                         fontSize: DesignToken.fontSize3XL,
                       ),
                     ),
-                  const SizedBox(height: DesignToken.spacingMD),
+                  if (offer.title.isNotEmpty && offer.description.isNotEmpty)
+                    const SizedBox(height: DesignToken.spacingSM),
                   if (offer.description.isNotEmpty)
                     Text(
                       offer.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: DesignToken.textRegular.copyWith(
                         color: DesignToken.white.withValues(alpha: 0.9),
                         fontSize: DesignToken.fontSizeLG,
                       ),
                     ),
-                  const SizedBox(height: DesignToken.spacingLG),
+                  if (offer.actionText.isNotEmpty &&
+                      (offer.title.isNotEmpty || offer.description.isNotEmpty))
+                    const SizedBox(height: DesignToken.spacingMD),
                   if (offer.actionText.isNotEmpty)
                     InkWell(
                       onTap: () {

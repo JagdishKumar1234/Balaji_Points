@@ -323,8 +323,10 @@ class _AddBillPageState extends State<AddBillPage> {
         return;
       }
 
+      final carpenterId = await _sessionService.getUserId() ?? phoneNumber;
+
       final success = await _billService.submitBill(
-        carpenterId: phoneNumber, // Use phone number as user ID
+        carpenterId: carpenterId,
         carpenterPhone: phoneNumber,
         amount: amount,
         imageFile: _selectedImage,
