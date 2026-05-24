@@ -1,7 +1,7 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/onboarding_prefs.dart';
 
@@ -110,7 +110,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         l10n.onboardingSkip,
                         style: AppTextStyles.nunitoSemiBold.copyWith(
                           fontSize: 15,
-                          color: DesignToken.primary,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                     ),
@@ -131,12 +131,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 padding: const EdgeInsets.all(28),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: DesignToken.white.withValues(
+                                  color: AppColors.white.withValues(
                                     alpha: 0.92,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: DesignToken.black.withValues(
+                                      color: AppColors.black.withValues(
                                         alpha: 0.08,
                                       ),
                                       blurRadius: 24,
@@ -147,7 +147,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 child: Icon(
                                   s.icon,
                                   size: 72,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                               const SizedBox(height: 36),
@@ -157,7 +157,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 style: AppTextStyles.nunitoBold.copyWith(
                                   fontSize: 24,
                                   height: 1.25,
-                                  color: DesignToken.textDark,
+                                  color: AppColors.lightTextPrimary,
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -167,7 +167,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 style: AppTextStyles.nunitoRegular.copyWith(
                                   fontSize: 16,
                                   height: 1.5,
-                                  color: DesignToken.textDark.withValues(
+                                  color: AppColors.lightTextPrimary.withValues(
                                     alpha: 0.78,
                                   ),
                                 ),
@@ -190,8 +190,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(999),
                           color: i == _pageIndex
-                              ? DesignToken.primary
-                              : DesignToken.grey400.withValues(alpha: 0.5),
+                              ? AppColors.lightPrimary
+                              : AppColors.grey400.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -205,8 +205,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: ElevatedButton(
                         onPressed: _next,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: DesignToken.primary,
-                          foregroundColor: DesignToken.white,
+                          backgroundColor: AppColors.lightPrimary,
+                          foregroundColor: AppColors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -218,7 +218,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               : l10n.onboardingGetStarted,
                           style: AppTextStyles.nunitoBold.copyWith(
                             fontSize: 17,
-                            color: DesignToken.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ),

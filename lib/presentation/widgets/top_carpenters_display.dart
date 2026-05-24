@@ -1,5 +1,5 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 
 class TopCarpentersDisplay extends StatelessWidget {
   final List<CarpenterRank> topCarpenters;
@@ -40,7 +40,7 @@ class TopCarpentersDisplay extends StatelessWidget {
         Text(
           '🏆 Top 3 Carpenters',
           style: TextStyle(
-            color: DesignToken.secondary,
+            color: AppColors.lightSecondary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),

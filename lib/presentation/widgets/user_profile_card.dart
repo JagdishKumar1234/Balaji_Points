@@ -1,6 +1,6 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 
 class UserProfileCard extends StatefulWidget {
@@ -60,14 +60,14 @@ class _UserProfileCardState extends State<UserProfileCard>
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [DesignToken.primary, DesignToken.secondary],
+          colors: [AppColors.lightPrimary, AppColors.lightSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: DesignToken.primary.withOpacity(0.3),
+            color: AppColors.lightPrimary.withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -97,7 +97,7 @@ class _UserProfileCardState extends State<UserProfileCard>
                   ? NetworkImage(widget.userImageUrl!)
                   : null,
               child: !_isValidImageUrl(widget.userImageUrl)
-                  ? Icon(Icons.person, size: 28, color: DesignToken.secondary)
+                  ? Icon(Icons.person, size: 28, color: AppColors.lightSecondary)
                   : null,
             ),
           ),

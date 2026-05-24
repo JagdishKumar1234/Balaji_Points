@@ -1,6 +1,6 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 
 /// Shimmer loading widget for card-style content
 class ShimmerCard extends StatelessWidget {
@@ -206,8 +206,8 @@ class ShimmerWinnerCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            DesignToken.secondary.withValues(alpha: 0.2),
-            DesignToken.primary.withValues(alpha: 0.1),
+            AppColors.lightSecondary.withValues(alpha: 0.2),
+            AppColors.lightPrimary.withValues(alpha: 0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

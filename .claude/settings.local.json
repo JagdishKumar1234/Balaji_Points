@@ -12,7 +12,21 @@
       "Bash(rm -f scripts/serviceAccountKey.json.json pglite-debug.log POINTS_SYNC_AND_RESET_PIN_REPORT.md cleanup_disk_space.sh balaji_points.iml l10n.yaml)",
       "Bash(rm -rf scripts/node_modules/ docs/ .dist/ .idea/)",
       "Bash(mkdir -p /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/assets/images/furniture)",
-      "Bash(git show *)"
+      "Bash(git show *)",
+      "Bash(find /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints -name \"*.pdf\" 2>/dev/null)",
+      "Read(//Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/**)",
+      "Bash(sed -n '408,416p' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/screens/cart/cart_page.dart)",
+      "Bash(sed -n '502,510p' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/screens/cart/cart_page.dart)",
+      "Bash(sed -n '275,283p' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/admin/orders_management.dart)",
+      "Bash(sed -n '68,80p' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/admin/products_management.dart)",
+      "Bash(sed -n '428,436p' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/admin/products_management.dart)",
+      "Bash(sed -n '194,230p' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/top_carpenters_display.dart)",
+      "Bash(sed -n '233,250p' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/offers_carousel.dart)",
+      "Bash(dart analyze *)",
+      "Bash(git -C /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points status --short)",
+      "Bash(git -C /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points add lib/features/auth/presentation/pages/pin_setup_page.dart lib/presentation/screens/dashboard/dashboard_page.dart lib/presentation/screens/home/home_page.dart lib/presentation/screens/wallet/wallet_page.dart lib/presentation/providers/home_provider.dart lib/presentation/providers/wallet_provider.dart)",
+      "Bash(git -C /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points commit -m ' *)",
+      "Bash(npm run *)"
     ]
   }
 }

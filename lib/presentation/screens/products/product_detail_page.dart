@@ -1,10 +1,10 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/cart_service.dart';
 import 'package:balaji_points/services/session_service.dart';
@@ -30,7 +30,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please log in to add items to cart.'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -113,7 +113,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: appBarFill,
-        foregroundColor: DesignToken.textDark,
+        foregroundColor: AppColors.lightTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -184,7 +184,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   textAlign: TextAlign.center,
                   style: AppTextStyles.nunitoRegular.copyWith(
                     fontSize: 14,
-                    color: DesignToken.error,
+                    color: AppColors.error,
                   ),
                 ),
               ),
@@ -195,7 +195,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               !snapshot.hasData ||
               !snapshot.data!.exists) {
             return const Center(
-              child: CircularProgressIndicator(color: DesignToken.primary),
+              child: CircularProgressIndicator(color: AppColors.lightPrimary),
             );
           }
 
@@ -253,8 +253,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               borderRadius: BorderRadius.circular(20),
                               gradient: LinearGradient(
                                 colors: [
-                                  DesignToken.blue500,
-                                  DesignToken.purple,
+                                  const Color(0xFF2196F3),
+                                  const Color(0xFF9C27B0),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -264,7 +264,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               child: Icon(
                                 Icons.layers_rounded,
                                 size: 64,
-                                color: DesignToken.white,
+                                color: AppColors.white,
                               ),
                             ),
                           );
@@ -295,7 +295,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           children: List.generate(imageUrls.length, (index) {
                             final active = index == _currentImageIndex;
                             return AnimatedContainer(
-                              duration: DesignToken.animationDurationFast,
+                              duration: const Duration(milliseconds: 200),
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 3),
                               width: active ? 16 : 6,
@@ -328,7 +328,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         name.isNotEmpty ? name : 'Product',
                         style: AppTextStyles.nunitoBold.copyWith(
                           fontSize: 22,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightTextPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -347,7 +347,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           '₹${price.toStringAsFixed(0)}',
                           style: AppTextStyles.nunitoBold.copyWith(
                             fontSize: 24,
-                            color: DesignToken.primary,
+                            color: AppColors.lightPrimary,
                           ),
                         ),
                       const SizedBox(height: 16),
@@ -384,7 +384,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           'Description',
                           style: AppTextStyles.nunitoSemiBold.copyWith(
                             fontSize: 15,
-                            color: DesignToken.textDark,
+                            color: AppColors.lightTextPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -416,8 +416,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           icon: const Icon(Icons.picture_as_pdf),
                           label: const Text('View catalog PDF'),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: DesignToken.primary,
-                            side: const BorderSide(color: DesignToken.primary),
+                            foregroundColor: AppColors.lightPrimary,
+                            side: const BorderSide(color: AppColors.lightPrimary),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -448,8 +448,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _shareProduct(data),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: DesignToken.primary,
-                          side: const BorderSide(color: DesignToken.primary),
+                          foregroundColor: AppColors.lightPrimary,
+                          side: const BorderSide(color: AppColors.lightPrimary),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -464,7 +464,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: ElevatedButton.icon(
                         onPressed: () => _addToCart(data),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: DesignToken.secondary,
+                          backgroundColor: AppColors.lightSecondary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -563,7 +563,7 @@ class _DetailCartIconButton extends StatelessWidget {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
               decoration: BoxDecoration(
-                color: DesignToken.error,
+                color: AppColors.error,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: Colors.white,

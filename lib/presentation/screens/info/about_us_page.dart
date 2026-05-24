@@ -1,7 +1,9 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/home_nav_bar.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
@@ -53,26 +55,26 @@ class AboutUsPage extends StatelessWidget {
                 children: [
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(DesignToken.paddingLG),
+                    padding: const EdgeInsets.all(AppSpacing.lg),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          DesignToken.primary.withValues(alpha: 0.12),
-                          DesignToken.secondary.withValues(alpha: 0.08),
+                          AppColors.lightPrimary.withValues(alpha: 0.12),
+                          AppColors.lightSecondary.withValues(alpha: 0.08),
                         ],
                       ),
-                      borderRadius: DesignToken.borderRadiusLG,
+                      borderRadius: AppRadius.forCard,
                       border: Border.all(
-                        color: DesignToken.primary.withValues(alpha: 0.2),
+                        color: AppColors.lightPrimary.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.volunteer_activism_rounded,
-                          color: DesignToken.primary,
+                          color: AppColors.lightPrimary,
                           size: 40,
                         ),
                         const SizedBox(width: 16),
@@ -130,7 +132,7 @@ class AboutUsPage extends StatelessWidget {
                     style: AppTextStyles.nunitoSemiBold.copyWith(
                       fontSize: 16,
                       height: 1.5,
-                      color: DesignToken.primary,
+                      color: AppColors.lightPrimary,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -187,9 +189,9 @@ class _AboutDeveloperCredits extends StatelessWidget {
     final linkStyle = AppTextStyles.nunitoSemiBold.copyWith(
       fontSize: 14,
       height: 1.4,
-      color: DesignToken.primary,
+      color: AppColors.lightPrimary,
       decoration: TextDecoration.underline,
-      decorationColor: DesignToken.primary.withValues(alpha: 0.5),
+      decorationColor: AppColors.lightPrimary.withValues(alpha: 0.5),
     );
     final captionStyle = AppTextStyles.nunitoRegular.copyWith(
       fontSize: 13,
@@ -228,7 +230,7 @@ class _AboutDeveloperCredits extends StatelessWidget {
                 Icon(
                   Icons.email_outlined,
                   size: 20,
-                  color: DesignToken.primary,
+                  color: AppColors.lightPrimary,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -261,7 +263,7 @@ class _AboutDeveloperCredits extends StatelessWidget {
                 Icon(
                   Icons.phone_outlined,
                   size: 20,
-                  color: DesignToken.primary,
+                  color: AppColors.lightPrimary,
                 ),
                 const SizedBox(width: 10),
                 Expanded(

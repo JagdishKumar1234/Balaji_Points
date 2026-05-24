@@ -1,8 +1,8 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 
 class PointsHistoryCard extends StatefulWidget {
@@ -114,7 +114,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: DesignToken.primary.withOpacity(0.1),
+            color: AppColors.lightPrimary.withOpacity(0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -130,12 +130,12 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: DesignToken.secondary.withOpacity(0.1),
+                    color: AppColors.lightSecondary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.history_rounded,
-                    color: DesignToken.secondary,
+                    color: AppColors.lightSecondary,
                     size: 24,
                   ),
                 ),
@@ -148,7 +148,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                         'Points History',
                         style: AppTextStyles.nunitoBold.copyWith(
                           fontSize: 18,
-                          color: DesignToken.primary,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -173,7 +173,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                       _isExpanded
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
-                      color: DesignToken.primary,
+                      color: AppColors.lightPrimary,
                     ),
                   ),
               ],
@@ -209,7 +209,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 icon: Icon(Icons.arrow_downward, size: 16),
                 label: Text('Show ${_history.length - 3} more'),
                 style: TextButton.styleFrom(
-                  foregroundColor: DesignToken.primary,
+                  foregroundColor: AppColors.lightPrimary,
                 ),
               ),
             ),
@@ -226,10 +226,10 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: DesignToken.woodenBackground.withOpacity(0.3),
+        color: AppColors.woodenBackground.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: DesignToken.primary.withOpacity(0.1),
+          color: AppColors.lightPrimary.withOpacity(0.1),
           width: 1,
         ),
       ),
@@ -262,7 +262,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                   reason,
                   style: AppTextStyles.nunitoSemiBold.copyWith(
                     fontSize: 14,
-                    color: DesignToken.textDark,
+                    color: AppColors.lightTextPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -319,14 +319,14 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: DesignToken.primary.withOpacity(0.1),
+            color: AppColors.lightPrimary.withOpacity(0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Center(
-        child: CircularProgressIndicator(color: DesignToken.primary),
+        child: CircularProgressIndicator(color: AppColors.lightPrimary),
       ),
     );
   }
@@ -340,7 +340,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: DesignToken.primary.withOpacity(0.1),
+            color: AppColors.lightPrimary.withOpacity(0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

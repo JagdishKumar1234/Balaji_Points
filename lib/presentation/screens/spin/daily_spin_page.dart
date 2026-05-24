@@ -1,9 +1,9 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/presentation/providers/daily_spin_provider.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 
 class DailySpinPage extends ConsumerStatefulWidget {
   const DailySpinPage({super.key});
@@ -78,7 +78,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: DesignToken.secondary,
+            color: AppColors.lightSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -87,7 +87,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
           children: [
             Text(
               'You won',
-              style: TextStyle(fontSize: 18, color: DesignToken.grey700),
+              style: TextStyle(fontSize: 18, color: AppColors.grey700),
             ),
             const SizedBox(height: 10),
             Text(
@@ -95,13 +95,13 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: DesignToken.secondary,
+                color: AppColors.lightSecondary,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               'Points have been added to your account.',
-              style: TextStyle(fontSize: 14, color: DesignToken.grey600),
+              style: TextStyle(fontSize: 14, color: AppColors.grey600),
               textAlign: TextAlign.center,
             ),
           ],
@@ -114,7 +114,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: DesignToken.secondary,
+                backgroundColor: AppColors.lightSecondary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
                   vertical: 12,
@@ -136,9 +136,9 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
     final spinState = ref.watch(dailySpinProvider);
     final theme = Theme.of(context);
     final light = theme.brightness == Brightness.light;
-    final carpenterBg = light ? DesignToken.carpenterAppBackground : theme.scaffoldBackgroundColor;
+    final carpenterBg = light ? AppColors.lightBackground : theme.scaffoldBackgroundColor;
     final appBarBg = light
-        ? DesignToken.carpenterAppBackground
+        ? AppColors.lightBackground
         : (theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor);
 
     return PopScope(
@@ -155,7 +155,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Please wait for spin to complete'),
-                backgroundColor: DesignToken.orange,
+                backgroundColor: AppColors.warning,
               ),
             );
           } else {
@@ -167,7 +167,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
         backgroundColor: carpenterBg,
         appBar: AppBar(
           backgroundColor: appBarBg,
-          foregroundColor: DesignToken.textDark,
+          foregroundColor: AppColors.lightTextPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -189,14 +189,14 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: DesignToken.secondary,
+                      color: AppColors.lightSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     'Get your daily spin and win exciting points',
-                    style: TextStyle(fontSize: 16, color: DesignToken.grey600),
+                    style: TextStyle(fontSize: 16, color: AppColors.grey600),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 60),
@@ -214,16 +214,16 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                             shape: BoxShape.circle,
                             gradient: LinearGradient(
                               colors: [
-                                DesignToken.pinkShade300,
-                                DesignToken.pinkShade500,
-                                DesignToken.secondary,
+                                const Color(0xFFF06292),
+                                const Color(0xFFE91E63),
+                                AppColors.lightSecondary,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: DesignToken.secondary
+                                color: AppColors.lightSecondary
                                     .withValues(alpha: 0.3),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
@@ -244,10 +244,10 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                                 height: 80,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: DesignToken.white,
+                                  color: AppColors.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: DesignToken.black.withValues(alpha: 0.1),
+                                      color: AppColors.black.withValues(alpha: 0.1),
                                       blurRadius: 10,
                                     ),
                                   ],
@@ -255,7 +255,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                                 child: Icon(
                                   Icons.radio_button_checked,
                                   size: 40,
-                                  color: DesignToken.secondary,
+                                  color: AppColors.lightSecondary,
                                 ),
                               ),
                             ],
@@ -274,8 +274,8 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                           ? _spin
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignToken.secondary,
-                        disabledBackgroundColor: DesignToken.grey300,
+                        backgroundColor: AppColors.lightSecondary,
+                        disabledBackgroundColor: AppColors.grey300,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 60,
                           vertical: 18,
@@ -289,7 +289,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: DesignToken.white,
+                          color: AppColors.white,
                         ),
                       ),
                     )
@@ -303,18 +303,18 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: DesignToken.blueShade50,
+                        color: const Color(0xFFE3F2FD),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.info_outline, color: DesignToken.blue700),
+                          Icon(Icons.info_outline, color: const Color(0xFF1976D2)),
                           const SizedBox(width: 10),
                           Text(
                             'You\'ve already spun today!\nCome back tomorrow for another chance.',
                             style: TextStyle(
-                              color: DesignToken.blue700,
+                              color: const Color(0xFF1976D2),
                               fontSize: 14,
                             ),
                             textAlign: TextAlign.center,
@@ -344,14 +344,14 @@ class SpinWheelPainter extends CustomPainter {
     final segmentAngle = (2 * 3.14159) / segments;
 
     final colors = [
-      DesignToken.redShade300,
-      DesignToken.orangeShade300,
-      DesignToken.yellowShade300,
-      DesignToken.greenShade300,
-      DesignToken.blueShade300,
-      DesignToken.indigoShade300,
-      DesignToken.purpleShade300,
-      DesignToken.pinkShade300,
+      const Color(0xFFE57373),
+      const Color(0xFFFFB74D),
+      const Color(0xFFFFF176),
+      const Color(0xFF81C784),
+      const Color(0xFF64B5F6),
+      const Color(0xFF7986CB),
+      const Color(0xFFBA68C8),
+      const Color(0xFFF06292),
     ];
 
     for (int i = 0; i < segments; i++) {
@@ -367,7 +367,7 @@ class SpinWheelPainter extends CustomPainter {
 
       // Draw lines between segments
       final linePaint = Paint()
-        ..color = DesignToken.white
+        ..color = AppColors.white
         ..strokeWidth = 2
         ..style = PaintingStyle.stroke;
       canvas.drawLine(
@@ -392,7 +392,7 @@ class SpinWheelPainter extends CustomPainter {
       textPainter.text = TextSpan(
         text: '$points',
         style: TextStyle(
-          color: DesignToken.white,
+          color: AppColors.white,
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),

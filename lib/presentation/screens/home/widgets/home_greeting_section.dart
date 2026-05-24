@@ -1,6 +1,8 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' as LegacyTheme;
 
 /// Minimal-height greeting strip (~half the height of a typical card row).
@@ -28,20 +30,20 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
         : (hour < 17 ? l10n.goodAfternoonGreeting : l10n.goodEveningGreeting);
 
     return Padding(
-      padding: DesignToken.layoutScreenHorizontal,
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: DesignToken.paddingSM,
-          vertical: DesignToken.paddingXS,
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
         ),
         decoration: BoxDecoration(
-          borderRadius: DesignToken.borderRadiusSM,
+          borderRadius: AppRadius.sm8,
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              DesignToken.primary.withValues(alpha: 0.07),
-              DesignToken.secondary.withValues(alpha: 0.08),
+              AppColors.lightPrimary.withValues(alpha: 0.07),
+              AppColors.lightSecondary.withValues(alpha: 0.08),
             ],
           ),
         ),
@@ -52,8 +54,8 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
               child: Text.rich(
                 TextSpan(
                   style: LegacyTheme.AppTextStyles.nunitoRegular.copyWith(
-                    fontSize: DesignToken.fontSizeSM,
-                    color: DesignToken.textDark.withValues(alpha: 0.72),
+                    fontSize: 12.0,
+                    color: AppColors.lightTextPrimary.withValues(alpha: 0.72),
                     height: 1.0,
                   ),
                   children: [
@@ -61,8 +63,8 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
                     TextSpan(
                       text: widget.userName,
                       style: LegacyTheme.AppTextStyles.nunitoBold.copyWith(
-                        fontSize: DesignToken.fontSizeSM,
-                        color: DesignToken.textDark,
+                        fontSize: 12.0,
+                        color: AppColors.lightTextPrimary,
                         height: 1.0,
                       ),
                     ),
@@ -72,7 +74,7 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(width: DesignToken.widthXS),
+            SizedBox(width: 4.0),
             _SunMoonBadge(
               isDayTime: isDayTime,
               pressed: _pressed,
@@ -109,7 +111,7 @@ class _SunMoonBadge extends StatelessWidget {
       onTapUp: (_) => onPressedChanged(false),
       onTapCancel: () => onPressedChanged(false),
       child: AnimatedScale(
-        duration: DesignToken.animationDurationFast,
+        duration: const Duration(milliseconds: 200),
         scale: pressed ? 0.92 : 1.0,
         child: Container(
           padding: const EdgeInsets.all(3),
@@ -119,14 +121,14 @@ class _SunMoonBadge extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: isDayTime
-                  ? [DesignToken.amberShade300, DesignToken.amberShade500]
-                  : [DesignToken.blueShade600, DesignToken.purpleShade600],
+                  ? [const Color(0xFFFFD54F), const Color(0xFFFFC107)]
+                  : [AppColors.info, const Color(0xFF8E24AA)],
             ),
           ),
           child: Icon(
             icon,
-            color: DesignToken.white,
-            size: DesignToken.iconSizeSM,
+            color: AppColors.white,
+            size: 16.0,
           ),
         ),
       ),

@@ -1,6 +1,6 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_top_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -49,12 +49,12 @@ class HomeNavBar extends StatelessWidget {
         onPressed: onProfileTap ?? () => context.push('/profile'),
         icon: CircleAvatar(
           radius: 18,
-          backgroundColor: DesignToken.primary.withValues(alpha: 0.12),
+          backgroundColor: AppColors.lightPrimary.withValues(alpha: 0.12),
           backgroundImage: userImageUrl != null && userImageUrl!.isNotEmpty
               ? NetworkImage(userImageUrl!)
               : null,
           child: userImageUrl == null || userImageUrl!.isEmpty
-              ? const Icon(Icons.person, size: 20, color: DesignToken.primary)
+              ? const Icon(Icons.person, size: 20, color: AppColors.lightPrimary)
               : null,
         ),
       );
@@ -70,7 +70,7 @@ class HomeNavBar extends StatelessWidget {
             height: 28,
             errorBuilder: (_, __, ___) => const Icon(
               Icons.storefront_rounded,
-              color: DesignToken.primary,
+              color: AppColors.lightPrimary,
               size: 24,
             ),
           ),
@@ -86,7 +86,7 @@ class HomeNavBar extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.nunitoBold.copyWith(
                     fontSize: 17,
-                    color: DesignToken.textDark,
+                    color: AppColors.lightTextPrimary,
                   ),
                 ),
                 if (subtitle != null)
@@ -96,7 +96,7 @@ class HomeNavBar extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.nunitoRegular.copyWith(
                       fontSize: 12,
-                      color: DesignToken.textDark.withValues(alpha: 0.65),
+                      color: AppColors.lightTextPrimary.withValues(alpha: 0.65),
                     ),
                   ),
               ],

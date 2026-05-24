@@ -1,8 +1,10 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:balaji_points/config/theme.dart' as LegacyTheme;
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/pin_auth_service.dart';
@@ -86,7 +88,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.enterValidTenDigit),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -119,7 +121,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.noAccountFound),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -149,7 +151,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.pleaseVerifyMobile),
-          backgroundColor: DesignToken.orange,
+          backgroundColor: AppColors.warning,
         ),
       );
       return;
@@ -164,7 +166,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.pinsDoNotMatch),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -175,7 +177,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.enterCurrentPin),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
         return;
@@ -185,7 +187,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.newPinMustBeDifferent),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
         return;
@@ -208,7 +210,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.pinResetSuccess),
-          backgroundColor: DesignToken.success,
+          backgroundColor: AppColors.success,
         ),
       );
       _pinController.clear();
@@ -218,7 +220,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.failedToResetPin),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -234,7 +236,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Cannot make phone call to $phoneNumber'),
-              backgroundColor: DesignToken.error,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -244,7 +246,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error making phone call: $e'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -286,7 +288,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
         ref.listen<AuthState>(authProvider, (_, state) {
           if (state is ResetPinSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.pinResetSuccess), backgroundColor: DesignToken.success),
+              SnackBar(content: Text(l10n.pinResetSuccess), backgroundColor: AppColors.success),
             );
             _currentPinController.clear();
             _pinController.clear();
@@ -294,7 +296,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
             context.pop();
           } else if (state is ResetPinError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: DesignToken.error),
+              SnackBar(content: Text(state.message), backgroundColor: AppColors.error),
             );
           }
         });
@@ -306,11 +308,11 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: true,
             appBar: AppBar(
-              backgroundColor: DesignToken.transparent,
-              elevation: DesignToken.elevationNone,
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
               title: Text(l10n.resetPinTitle),
               leading: BackButton(
-                color: DesignToken.primary,
+                color: AppColors.lightPrimary,
                 onPressed: () {
                   if (_hasPinData()) {
                     Navigator.of(context).maybePop();
@@ -333,51 +335,51 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                 // Main Content
                 SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
-                    DesignToken.spacing2XL,
-                    topInset + kToolbarHeight + DesignToken.spacingSM,
-                    DesignToken.spacing2XL,
-                    bottomInset + DesignToken.spacingXL,
+                    AppSpacing.xl2,
+                    topInset + kToolbarHeight + AppSpacing.sm,
+                    AppSpacing.xl2,
+                    bottomInset + AppSpacing.xl,
                   ),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        SizedBox(height: DesignToken.heightSM),
+                        SizedBox(height: 8.0),
 
                         Text(
                           l10n.resetPinSubtitle,
                           textAlign: TextAlign.center,
                           style: LegacyTheme.AppTextStyles.nunitoRegular.copyWith(
-                            fontSize: DesignToken.fontSizeSM,
-                            color: DesignToken.textDark.withOpacity(0.7),
+                            fontSize: 12.0,
+                            color: AppColors.lightTextPrimary.withOpacity(0.7),
                           ),
                         ),
 
-                        SizedBox(height: DesignToken.height2XL),
+                        SizedBox(height: 24.0),
 
                         // Glass Card
                         ClipRRect(
-                          borderRadius: DesignToken.borderRadius2XL,
+                          borderRadius: BorderRadius.circular(24),
                           child: BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                             child: Container(
-                              padding: DesignToken.paddingAll2XL,
+                              padding: EdgeInsets.all(24),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    DesignToken.white.withOpacity(0.9),
-                                    DesignToken.white.withOpacity(0.7),
+                                    AppColors.white.withOpacity(0.9),
+                                    AppColors.white.withOpacity(0.7),
                                   ],
                                 ),
-                                borderRadius: DesignToken.borderRadius2XL,
+                                borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: DesignToken.white.withOpacity(0.5),
+                                  color: AppColors.white.withOpacity(0.5),
                                   width: 1.5,
                                 ),
-                                boxShadow: DesignToken.shadowLG.map((shadow) => shadow.copyWith(
-                                  color: DesignToken.primary.withOpacity(0.1),
+                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 12.0, offset: Offset(0, 6))].map((shadow) => shadow.copyWith(
+                                  color: AppColors.lightPrimary.withOpacity(0.1),
                                 )).toList(),
                               ),
                               child: Column(
@@ -389,40 +391,40 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     maxLength: 10,
                                     enabled: !_isLoggedIn,
                                     style: LegacyTheme.AppTextStyles.nunitoSemiBold
-                                        .copyWith(fontSize: DesignToken.fontSizeLG),
+                                        .copyWith(fontSize: 16.0),
                                     decoration: InputDecoration(
                                       labelText: l10n.mobileNumber,
                                       prefixText: "+91 ",
                                       counterText: "",
                                       filled: true,
                                       fillColor: _isLoggedIn
-                                          ? DesignToken.primary.withOpacity(0.1)
-                                          : DesignToken.primary.withOpacity(0.05),
+                                          ? AppColors.lightPrimary.withOpacity(0.1)
+                                          : AppColors.lightPrimary.withOpacity(0.05),
                                       border: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(0.3),
+                                          color: AppColors.lightPrimary.withOpacity(0.3),
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(0.2),
+                                          color: AppColors.lightPrimary.withOpacity(0.2),
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: const BorderSide(
-                                          color: DesignToken.primary,
+                                          color: AppColors.lightPrimary,
                                           width: 2,
                                         ),
                                       ),
                                       disabledBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(0.3),
+                                          color: AppColors.lightPrimary.withOpacity(0.3),
                                           width: 1.5,
                                         ),
                                       ),
@@ -437,7 +439,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     },
                                   ),
 
-                                  SizedBox(height: DesignToken.heightMD),
+                                  SizedBox(height: 12.0),
 
                                   if (!_isLoggedIn) ...[
                                     Align(
@@ -448,19 +450,19 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             : _checkPhone,
                                         icon: _isCheckingPhone
                                             ? SizedBox(
-                                                width: DesignToken.iconSizeSM,
-                                                height: DesignToken.iconSizeSM,
+                                                width: 16.0,
+                                                height: 16.0,
                                                 child:
                                                     const CircularProgressIndicator(
                                                   strokeWidth: 2,
-                                                  color: DesignToken.white,
+                                                  color: AppColors.white,
                                                 ),
                                               )
                                             : Icon(
                                                 _phoneChecked && _phoneExists
                                                     ? Icons.check_circle
                                                     : Icons.search,
-                                                size: DesignToken.iconSizeSM + 2,
+                                                size: 16.0 + 2,
                                               ),
                                         label: Text(
                                           _phoneChecked && _phoneExists
@@ -469,24 +471,24 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           style: LegacyTheme
                                               .AppTextStyles.nunitoSemiBold
                                               .copyWith(
-                                                fontSize: DesignToken.fontSizeMD,
+                                                fontSize: 14.0,
                                               ),
                                         ),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: _phoneChecked &&
                                                   _phoneExists
-                                              ? DesignToken.success
-                                              : DesignToken.primary,
-                                          foregroundColor: DesignToken.white,
-                                          padding: DesignToken.paddingHorizontalLG
+                                              ? AppColors.success
+                                              : AppColors.lightPrimary,
+                                          foregroundColor: AppColors.white,
+                                          padding: EdgeInsets.symmetric(horizontal: 16)
                                               .copyWith(
-                                            top: DesignToken.paddingSM + 2,
-                                            bottom: DesignToken.paddingSM + 2,
+                                            top: AppSpacing.sm + 2,
+                                            bottom: AppSpacing.sm + 2,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: DesignToken.heightMD),
+                                    SizedBox(height: 12.0),
                                   ],
 
                                   // Auto-verify if logged in
@@ -494,13 +496,13 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: Container(
-                                        padding: DesignToken.paddingHorizontalLG,
+                                        padding: EdgeInsets.symmetric(horizontal: 16),
                                         height: 40,
                                         decoration: BoxDecoration(
-                                          color: DesignToken.success.withOpacity(0.1),
-                                          borderRadius: DesignToken.borderRadiusMD,
+                                          color: AppColors.success.withOpacity(0.1),
+                                          borderRadius: AppRadius.forInput,
                                           border: Border.all(
-                                            color: DesignToken.success,
+                                            color: AppColors.success,
                                             width: 1.5,
                                           ),
                                         ),
@@ -510,17 +512,17 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             const Icon(
                                               Icons.check_circle,
                                               size: 18,
-                                              color: DesignToken.success,
+                                              color: AppColors.success,
                                             ),
-                                            SizedBox(width: DesignToken.widthSM),
+                                            SizedBox(width: 8.0),
                                             Text(
                                               l10n.verified,
                                               style: LegacyTheme
                                                   .AppTextStyles
                                                   .nunitoSemiBold
                                                   .copyWith(
-                                                    fontSize: DesignToken.fontSizeMD,
-                                                    color: DesignToken.success,
+                                                    fontSize: 14.0,
+                                                    color: AppColors.success,
                                                   ),
                                             ),
                                           ],
@@ -529,7 +531,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     ),
                                   ],
 
-                                  SizedBox(height: DesignToken.heightXL),
+                                  SizedBox(height: 20.0),
 
                                   // Current PIN Field (Required for logged-in users)
                                   if (_isLoggedIn) ...[
@@ -541,33 +543,33 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                       textAlign: TextAlign.center,
                                       style: LegacyTheme.AppTextStyles.nunitoBold
                                           .copyWith(
-                                            fontSize: DesignToken.fontSize2XL,
+                                            fontSize: 20.0,
                                             letterSpacing: 8,
-                                            color: DesignToken.primary,
+                                            color: AppColors.lightPrimary,
                                           ),
                                       decoration: InputDecoration(
                                         labelText: l10n.currentPinLabel,
                                         counterText: "",
                                         filled: true,
-                                        fillColor: DesignToken.primary.withOpacity(0.05),
+                                        fillColor: AppColors.lightPrimary.withOpacity(0.05),
                                         border: OutlineInputBorder(
-                                          borderRadius: DesignToken.borderRadiusLG,
+                                          borderRadius: AppRadius.forCard,
                                           borderSide: BorderSide(
-                                            color: DesignToken.primary.withOpacity(0.3),
+                                            color: AppColors.lightPrimary.withOpacity(0.3),
                                             width: 1.5,
                                           ),
                                         ),
                                         enabledBorder: OutlineInputBorder(
-                                          borderRadius: DesignToken.borderRadiusLG,
+                                          borderRadius: AppRadius.forCard,
                                           borderSide: BorderSide(
-                                            color: DesignToken.primary.withOpacity(0.2),
+                                            color: AppColors.lightPrimary.withOpacity(0.2),
                                             width: 1.5,
                                           ),
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: DesignToken.borderRadiusLG,
+                                          borderRadius: AppRadius.forCard,
                                           borderSide: const BorderSide(
-                                            color: DesignToken.primary,
+                                            color: AppColors.lightPrimary,
                                             width: 2,
                                           ),
                                         ),
@@ -581,19 +583,19 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         return null;
                                       },
                                     ),
-                                    SizedBox(height: DesignToken.heightLG),
+                                    SizedBox(height: 16.0),
                                   ],
 
                                   // Admin Support Info (for users who forgot current PIN)
                                   if (_isLoggedIn) ...[
-                                    SizedBox(height: DesignToken.heightMD),
+                                    SizedBox(height: 12.0),
                                     Container(
-                                      padding: EdgeInsets.all(DesignToken.paddingLG),
+                                      padding: EdgeInsets.all(AppSpacing.lg),
                                       decoration: BoxDecoration(
-                                        color: DesignToken.primary.withOpacity(0.05),
-                                        borderRadius: DesignToken.borderRadiusMD,
+                                        color: AppColors.lightPrimary.withOpacity(0.05),
+                                        borderRadius: AppRadius.forInput,
                                         border: Border.all(
-                                          color: DesignToken.primary.withOpacity(0.2),
+                                          color: AppColors.lightPrimary.withOpacity(0.2),
                                           width: 1,
                                         ),
                                       ),
@@ -605,41 +607,41 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                               const Icon(
                                                 Icons.help_outline,
                                                 size: 20,
-                                                color: DesignToken.primary,
+                                                color: AppColors.lightPrimary,
                                               ),
-                                              SizedBox(width: DesignToken.widthSM),
+                                              SizedBox(width: 8.0),
                                               Text(
                                                 l10n.forgotCurrentPin,
                                                 style: LegacyTheme
                                                     .AppTextStyles
                                                     .nunitoSemiBold
                                                     .copyWith(
-                                                      fontSize: DesignToken.fontSizeMD,
-                                                      color: DesignToken.primary,
+                                                      fontSize: 14.0,
+                                                      color: AppColors.lightPrimary,
                                                     ),
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: DesignToken.heightSM),
+                                          SizedBox(height: 8.0),
                                           Text(
                                             l10n.forgotPinHelp,
                                             style: LegacyTheme
                                                 .AppTextStyles
                                                 .nunitoRegular
                                                 .copyWith(
-                                                  fontSize: DesignToken.fontSizeSM,
-                                                  color: DesignToken.textDark
+                                                  fontSize: 12.0,
+                                                  color: AppColors.lightTextPrimary
                                                       .withOpacity(0.7),
                                                 ),
                                           ),
-                                          SizedBox(height: DesignToken.heightMD),
+                                          SizedBox(height: 12.0),
                                           Container(
-                                            padding: DesignToken.paddingAllSM,
+                                            padding: EdgeInsets.all(8),
                                             decoration: BoxDecoration(
-                                              color: DesignToken.white,
-                                              borderRadius: DesignToken.borderRadiusSM,
+                                              color: AppColors.white,
+                                              borderRadius: AppRadius.sm8,
                                               border: Border.all(
-                                                color: DesignToken.primary
+                                                color: AppColors.lightPrimary
                                                     .withOpacity(0.2),
                                                 width: 1,
                                               ),
@@ -651,22 +653,22 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                     const Icon(
                                                       Icons.support_agent,
                                                       size: 18,
-                                                      color: DesignToken.secondary,
+                                                      color: AppColors.lightSecondary,
                                                     ),
-                                                    SizedBox(width: DesignToken.widthSM),
+                                                    SizedBox(width: 8.0),
                                                     Text(
                                                       l10n.adminSupportInfo,
                                                       style: LegacyTheme
                                                           .AppTextStyles
                                                           .nunitoSemiBold
                                                           .copyWith(
-                                                            fontSize: DesignToken.fontSizeSM,
-                                                            color: DesignToken.textDark,
+                                                            fontSize: 12.0,
+                                                            color: AppColors.lightTextPrimary,
                                                           ),
                                                     ),
                                                   ],
                                                 ),
-                                                SizedBox(height: DesignToken.heightSM),
+                                                SizedBox(height: 8.0),
                                                 // Support Phone 1
                                                 InkWell(
                                                   onTap: () => _makePhoneCall(
@@ -674,25 +676,25 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                         .replaceAll('-', ''),
                                                   ),
                                                   borderRadius:
-                                                      DesignToken.borderRadiusSM,
+                                                      AppRadius.sm8,
                                                   child: Container(
                                                     padding:
-                                                        DesignToken.paddingHorizontalMD,
+                                                        EdgeInsets.symmetric(horizontal: 12),
                                                     height: 40,
                                                     decoration: BoxDecoration(
-                                                      color: DesignToken.success
+                                                      color: AppColors.success
                                                           .withOpacity(0.1),
                                                       borderRadius:
-                                                          DesignToken.borderRadiusSM,
+                                                          AppRadius.sm8,
                                                     ),
                                                     child: Row(
                                                       children: [
                                                         const Icon(
                                                           Icons.phone_android,
                                                           size: 16,
-                                                          color: DesignToken.success,
+                                                          color: AppColors.success,
                                                         ),
-                                                        SizedBox(width: DesignToken.widthSM),
+                                                        SizedBox(width: 8.0),
                                                         Expanded(
                                                           child: Text(
                                                             l10n.supportPhone1,
@@ -700,22 +702,22 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                                 .AppTextStyles
                                                                 .nunitoSemiBold
                                                                 .copyWith(
-                                                                  fontSize: DesignToken.fontSizeSM,
+                                                                  fontSize: 12.0,
                                                                   color:
-                                                                      DesignToken.success,
+                                                                      AppColors.success,
                                                                 ),
                                                           ),
                                                         ),
                                                         const Icon(
                                                           Icons.call,
                                                           size: 16,
-                                                          color: DesignToken.success,
+                                                          color: AppColors.success,
                                                         ),
                                                       ],
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(height: DesignToken.heightSM),
+                                                SizedBox(height: 8.0),
                                                 // Support Phone 2
                                                 InkWell(
                                                   onTap: () => _makePhoneCall(
@@ -723,25 +725,25 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                         .replaceAll('-', ''),
                                                   ),
                                                   borderRadius:
-                                                      DesignToken.borderRadiusSM,
+                                                      AppRadius.sm8,
                                                   child: Container(
                                                     padding:
-                                                        DesignToken.paddingHorizontalMD,
+                                                        EdgeInsets.symmetric(horizontal: 12),
                                                     height: 40,
                                                     decoration: BoxDecoration(
-                                                      color: DesignToken.primary
+                                                      color: AppColors.lightPrimary
                                                           .withOpacity(0.1),
                                                       borderRadius:
-                                                          DesignToken.borderRadiusSM,
+                                                          AppRadius.sm8,
                                                     ),
                                                     child: Row(
                                                       children: [
                                                         const Icon(
                                                           Icons.phone,
                                                           size: 16,
-                                                          color: DesignToken.primary,
+                                                          color: AppColors.lightPrimary,
                                                         ),
-                                                        SizedBox(width: DesignToken.widthSM),
+                                                        SizedBox(width: 8.0),
                                                         Expanded(
                                                           child: Text(
                                                             l10n.supportPhone2,
@@ -749,16 +751,16 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                                 .AppTextStyles
                                                                 .nunitoSemiBold
                                                                 .copyWith(
-                                                                  fontSize: DesignToken.fontSizeSM,
+                                                                  fontSize: 12.0,
                                                                   color:
-                                                                      DesignToken.primary,
+                                                                      AppColors.lightPrimary,
                                                                 ),
                                                           ),
                                                         ),
                                                         const Icon(
                                                           Icons.call,
                                                           size: 16,
-                                                          color: DesignToken.primary,
+                                                          color: AppColors.lightPrimary,
                                                         ),
                                                       ],
                                                     ),
@@ -770,7 +772,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(height: DesignToken.heightLG),
+                                    SizedBox(height: 16.0),
                                   ],
 
                                   // New PIN Field
@@ -782,33 +784,33 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     textAlign: TextAlign.center,
                                     style: LegacyTheme.AppTextStyles.nunitoBold
                                         .copyWith(
-                                          fontSize: DesignToken.fontSize2XL,
+                                          fontSize: 20.0,
                                           letterSpacing: 8,
-                                          color: DesignToken.primary,
+                                          color: AppColors.lightPrimary,
                                         ),
                                     decoration: InputDecoration(
                                       labelText: l10n.newPinLabel,
                                       counterText: "",
                                       filled: true,
-                                      fillColor: DesignToken.primary.withOpacity(0.05),
+                                      fillColor: AppColors.lightPrimary.withOpacity(0.05),
                                       border: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(0.3),
+                                          color: AppColors.lightPrimary.withOpacity(0.3),
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(0.2),
+                                          color: AppColors.lightPrimary.withOpacity(0.2),
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: const BorderSide(
-                                          color: DesignToken.primary,
+                                          color: AppColors.lightPrimary,
                                           width: 2,
                                         ),
                                       ),
@@ -823,7 +825,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     },
                                   ),
 
-                                  SizedBox(height: DesignToken.heightLG),
+                                  SizedBox(height: 16.0),
 
                                   // Confirm PIN Field
                                   TextFormField(
@@ -834,40 +836,40 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     textAlign: TextAlign.center,
                                     style: LegacyTheme.AppTextStyles.nunitoBold
                                         .copyWith(
-                                          fontSize: DesignToken.fontSize2XL,
+                                          fontSize: 20.0,
                                           letterSpacing: 8,
-                                          color: DesignToken.primary,
+                                          color: AppColors.lightPrimary,
                                         ),
                                     decoration: InputDecoration(
                                       labelText: l10n.confirmPin,
                                       counterText: "",
                                       filled: true,
-                                      fillColor: DesignToken.primary.withOpacity(0.05),
+                                      fillColor: AppColors.lightPrimary.withOpacity(0.05),
                                       border: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(0.3),
+                                          color: AppColors.lightPrimary.withOpacity(0.3),
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(0.2),
+                                          color: AppColors.lightPrimary.withOpacity(0.2),
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
+                                        borderRadius: AppRadius.forCard,
                                         borderSide: const BorderSide(
-                                          color: DesignToken.primary,
+                                          color: AppColors.lightPrimary,
                                           width: 2,
                                         ),
                                       ),
                                     ),
                                   ),
 
-                                  SizedBox(height: DesignToken.height2XL),
+                                  SizedBox(height: 24.0),
 
                                   // Reset Button with Gradient
                                   SizedBox(
@@ -877,25 +879,25 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         gradient: LinearGradient(
                                           colors: canSubmit
                                               ? [
-                                                  DesignToken.secondary,
-                                                  DesignToken.secondary
+                                                  AppColors.lightSecondary,
+                                                  AppColors.lightSecondary
                                                       .withOpacity(0.8),
                                                 ]
                                               : [
-                                                  DesignToken.grey500,
-                                                  DesignToken.grey500
+                                                  AppColors.grey500,
+                                                  AppColors.grey500
                                                       .withValues(alpha: 0.8),
                                                 ],
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
                                         ),
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        boxShadow: DesignToken.shadowMD
+                                        borderRadius: AppRadius.forCard,
+                                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 8.0, offset: Offset(0, 4))]
                                             .map(
                                               (shadow) => shadow.copyWith(
                                                 color: (canSubmit
-                                                        ? DesignToken.secondary
-                                                        : DesignToken.grey500)
+                                                        ? AppColors.lightSecondary
+                                                        : AppColors.grey500)
                                                     .withOpacity(0.4),
                                               ),
                                             )
@@ -906,13 +908,13 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             ? null
                                             : () => _saveNewPin(),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: DesignToken.transparent,
-                                          shadowColor: DesignToken.transparent,
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
                                           padding: const EdgeInsets.symmetric(
                                             vertical: 18,
                                           ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: DesignToken.borderRadiusLG,
+                                            borderRadius: AppRadius.forCard,
                                           ),
                                         ),
                                         child: isSaving
@@ -922,7 +924,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                 child: CircularProgressIndicator(
                                                   strokeWidth: 2.5,
                                                   valueColor: AlwaysStoppedAnimation(
-                                                    DesignToken.white,
+                                                    AppColors.white,
                                                   ),
                                                 ),
                                               )
@@ -932,8 +934,8 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                     .AppTextStyles
                                                     .nunitoBold
                                                     .copyWith(
-                                                      color: DesignToken.white,
-                                                      fontSize: DesignToken.fontSizeXL,
+                                                      color: AppColors.white,
+                                                      fontSize: 18.0,
                                                     ),
                                               ),
                                       ),
@@ -941,14 +943,14 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                   ),
 
                                   if (!_isLoggedIn && !canSubmit) ...[
-                                    SizedBox(height: DesignToken.heightLG),
+                                    SizedBox(height: 16.0),
                                     Text(
                                       l10n.pleaseVerifyMobile,
                                       textAlign: TextAlign.center,
                                       style: LegacyTheme.AppTextStyles.nunitoRegular
                                           .copyWith(
-                                            fontSize: DesignToken.fontSizeSM,
-                                            color: DesignToken.textDark.withOpacity(0.7),
+                                            fontSize: 12.0,
+                                            color: AppColors.lightTextPrimary.withOpacity(0.7),
                                           ),
                                     ),
                                   ],
@@ -1041,19 +1043,19 @@ class CelebrationPainter extends CustomPainter {
   Color _getColorForType(FloatingType type) {
     switch (type) {
       case FloatingType.coin:
-        return DesignToken.amber;
+        return const Color(0xFFFFC107);
       case FloatingType.star:
-        return DesignToken.secondary;
+        return AppColors.lightSecondary;
       case FloatingType.sparkle:
-        return DesignToken.primary;
+        return AppColors.lightPrimary;
       case FloatingType.points:
-        return DesignToken.success;
+        return AppColors.success;
     }
   }
 
   void _drawCoin(Canvas canvas, Paint paint) {
     canvas.drawCircle(Offset.zero, 8, paint);
-    paint.color = DesignToken.white.withOpacity(0.6);
+    paint.color = AppColors.white.withOpacity(0.6);
     canvas.drawCircle(Offset(-3, -3), 2, paint);
   }
 
@@ -1095,12 +1097,12 @@ class CelebrationPainter extends CustomPainter {
     path.addRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(center: Offset.zero, width: 16, height: 12),
-        Radius.circular(DesignToken.radiusSM),
+        Radius.circular(8.0),
       ),
     );
     canvas.drawPath(path, paint);
 
-    paint.color = DesignToken.white.withOpacity(0.8);
+    paint.color = AppColors.white.withOpacity(0.8);
     canvas.drawCircle(Offset(-4, 0), 2, paint);
     canvas.drawCircle(Offset(4, 0), 2, paint);
   }

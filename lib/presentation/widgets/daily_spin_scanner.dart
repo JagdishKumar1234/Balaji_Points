@@ -1,8 +1,8 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/presentation/providers/daily_spin_provider.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 
 class DailySpinScanner extends ConsumerStatefulWidget {
@@ -164,13 +164,13 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: DesignToken.secondary.withOpacity(0.1),
+                color: AppColors.lightSecondary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.celebration,
                 size: 48,
-                color: DesignToken.secondary,
+                color: AppColors.lightSecondary,
               ),
             ),
             const SizedBox(height: 16),
@@ -179,7 +179,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: DesignToken.primary,
+                color: AppColors.lightPrimary,
               ),
             ),
           ],
@@ -197,14 +197,14 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    DesignToken.secondary,
-                    DesignToken.secondary.withOpacity(0.7),
+                    AppColors.lightSecondary,
+                    AppColors.lightSecondary.withOpacity(0.7),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: DesignToken.secondary.withOpacity(0.3),
+                    color: AppColors.lightSecondary.withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -235,7 +235,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                 widget.onSpinComplete?.call();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: DesignToken.secondary,
+                backgroundColor: AppColors.lightSecondary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 48,
                   vertical: 14,
@@ -271,7 +271,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.white, DesignToken.primary.withOpacity(0.05)],
+          colors: [Colors.white, AppColors.lightPrimary.withOpacity(0.05)],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -291,12 +291,12 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: DesignToken.secondary.withOpacity(0.1),
+                  color: AppColors.lightSecondary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.qr_code_scanner,
-                  color: DesignToken.secondary,
+                  color: AppColors.lightSecondary,
                   size: 28,
                 ),
               ),
@@ -305,7 +305,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                 'Daily Prize Scan',
                 style: AppTextStyles.nunitoBold.copyWith(
                   fontSize: 24,
-                  color: DesignToken.primary,
+                  color: AppColors.lightPrimary,
                 ),
               ),
             ],
@@ -328,7 +328,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
               color: Colors.black87,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: DesignToken.secondary.withOpacity(0.3),
+                color: AppColors.lightSecondary.withOpacity(0.3),
                 width: 2,
               ),
             ),
@@ -341,7 +341,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        DesignToken.secondary,
+                        AppColors.lightSecondary,
                         Colors.transparent,
                       ],
                     ),
@@ -441,7 +441,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        DesignToken.secondary,
+                        AppColors.lightSecondary,
                         Colors.transparent,
                       ],
                     ),
@@ -462,7 +462,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                 backgroundColor: _isSpinning
                     ? Colors.grey
                     : (spinState.canSpin
-                          ? DesignToken.secondary
+                          ? AppColors.lightSecondary
                           : Colors.grey.shade400),
                 disabledBackgroundColor: Colors.grey.shade300,
                 padding: const EdgeInsets.symmetric(vertical: 16),

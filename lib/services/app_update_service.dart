@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,7 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/logger.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart';
 import 'package:balaji_points/presentation/widgets/app_update_dialog.dart';
 import 'package:balaji_points/services/local_notification_service.dart';
@@ -166,7 +166,7 @@ class AppUpdateService {
     await showDialog<void>(
       context: context,
       barrierDismissible: !forceUpdate,
-      barrierColor: DesignToken.overlay50,
+      barrierColor: Colors.black54,
       builder: (dialogContext) {
         return AppUpdateDialog(
           forceUpdate: forceUpdate,
@@ -236,9 +236,9 @@ class AppUpdateService {
       SnackBar(
         content: Text(
           'Unable to open the app store. Please check your connection or contact support.',
-          style: AppTextStyles.nunitoRegular.copyWith(color: DesignToken.white),
+          style: AppTextStyles.nunitoRegular.copyWith(color: AppColors.white),
         ),
-        backgroundColor: DesignToken.error,
+        backgroundColor: AppColors.error,
       ),
     );
   }

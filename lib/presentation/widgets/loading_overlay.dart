@@ -1,6 +1,6 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/design_token.dart';
 import '../providers/loading_provider.dart';
 
 class LoadingOverlay extends ConsumerWidget {
@@ -38,7 +38,7 @@ class LoadingOverlay extends ConsumerWidget {
                     height: 40,
                     child: CircularProgressIndicator(
                       strokeWidth: 4,
-                      color: DesignToken.secondary,
+                      color: AppColors.lightSecondary,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -47,7 +47,7 @@ class LoadingOverlay extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: DesignToken.textDark,
+                      color: AppColors.lightTextPrimary,
                     ),
                   ),
                 ],

@@ -1,8 +1,8 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/cart_service.dart';
 import 'package:balaji_points/services/session_service.dart';
@@ -25,7 +25,7 @@ class ProductListPage extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: appBarFill,
-        foregroundColor: DesignToken.textDark,
+        foregroundColor: AppColors.lightTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -83,7 +83,7 @@ class ProductListPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTextStyles.nunitoRegular.copyWith(
                     fontSize: 14,
-                    color: DesignToken.error,
+                    color: AppColors.error,
                   ),
                 ),
               ),
@@ -92,7 +92,7 @@ class ProductListPage extends StatelessWidget {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: DesignToken.primary),
+              child: CircularProgressIndicator(color: AppColors.lightPrimary),
             );
           }
 
@@ -113,7 +113,7 @@ class ProductListPage extends StatelessWidget {
                     'No Product Added',
                     style: AppTextStyles.nunitoBold.copyWith(
                       fontSize: 20,
-                      color: DesignToken.textDark,
+                      color: AppColors.lightTextPrimary,
                     ),
                   ),
                 ],
@@ -195,8 +195,8 @@ class ProductListPage extends StatelessWidget {
                 child: Text(
                   hasCategories ? selectedCategory : 'Products',
                   style: AppTextStyles.nunitoSemiBold.copyWith(
-                    fontSize: DesignToken.fontSizeLG,
-                    color: isDark ? DesignToken.white : DesignToken.textDark,
+                    fontSize: 16.0,
+                    color: isDark ? AppColors.white : AppColors.lightTextPrimary,
                   ),
                 ),
               ),
@@ -284,10 +284,10 @@ class _ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final Color titleColor = isDark ? DesignToken.white : DesignToken.textDark;
+    final Color titleColor = isDark ? AppColors.white : AppColors.lightTextPrimary;
     final Color subtitleColor = isDark
-        ? DesignToken.white.withValues(alpha: 0.80)
-        : DesignToken.textDark.withValues(alpha: 0.70);
+        ? AppColors.white.withValues(alpha: 0.80)
+        : AppColors.lightTextPrimary.withValues(alpha: 0.70);
 
     final cartService = CartService();
     final sessionService = SessionService();
@@ -298,7 +298,7 @@ class _ProductCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please log in to add items to cart.'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
         return;
@@ -331,7 +331,7 @@ class _ProductCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: DesignToken.black.withValues(alpha: 0.05),
+              color: AppColors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 6),
             ),
@@ -358,8 +358,8 @@ class _ProductCard extends StatelessWidget {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    DesignToken.blue500,
-                                    DesignToken.purple,
+                                    const Color(0xFF2196F3),
+                                    const Color(0xFF9C27B0),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -369,7 +369,7 @@ class _ProductCard extends StatelessWidget {
                                 child: Icon(
                                   Icons.layers_rounded,
                                   size: 40,
-                                  color: DesignToken.white,
+                                  color: AppColors.white,
                                 ),
                               ),
                             ),
@@ -427,7 +427,7 @@ class _ProductCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.nunitoSemiBold.copyWith(
                   color: titleColor,
-                  fontSize: DesignToken.fontSizeMD,
+                  fontSize: 14.0,
                 ),
               ),
             ),
@@ -441,7 +441,7 @@ class _ProductCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.nunitoRegular.copyWith(
                   color: subtitleColor,
-                  fontSize: DesignToken.fontSizeSM,
+                  fontSize: 12.0,
                 ),
               ),
             ),
@@ -452,8 +452,8 @@ class _ProductCard extends StatelessWidget {
               child: Text(
                 price > 0 ? '₹${price.toStringAsFixed(0)}' : '',
                 style: AppTextStyles.nunitoBold.copyWith(
-                  color: DesignToken.primary,
-                  fontSize: DesignToken.fontSizeMD,
+                  color: AppColors.lightPrimary,
+                  fontSize: 14.0,
                 ),
               ),
             ),
@@ -539,7 +539,7 @@ class _CartIconButton extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
               decoration: BoxDecoration(
-                color: DesignToken.error,
+                color: AppColors.error,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.white, width: 1),
               ),

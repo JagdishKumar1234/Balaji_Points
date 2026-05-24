@@ -1,8 +1,10 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/config/theme.dart' as LegacyTheme;
-import 'package:balaji_points/core/theme/design_token.dart';
 
 class CompleteProfileCard extends StatelessWidget {
   const CompleteProfileCard({super.key});
@@ -12,58 +14,58 @@ class CompleteProfileCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      margin: DesignToken.layoutScreenHorizontal,
+      margin: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         // Thin gradient border to match home header & bottom bar
         gradient: LinearGradient(
-          colors: DesignToken.primaryGradient,
+          colors: AppColors.primaryGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: DesignToken.borderRadiusLG,
+        borderRadius: AppRadius.forCard,
       ),
       child: Container(
         margin: const EdgeInsets.all(1.0),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: <Color>[
-              DesignToken.orangeShade400,
-              DesignToken.deepOrangeShade500,
+              const Color(0xFFFFA726),
+              const Color(0xFFFF6F00),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: DesignToken.borderRadiusLG,
+          borderRadius: AppRadius.forCard,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: DesignToken.orange.withValues(alpha: 0.3),
-              blurRadius: DesignToken.elevationXL,
+              color: AppColors.warning.withValues(alpha: 0.3),
+              blurRadius: 12.0,
               offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Material(
-          color: DesignToken.transparent,
+          color: Colors.transparent,
           child: InkWell(
             onTap: () => context.push('/edit-profile'),
-            borderRadius: DesignToken.borderRadiusLG,
+            borderRadius: AppRadius.forCard,
             child: Padding(
-              padding: DesignToken.paddingAllLG,
+              padding: EdgeInsets.all(16),
               child: Row(
                 children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.all(DesignToken.paddingMD),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: DesignToken.white.withValues(alpha: 0.2),
+                      color: AppColors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.person_add_alt_1,
-                      color: DesignToken.white,
+                      color: AppColors.white,
                       size: 32,
                     ),
                   ),
-                  const SizedBox(width: DesignToken.widthLG),
+                  const SizedBox(width: 16.0),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,17 +73,17 @@ class CompleteProfileCard extends StatelessWidget {
                         Text(
                           l10n.completeProfile,
                           style: LegacyTheme.AppTextStyles.nunitoBold.copyWith(
-                            fontSize: DesignToken.fontSizeLG,
-                            color: DesignToken.white,
+                            fontSize: 16.0,
+                            color: AppColors.white,
                           ),
                         ),
-                        const SizedBox(height: DesignToken.heightXS),
+                        const SizedBox(height: 4.0),
                         Text(
                           l10n.completeProfileDetails,
                           style: LegacyTheme.AppTextStyles.nunitoRegular
                               .copyWith(
-                                fontSize: DesignToken.fontSizeMD,
-                                color: DesignToken.white.withValues(
+                                fontSize: 14.0,
+                                color: AppColors.white.withValues(
                                   alpha: 0.95,
                                 ),
                                 height: 1.4,
@@ -92,7 +94,7 @@ class CompleteProfileCard extends StatelessWidget {
                   ),
                   const Icon(
                     Icons.arrow_forward_ios,
-                    color: DesignToken.white,
+                    color: AppColors.white,
                     size: 20,
                   ),
                 ],

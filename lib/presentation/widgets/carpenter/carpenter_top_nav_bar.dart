@@ -1,6 +1,6 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -62,10 +62,10 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
     final isDark = theme.brightness == Brightness.dark;
     final bg = backgroundColor ??
         (isDark
-            ? DesignToken.navyBackground
-            : DesignToken.carpenterAppBackground);
+            ? const Color(0xFF001F3F)
+            : AppColors.lightBackground);
     final fg = foregroundColor ??
-        (isDark ? DesignToken.white : DesignToken.textDark);
+        (isDark ? AppColors.white : AppColors.lightTextPrimary);
     final fgMuted = fg.withValues(alpha: 0.72);
 
     final overlayStyle = SystemUiOverlayStyle(

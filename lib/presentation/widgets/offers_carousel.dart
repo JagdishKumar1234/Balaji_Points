@@ -1,5 +1,7 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 
 class OffersCarousel extends StatefulWidget {
   final List<OfferItem> offers;
@@ -43,7 +45,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
             },
           ),
         ),
-        const SizedBox(height: DesignToken.layoutCardGapTight),
+        const SizedBox(height: 12.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
@@ -58,20 +60,20 @@ class _OffersCarouselState extends State<OffersCarousel> {
   Widget _buildOfferCard(BuildContext context, OfferItem offer) {
     return Container(
       margin: const EdgeInsets.symmetric(
-        horizontal: DesignToken.layoutScreenPaddingX,
+        horizontal: 16.0,
       ),
       decoration: BoxDecoration(
-        borderRadius: DesignToken.borderRadiusLG,
+        borderRadius: AppRadius.forCard,
         boxShadow: [
           BoxShadow(
-            color: DesignToken.purpleShade500.withValues(alpha: 0.3),
-            blurRadius: DesignToken.offerCarouselShadowBlur,
-            offset: Offset(0, DesignToken.offerCarouselShadowDy),
+            color: const Color(0xFF9C27B0).withValues(alpha: 0.3),
+            blurRadius: 10.0,
+            offset: Offset(0, 4.0),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: DesignToken.borderRadiusLG,
+        borderRadius: AppRadius.forCard,
         child: Stack(
           children: [
             if (offer.imageUrl != null && offer.imageUrl!.isNotEmpty)
@@ -82,7 +84,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
                   width: double.infinity,
                   height: double.infinity,
                   errorBuilder: (context, error, stackTrace) {
-                    return ColoredBox(color: DesignToken.purpleShade300);
+                    return ColoredBox(color: const Color(0xFFBA68C8));
                   },
                 ),
               )
@@ -92,8 +94,8 @@ class _OffersCarouselState extends State<OffersCarousel> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        DesignToken.purpleShade600,
-                        DesignToken.purpleShade300,
+                        const Color(0xFF8E24AA),
+                        const Color(0xFFBA68C8),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -111,15 +113,15 @@ class _OffersCarouselState extends State<OffersCarousel> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      DesignToken.black.withValues(alpha: 0.35),
-                      DesignToken.black.withValues(alpha: 0.55),
+                      AppColors.black.withValues(alpha: 0.35),
+                      AppColors.black.withValues(alpha: 0.55),
                     ],
                   ),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(DesignToken.paddingXL),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,26 +131,26 @@ class _OffersCarouselState extends State<OffersCarousel> {
                       offer.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: DesignToken.textBold.copyWith(
-                        color: DesignToken.white,
-                        fontSize: DesignToken.fontSize3XL,
+                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                        color: AppColors.white,
+                        fontSize: 24.0,
                       ),
                     ),
                   if (offer.title.isNotEmpty && offer.description.isNotEmpty)
-                    const SizedBox(height: DesignToken.spacingSM),
+                    const SizedBox(height: AppSpacing.sm),
                   if (offer.description.isNotEmpty)
                     Text(
                       offer.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: DesignToken.textRegular.copyWith(
-                        color: DesignToken.white.withValues(alpha: 0.9),
-                        fontSize: DesignToken.fontSizeLG,
+                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                        color: AppColors.white.withValues(alpha: 0.9),
+                        fontSize: 16.0,
                       ),
                     ),
                   if (offer.actionText.isNotEmpty &&
                       (offer.title.isNotEmpty || offer.description.isNotEmpty))
-                    const SizedBox(height: DesignToken.spacingMD),
+                    const SizedBox(height: AppSpacing.md),
                   if (offer.actionText.isNotEmpty)
                     InkWell(
                       onTap: () {
@@ -159,23 +161,22 @@ class _OffersCarouselState extends State<OffersCarousel> {
                             builder: (context) {
                               return Dialog(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: DesignToken.borderRadiusLG,
+                                  borderRadius: AppRadius.forCard,
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: DesignToken.borderRadiusLG,
+                                  borderRadius: AppRadius.forCard,
                                   child: Image.network(
                                     offer.imageUrl!,
                                     fit: BoxFit.contain,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(
-                                        color: DesignToken.grey200,
-                                        height: DesignToken
-                                            .offerImageDialogFallbackMinHeight,
+                                        color: AppColors.grey200,
+                                        height: 220.0,
                                         child: Center(
                                           child: Icon(
                                             Icons.broken_image,
-                                            size: DesignToken.iconSize2XL,
-                                            color: DesignToken.grey500,
+                                            size: 40.0,
+                                            color: AppColors.grey500,
                                           ),
                                         ),
                                       );
@@ -187,23 +188,23 @@ class _OffersCarouselState extends State<OffersCarousel> {
                           );
                         }
                       },
-                      borderRadius: BorderRadius.circular(DesignToken.radiusXL),
+                      borderRadius: BorderRadius.circular(20.0),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: DesignToken.paddingXL,
-                          vertical: DesignToken.paddingSM + 2,
+                          horizontal: AppSpacing.xl,
+                          vertical: AppSpacing.sm + 2,
                         ),
                         decoration: BoxDecoration(
-                          color: DesignToken.white,
+                          color: AppColors.white,
                           borderRadius: BorderRadius.circular(
-                            DesignToken.radiusXL,
+                            20.0,
                           ),
                         ),
                         child: Text(
                           offer.actionText,
-                          style: DesignToken.textBold.copyWith(
-                            color: DesignToken.purpleShade700,
-                            fontSize: DesignToken.fontSizeMD,
+                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                            color: const Color(0xFF7B1FA2),
+                            fontSize: 14.0,
                           ),
                         ),
                       ),
@@ -219,12 +220,12 @@ class _OffersCarouselState extends State<OffersCarousel> {
 
   Widget _buildDot(bool isActive) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: DesignToken.spacingXS),
-      width: isActive ? DesignToken.width2XL : DesignToken.spacingSM,
-      height: DesignToken.spacingSM,
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+      width: isActive ? 24.0 : AppSpacing.sm,
+      height: AppSpacing.sm,
       decoration: BoxDecoration(
-        color: isActive ? DesignToken.secondary : DesignToken.grey300,
-        borderRadius: DesignToken.borderRadiusXS,
+        color: isActive ? AppColors.lightSecondary : AppColors.grey300,
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }
@@ -248,14 +249,14 @@ class _OfferPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = DesignToken.white.withValues(alpha: 0.1)
+      ..color = AppColors.white.withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
 
     for (int i = 0; i < 5; i++) {
       for (int j = 0; j < 3; j++) {
         canvas.drawCircle(
           Offset(size.width * 0.2 * (i + 1), size.height * 0.3 * (j + 1)),
-          DesignToken.iconSizeMD,
+          20.0,
           paint,
         );
       }

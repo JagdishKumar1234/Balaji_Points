@@ -1,7 +1,8 @@
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/config/theme.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 
 /// Branded force / optional update prompt matching Balaji Points theme.
 class AppUpdateDialog extends StatelessWidget {
@@ -41,29 +42,29 @@ class AppUpdateDialog extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         insetPadding: const EdgeInsets.symmetric(
-          horizontal: DesignToken.spacing2XL,
-          vertical: DesignToken.spacing3XL,
+          horizontal: AppSpacing.xl2,
+          vertical: AppSpacing.xl3,
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(DesignToken.radius2XL),
+            borderRadius: BorderRadius.circular(24.0),
             boxShadow: [
               BoxShadow(
-                color: DesignToken.primary.withValues(alpha: 0.22),
+                color: AppColors.lightPrimary.withValues(alpha: 0.22),
                 blurRadius: 32,
                 offset: const Offset(0, 12),
               ),
               BoxShadow(
-                color: DesignToken.shadow10,
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(DesignToken.radius2XL),
+            borderRadius: BorderRadius.circular(24.0),
             child: Material(
-              color: DesignToken.white,
+              color: AppColors.white,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -77,10 +78,10 @@ class AppUpdateDialog extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
-                      DesignToken.spacing2XL,
+                      AppSpacing.xl2,
                       52,
-                      DesignToken.spacing2XL,
-                      DesignToken.spacing2XL,
+                      AppSpacing.xl2,
+                      AppSpacing.xl2,
                     ),
                     child: Column(
                       children: [
@@ -91,11 +92,11 @@ class AppUpdateDialog extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: AppTextStyles.nunitoBold.copyWith(
                             fontSize: 22,
-                            color: DesignToken.textDark,
+                            color: AppColors.lightTextPrimary,
                             letterSpacing: -0.3,
                           ),
                         ),
-                        const SizedBox(height: DesignToken.spacingSM),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
                           forceUpdate
                               ? 'Please install the latest version of '
@@ -106,33 +107,33 @@ class AppUpdateDialog extends StatelessWidget {
                           style: AppTextStyles.nunitoRegular.copyWith(
                             fontSize: 15,
                             height: 1.45,
-                            color: DesignToken.homeTextMuted,
+                            color: AppColors.lightTextMuted,
                           ),
                         ),
-                        const SizedBox(height: DesignToken.spacing2XL),
+                        const SizedBox(height: AppSpacing.xl2),
                         _VersionRow(
                           current: currentVersion,
                           target: target.isNotEmpty ? target : '—',
                           targetLabel: forceUpdate ? 'Required' : 'Latest',
                         ),
                         if (forceUpdate) ...[
-                          const SizedBox(height: DesignToken.spacingLG),
+                          const SizedBox(height: AppSpacing.lg),
                           _RequiredBanner(),
                         ],
-                        const SizedBox(height: DesignToken.spacing2XL),
+                        const SizedBox(height: AppSpacing.xl2),
                         _PrimaryButton(
                           label: 'Update now',
                           onPressed: onUpdate,
                         ),
                         if (!forceUpdate && onLater != null) ...[
-                          const SizedBox(height: DesignToken.spacingMD),
+                          const SizedBox(height: AppSpacing.md),
                           TextButton(
                             onPressed: onLater,
                             style: TextButton.styleFrom(
-                              foregroundColor: DesignToken.homeTextMuted,
+                              foregroundColor: AppColors.lightTextMuted,
                               padding: const EdgeInsets.symmetric(
-                                vertical: DesignToken.spacingMD,
-                                horizontal: DesignToken.spacing2XL,
+                                vertical: AppSpacing.md,
+                                horizontal: AppSpacing.xl2,
                               ),
                             ),
                             child: Text(
@@ -172,7 +173,7 @@ class _Header extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: DesignToken.primaryGradient,
+                colors: AppColors.primaryGradient,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -183,7 +184,7 @@ class _Header extends StatelessWidget {
             right: -20,
             child: _DecorCircle(
               size: 88,
-              color: DesignToken.white.withValues(alpha: 0.08),
+              color: AppColors.white.withValues(alpha: 0.08),
             ),
           ),
           Positioned(
@@ -191,17 +192,17 @@ class _Header extends StatelessWidget {
             left: -24,
             child: _DecorCircle(
               size: 72,
-              color: DesignToken.secondary.withValues(alpha: 0.18),
+              color: AppColors.lightSecondary.withValues(alpha: 0.18),
             ),
           ),
           Center(
             child: Container(
-              padding: const EdgeInsets.all(DesignToken.spacingMD),
+              padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: DesignToken.white.withValues(alpha: 0.14),
+                color: AppColors.white.withValues(alpha: 0.14),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: DesignToken.white.withValues(alpha: 0.28),
+                  color: AppColors.white.withValues(alpha: 0.28),
                   width: 1.5,
                 ),
               ),
@@ -209,26 +210,26 @@ class _Header extends StatelessWidget {
                 forceUpdate
                     ? Icons.system_update_alt_rounded
                     : Icons.rocket_launch_rounded,
-                color: DesignToken.white,
+                color: AppColors.white,
                 size: 36,
               ),
             ),
           ),
           if (forceUpdate)
             Positioned(
-              top: DesignToken.spacingMD,
-              right: DesignToken.spacingMD,
+              top: AppSpacing.md,
+              right: AppSpacing.md,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: DesignToken.spacingMD,
-                  vertical: DesignToken.spacingXS,
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xs,
                 ),
                 decoration: BoxDecoration(
-                  color: DesignToken.secondary,
-                  borderRadius: BorderRadius.circular(DesignToken.radiusRound),
+                  color: AppColors.lightSecondary,
+                  borderRadius: BorderRadius.circular(999.0),
                   boxShadow: [
                     BoxShadow(
-                      color: DesignToken.secondary.withValues(alpha: 0.35),
+                      color: AppColors.lightSecondary.withValues(alpha: 0.35),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -238,7 +239,7 @@ class _Header extends StatelessWidget {
                   'Required',
                   style: AppTextStyles.nunitoBold.copyWith(
                     fontSize: 11,
-                    color: DesignToken.white,
+                    color: AppColors.white,
                     letterSpacing: 0.6,
                   ),
                 ),
@@ -273,23 +274,23 @@ class _LogoBadge extends StatelessWidget {
       width: 72,
       height: 72,
       decoration: BoxDecoration(
-        color: DesignToken.white,
-        borderRadius: BorderRadius.circular(DesignToken.radiusLG),
-        border: Border.all(color: DesignToken.homeCardBorder),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(color: AppColors.lightBorder),
         boxShadow: [
           BoxShadow(
-            color: DesignToken.homeTextMuted.withValues(alpha: 0.12),
+            color: AppColors.lightTextMuted.withValues(alpha: 0.12),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(DesignToken.spacingSM),
+      padding: const EdgeInsets.all(AppSpacing.sm),
       child: Image.asset(
         AppConstants.logoPath,
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) =>
-            Icon(Icons.stars_rounded, color: DesignToken.primary, size: 40),
+            Icon(Icons.stars_rounded, color: AppColors.lightPrimary, size: 40),
       ),
     );
   }
@@ -310,13 +311,13 @@ class _VersionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: DesignToken.spacingLG,
-        vertical: DesignToken.spacingMD,
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: DesignToken.carpenterAppBackground,
-        borderRadius: BorderRadius.circular(DesignToken.radiusLG),
-        border: Border.all(color: DesignToken.homeCardBorder),
+        color: AppColors.lightBackground,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(color: AppColors.lightBorder),
       ),
       child: Row(
         children: [
@@ -329,12 +330,12 @@ class _VersionRow extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: DesignToken.spacingSM,
+              horizontal: AppSpacing.sm,
             ),
             child: Icon(
               Icons.arrow_forward_rounded,
               size: 20,
-              color: DesignToken.primary.withValues(alpha: 0.7),
+              color: AppColors.lightPrimary.withValues(alpha: 0.7),
             ),
           ),
           Expanded(
@@ -369,30 +370,30 @@ class _VersionChip extends StatelessWidget {
           label,
           style: AppTextStyles.nunitoMedium.copyWith(
             fontSize: 11,
-            color: DesignToken.homeTextMuted,
+            color: AppColors.lightTextMuted,
             letterSpacing: 0.4,
           ),
         ),
-        const SizedBox(height: DesignToken.spacingXS),
+        const SizedBox(height: AppSpacing.xs),
         Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: DesignToken.spacingMD,
-            vertical: DesignToken.spacingXS,
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.xs,
           ),
           decoration: BoxDecoration(
             color: emphasized
-                ? DesignToken.primary.withValues(alpha: 0.1)
-                : DesignToken.grey100,
-            borderRadius: BorderRadius.circular(DesignToken.radiusMD),
+                ? AppColors.lightPrimary.withValues(alpha: 0.1)
+                : AppColors.grey100,
+            borderRadius: BorderRadius.circular(12.0),
             border: emphasized
-                ? Border.all(color: DesignToken.primary.withValues(alpha: 0.25))
+                ? Border.all(color: AppColors.lightPrimary.withValues(alpha: 0.25))
                 : null,
           ),
           child: Text(
             'v$version',
             style: AppTextStyles.nunitoBold.copyWith(
               fontSize: 14,
-              color: emphasized ? DesignToken.primary : DesignToken.textDark,
+              color: emphasized ? AppColors.lightPrimary : AppColors.lightTextPrimary,
             ),
           ),
         ),
@@ -407,29 +408,29 @@ class _RequiredBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
-        horizontal: DesignToken.spacingMD,
-        vertical: DesignToken.spacingMD,
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: DesignToken.blueShade50,
-        borderRadius: BorderRadius.circular(DesignToken.radiusMD),
-        border: Border.all(color: DesignToken.primary.withValues(alpha: 0.12)),
+        color: const Color(0xFFE3F2FD),
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: AppColors.lightPrimary.withValues(alpha: 0.12)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_outline_rounded,
             size: 20,
-            color: DesignToken.primary.withValues(alpha: 0.85),
+            color: AppColors.lightPrimary.withValues(alpha: 0.85),
           ),
-          const SizedBox(width: DesignToken.spacingSM),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               'This update is mandatory to keep using the app.',
               style: AppTextStyles.nunitoMedium.copyWith(
                 fontSize: 13,
                 height: 1.35,
-                color: DesignToken.textDark.withValues(alpha: 0.85),
+                color: AppColors.lightTextPrimary.withValues(alpha: 0.85),
               ),
             ),
           ),
@@ -453,14 +454,14 @@ class _PrimaryButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: DesignToken.primaryGradient,
+            colors: AppColors.primaryGradient,
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(DesignToken.radiusMD),
+          borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(
-              color: DesignToken.primary.withValues(alpha: 0.35),
+              color: AppColors.lightPrimary.withValues(alpha: 0.35),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -470,7 +471,7 @@ class _PrimaryButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: onPressed,
-            borderRadius: BorderRadius.circular(DesignToken.radiusMD),
+            borderRadius: BorderRadius.circular(12.0),
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -479,14 +480,14 @@ class _PrimaryButton extends StatelessWidget {
                     label,
                     style: AppTextStyles.nunitoBold.copyWith(
                       fontSize: 16,
-                      color: DesignToken.white,
+                      color: AppColors.white,
                       letterSpacing: 0.2,
                     ),
                   ),
-                  const SizedBox(width: DesignToken.spacingSM),
+                  const SizedBox(width: AppSpacing.sm),
                   const Icon(
                     Icons.open_in_new_rounded,
-                    color: DesignToken.white,
+                    color: AppColors.white,
                     size: 20,
                   ),
                 ],

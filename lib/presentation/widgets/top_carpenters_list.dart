@@ -1,5 +1,5 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'top_carpenters_display.dart';
 
@@ -45,7 +45,7 @@ class TopCarpentersList extends StatelessWidget {
               Text(
                 '🏆 Top Carpenters',
                 style: TextStyle(
-                  color: DesignToken.secondary,
+                  color: AppColors.lightSecondary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -77,8 +77,8 @@ class TopCarpentersList extends StatelessWidget {
       rankBgColor = Colors.brown.shade100;
       rankTextColor = Colors.brown.shade700;
     } else {
-      rankBgColor = DesignToken.secondary.withValues(alpha: 0.1);
-      rankTextColor = DesignToken.secondary;
+      rankBgColor = AppColors.lightSecondary.withValues(alpha: 0.1);
+      rankTextColor = AppColors.lightSecondary;
     }
 
     return Container(
@@ -88,7 +88,7 @@ class TopCarpentersList extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: DesignToken.secondary.withValues(alpha: 0.2),
+          color: AppColors.lightSecondary.withValues(alpha: 0.2),
           width: 1.5,
         ),
         boxShadow: [
@@ -130,7 +130,7 @@ class TopCarpentersList extends StatelessWidget {
               shape: BoxShape.circle,
               color: rankBgColor,
               border: Border.all(
-                color: DesignToken.secondary.withValues(alpha: 0.3),
+                color: AppColors.lightSecondary.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -153,7 +153,7 @@ class TopCarpentersList extends StatelessWidget {
               carpenter.name,
               style: AppTextStyles.nunitoSemiBold.copyWith(
                 fontSize: 16,
-                color: DesignToken.textDark,
+                color: AppColors.lightTextPrimary,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

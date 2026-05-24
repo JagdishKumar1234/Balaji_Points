@@ -1,5 +1,5 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +37,7 @@ class CarpenterBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    const barColor = DesignToken.primary;
+    const barColor = AppColors.lightPrimary;
 
     return Material(
       color: barColor,
@@ -106,8 +106,8 @@ class _Tab extends StatelessWidget {
   Widget build(BuildContext context) {
     final selected = index == currentIndex;
     final color = selected
-        ? DesignToken.white
-        : DesignToken.white.withValues(alpha: 0.55);
+        ? AppColors.white
+        : AppColors.white.withValues(alpha: 0.55);
 
     return Expanded(
       child: InkWell(
@@ -152,13 +152,13 @@ class _CenterAddButton extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: DesignToken.secondary,
+                color: AppColors.lightSecondary,
                 shape: BoxShape.circle,
-                border: Border.all(color: DesignToken.white, width: 2),
+                border: Border.all(color: AppColors.white, width: 2),
               ),
               child: const Icon(
                 Icons.add,
-                color: DesignToken.white,
+                color: AppColors.white,
                 size: 22,
               ),
             ),
@@ -170,7 +170,7 @@ class _CenterAddButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
-                color: DesignToken.white.withValues(alpha: 0.9),
+                color: AppColors.white.withValues(alpha: 0.9),
               ),
             ),
           ],

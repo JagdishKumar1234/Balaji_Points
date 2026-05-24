@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 // lib/presentation/screens/notifications/notifications_page.dart
 // Notifications screen for carpenters to view and manage their notifications
 
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/session_service.dart';
 import 'dart:async';
@@ -337,7 +337,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Notification deleted'),
-            backgroundColor: DesignToken.primary,
+            backgroundColor: AppColors.lightPrimary,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -348,7 +348,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error deleting notification: $e'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -368,12 +368,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: DesignToken.error.withValues(alpha: 0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.delete_outline,
-                color: DesignToken.redShade700,
+                color: const Color(0xFFD32F2F),
                 size: 24,
               ),
             ),
@@ -395,14 +395,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               'Cancel',
-              style: TextStyle(color: DesignToken.grey600, fontSize: 16),
+              style: TextStyle(color: AppColors.grey600, fontSize: 16),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.redShade600,
-              foregroundColor: DesignToken.white,
+              backgroundColor: const Color(0xFFE53935),
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -471,7 +471,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${snapshot.length} notification(s) deleted'),
-            backgroundColor: DesignToken.primary,
+            backgroundColor: AppColors.lightPrimary,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -488,7 +488,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error deleting notifications: $e'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -553,30 +553,30 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Color _getNotificationColor(String? type) {
     switch (type) {
       case 'billApproved':
-        return DesignToken.success;
+        return AppColors.success;
       case 'billRejected':
-        return DesignToken.error;
+        return AppColors.error;
       case 'pointsWithdrawn':
-        return DesignToken.orange;
+        return AppColors.warning;
       case 'tierUpgraded':
-        return DesignToken.purple;
+        return const Color(0xFF9C27B0);
       case 'dailySpinWon':
-        return DesignToken.amber;
+        return const Color(0xFFFFC107);
       case 'offerRedeemed':
-        return DesignToken.blue500;
+        return const Color(0xFF2196F3);
       case 'newOfferAvailable':
-        return DesignToken.primary;
+        return AppColors.lightPrimary;
       case 'pointsMilestone':
-        return DesignToken.amberShade700;
+        return const Color(0xFFFFA000);
       // Admin notification types
       case 'newPendingBill':
-        return DesignToken.blueShade600;
+        return AppColors.info;
       case 'newUserRegistered':
-        return DesignToken.greenShade600;
+        return AppColors.success;
       case 'dailySpinReminder':
-        return DesignToken.amberShade500;
+        return const Color(0xFFFFC107);
       default:
-        return DesignToken.primary;
+        return AppColors.lightPrimary;
     }
   }
 
@@ -671,13 +671,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   Icon(
                                     Icons.error_outline,
                                     size: 64,
-                                    color: DesignToken.redShade300,
+                                    color: const Color(0xFFE57373),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
                                     'Error loading notifications',
                                     style: TextStyle(
-                                      color: DesignToken.grey600,
+                                      color: AppColors.grey600,
                                       fontSize: 16,
                                     ),
                                   ),
@@ -699,7 +699,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   Container(
                                     padding: const EdgeInsets.all(24),
                                     decoration: BoxDecoration(
-                                      color: DesignToken.primary.withValues(
+                                      color: AppColors.lightPrimary.withValues(
                                         alpha: 0.1,
                                       ),
                                       shape: BoxShape.circle,
@@ -707,7 +707,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     child: Icon(
                                       Icons.notifications_none,
                                       size: 64,
-                                      color: DesignToken.primary.withValues(
+                                      color: AppColors.lightPrimary.withValues(
                                         alpha: 0.5,
                                       ),
                                     ),
@@ -717,7 +717,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     'No Notifications',
                                     style: AppTextStyles.nunitoBold.copyWith(
                                       fontSize: 24,
-                                      color: DesignToken.textDark,
+                                      color: AppColors.lightTextPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -725,7 +725,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     'You don\'t have any notifications yet',
                                     style: AppTextStyles.nunitoRegular.copyWith(
                                       fontSize: 16,
-                                      color: DesignToken.grey600,
+                                      color: AppColors.grey600,
                                     ),
                                   ),
                                 ],
@@ -742,7 +742,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 const Duration(milliseconds: 500),
                               );
                             },
-                            color: DesignToken.primary,
+                            color: AppColors.lightPrimary,
                             child: ListView.builder(
                               padding: const EdgeInsets.fromLTRB(
                                 16,
@@ -770,14 +770,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   background: Container(
                                     margin: const EdgeInsets.only(bottom: 12),
                                     decoration: BoxDecoration(
-                                      color: DesignToken.redShade600,
+                                      color: const Color(0xFFE53935),
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     alignment: Alignment.centerRight,
                                     padding: const EdgeInsets.only(right: 24),
                                     child: const Icon(
                                       Icons.delete_rounded,
-                                      color: DesignToken.white,
+                                      color: AppColors.white,
                                       size: 26,
                                     ),
                                   ),
@@ -806,7 +806,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                 child: Text(
                                                   'Cancel',
                                                   style: TextStyle(
-                                                    color: DesignToken.grey600,
+                                                    color: AppColors.grey600,
                                                   ),
                                                 ),
                                               ),
@@ -816,9 +816,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                 ).pop(true),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor:
-                                                      DesignToken.redShade600,
+                                                      const Color(0xFFE53935),
                                                   foregroundColor:
-                                                      DesignToken.white,
+                                                      AppColors.white,
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -845,14 +845,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                         borderRadius: BorderRadius.circular(14),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: DesignToken.black.withValues(
+                                            color: AppColors.black.withValues(
                                               alpha: 0.04,
                                             ),
                                             blurRadius: 10,
                                             offset: const Offset(0, 2),
                                           ),
                                           BoxShadow(
-                                            color: DesignToken.black.withValues(
+                                            color: AppColors.black.withValues(
                                               alpha: 0.02,
                                             ),
                                             blurRadius: 4,
@@ -930,8 +930,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                                   .copyWith(
                                                                     fontSize:
                                                                         15,
-                                                                    color: DesignToken
-                                                                        .textDark,
+                                                                    color: AppColors.lightTextPrimary,
                                                                     letterSpacing:
                                                                         -0.2,
                                                                   ),

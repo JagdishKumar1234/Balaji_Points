@@ -1,10 +1,10 @@
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/cart_service.dart';
 import 'package:balaji_points/services/session_service.dart';
@@ -116,7 +116,7 @@ class _CartPageState extends State<CartPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to place order: $e'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -137,7 +137,7 @@ class _CartPageState extends State<CartPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: appBarFill,
-          foregroundColor: DesignToken.textDark,
+          foregroundColor: AppColors.lightTextPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -151,7 +151,7 @@ class _CartPageState extends State<CartPage> {
           ),
         ),
         body: const Center(
-          child: CircularProgressIndicator(color: DesignToken.primary),
+          child: CircularProgressIndicator(color: AppColors.lightPrimary),
         ),
       );
     }
@@ -161,7 +161,7 @@ class _CartPageState extends State<CartPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: appBarFill,
-          foregroundColor: DesignToken.textDark,
+          foregroundColor: AppColors.lightTextPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -182,7 +182,7 @@ class _CartPageState extends State<CartPage> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: appBarFill,
-        foregroundColor: DesignToken.textDark,
+        foregroundColor: AppColors.lightTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -207,7 +207,7 @@ class _CartPageState extends State<CartPage> {
                   textAlign: TextAlign.center,
                   style: AppTextStyles.nunitoRegular.copyWith(
                     fontSize: 14,
-                    color: DesignToken.error,
+                    color: AppColors.error,
                   ),
                 ),
               ),
@@ -216,7 +216,7 @@ class _CartPageState extends State<CartPage> {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: DesignToken.primary),
+              child: CircularProgressIndicator(color: AppColors.lightPrimary),
             );
           }
 
@@ -237,7 +237,7 @@ class _CartPageState extends State<CartPage> {
                     'Your cart is empty',
                     style: AppTextStyles.nunitoBold.copyWith(
                       fontSize: 20,
-                      color: DesignToken.textDark,
+                      color: AppColors.lightTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -305,12 +305,12 @@ class _CartPageState extends State<CartPage> {
                                           fit: BoxFit.cover,
                                         )
                                       : Container(
-                                          color: DesignToken.primary.withValues(
+                                          color: AppColors.lightPrimary.withValues(
                                             alpha: 0.1,
                                           ),
                                           child: const Icon(
                                             Icons.layers_rounded,
-                                            color: DesignToken.primary,
+                                            color: AppColors.lightPrimary,
                                           ),
                                         ),
                                 ),
@@ -327,7 +327,7 @@ class _CartPageState extends State<CartPage> {
                                       style: AppTextStyles.nunitoSemiBold
                                           .copyWith(
                                             fontSize: 16,
-                                            color: DesignToken.textDark,
+                                            color: AppColors.lightTextPrimary,
                                           ),
                                     ),
                                     const SizedBox(height: 4),
@@ -346,7 +346,7 @@ class _CartPageState extends State<CartPage> {
                                       '₹${price.toStringAsFixed(0)}',
                                       style: AppTextStyles.nunitoBold.copyWith(
                                         fontSize: 14,
-                                        color: DesignToken.primary,
+                                        color: AppColors.lightPrimary,
                                       ),
                                     ),
                                   ],
@@ -358,7 +358,7 @@ class _CartPageState extends State<CartPage> {
                                     children: [
                                       IconButton(
                                         icon: const Icon(Icons.remove_circle),
-                                        color: DesignToken.primary,
+                                        color: AppColors.lightPrimary,
                                         onPressed: () {
                                           final newQty = qty - 1;
                                           _cartService.updateQuantity(
@@ -375,7 +375,7 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                       IconButton(
                                         icon: const Icon(Icons.add_circle),
-                                        color: DesignToken.primary,
+                                        color: AppColors.lightPrimary,
                                         onPressed: () {
                                           final newQty = qty + 1;
                                           _cartService.updateQuantity(
@@ -392,7 +392,7 @@ class _CartPageState extends State<CartPage> {
                                     style: AppTextStyles.nunitoSemiBold
                                         .copyWith(
                                           fontSize: 12,
-                                          color: DesignToken.textDark,
+                                          color: AppColors.lightTextPrimary,
                                         ),
                                   ),
                                   TextButton.icon(
@@ -482,7 +482,7 @@ class _CartPageState extends State<CartPage> {
                               '₹${total.toStringAsFixed(0)}',
                               style: AppTextStyles.nunitoBold.copyWith(
                                 fontSize: 18,
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                               ),
                             ),
                           ],
@@ -493,7 +493,7 @@ class _CartPageState extends State<CartPage> {
                         child: ElevatedButton.icon(
                           onPressed: () => _placeOrder(docs),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: DesignToken.secondary,
+                            backgroundColor: AppColors.lightSecondary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
