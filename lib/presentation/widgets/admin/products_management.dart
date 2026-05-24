@@ -7,7 +7,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../services/product_service.dart';
+import '../../../services/platform/product_service.dart';
 
 class ProductsManagement extends StatefulWidget {
   const ProductsManagement({super.key});

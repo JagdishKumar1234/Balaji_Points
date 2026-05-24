@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../services/user_service.dart';
+import '../../../services/user/user_service.dart';
 import '../../../core/logger.dart';
 
 class PendingCarpentersList extends StatefulWidget {

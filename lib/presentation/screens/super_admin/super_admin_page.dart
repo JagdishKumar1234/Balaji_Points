@@ -7,9 +7,9 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
-import 'package:balaji_points/services/branch_service.dart';
-import 'package:balaji_points/services/pin_auth_service.dart';
-import 'package:balaji_points/services/session_service.dart';
+import 'package:balaji_points/services/branch/branch_service.dart';
+import 'package:balaji_points/services/auth/pin_auth_service.dart';
+import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SuperAdminPage extends StatefulWidget {

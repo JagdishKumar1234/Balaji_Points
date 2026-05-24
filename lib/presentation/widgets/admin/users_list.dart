@@ -1,16 +1,16 @@
-import 'package:balaji_points/services/user_service.dart';
+import 'package:balaji_points/services/user/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/services/pin_auth_service.dart';
+import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:balaji_points/services/bill_service.dart';
+import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:intl/intl.dart';
 
 /// Full single-file implementation:

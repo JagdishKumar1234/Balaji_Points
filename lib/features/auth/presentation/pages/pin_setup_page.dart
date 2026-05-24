@@ -9,7 +9,7 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/services/branch_service.dart';
+import 'package:balaji_points/services/branch/branch_service.dart';
 import '../providers/auth_provider.dart';
 
 class PINSetupPage extends ConsumerStatefulWidget {

@@ -3,7 +3,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'package:balaji_points/services/bill_service.dart';
+import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
 import 'package:balaji_points/core/utils/bill_query_utils.dart';

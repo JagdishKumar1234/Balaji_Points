@@ -5,7 +5,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:balaji_points/presentation/widgets/home_nav_bar.dart';
+import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 
 /// Admin-only notifications screen.
 ///

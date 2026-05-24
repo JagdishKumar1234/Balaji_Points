@@ -10,8 +10,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'app.dart';
 import 'firebase_options.dart';
 import 'core/logger.dart';
-import 'services/fcm_service.dart';
-import 'services/local_notification_service.dart';
+import 'services/notifications/fcm_service.dart';
+import 'services/notifications/local_notification_service.dart';
 
 /// -------------------------------
 /// BACKGROUND FCM HANDLER (TOP LEVEL)

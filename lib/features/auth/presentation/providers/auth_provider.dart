@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/features/auth/domain/entities/user.dart';
-import 'package:balaji_points/services/pin_auth_service.dart';
-import 'package:balaji_points/services/session_service.dart';
-import 'package:balaji_points/services/fcm_service.dart';
-import 'package:balaji_points/services/user_migration_service.dart';
+import 'package:balaji_points/services/auth/pin_auth_service.dart';
+import 'package:balaji_points/services/auth/session_service.dart';
+import 'package:balaji_points/services/notifications/fcm_service.dart';
+import 'package:balaji_points/services/user/user_migration_service.dart';
 import 'package:balaji_points/core/logger.dart';
 
 // ─── Service providers ────────────────────────────────────────────────────────

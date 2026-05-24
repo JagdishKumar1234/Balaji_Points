@@ -6,9 +6,9 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'core/design/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'config/routes.dart';
-import 'presentation/widgets/loading_overlay.dart';
-import 'presentation/providers/theme_provider.dart';
-import 'presentation/providers/locale_provider.dart';
+import 'presentation/widgets/shared/loading_overlay.dart';
+import 'providers/theme_provider.dart';
+import 'providers/locale_provider.dart';
 
 class BalajiPointsApp extends ConsumerWidget {
   const BalajiPointsApp({super.key});

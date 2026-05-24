@@ -4,7 +4,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:balaji_points/services/offer_service.dart';
+import 'package:balaji_points/services/platform/offer_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 

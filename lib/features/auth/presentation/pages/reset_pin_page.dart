@@ -4,10 +4,9 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:balaji_points/config/theme.dart' as LegacyTheme;
 import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/services/session_service.dart';
-import 'package:balaji_points/services/pin_auth_service.dart';
+import 'package:balaji_points/services/auth/session_service.dart';
+import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -349,7 +348,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                         Text(
                           l10n.resetPinSubtitle,
                           textAlign: TextAlign.center,
-                          style: LegacyTheme.AppTextStyles.nunitoRegular.copyWith(
+                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
                             fontSize: 12.0,
                             color: AppColors.lightTextPrimary.withOpacity(0.7),
                           ),
@@ -390,7 +389,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     keyboardType: TextInputType.phone,
                                     maxLength: 10,
                                     enabled: !_isLoggedIn,
-                                    style: LegacyTheme.AppTextStyles.nunitoSemiBold
+                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
                                         .copyWith(fontSize: 16.0),
                                     decoration: InputDecoration(
                                       labelText: l10n.mobileNumber,
@@ -468,8 +467,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           _phoneChecked && _phoneExists
                                               ? l10n.verified
                                               : l10n.checkNumber,
-                                          style: LegacyTheme
-                                              .AppTextStyles.nunitoSemiBold
+                                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
                                               .copyWith(
                                                 fontSize: 14.0,
                                               ),
@@ -517,9 +515,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             SizedBox(width: 8.0),
                                             Text(
                                               l10n.verified,
-                                              style: LegacyTheme
-                                                  .AppTextStyles
-                                                  .nunitoSemiBold
+                                              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
                                                   .copyWith(
                                                     fontSize: 14.0,
                                                     color: AppColors.success,
@@ -541,7 +537,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                       obscureText: true,
                                       maxLength: 4,
                                       textAlign: TextAlign.center,
-                                      style: LegacyTheme.AppTextStyles.nunitoBold
+                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
                                           .copyWith(
                                             fontSize: 20.0,
                                             letterSpacing: 8,
@@ -612,9 +608,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                               SizedBox(width: 8.0),
                                               Text(
                                                 l10n.forgotCurrentPin,
-                                                style: LegacyTheme
-                                                    .AppTextStyles
-                                                    .nunitoSemiBold
+                                                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
                                                     .copyWith(
                                                       fontSize: 14.0,
                                                       color: AppColors.lightPrimary,
@@ -625,9 +619,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           SizedBox(height: 8.0),
                                           Text(
                                             l10n.forgotPinHelp,
-                                            style: LegacyTheme
-                                                .AppTextStyles
-                                                .nunitoRegular
+                                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400)
                                                 .copyWith(
                                                   fontSize: 12.0,
                                                   color: AppColors.lightTextPrimary
@@ -658,9 +650,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                     SizedBox(width: 8.0),
                                                     Text(
                                                       l10n.adminSupportInfo,
-                                                      style: LegacyTheme
-                                                          .AppTextStyles
-                                                          .nunitoSemiBold
+                                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
                                                           .copyWith(
                                                             fontSize: 12.0,
                                                             color: AppColors.lightTextPrimary,
@@ -698,9 +688,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                         Expanded(
                                                           child: Text(
                                                             l10n.supportPhone1,
-                                                            style: LegacyTheme
-                                                                .AppTextStyles
-                                                                .nunitoSemiBold
+                                                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
                                                                 .copyWith(
                                                                   fontSize: 12.0,
                                                                   color:
@@ -747,9 +735,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                         Expanded(
                                                           child: Text(
                                                             l10n.supportPhone2,
-                                                            style: LegacyTheme
-                                                                .AppTextStyles
-                                                                .nunitoSemiBold
+                                                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
                                                                 .copyWith(
                                                                   fontSize: 12.0,
                                                                   color:
@@ -782,7 +768,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     obscureText: true,
                                     maxLength: 4,
                                     textAlign: TextAlign.center,
-                                    style: LegacyTheme.AppTextStyles.nunitoBold
+                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
                                         .copyWith(
                                           fontSize: 20.0,
                                           letterSpacing: 8,
@@ -834,7 +820,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     obscureText: true,
                                     maxLength: 4,
                                     textAlign: TextAlign.center,
-                                    style: LegacyTheme.AppTextStyles.nunitoBold
+                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
                                         .copyWith(
                                           fontSize: 20.0,
                                           letterSpacing: 8,
@@ -930,9 +916,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                               )
                                             : Text(
                                                 l10n.resetPin,
-                                                style: LegacyTheme
-                                                    .AppTextStyles
-                                                    .nunitoBold
+                                                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
                                                     .copyWith(
                                                       color: AppColors.white,
                                                       fontSize: 18.0,
@@ -947,7 +931,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     Text(
                                       l10n.pleaseVerifyMobile,
                                       textAlign: TextAlign.center,
-                                      style: LegacyTheme.AppTextStyles.nunitoRegular
+                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400)
                                           .copyWith(
                                             fontSize: 12.0,
                                             color: AppColors.lightTextPrimary.withOpacity(0.7),
