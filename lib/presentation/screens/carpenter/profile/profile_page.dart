@@ -203,7 +203,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       context: context,
       barrierColor: AppColors.black.withValues(alpha: 0.5),
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         insetPadding: const EdgeInsets.all(20),
         child: Container(
           decoration: BoxDecoration(
@@ -404,7 +404,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               ],
             ),
             child: Material(
-              color: Colors.transparent,
+              color: AppColors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: onTap,
@@ -452,7 +452,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         ],
       ),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
@@ -898,7 +898,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           _handleLogout(context),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            const Color(0xFFE53935),
+                                            AppColors.errorDark,
                                         foregroundColor: AppColors.white,
                                         padding:
                                             const EdgeInsets.symmetric(

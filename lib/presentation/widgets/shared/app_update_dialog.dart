@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
@@ -38,7 +39,7 @@ class AppUpdateDialog extends StatelessWidget {
     return PopScope(
       canPop: !forceUpdate,
       child: Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         insetPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.xl2,
@@ -54,7 +55,7 @@ class AppUpdateDialog extends StatelessWidget {
                 offset: const Offset(0, 12),
               ),
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: AppColors.black.withValues(alpha: 0.1),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
@@ -89,7 +90,7 @@ class AppUpdateDialog extends StatelessWidget {
                               ? 'Update required'
                               : 'New version available',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                          style: AppTypography.buttonMedium().copyWith(
                             fontSize: 22,
                             color: AppColors.lightTextPrimary,
                             letterSpacing: -0.3,
@@ -103,7 +104,7 @@ class AppUpdateDialog extends StatelessWidget {
                               : 'A newer version is ready with improvements '
                                     'and fixes.',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 15,
                             height: 1.45,
                             color: AppColors.lightTextMuted,
@@ -137,7 +138,7 @@ class AppUpdateDialog extends StatelessWidget {
                             ),
                             child: Text(
                               'Maybe later',
-                              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+                              style: AppTypography.labelLarge().copyWith(
                                 fontSize: 15,
                               ),
                             ),
@@ -236,7 +237,7 @@ class _Header extends StatelessWidget {
                 ),
                 child: Text(
                   'Required',
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                  style: AppTypography.buttonMedium().copyWith(
                     fontSize: 11,
                     color: AppColors.white,
                     letterSpacing: 0.6,
@@ -367,7 +368,7 @@ class _VersionChip extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w500).copyWith(
+          style: AppTypography.bodyMedium().copyWith(
             fontSize: 11,
             color: AppColors.lightTextMuted,
             letterSpacing: 0.4,
@@ -390,7 +391,7 @@ class _VersionChip extends StatelessWidget {
           ),
           child: Text(
             'v$version',
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+            style: AppTypography.buttonMedium().copyWith(
               fontSize: 14,
               color: emphasized ? AppColors.lightPrimary : AppColors.lightTextPrimary,
             ),
@@ -426,7 +427,7 @@ class _RequiredBanner extends StatelessWidget {
           Expanded(
             child: Text(
               'This update is mandatory to keep using the app.',
-              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w500).copyWith(
+              style: AppTypography.bodyMedium().copyWith(
                 fontSize: 13,
                 height: 1.35,
                 color: AppColors.lightTextPrimary.withValues(alpha: 0.85),
@@ -467,7 +468,7 @@ class _PrimaryButton extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: Colors.transparent,
+          color: AppColors.transparent,
           child: InkWell(
             onTap: onPressed,
             borderRadius: BorderRadius.circular(12.0),
@@ -477,7 +478,7 @@ class _PrimaryButton extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                    style: AppTypography.buttonMedium().copyWith(
                       fontSize: 16,
                       color: AppColors.white,
                       letterSpacing: 0.2,

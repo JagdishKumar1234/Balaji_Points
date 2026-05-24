@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 // lib/presentation/screens/notifications/notifications_page.dart
 // Notifications screen for carpenters to view and manage their notifications
 
@@ -400,7 +401,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE53935),
+              backgroundColor: AppColors.errorDark,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -558,9 +559,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
       case 'pointsWithdrawn':
         return AppColors.warning;
       case 'tierUpgraded':
-        return const Color(0xFF9C27B0);
+        return AppColors.purple;
       case 'dailySpinWon':
-        return const Color(0xFFFFC107);
+        return AppColors.amber;
       case 'offerRedeemed':
         return const Color(0xFF2196F3);
       case 'newOfferAvailable':
@@ -573,7 +574,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       case 'newUserRegistered':
         return AppColors.success;
       case 'dailySpinReminder':
-        return const Color(0xFFFFC107);
+        return AppColors.amber;
       default:
         return AppColors.lightPrimary;
     }
@@ -714,7 +715,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   const SizedBox(height: 24),
                                   Text(
                                     'No Notifications',
-                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                                    style: AppTypography.buttonMedium().copyWith(
                                       fontSize: 24,
                                       color: AppColors.lightTextPrimary,
                                     ),
@@ -722,7 +723,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   const SizedBox(height: 8),
                                   Text(
                                     'You don\'t have any notifications yet',
-                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                                    style: AppTypography.bodyMedium().copyWith(
                                       fontSize: 16,
                                       color: AppColors.grey600,
                                     ),
@@ -769,7 +770,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   background: Container(
                                     margin: const EdgeInsets.only(bottom: 12),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFE53935),
+                                      color: AppColors.errorDark,
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     alignment: Alignment.centerRight,
@@ -815,7 +816,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                 ).pop(true),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor:
-                                                      const Color(0xFFE53935),
+                                                      AppColors.errorDark,
                                                   foregroundColor:
                                                       AppColors.white,
                                                   shape: RoundedRectangleBorder(
@@ -924,7 +925,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                           Expanded(
                                                             child: Text(
                                                               title,
-                                                              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
+                                                              style: AppTypography.buttonMedium()
                                                                   .copyWith(
                                                                     fontSize:
                                                                         15,
@@ -956,7 +957,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                       // Body text
                                                       Text(
                                                         body,
-                                                        style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400)
+                                                        style: AppTypography.bodyMedium()
                                                             .copyWith(
                                                               fontSize: 13,
                                                               color: Colors

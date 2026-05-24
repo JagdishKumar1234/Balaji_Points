@@ -57,7 +57,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                     children: [
                       const Icon(
                         Icons.person_search,
-                        color: Colors.white,
+                        color: AppColors.white,
                         size: 24,
                       ),
                       const SizedBox(width: 12),
@@ -66,12 +66,12 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                           l10n.selectCarpenter,
                           style: AppTypography.labelLarge().copyWith(
                             fontSize: 20,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
+                        icon: const Icon(Icons.close, color: AppColors.white),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -92,7 +92,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                     decoration: InputDecoration(
                       hintText: l10n.searchByNameOrPhone,
                       hintStyle: AppTypography.bodyMedium().copyWith(
-                        color: Colors.grey[400],
+                        color: AppColors.grey400,
                       ),
                       prefixIcon: const Icon(
                         Icons.search,
@@ -110,7 +110,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                             )
                           : null,
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: AppColors.grey100,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -135,7 +135,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                         child: Text(
                           l10n.errorLoadingCarpenters,
                           style: AppTypography.bodyMedium().copyWith(
-                            color: Colors.red,
+                            color: AppColors.red,
                           ),
                         ),
                       );
@@ -184,7 +184,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                             Icon(
                               Icons.person_off,
                               size: 64,
-                              color: Colors.grey[400],
+                              color: AppColors.grey400,
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -193,7 +193,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                   : l10n.noCarpentersAvailable,
                               style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 16,
-                                color: Colors.grey[600],
+                                color: AppColors.grey600,
                               ),
                             ),
                           ],
@@ -241,12 +241,12 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppColors.lightPrimary.withOpacity(0.1)
-                                  : Colors.white,
+                                  : AppColors.white,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected
                                     ? AppColors.lightPrimary
-                                    : Colors.grey[300]!,
+                                    : AppColors.grey300!,
                                 width: isSelected ? 2 : 1,
                               ),
                             ),
@@ -302,7 +302,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                         style: AppTypography.bodyMedium()
                                             .copyWith(
                                           fontSize: 12,
-                                          color: Colors.grey[600],
+                                          color: AppColors.grey600,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -334,7 +334,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                             style: AppTypography.bodyMedium()
                                                 .copyWith(
                                               fontSize: 11,
-                                              color: Colors.grey[600],
+                                              color: AppColors.grey600,
                                             ),
                                           ),
                                         ],
@@ -375,7 +375,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: AppColors.grey100,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selectedCarpenter != null
@@ -409,7 +409,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                           selectedCarpenter['phone'] ?? '',
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: AppColors.grey600,
                           ),
                         ),
                       ],
@@ -418,7 +418,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                       l10n.selectCarpenter,
                       style: AppTypography.bodyMedium().copyWith(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: AppColors.grey600,
                       ),
                     ),
             ),

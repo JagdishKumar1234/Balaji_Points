@@ -65,7 +65,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             ),
             appBarTheme: theme.appBarTheme.copyWith(
               backgroundColor: AppColors.carpenterAppBackground,
-              surfaceTintColor: Colors.transparent,
+              surfaceTintColor: AppColors.transparent,
             ),
           );
 

@@ -215,7 +215,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                             gradient: LinearGradient(
                               colors: [
                                 const Color(0xFFF06292),
-                                const Color(0xFFE91E63),
+                                AppColors.pink,
                                 AppColors.lightSecondary,
                               ],
                               begin: Alignment.topLeft,
@@ -345,7 +345,7 @@ class SpinWheelPainter extends CustomPainter {
 
     final colors = [
       const Color(0xFFE57373),
-      const Color(0xFFFFB74D),
+      AppColors.orangeLight,
       const Color(0xFFFFF176),
       const Color(0xFF81C784),
       const Color(0xFF64B5F6),

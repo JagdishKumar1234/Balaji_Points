@@ -505,7 +505,7 @@ class _UsersListState extends State<UsersList> {
             duration: const Duration(seconds: 4),
             action: SnackBarAction(
               label: 'Dismiss',
-              textColor: Colors.white,
+              textColor: AppColors.white,
               onPressed: () {},
             ),
           ),
@@ -523,7 +523,7 @@ class _UsersListState extends State<UsersList> {
         // Search + Add button
         Container(
           padding: const EdgeInsets.all(16),
-          color: Colors.white,
+          color: AppColors.white,
           child: Column(
             children: [
               Row(
@@ -577,7 +577,7 @@ class _UsersListState extends State<UsersList> {
                       Container(
                         decoration: BoxDecoration(
                           color: _isExporting
-                              ? Colors.grey.withValues(alpha: 0.1)
+                              ? AppColors.grey500.withValues(alpha: 0.1)
                               : AppColors.lightPrimary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -673,7 +673,7 @@ class _UsersListState extends State<UsersList> {
                               labelStyle: AppTypography.labelLarge().copyWith(
                                 fontSize: 14,
                                 color: isSelected
-                                    ? Colors.white
+                                    ? AppColors.white
                                     : AppColors.lightPrimary,
                               ),
                               backgroundColor: Colors.grey[200],
@@ -931,7 +931,7 @@ class _UsersListState extends State<UsersList> {
                                       '#${index + 1}',
                                       style: AppTypography.labelLarge().copyWith(
                                         fontSize: 14,
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                       ),
                                     ),
                                   ),
@@ -1084,7 +1084,7 @@ class _UsersListState extends State<UsersList> {
                                     tier,
                                     style: AppTypography.labelLarge().copyWith(
                                       fontSize: 11,
-                                      color: Colors.white,
+                                      color: AppColors.white,
                                     ),
                                   ),
                                 ),
@@ -1191,7 +1191,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(s),
-        backgroundColor: isError ? Colors.red : Colors.green,
+        backgroundColor: isError ? AppColors.red : AppColors.success,
       ),
     );
   }
@@ -1450,12 +1450,12 @@ class _ApprovedBillsList extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey[200]!),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: AppColors.grey500.withOpacity(0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -1700,7 +1700,7 @@ class _ApprovedBillsList extends StatelessWidget {
             ),
             child: Text(
               'Withdraw',
-              style: AppTypography.labelLarge().copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
             ),
           ),
         ],
@@ -1784,7 +1784,7 @@ class UserDetailsScreen extends StatelessWidget {
     final profileImage = user['profileImage'] ?? '';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: Column(
         children: [
           // Header
@@ -1805,7 +1805,7 @@ class UserDetailsScreen extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: AppColors.white),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 ClipOval(
@@ -1819,7 +1819,7 @@ class UserDetailsScreen extends StatelessWidget {
                             return Container(
                               width: 60,
                               height: 60,
-                              color: Colors.white,
+                              color: AppColors.white,
                               child: Icon(
                                 Icons.person,
                                 size: 35,
@@ -1832,7 +1832,7 @@ class UserDetailsScreen extends StatelessWidget {
                             return Container(
                               width: 60,
                               height: 60,
-                              color: Colors.white,
+                              color: AppColors.white,
                               child: Center(
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
@@ -1852,7 +1852,7 @@ class UserDetailsScreen extends StatelessWidget {
                       : Container(
                           width: 60,
                           height: 60,
-                          color: Colors.white,
+                          color: AppColors.white,
                           child: Icon(
                             Icons.person,
                             size: 35,
@@ -1869,14 +1869,14 @@ class UserDetailsScreen extends StatelessWidget {
                         '$firstName $lastName',
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 20,
-                          color: Colors.white,
+                          color: AppColors.white,
                         ),
                       ),
                       Text(
                         phone,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
-                          color: Colors.white.withOpacity(0.9),
+                          color: AppColors.white.withOpacity(0.9),
                         ),
                       ),
                     ],
@@ -1971,7 +1971,7 @@ class UserDetailsScreen extends StatelessWidget {
                                 l10n.tierLabel(currentTier),
                                 style: AppTypography.labelLarge().copyWith(
                                   fontSize: 16,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                 ),
                               ),
                             ),
@@ -2271,7 +2271,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.lock_reset, color: Colors.white, size: 28),
+                    Icon(Icons.lock_reset, color: AppColors.white, size: 28),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -2281,7 +2281,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                             l10n.adminResetPinTitle(carpenterName),
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 18,
-                              color: Colors.white,
+                              color: AppColors.white,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -2289,14 +2289,14 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                             phone,
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: Colors.white.withOpacity(0.9),
+                              color: AppColors.white.withOpacity(0.9),
                             ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      icon: const Icon(Icons.close, color: AppColors.white),
                       onPressed: _isResetting
                           ? null
                           : () => Navigator.of(context).pop(),
@@ -2468,8 +2468,8 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                             child: ElevatedButton(
                               onPressed: _isResetting ? null : _resetPin,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
+                                backgroundColor: AppColors.transparent,
+                                shadowColor: AppColors.transparent,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 14,
                                 ),
@@ -2484,7 +2484,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.5,
                                         valueColor: AlwaysStoppedAnimation(
-                                          Colors.white,
+                                          AppColors.white,
                                         ),
                                       ),
                                     )
@@ -2492,7 +2492,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                                       l10n.adminResetPin,
                                       style: AppTypography.labelLarge().copyWith(
                                         fontSize: 16,
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                       ),
                                     ),
                             ),

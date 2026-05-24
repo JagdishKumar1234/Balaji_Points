@@ -51,7 +51,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        backgroundColor: Colors.black87,
+        backgroundColor: AppColors.black87,
         child: Stack(
           children: [
             Center(
@@ -65,12 +65,12 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           children: [
                             const Icon(
                               Icons.error,
-                              color: Colors.red,
+                              color: AppColors.red,
                               size: 60,
                             ),
                             Text(
                               l10n.failedToLoadImage,
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(color: AppColors.white),
                             ),
                           ],
                         ),
@@ -81,11 +81,11 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           const Icon(
                             Icons.image_not_supported,
                             size: 60,
-                            color: Colors.grey,
+                            color: AppColors.grey500,
                           ),
                           Text(
                             l10n.noImageAvailable,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: AppColors.white),
                           ),
                         ],
                       ),
@@ -96,7 +96,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
               top: 20,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -154,7 +154,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
               primary: AppColors.lightPrimary,
-              onPrimary: Colors.white,
+              onPrimary: AppColors.white,
             ),
           ),
           child: child!,
@@ -180,7 +180,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
               primary: AppColors.lightPrimary,
-              onPrimary: Colors.white,
+              onPrimary: AppColors.white,
             ),
           ),
           child: child!,
@@ -504,10 +504,10 @@ class _BillHistoryListState extends State<BillHistoryList> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: AppColors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -524,9 +524,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildCompactStatusChip('approved', 'Approved', Colors.green),
+                          _buildCompactStatusChip('approved', 'Approved', AppColors.success),
                           const SizedBox(width: 6),
-                          _buildCompactStatusChip('rejected', 'Rejected', Colors.red),
+                          _buildCompactStatusChip('rejected', 'Rejected', AppColors.red),
                           const SizedBox(width: 6),
                           _buildCompactStatusChip('all', 'All', AppColors.lightPrimary),
                         ],
@@ -538,7 +538,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                   Container(
                     decoration: BoxDecoration(
                       color: (_billsForExport.isEmpty || _isExporting)
-                          ? Colors.grey.withValues(alpha: 0.1)
+                          ? AppColors.grey500.withValues(alpha: 0.1)
                           : AppColors.lightPrimary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -574,7 +574,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                     decoration: BoxDecoration(
                       color: _showFilters
                           ? AppColors.lightPrimary.withValues(alpha: 0.1)
-                          : Colors.grey.withValues(alpha: 0.1),
+                          : AppColors.grey500.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: IconButton(
@@ -612,7 +612,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             border: Border.all(
                               color: _startDate != null
                                   ? AppColors.lightPrimary.withValues(alpha: 0.4)
-                                  : Colors.grey.withValues(alpha: 0.2),
+                                  : AppColors.grey500.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -658,7 +658,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             border: Border.all(
                               color: _endDate != null
                                   ? AppColors.lightPrimary.withValues(alpha: 0.4)
-                                  : Colors.grey.withValues(alpha: 0.2),
+                                  : AppColors.grey500.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -722,14 +722,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.2),
+                        color: AppColors.grey500.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.2),
+                        color: AppColors.grey500.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
@@ -853,8 +853,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         elevation: 4,
                         margin: const EdgeInsets.only(bottom: 12),
                         shadowColor: status == 'approved'
-                            ? Colors.green.withValues(alpha: 0.3)
-                            : Colors.red.withValues(alpha: 0.3),
+                            ? AppColors.success.withValues(alpha: 0.3)
+                            : AppColors.red.withValues(alpha: 0.3),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -865,16 +865,16 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Colors.white,
+                                AppColors.white,
                                 status == 'approved'
-                                    ? Colors.green.withValues(alpha: 0.05)
-                                    : Colors.red.withValues(alpha: 0.05),
+                                    ? AppColors.success.withValues(alpha: 0.05)
+                                    : AppColors.red.withValues(alpha: 0.05),
                               ],
                             ),
                             border: Border.all(
                               color: status == 'approved'
-                                  ? Colors.green.withValues(alpha: 0.2)
-                                  : Colors.red.withValues(alpha: 0.2),
+                                  ? AppColors.success.withValues(alpha: 0.2)
+                                  : AppColors.red.withValues(alpha: 0.2),
                               width: 1.5,
                             ),
                           ),
@@ -1039,15 +1039,15 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                           begin: Alignment.topCenter,
                                                           end: Alignment.bottomCenter,
                                                           colors: [
-                                                            Colors.black.withValues(alpha: 0.3),
-                                                            Colors.transparent,
+                                                            AppColors.black.withValues(alpha: 0.3),
+                                                            AppColors.transparent,
                                                           ],
                                                         ),
                                                       ),
                                                       child: Center(
                                                         child: Icon(
                                                           Icons.zoom_in,
-                                                          color: Colors.white,
+                                                          color: AppColors.white,
                                                           size: 14,
                                                         ),
                                                       ),
@@ -1068,7 +1068,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                               decoration: BoxDecoration(
-                                                color: Colors.green.withValues(alpha: 0.15),
+                                                color: AppColors.success.withValues(alpha: 0.15),
                                                 borderRadius: BorderRadius.circular(6),
                                                 border: Border.all(
                                                   color: AppColors.lightPrimary.withValues(alpha: 0.25),
@@ -1244,7 +1244,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
           label,
           style: AppTypography.labelLarge().copyWith(
             fontSize: 11,
-            color: isSelected ? Colors.white : color,
+            color: isSelected ? AppColors.white : color,
           ),
         ),
       ),

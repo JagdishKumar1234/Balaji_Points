@@ -80,8 +80,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
               primary: AppColors.lightPrimary,
-              onPrimary: Colors.white,
-              surface: Colors.white,
+              onPrimary: AppColors.white,
+              surface: AppColors.white,
               onSurface: AppColors.lightPrimary,
             ),
           ),
@@ -372,7 +372,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           return Scaffold(
             backgroundColor: AppColors.woodenBackground,
             appBar: AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               foregroundColor: AppColors.lightPrimary,
               elevation: 0,
               leading: IconButton(
@@ -807,7 +807,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                     color: AppColors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: AppColors.black.withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, -2),
                       ),
@@ -834,7 +834,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                                    AppColors.white,
                                   ),
                                 ),
                               )

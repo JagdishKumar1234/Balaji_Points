@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_top_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ class HomeNavBar extends StatelessWidget {
                   title ?? 'Balaji Points',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                  style: AppTypography.buttonMedium().copyWith(
                     fontSize: 17,
                     color: AppColors.lightTextPrimary,
                   ),
@@ -93,7 +94,7 @@ class HomeNavBar extends StatelessWidget {
                     subtitle!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                    style: AppTypography.bodyMedium().copyWith(
                       fontSize: 12,
                       color: AppColors.lightTextPrimary.withValues(alpha: 0.65),
                     ),

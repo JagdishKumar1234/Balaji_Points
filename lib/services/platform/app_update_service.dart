@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -165,7 +166,7 @@ class AppUpdateService {
     await showDialog<void>(
       context: context,
       barrierDismissible: !forceUpdate,
-      barrierColor: Colors.black54,
+      barrierColor: AppColors.black54,
       builder: (dialogContext) {
         return AppUpdateDialog(
           forceUpdate: forceUpdate,
@@ -235,7 +236,7 @@ class AppUpdateService {
       SnackBar(
         content: Text(
           'Unable to open the app store. Please check your connection or contact support.',
-          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(color: AppColors.white),
+          style: AppTypography.bodyMedium().copyWith(color: AppColors.white),
         ),
         backgroundColor: AppColors.error,
       ),

@@ -94,7 +94,7 @@ class _SplashPageState extends State<SplashPage> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         body: Stack(
           fit: StackFit.expand,
           children: [

@@ -35,7 +35,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
             return Center(
               child: Text(
                 'Error: ${snapshot.error}',
-                style: AppTypography.bodyMedium().copyWith(color: Colors.red),
+                style: AppTypography.bodyMedium().copyWith(color: AppColors.red),
               ),
             );
           }
@@ -90,11 +90,11 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: AppColors.black.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -169,10 +169,10 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.1),
+                          color: AppColors.orange.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.orange.withOpacity(0.3),
+                            color: AppColors.orange.withOpacity(0.3),
                             width: 1,
                           ),
                         ),
@@ -261,7 +261,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                                        AppColors.white,
                                       ),
                                     ),
                                   )
@@ -269,7 +269,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                                     'Approve',
                                     style: AppTypography.labelLarge().copyWith(
                                       fontSize: 14,
-                                      color: Colors.white,
+                                      color: AppColors.white,
                                     ),
                                   ),
                           ),
@@ -358,7 +358,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
             ),
             child: Text(
               'Approve',
-              style: AppTypography.labelLarge().copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
             ),
           ),
         ],
@@ -402,7 +402,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('$userName approved successfully'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.success,
           ),
         );
       }
@@ -414,7 +414,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error approving user: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }
@@ -466,7 +466,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
             ),
             child: Text(
               'Reject',
-              style: AppTypography.labelLarge().copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
             ),
           ),
         ],
@@ -488,7 +488,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('$userName rejected'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.orange,
           ),
         );
       }
@@ -498,7 +498,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error rejecting user: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }

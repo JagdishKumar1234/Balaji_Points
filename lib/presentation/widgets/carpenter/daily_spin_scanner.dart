@@ -28,13 +28,13 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
     PrizeItem(
       icon: Icons.local_fire_department,
       points: 10,
-      color: Colors.orange,
+      color: AppColors.orange,
     ),
     PrizeItem(icon: Icons.star, points: 20, color: Colors.amber),
     PrizeItem(icon: Icons.diamond, points: 30, color: Colors.cyan),
-    PrizeItem(icon: Icons.emoji_events, points: 40, color: Colors.yellow),
-    PrizeItem(icon: Icons.card_giftcard, points: 50, color: Colors.purple),
-    PrizeItem(icon: Icons.auto_awesome, points: 60, color: Colors.pink),
+    PrizeItem(icon: Icons.emoji_events, points: 40, color: AppColors.yellow),
+    PrizeItem(icon: Icons.card_giftcard, points: 50, color: AppColors.purple),
+    PrizeItem(icon: Icons.auto_awesome, points: 60, color: AppColors.pink),
     PrizeItem(icon: Icons.military_tech, points: 70, color: Colors.indigo),
     PrizeItem(
       icon: Icons.workspace_premium,
@@ -83,7 +83,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('You have already spun today. Come back tomorrow!'),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColors.orange,
         ),
       );
       return;
@@ -157,7 +157,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         title: Column(
           children: [
             Container(
@@ -188,7 +188,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
           children: [
             const Text(
               'You won',
-              style: TextStyle(fontSize: 16, color: Colors.black54),
+              style: TextStyle(fontSize: 16, color: AppColors.black54),
             ),
             const SizedBox(height: 12),
             Container(
@@ -214,14 +214,14 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                 style: const TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
               ),
             ),
             const SizedBox(height: 16),
             const Text(
               'Points added to your account ✨',
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+              style: TextStyle(fontSize: 14, color: AppColors.black54),
               textAlign: TextAlign.center,
             ),
           ],
@@ -249,7 +249,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
               ),
             ),
@@ -270,12 +270,12 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.white, AppColors.lightPrimary.withOpacity(0.05)],
+          colors: [AppColors.white, AppColors.lightPrimary.withOpacity(0.05)],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.black.withOpacity(0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -324,7 +324,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
             height: 320,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.black87,
+              color: AppColors.black87,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: AppColors.lightSecondary.withOpacity(0.3),
@@ -339,9 +339,9 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.transparent,
+                        AppColors.transparent,
                         AppColors.lightSecondary,
-                        Colors.transparent,
+                        AppColors.transparent,
                       ],
                     ),
                   ),
@@ -370,14 +370,14 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                             decoration: BoxDecoration(
                               color: isSelected && _isSpinning
                                   ? prize.color.withOpacity(0.2)
-                                  : Colors.white.withOpacity(0.05),
+                                  : AppColors.white.withOpacity(0.05),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected && _isSpinning
                                     ? prize.color.withOpacity(
                                         _glowAnimation.value,
                                       )
-                                    : Colors.white.withOpacity(0.1),
+                                    : AppColors.white.withOpacity(0.1),
                                 width: isSelected && _isSpinning ? 2 : 1,
                               ),
                               boxShadow: isSelected && _isSpinning
@@ -398,7 +398,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                                   prize.icon,
                                   color: isSelected && _isSpinning
                                       ? prize.color
-                                      : Colors.white70,
+                                      : AppColors.white70,
                                   size: 28,
                                 ),
                                 const SizedBox(width: 16),
@@ -407,8 +407,8 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                                     '${prize.points} Points',
                                     style: TextStyle(
                                       color: isSelected && _isSpinning
-                                          ? Colors.white
-                                          : Colors.white70,
+                                          ? AppColors.white
+                                          : AppColors.white70,
                                       fontSize: 18,
                                       fontWeight: isSelected && _isSpinning
                                           ? FontWeight.bold
@@ -439,9 +439,9 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.transparent,
+                        AppColors.transparent,
                         AppColors.lightSecondary,
-                        Colors.transparent,
+                        AppColors.transparent,
                       ],
                     ),
                   ),
@@ -459,7 +459,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
               onPressed: spinState.canSpin && !_isSpinning ? _startScan : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _isSpinning
-                    ? Colors.grey
+                    ? AppColors.grey500
                     : (spinState.canSpin
                           ? AppColors.lightSecondary
                           : Colors.grey.shade400),
@@ -480,7 +480,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                              AppColors.white,
                             ),
                           ),
                         ),
@@ -490,7 +490,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ],
@@ -507,7 +507,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ],

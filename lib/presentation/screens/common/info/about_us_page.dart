@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -23,12 +24,12 @@ class AboutUsPage extends StatelessWidget {
     final scrollBottomPadding = CarpenterShellLayout.bottomPaddingForScrollView(
       mq,
     );
-    final bodyStyle = const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+    final bodyStyle = AppTypography.bodyMedium().copyWith(
       fontSize: 15,
       height: 1.58,
       color: theme.colorScheme.onSurface.withValues(alpha: 0.88),
     );
-    final titleStyle = const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+    final titleStyle = AppTypography.buttonMedium().copyWith(
       fontSize: 17,
       height: 1.35,
       color: theme.colorScheme.onSurface,
@@ -80,7 +81,7 @@ class AboutUsPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             l10n.rewardsLoyaltyProgram,
-                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                            style: AppTypography.buttonMedium().copyWith(
                               fontSize: 18,
                               color: theme.colorScheme.onSurface,
                               height: 1.25,
@@ -128,7 +129,7 @@ class AboutUsPage extends StatelessWidget {
                   const SizedBox(height: 28),
                   Text(
                     l10n.aboutUsClosing,
-                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+                    style: AppTypography.labelLarge().copyWith(
                       fontSize: 16,
                       height: 1.5,
                       color: AppColors.lightPrimary,
@@ -185,19 +186,19 @@ class _AboutDeveloperCredits extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final muted = theme.colorScheme.onSurface.withValues(alpha: 0.65);
-    final linkStyle = const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+    final linkStyle = AppTypography.labelLarge().copyWith(
       fontSize: 14,
       height: 1.4,
       color: AppColors.lightPrimary,
       decoration: TextDecoration.underline,
       decorationColor: AppColors.lightPrimary.withValues(alpha: 0.5),
     );
-    final captionStyle = const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+    final captionStyle = AppTypography.bodyMedium().copyWith(
       fontSize: 13,
       height: 1.45,
       color: muted,
     );
-    final headingStyle = const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+    final headingStyle = AppTypography.buttonMedium().copyWith(
       fontSize: 13,
       height: 1.35,
       color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
@@ -211,7 +212,7 @@ class _AboutDeveloperCredits extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           l10n.aboutUsCreditsStudio,
-          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+          style: AppTypography.labelLarge().copyWith(
             fontSize: 15,
             height: 1.4,
             color: theme.colorScheme.onSurface.withValues(alpha: 0.9),

@@ -103,7 +103,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
           content: Text(
             success ? 'Product deleted successfully' : 'Failed to delete product',
           ),
-          backgroundColor: success ? Colors.green : AppColors.error,
+          backgroundColor: success ? AppColors.success : AppColors.error,
         ),
       );
     }
@@ -113,7 +113,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         child: Stack(
           children: [
             Center(
@@ -124,7 +124,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       padding: const EdgeInsets.all(20),
-                      color: Colors.white,
+                      color: AppColors.white,
                       child: const Text('Failed to load image'),
                     );
                   },
@@ -135,7 +135,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
               top: 40,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),
@@ -258,7 +258,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                   child: Icon(
                                     Icons.broken_image,
                                     size: 50,
-                                    color: Colors.grey,
+                                    color: AppColors.grey500,
                                   ),
                                 ),
                               );
@@ -740,7 +740,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                   ? 'Product updated successfully'
                   : 'Product created successfully',
             ),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.success,
           ),
         );
       } else {
@@ -787,19 +787,19 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.inventory_2, color: Colors.white, size: 26),
+                  const Icon(Icons.inventory_2, color: AppColors.white, size: 26),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       title,
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
-                        color: Colors.white,
+                        color: AppColors.white,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
+                    icon: const Icon(Icons.close, color: AppColors.white),
                     onPressed:
                         (_isSaving || _isUploadingImage || _isUploadingCatalogPdf)
                             ? null
@@ -910,7 +910,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                     _newCatalogPdfFile == null)
                                   const Icon(
                                     Icons.check_circle,
-                                    color: Colors.green,
+                                    color: AppColors.success,
                                     size: 20,
                                   ),
                               ],
@@ -1170,7 +1170,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                 });
                               },
                               activeTrackColor: AppColors.lightSecondary,
-                              activeColor: Colors.white,
+                              activeColor: AppColors.white,
                             ),
                           ],
                         ),
@@ -1213,7 +1213,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                               : _saveProduct,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.lightSecondary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -1226,7 +1226,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
+                                      AppColors.white,
                                     ),
                                   ),
                                 )
@@ -1234,7 +1234,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   _isEditMode ? 'Update product' : 'Save product',
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                   ),
                                 ),
                         ),

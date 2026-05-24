@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class CompleteProfileCard extends StatelessWidget {
           gradient: LinearGradient(
             colors: <Color>[
               const Color(0xFFFFA726),
-              const Color(0xFFFF6F00),
+              AppColors.orangeDark,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -44,7 +45,7 @@ class CompleteProfileCard extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: Colors.transparent,
+          color: AppColors.transparent,
           child: InkWell(
             onTap: () => context.push('/edit-profile'),
             borderRadius: AppRadius.forCard,
@@ -71,7 +72,7 @@ class CompleteProfileCard extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           l10n.completeProfile,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                          style: AppTypography.buttonMedium().copyWith(
                             fontSize: 16.0,
                             color: AppColors.white,
                           ),
@@ -79,7 +80,7 @@ class CompleteProfileCard extends StatelessWidget {
                         const SizedBox(height: 4.0),
                         Text(
                           l10n.completeProfileDetails,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400)
+                          style: AppTypography.bodyMedium()
                               .copyWith(
                                 fontSize: 14.0,
                                 color: AppColors.white.withValues(

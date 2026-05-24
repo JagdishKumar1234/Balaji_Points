@@ -26,7 +26,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
           // Filter Buttons
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.white,
+            color: AppColors.white,
             child: Row(
               children: [
                 Expanded(child: _buildFilterButton('All', 'all')),
@@ -57,7 +57,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                     child: Text(
                       'Error: ${snapshot.error}',
                       style: AppTypography.bodyMedium().copyWith(
-                        color: Colors.red,
+                        color: AppColors.red,
                       ),
                     ),
                   );
@@ -116,11 +116,11 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: AppColors.black.withOpacity(0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
@@ -325,7 +325,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                       'Approve',
                                       style: AppTypography.labelLarge().copyWith(
                                         fontSize: 14,
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                       ),
                                     ),
                                   ),
@@ -372,7 +372,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             label,
             style: AppTypography.labelLarge().copyWith(
               fontSize: 13,
-              color: isSelected ? Colors.white : AppColors.lightPrimary,
+              color: isSelected ? AppColors.white : AppColors.lightPrimary,
             ),
           ),
         ),
@@ -408,12 +408,12 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'approved':
-        return Colors.green;
+        return AppColors.success;
       case 'rejected':
-        return Colors.red;
+        return AppColors.red;
       case 'pending':
       default:
-        return Colors.orange;
+        return AppColors.orange;
     }
   }
 
@@ -465,7 +465,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             ),
             child: Text(
               'Approve',
-              style: AppTypography.labelLarge().copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
             ),
           ),
         ],
@@ -488,12 +488,12 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: success ? Colors.green : Colors.red,
+            backgroundColor: success ? AppColors.success : AppColors.red,
             content: Text(
               success
                   ? 'Bill approved and points added successfully'
                   : 'Failed to approve bill',
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.white),
             ),
             duration: const Duration(seconds: 2),
           ),
@@ -508,7 +508,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }
@@ -554,7 +554,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             ),
             child: Text(
               'Reject',
-              style: AppTypography.labelLarge().copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
             ),
           ),
         ],
@@ -569,7 +569,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Bill rejected'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.orange,
           ),
         );
       }
@@ -579,7 +579,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }

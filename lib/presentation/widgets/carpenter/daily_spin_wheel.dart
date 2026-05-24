@@ -49,7 +49,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('You have already spun today. Come back tomorrow!'),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColors.orange,
         ),
       );
       return;
@@ -211,11 +211,11 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.black.withOpacity(0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -292,7 +292,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.red.withOpacity(0.5),
+                        color: AppColors.red.withOpacity(0.5),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -300,7 +300,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                   ),
                   child: const Icon(
                     Icons.arrow_downward,
-                    color: Colors.white,
+                    color: AppColors.white,
                     size: 24,
                   ),
                 ),
@@ -312,10 +312,10 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                 height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white,
+                  color: AppColors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: AppColors.black.withOpacity(0.2),
                       blurRadius: 10,
                     ),
                   ],
@@ -335,12 +335,12 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
               onPressed: spinState.canSpin && !_isSpinning ? _spin : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _isSpinning
-                    ? Colors.grey
+                    ? AppColors.grey500
                     : (spinState.canSpin
                           ? Colors.amber.shade600
                           : Colors.grey.shade400),
                 disabledBackgroundColor: Colors.grey.shade300,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 40,
@@ -359,7 +359,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                              AppColors.white,
                             ),
                           ),
                         ),
@@ -369,7 +369,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ],
@@ -379,7 +379,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: AppColors.white,
                       ),
                     ),
             ),
@@ -427,7 +427,7 @@ class SpinWheelPainter extends CustomPainter {
 
       // Draw borders between segments
       final borderPaint = Paint()
-        ..color = Colors.white
+        ..color = AppColors.white
         ..strokeWidth = 3
         ..style = PaintingStyle.stroke;
       canvas.drawLine(
@@ -449,12 +449,12 @@ class SpinWheelPainter extends CustomPainter {
         text: TextSpan(
           text: '${pointValues[i]}',
           style: const TextStyle(
-            color: Colors.white,
+            color: AppColors.white,
             fontSize: 24,
             fontWeight: FontWeight.bold,
             shadows: [
               Shadow(
-                color: Colors.black54,
+                color: AppColors.black54,
                 blurRadius: 3,
                 offset: Offset(1, 1),
               ),

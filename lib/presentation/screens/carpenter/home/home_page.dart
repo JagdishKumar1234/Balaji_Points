@@ -96,7 +96,7 @@ class _HomePageState extends ConsumerState<HomePage>
     _HomeProductCategory(
       title: 'Kitchen',
       icon: Icons.kitchen_rounded,
-      background: Color(0xFFFFF3E0),
+      background: AppColors.orangeBackground,
       imageAsset: 'assets/images/furniture/brown_kitchen_cabinet.jpeg',
     ),
     _HomeProductCategory(
@@ -332,7 +332,7 @@ class _HomePageState extends ConsumerState<HomePage>
     bool isDark,
     MediaQueryData mq,
   ) {
-    final fg = isDark ? Colors.white : AppColors.lightTextPrimary;
+    final fg = isDark ? AppColors.white : AppColors.lightTextPrimary;
     final fgMuted = fg.withValues(alpha: 0.70);
     final l10n = AppLocalizations.of(context)!;
 
@@ -397,7 +397,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     ),
                     child: Text(
                       homeState.cartCount > 99 ? '99+' : '${homeState.cartCount}',
-                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: AppColors.white, fontSize: 9, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -561,7 +561,7 @@ class _HomePageState extends ConsumerState<HomePage>
           end: Alignment.bottomRight,
         ),
         borderRadius: AppRadius.forCard,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
         boxShadow: [
           BoxShadow(
             color: AppColors.darkPrimary.withValues(alpha: 0.22),
@@ -584,14 +584,14 @@ class _HomePageState extends ConsumerState<HomePage>
                   height: 44,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.45)),
+                    border: Border.all(color: AppColors.white.withValues(alpha: 0.45)),
                   ),
                   child: CircleAvatar(
                     radius: 17,
-                    backgroundColor: Colors.white.withValues(alpha: 0.18),
+                    backgroundColor: AppColors.white.withValues(alpha: 0.18),
                     backgroundImage: hasValidImage ? NetworkImage(profileImage) : null,
                     child: !hasValidImage
-                        ? const Icon(Icons.person, size: 22, color: Colors.white)
+                        ? const Icon(Icons.person, size: 22, color: AppColors.white)
                         : null,
                   ),
                 ),
@@ -599,12 +599,12 @@ class _HomePageState extends ConsumerState<HomePage>
                 Expanded(
                   child: Text.rich(
                     TextSpan(
-                      style: AppTypography.bodySmall(color: Colors.white.withValues(alpha: 0.82)),
+                      style: AppTypography.bodySmall(color: AppColors.white.withValues(alpha: 0.82)),
                       children: [
                         TextSpan(text: '$greeting,\n'),
                         TextSpan(
                           text: homeState.displayName,
-                          style: AppTypography.bodyLarge(color: Colors.white)
+                          style: AppTypography.bodyLarge(color: AppColors.white)
                               .copyWith(fontWeight: FontWeight.w700, height: 1.15),
                         ),
                       ],
@@ -633,12 +633,12 @@ class _HomePageState extends ConsumerState<HomePage>
                     children: [
                       Text(
                         l10n.totalPointsLabel,
-                        style: AppTypography.labelSmall(color: Colors.white.withValues(alpha: 0.78)),
+                        style: AppTypography.labelSmall(color: AppColors.white.withValues(alpha: 0.78)),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         nf.format(homeState.points),
-                        style: AppTypography.pointsHero(color: Colors.white),
+                        style: AppTypography.pointsHero(color: AppColors.white),
                       ),
                     ],
                   ),
@@ -653,7 +653,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 Expanded(
                   child: Text(
                     '${homeState.tier} ${l10n.homeTierSuffix}',
-                    style: AppTypography.bodySmall(color: Colors.white.withValues(alpha: 0.92)),
+                    style: AppTypography.bodySmall(color: AppColors.white.withValues(alpha: 0.92)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -661,7 +661,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 Icon(
                   Icons.account_balance_wallet_outlined,
                   size: 16,
-                  color: Colors.white.withValues(alpha: 0.55),
+                  color: AppColors.white.withValues(alpha: 0.55),
                 ),
               ],
             ),
@@ -677,13 +677,13 @@ class _HomePageState extends ConsumerState<HomePage>
 
   Widget _buildProductsSection(BuildContext context, bool isDark, ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    final titleColor = isDark ? Colors.white : AppColors.lightTextPrimary;
-    final subtitleColor = isDark ? Colors.white.withValues(alpha: 0.72) : AppColors.lightTextSecondary;
+    final titleColor = isDark ? AppColors.white : AppColors.lightTextPrimary;
+    final subtitleColor = isDark ? AppColors.white.withValues(alpha: 0.72) : AppColors.lightTextSecondary;
     final surfaceColor = theme.colorScheme.surface;
     final heroDecodeW = MediaQuery.sizeOf(context).width * 0.92;
-    final dotActive = isDark ? Colors.white.withValues(alpha: 0.95) : AppColors.lightPrimary;
+    final dotActive = isDark ? AppColors.white.withValues(alpha: 0.95) : AppColors.lightPrimary;
     final dotInactive = isDark
-        ? Colors.white.withValues(alpha: 0.45)
+        ? AppColors.white.withValues(alpha: 0.45)
         : AppColors.lightTextSecondary.withValues(alpha: 0.35);
 
     return Column(
@@ -702,7 +702,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [Color(0xFFD4A537), Color(0xFF8B5E3C)],
+                        colors: [AppColors.tierGold, Color(0xFF8B5E3C)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -774,8 +774,8 @@ class _HomePageState extends ConsumerState<HomePage>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Colors.black.withValues(alpha: 0.10),
-                                Colors.black.withValues(alpha: 0.65),
+                                AppColors.black.withValues(alpha: 0.10),
+                                AppColors.black.withValues(alpha: 0.65),
                               ],
                             ),
                           ),
@@ -791,21 +791,21 @@ class _HomePageState extends ConsumerState<HomePage>
                                 height: 34,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.white.withValues(alpha: 0.92),
+                                  color: AppColors.white.withValues(alpha: 0.92),
                                 ),
                                 child: Icon(hero.icon, size: 20, color: const Color(0xFF4E2C0A)),
                               ),
                               const SizedBox(height: AppSpacing.md),
                               Text(
                                 hero.title,
-                                style: AppTypography.bodyLarge(color: Colors.white)
+                                style: AppTypography.bodyLarge(color: AppColors.white)
                                     .copyWith(fontWeight: FontWeight.w700),
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               Text(
                                 hero.subtitle,
                                 style: AppTypography.bodySmall(
-                                  color: Colors.white.withValues(alpha: 0.92),
+                                  color: AppColors.white.withValues(alpha: 0.92),
                                 ),
                               ),
                             ],
@@ -928,7 +928,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 border: isDark ? null : Border.all(color: AppColors.grey200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: AppColors.black.withValues(alpha: 0.05),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -987,7 +987,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: AppColors.black.withValues(alpha: 0.05),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -1042,14 +1042,14 @@ class _HomePageState extends ConsumerState<HomePage>
             padding: const EdgeInsets.all(AppSpacing.cardPadding),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFFD4A537), Color(0xFF8B5E3C)],
+                colors: [AppColors.tierGold, Color(0xFF8B5E3C)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFD4A537).withValues(alpha: 0.3),
+                  color: AppColors.tierGold.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -1060,7 +1060,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 CircleAvatar(
                   radius: 26,
                   backgroundImage: hasImg ? NetworkImage(winnerImage) : null,
-                  child: !hasImg ? const Icon(Icons.person, color: Colors.white) : null,
+                  child: !hasImg ? const Icon(Icons.person, color: AppColors.white) : null,
                 ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
@@ -1069,23 +1069,23 @@ class _HomePageState extends ConsumerState<HomePage>
                     children: [
                       Text(
                         AppLocalizations.of(context)!.todaysWinnerLabel,
-                        style: AppTypography.labelSmall(color: Colors.white.withValues(alpha: 0.85)),
+                        style: AppTypography.labelSmall(color: AppColors.white.withValues(alpha: 0.85)),
                       ),
                       Text(
                         winnerName,
-                        style: AppTypography.bodyLarge(color: Colors.white)
+                        style: AppTypography.bodyLarge(color: AppColors.white)
                             .copyWith(fontWeight: FontWeight.w700),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         '$winnerPoints pts',
-                        style: AppTypography.bodySmall(color: Colors.white.withValues(alpha: 0.9)),
+                        style: AppTypography.bodySmall(color: AppColors.white.withValues(alpha: 0.9)),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.emoji_events, color: Colors.white, size: 32),
+                const Icon(Icons.emoji_events, color: AppColors.white, size: 32),
               ],
             ),
           );
@@ -1119,7 +1119,7 @@ class _HomePageState extends ConsumerState<HomePage>
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.amber, width: 3),
               boxShadow: [
@@ -1146,7 +1146,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey,
+                    color: AppColors.grey500,
                   ),
                 ),
               ],
@@ -1159,12 +1159,12 @@ class _HomePageState extends ConsumerState<HomePage>
               children: [
                 Text(
                   AppLocalizations.of(context)!.yourPosition,
-                  style: AppTypography.labelSmall(color: Colors.white.withValues(alpha: 0.75)),
+                  style: AppTypography.labelSmall(color: AppColors.white.withValues(alpha: 0.75)),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   homeState.displayName,
-                  style: AppTypography.bodyLarge(color: Colors.white)
+                  style: AppTypography.bodyLarge(color: AppColors.white)
                       .copyWith(fontWeight: FontWeight.w700),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -1176,7 +1176,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       '${homeState.points} Points',
-                      style: AppTypography.bodyMedium(color: Colors.white)
+                      style: AppTypography.bodyMedium(color: AppColors.white)
                           .copyWith(fontWeight: FontWeight.w700),
                     ),
                   ],
@@ -1187,7 +1187,7 @@ class _HomePageState extends ConsumerState<HomePage>
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.emoji_events, color: AppColors.amber, size: 28),
@@ -1205,9 +1205,9 @@ class _HomePageState extends ConsumerState<HomePage>
     final mq = MediaQuery.of(context);
     final topInset = mq.padding.top;
     final drawerFooterBottom = CarpenterShellLayout.chromeHeight(mq) + AppSpacing.sm;
-    final titleColor = isDark ? Colors.white : AppColors.lightTextPrimary;
+    final titleColor = isDark ? AppColors.white : AppColors.lightTextPrimary;
     final subtitleColor = isDark
-        ? Colors.white.withValues(alpha: 0.80)
+        ? AppColors.white.withValues(alpha: 0.80)
         : AppColors.lightTextPrimary.withValues(alpha: 0.70);
 
     final phone = homeState.userData?['phone'] as String? ?? '';
@@ -1258,7 +1258,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.15),
+                      color: AppColors.black.withValues(alpha: 0.15),
                       blurRadius: 18,
                       offset: const Offset(0, 8),
                     ),
@@ -1271,10 +1271,10 @@ class _HomePageState extends ConsumerState<HomePage>
                       height: 52,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 2),
+                        border: Border.all(color: AppColors.white.withValues(alpha: 0.9), width: 2),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.25),
+                            color: AppColors.black.withValues(alpha: 0.25),
                             blurRadius: 12,
                             offset: const Offset(0, 6),
                           ),
@@ -1286,12 +1286,12 @@ class _HomePageState extends ConsumerState<HomePage>
                                 profileImage,
                                 fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => const ColoredBox(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   child: Icon(Icons.person, color: AppColors.lightPrimary),
                                 ),
                               )
                             : const ColoredBox(
-                                color: Colors.white,
+                                color: AppColors.white,
                                 child: Icon(Icons.person, color: AppColors.lightPrimary),
                               ),
                       ),
@@ -1303,7 +1303,7 @@ class _HomePageState extends ConsumerState<HomePage>
                         children: [
                           Text(
                             homeState.displayName,
-                            style: AppTypography.bodyLarge(color: Colors.white)
+                            style: AppTypography.bodyLarge(color: AppColors.white)
                                 .copyWith(fontWeight: FontWeight.w600),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -1313,7 +1313,7 @@ class _HomePageState extends ConsumerState<HomePage>
                             Text(
                               phone,
                               style: AppTypography.bodySmall(
-                                  color: Colors.white.withValues(alpha: 0.85)),
+                                  color: AppColors.white.withValues(alpha: 0.85)),
                             ),
                         ],
                       ),
@@ -1419,7 +1419,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.error,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -1429,7 +1429,7 @@ class _HomePageState extends ConsumerState<HomePage>
                       icon: const Icon(Icons.logout_rounded, size: 22),
                       label: Text(
                         l10n.logout,
-                        style: AppTypography.bodyMedium(color: Colors.white)
+                        style: AppTypography.bodyMedium(color: AppColors.white)
                             .copyWith(fontWeight: FontWeight.w700),
                       ),
                       onPressed: () => _handleLogout(context),
@@ -1489,7 +1489,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(ctx).pop(false),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey.withValues(alpha: 0.8)),
+                        side: BorderSide(color: AppColors.grey500.withValues(alpha: 0.8)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
@@ -1505,14 +1505,14 @@ class _HomePageState extends ConsumerState<HomePage>
                       onPressed: () => Navigator.of(ctx).pop(true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.error,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
                       child: Text(
                         l10n.yes,
-                        style: AppTypography.bodyMedium(color: Colors.white)
+                        style: AppTypography.bodyMedium(color: AppColors.white)
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -1598,18 +1598,18 @@ class _SunMoonBadge extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: isDayTime
-                  ? [const Color(0xFFFCD34D), const Color(0xFFF59E0B)]
+                  ? [const Color(0xFFFCD34D), AppColors.warning]
                   : [const Color(0xFF2563EB), const Color(0xFF7C3AED)],
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
+                color: AppColors.black.withValues(alpha: 0.15),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: Icon(icon, color: Colors.white, size: 22),
+          child: Icon(icon, color: AppColors.white, size: 22),
         ),
       ),
     );
@@ -1635,7 +1635,7 @@ class _PointsCoin extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: Colors.white.withValues(alpha: onDark ? 0.4 : 0.55),
+          color: AppColors.white.withValues(alpha: onDark ? 0.4 : 0.55),
           width: 1.25,
         ),
         boxShadow: [
@@ -1650,7 +1650,7 @@ class _PointsCoin extends StatelessWidget {
       child: Icon(
         Icons.toll_rounded,
         size: 26,
-        color: Colors.white.withValues(alpha: 0.95),
+        color: AppColors.white.withValues(alpha: 0.95),
       ),
     );
   }
@@ -1681,7 +1681,7 @@ class _ProductCategoryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: AppColors.black.withValues(alpha: 0.06),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

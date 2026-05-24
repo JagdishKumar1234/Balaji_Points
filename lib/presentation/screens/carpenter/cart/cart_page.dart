@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -128,8 +129,8 @@ class _CartPageState extends State<CartPage> {
     final appBarFill =
         theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor;
     final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.08);
+        ? AppColors.white.withValues(alpha: 0.12)
+        : AppColors.black.withValues(alpha: 0.08);
 
     if (_loadingUser) {
       return Scaffold(
@@ -204,7 +205,7 @@ class _CartPageState extends State<CartPage> {
                 child: Text(
                   'Error loading cart:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                  style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
                     color: AppColors.error,
                   ),
@@ -229,12 +230,12 @@ class _CartPageState extends State<CartPage> {
                   Icon(
                     Icons.shopping_cart_outlined,
                     size: 80,
-                    color: Colors.grey[300],
+                    color: AppColors.grey300,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Your cart is empty',
-                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                    style: AppTypography.buttonMedium().copyWith(
                       fontSize: 20,
                       color: AppColors.lightTextPrimary,
                     ),
@@ -242,9 +243,9 @@ class _CartPageState extends State<CartPage> {
                   const SizedBox(height: 8),
                   Text(
                     'Browse products and add items to your cart.',
-                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                    style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
-                      color: Colors.grey[600],
+                      color: AppColors.grey600,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -323,7 +324,7 @@ class _CartPageState extends State<CartPage> {
                                       name,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                      style: AppTypography.labelLarge()
                                           .copyWith(
                                             fontSize: 16,
                                             color: AppColors.lightTextPrimary,
@@ -334,16 +335,16 @@ class _CartPageState extends State<CartPage> {
                                       subCategory.isNotEmpty
                                           ? '$mainCategory • $subCategory'
                                           : mainCategory,
-                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400)
+                                      style: AppTypography.bodyMedium()
                                           .copyWith(
                                             fontSize: 12,
-                                            color: Colors.grey[600],
+                                            color: AppColors.grey600,
                                           ),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
                                       '₹${price.toStringAsFixed(0)}',
-                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                                      style: AppTypography.buttonMedium().copyWith(
                                         fontSize: 14,
                                         color: AppColors.lightPrimary,
                                       ),
@@ -369,7 +370,7 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                       Text(
                                         '$qty',
-                                        style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
+                                        style: AppTypography.buttonMedium()
                                             .copyWith(fontSize: 14),
                                       ),
                                       IconButton(
@@ -388,7 +389,7 @@ class _CartPageState extends State<CartPage> {
                                   ),
                                   Text(
                                     '₹${lineTotal.toStringAsFixed(0)}',
-                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                    style: AppTypography.labelLarge()
                                         .copyWith(
                                           fontSize: 12,
                                           color: AppColors.lightTextPrimary,
@@ -408,7 +409,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                                     label: Text(
                                       'Remove',
-                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400),
+                                      style: AppTypography.bodyMedium(),
                                     ),
                                     style: TextButton.styleFrom(
                                       foregroundColor: Colors.redAccent,
@@ -457,7 +458,7 @@ class _CartPageState extends State<CartPage> {
                     color: theme.colorScheme.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
+                        color: AppColors.black.withValues(alpha: 0.06),
                         blurRadius: 8,
                         offset: const Offset(0, -2),
                       ),
@@ -471,15 +472,15 @@ class _CartPageState extends State<CartPage> {
                           children: [
                             Text(
                               'Total',
-                              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                              style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 13,
-                                color: Colors.grey[600],
+                                color: AppColors.grey600,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               '₹${total.toStringAsFixed(0)}',
-                              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                              style: AppTypography.buttonMedium().copyWith(
                                 fontSize: 18,
                                 color: AppColors.lightPrimary,
                               ),
@@ -493,7 +494,7 @@ class _CartPageState extends State<CartPage> {
                           onPressed: () => _placeOrder(docs),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.lightSecondary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -502,7 +503,7 @@ class _CartPageState extends State<CartPage> {
                           icon: const Icon(Icons.shopping_bag),
                           label: Text(
                             'Place Order (WhatsApp)',
-                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700),
+                            style: AppTypography.buttonMedium(),
                           ),
                         ),
                       ),

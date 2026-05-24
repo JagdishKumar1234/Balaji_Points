@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -80,7 +81,7 @@ class ProductListPage extends StatelessWidget {
                 child: Text(
                   'Error loading products:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                  style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
                     color: AppColors.error,
                   ),
@@ -105,12 +106,12 @@ class ProductListPage extends StatelessWidget {
                   Icon(
                     Icons.inventory_2_outlined,
                     size: 80,
-                    color: Colors.grey[300],
+                    color: AppColors.grey300,
                   ),
                   const SizedBox(height: 20),
                   Text(
                     'No Product Added',
-                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                    style: AppTypography.buttonMedium().copyWith(
                       fontSize: 20,
                       color: AppColors.lightTextPrimary,
                     ),
@@ -193,7 +194,7 @@ class ProductListPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   hasCategories ? selectedCategory : 'Products',
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+                  style: AppTypography.labelLarge().copyWith(
                     fontSize: 16.0,
                     color: isDark ? AppColors.white : AppColors.lightTextPrimary,
                   ),
@@ -358,7 +359,7 @@ class _ProductCard extends StatelessWidget {
                                 gradient: LinearGradient(
                                   colors: [
                                     const Color(0xFF2196F3),
-                                    const Color(0xFF9C27B0),
+                                    AppColors.purple,
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -378,7 +379,7 @@ class _ProductCard extends StatelessWidget {
                     right: 8,
                     bottom: 8,
                     child: Material(
-                      color: Colors.black.withValues(alpha: 0.55),
+                      color: AppColors.black.withValues(alpha: 0.55),
                       borderRadius: BorderRadius.circular(999),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(999),
@@ -396,13 +397,13 @@ class _ProductCard extends StatelessWidget {
                               Icon(
                                 Icons.add_shopping_cart,
                                 size: 16,
-                                color: Colors.white,
+                                color: AppColors.white,
                               ),
                               SizedBox(width: 4),
                               Text(
                                 'Add',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -424,7 +425,7 @@ class _ProductCard extends StatelessWidget {
                 name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+                style: AppTypography.labelLarge().copyWith(
                   color: titleColor,
                   fontSize: 14.0,
                 ),
@@ -438,7 +439,7 @@ class _ProductCard extends StatelessWidget {
                 subtitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                style: AppTypography.bodyMedium().copyWith(
                   color: subtitleColor,
                   fontSize: 12.0,
                 ),
@@ -450,7 +451,7 @@ class _ProductCard extends StatelessWidget {
               ).copyWith(top: 4),
               child: Text(
                 price > 0 ? '₹${price.toStringAsFixed(0)}' : '',
-                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                style: AppTypography.buttonMedium().copyWith(
                   color: AppColors.lightPrimary,
                   fontSize: 14.0,
                 ),
@@ -492,20 +493,20 @@ class _SmallChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: AppColors.grey100,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.grey300!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 10, color: Colors.grey[700]),
+          Icon(icon, size: 10, color: AppColors.grey700),
           const SizedBox(width: 2),
           Text(
             label,
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+            style: AppTypography.bodyMedium().copyWith(
               fontSize: 9,
-              color: Colors.grey[800],
+              color: AppColors.grey800,
             ),
           ),
         ],
@@ -540,12 +541,12 @@ class _CartIconButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.error,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.white, width: 1),
+                border: Border.all(color: AppColors.white, width: 1),
               ),
               child: Text(
                 count > 99 ? '99+' : '$count',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
                   height: 1,

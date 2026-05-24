@@ -71,7 +71,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE53935),
+              backgroundColor: AppColors.errorDark,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
@@ -316,7 +316,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                         background: Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE53935),
+                            color: AppColors.errorDark,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           alignment: Alignment.centerRight,
@@ -348,7 +348,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                       onPressed: () =>
                                           Navigator.of(context).pop(true),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFFE53935),
+                                        backgroundColor: AppColors.errorDark,
                                         foregroundColor: AppColors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),

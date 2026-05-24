@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
             Expanded(
               child: Text.rich(
                 TextSpan(
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                  style: AppTypography.bodyMedium().copyWith(
                     fontSize: 12.0,
                     color: AppColors.lightTextPrimary.withValues(alpha: 0.72),
                     height: 1.0,
@@ -61,7 +62,7 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
                     TextSpan(text: '$greeting, '),
                     TextSpan(
                       text: widget.userName,
-                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                      style: AppTypography.buttonMedium().copyWith(
                         fontSize: 12.0,
                         color: AppColors.lightTextPrimary,
                         height: 1.0,
@@ -120,7 +121,7 @@ class _SunMoonBadge extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: isDayTime
-                  ? [const Color(0xFFFFD54F), const Color(0xFFFFC107)]
+                  ? [const Color(0xFFFFD54F), AppColors.amber]
                   : [AppColors.info, const Color(0xFF8E24AA)],
             ),
           ),

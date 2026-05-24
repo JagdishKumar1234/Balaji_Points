@@ -31,6 +31,7 @@ import 'package:balaji_points/presentation/screens/carpenter/orders/orders_page.
 import 'package:balaji_points/presentation/screens/carpenter/orders/order_detail_page.dart';
 import 'package:balaji_points/presentation/screens/common/info/about_us_page.dart';
 import 'package:balaji_points/presentation/screens/common/onboarding/onboarding_page.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/logger.dart';
 
@@ -96,7 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const Icon(Icons.error_outline, size: 64, color: AppColors.red),
                 const SizedBox(height: 16),
                 Text(
                   body,

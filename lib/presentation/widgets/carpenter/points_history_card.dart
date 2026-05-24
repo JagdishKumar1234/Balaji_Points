@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -109,7 +110,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -145,7 +146,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                     children: [
                       Text(
                         'Points History',
-                        style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                        style: AppTypography.buttonMedium().copyWith(
                           fontSize: 18,
                           color: AppColors.lightPrimary,
                         ),
@@ -153,9 +154,9 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                       const SizedBox(height: 4),
                       Text(
                         '${_history.length} transactions',
-                        style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 13,
-                          color: Colors.grey[600],
+                          color: AppColors.grey600,
                         ),
                       ),
                     ],
@@ -180,7 +181,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
           ),
 
           // Divider
-          Divider(height: 1, color: Colors.grey[200]),
+          Divider(height: 1, color: AppColors.grey200),
 
           // History List
           ListView.separated(
@@ -240,13 +241,13 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
             height: 40,
             decoration: BoxDecoration(
               color: points > 0
-                  ? Colors.green.withOpacity(0.1)
-                  : Colors.red.withOpacity(0.1),
+                  ? AppColors.success.withOpacity(0.1)
+                  : AppColors.red.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               points > 0 ? Icons.add_circle : Icons.remove_circle,
-              color: points > 0 ? Colors.green[700] : Colors.red[700],
+              color: points > 0 ? AppColors.success : AppColors.error,
               size: 20,
             ),
           ),
@@ -259,7 +260,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
               children: [
                 Text(
                   reason,
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+                  style: AppTypography.labelLarge().copyWith(
                     fontSize: 14,
                     color: AppColors.lightTextPrimary,
                   ),
@@ -267,9 +268,9 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 const SizedBox(height: 4),
                 Text(
                   _formatDate(date),
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                  style: AppTypography.bodyMedium().copyWith(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: AppColors.grey600,
                   ),
                 ),
               ],
@@ -281,8 +282,8 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: points > 0
-                  ? Colors.green.withOpacity(0.1)
-                  : Colors.red.withOpacity(0.1),
+                  ? AppColors.success.withOpacity(0.1)
+                  : AppColors.red.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -291,14 +292,14 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 Icon(
                   Icons.monetization_on,
                   size: 14,
-                  color: points > 0 ? Colors.green[700] : Colors.red[700],
+                  color: points > 0 ? AppColors.success : AppColors.error,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '${points > 0 ? '+' : ''}$points',
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                  style: AppTypography.buttonMedium().copyWith(
                     fontSize: 14,
-                    color: points > 0 ? Colors.green[700] : Colors.red[700],
+                    color: points > 0 ? AppColors.success : AppColors.error,
                   ),
                 ),
               ],
@@ -314,7 +315,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -335,7 +336,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -347,21 +348,21 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       ),
       child: Column(
         children: [
-          Icon(Icons.history_rounded, size: 60, color: Colors.grey[300]),
+          Icon(Icons.history_rounded, size: 60, color: AppColors.grey300),
           const SizedBox(height: 16),
           Text(
             'No Points History',
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+            style: AppTypography.buttonMedium().copyWith(
               fontSize: 16,
-              color: Colors.grey[600],
+              color: AppColors.grey600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Your points transactions will appear here',
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+            style: AppTypography.bodyMedium().copyWith(
               fontSize: 13,
-              color: Colors.grey[500],
+              color: AppColors.grey500,
             ),
             textAlign: TextAlign.center,
           ),

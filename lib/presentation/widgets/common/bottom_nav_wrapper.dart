@@ -33,13 +33,13 @@ class BottomNavWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       body: child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex >= 0 ? selectedIndex : 0,
         onTap: (index) => _onItemTapped(context, index),
         selectedItemColor: AppColors.lightSecondary,
-        unselectedItemColor: Colors.white,
+        unselectedItemColor: AppColors.white,
         backgroundColor: AppColors.lightPrimary,
         type: BottomNavigationBarType.fixed,
         items: const [

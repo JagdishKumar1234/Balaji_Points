@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 
 class WoodenTexture extends StatelessWidget {
   final Widget child;
@@ -20,7 +21,7 @@ class WoodenTexture extends StatelessWidget {
         // Wooden texture background
         CustomPaint(
           painter: _WoodenTexturePainter(
-            baseColor: baseColor ?? const Color(0xFFD4A574),
+            baseColor: baseColor ?? AppColors.woodenBase,
             opacity: opacity,
           ),
           child: Container(),
@@ -95,7 +96,7 @@ class _WoodenTexturePainter extends CustomPainter {
           final highlightPaint = Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 0.5
-            ..color = Colors.white.withOpacity(grainOpacity * 0.3);
+            ..color = AppColors.white.withOpacity(grainOpacity * 0.3);
 
           final highlightPath = Path();
           highlightPath.moveTo(variation, y - 1);
@@ -150,7 +151,7 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Knot highlight (lighter edge)
       final highlightPaint = Paint()
-        ..color = Colors.white.withOpacity(opacity * 0.2)
+        ..color = AppColors.white.withOpacity(opacity * 0.2)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1;
       canvas.drawCircle(Offset(knotX, knotY), knotRadius * 0.7, highlightPaint);
@@ -181,7 +182,7 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Highlight line (top edge)
       final highlightLinePaint = Paint()
-        ..color = Colors.white.withOpacity(opacity * 0.2)
+        ..color = AppColors.white.withOpacity(opacity * 0.2)
         ..strokeWidth = 0.5
         ..style = PaintingStyle.stroke;
       canvas.drawLine(
@@ -196,9 +197,9 @@ class _WoodenTexturePainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        Colors.white.withOpacity(opacity * 0.15),
-        Colors.transparent,
-        Colors.transparent,
+        AppColors.white.withOpacity(opacity * 0.15),
+        AppColors.transparent,
+        AppColors.transparent,
         Colors.brown.shade900.withOpacity(opacity * 0.1),
       ],
       stops: const [0.0, 0.3, 0.7, 1.0],
@@ -250,7 +251,7 @@ class WoodenContainer extends StatelessWidget {
             Positioned.fill(
               child: CustomPaint(
                 painter: _WoodenTexturePainter(
-                  baseColor: baseColor ?? const Color(0xFFD4A574),
+                  baseColor: baseColor ?? AppColors.woodenBase,
                   opacity: opacity,
                 ),
               ),

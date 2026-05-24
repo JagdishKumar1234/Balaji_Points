@@ -126,7 +126,7 @@ class _TabBtn extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: active ? AppColors.lightSecondary : Colors.transparent,
+                color: active ? AppColors.lightSecondary : AppColors.transparent,
                 width: 3,
               ),
             ),

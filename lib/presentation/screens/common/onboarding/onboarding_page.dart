@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -75,7 +76,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         body: Stack(
           fit: StackFit.expand,
           children: [
@@ -107,7 +108,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       onPressed: _finish,
                       child: Text(
                         l10n.onboardingSkip,
-                        style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 15,
                           color: AppColors.lightPrimary,
                         ),
@@ -153,7 +154,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               Text(
                                 s.title,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                                style: AppTypography.buttonMedium().copyWith(
                                   fontSize: 24,
                                   height: 1.25,
                                   color: AppColors.lightTextPrimary,
@@ -163,7 +164,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               Text(
                                 s.body,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                                style: AppTypography.bodyMedium().copyWith(
                                   fontSize: 16,
                                   height: 1.5,
                                   color: AppColors.lightTextPrimary.withValues(
@@ -215,7 +216,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           _pageIndex < _pageCount - 1
                               ? l10n.next
                               : l10n.onboardingGetStarted,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                          style: AppTypography.buttonMedium().copyWith(
                             fontSize: 17,
                             color: AppColors.white,
                           ),

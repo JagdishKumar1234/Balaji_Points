@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -105,8 +106,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     final appBarFill =
         theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor;
     final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.08);
+        ? AppColors.white.withValues(alpha: 0.12)
+        : AppColors.black.withValues(alpha: 0.08);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -181,7 +182,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: Text(
                   'Error loading product:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                  style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
                     color: AppColors.error,
                   ),
@@ -253,7 +254,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               gradient: LinearGradient(
                                 colors: [
                                   const Color(0xFF2196F3),
-                                  const Color(0xFF9C27B0),
+                                  AppColors.purple,
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -301,8 +302,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               height: 6,
                               decoration: BoxDecoration(
                                 color: active
-                                    ? Colors.white
-                                    : Colors.white.withValues(alpha: 0.5),
+                                    ? AppColors.white
+                                    : AppColors.white.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(999),
                               ),
                             );
@@ -325,7 +326,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     children: [
                       Text(
                         name.isNotEmpty ? name : 'Product',
-                        style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                        style: AppTypography.buttonMedium().copyWith(
                           fontSize: 22,
                           color: AppColors.lightTextPrimary,
                         ),
@@ -335,16 +336,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         subCategory.isNotEmpty
                             ? '$mainCategory • $subCategory'
                             : mainCategory,
-                        style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: AppColors.grey600,
                         ),
                       ),
                       const SizedBox(height: 12),
                       if (price > 0)
                         Text(
                           '₹${price.toStringAsFixed(0)}',
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                          style: AppTypography.buttonMedium().copyWith(
                             fontSize: 24,
                             color: AppColors.lightPrimary,
                           ),
@@ -381,7 +382,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         const SizedBox(height: 16),
                         Text(
                           'Description',
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+                          style: AppTypography.labelLarge().copyWith(
                             fontSize: 15,
                             color: AppColors.lightTextPrimary,
                           ),
@@ -389,9 +390,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         const SizedBox(height: 4),
                         Text(
                           description,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 14,
-                            color: Colors.grey[700],
+                            color: AppColors.grey700,
                           ),
                         ),
                       ],
@@ -435,7 +436,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   color: theme.colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
+                      color: AppColors.black.withValues(alpha: 0.06),
                       blurRadius: 8,
                       offset: const Offset(0, -2),
                     ),
@@ -464,7 +465,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         onPressed: () => _addToCart(data),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.lightSecondary,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -502,28 +503,28 @@ class _DetailChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: AppColors.grey100,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.grey300!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.grey[700]),
+          Icon(icon, size: 14, color: AppColors.grey700),
           const SizedBox(width: 4),
           Text(
             '$label:',
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
+            style: AppTypography.labelLarge().copyWith(
               fontSize: 12,
-              color: Colors.grey[800],
+              color: AppColors.grey800,
             ),
           ),
           const SizedBox(width: 4),
           Text(
             value,
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+            style: AppTypography.bodyMedium().copyWith(
               fontSize: 12,
-              color: Colors.grey[800],
+              color: AppColors.grey800,
             ),
           ),
         ],
@@ -565,14 +566,14 @@ class _DetailCartIconButton extends StatelessWidget {
                 color: AppColors.error,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Colors.white,
+                  color: AppColors.white,
                   width: 1,
                 ),
               ),
               child: Text(
                 count > 99 ? '99+' : '$count',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
                   height: 1,

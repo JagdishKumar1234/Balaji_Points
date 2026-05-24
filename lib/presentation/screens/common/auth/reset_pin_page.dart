@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
@@ -304,10 +305,10 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
         final canSubmit = _phoneChecked && _phoneExists;
 
         return Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppColors.transparent,
             extendBodyBehindAppBar: true,
             appBar: AppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppColors.transparent,
               elevation: 0.0,
               title: Text(l10n.resetPinTitle),
               leading: BackButton(
@@ -348,7 +349,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                         Text(
                           l10n.resetPinSubtitle,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 12.0,
                             color: AppColors.lightTextPrimary.withOpacity(0.7),
                           ),
@@ -377,7 +378,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                   color: AppColors.white.withOpacity(0.5),
                                   width: 1.5,
                                 ),
-                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 12.0, offset: Offset(0, 6))].map((shadow) => shadow.copyWith(
+                                boxShadow: [BoxShadow(color: AppColors.black.withValues(alpha: 0.2), blurRadius: 12.0, offset: Offset(0, 6))].map((shadow) => shadow.copyWith(
                                   color: AppColors.lightPrimary.withOpacity(0.1),
                                 )).toList(),
                               ),
@@ -389,7 +390,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     keyboardType: TextInputType.phone,
                                     maxLength: 10,
                                     enabled: !_isLoggedIn,
-                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                    style: AppTypography.labelLarge()
                                         .copyWith(fontSize: 16.0),
                                     decoration: InputDecoration(
                                       labelText: l10n.mobileNumber,
@@ -467,7 +468,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           _phoneChecked && _phoneExists
                                               ? l10n.verified
                                               : l10n.checkNumber,
-                                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                          style: AppTypography.labelLarge()
                                               .copyWith(
                                                 fontSize: 14.0,
                                               ),
@@ -515,7 +516,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             SizedBox(width: 8.0),
                                             Text(
                                               l10n.verified,
-                                              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                              style: AppTypography.labelLarge()
                                                   .copyWith(
                                                     fontSize: 14.0,
                                                     color: AppColors.success,
@@ -537,7 +538,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                       obscureText: true,
                                       maxLength: 4,
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
+                                      style: AppTypography.buttonMedium()
                                           .copyWith(
                                             fontSize: 20.0,
                                             letterSpacing: 8,
@@ -608,7 +609,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                               SizedBox(width: 8.0),
                                               Text(
                                                 l10n.forgotCurrentPin,
-                                                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                                style: AppTypography.labelLarge()
                                                     .copyWith(
                                                       fontSize: 14.0,
                                                       color: AppColors.lightPrimary,
@@ -619,7 +620,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           SizedBox(height: 8.0),
                                           Text(
                                             l10n.forgotPinHelp,
-                                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400)
+                                            style: AppTypography.bodyMedium()
                                                 .copyWith(
                                                   fontSize: 12.0,
                                                   color: AppColors.lightTextPrimary
@@ -650,7 +651,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                     SizedBox(width: 8.0),
                                                     Text(
                                                       l10n.adminSupportInfo,
-                                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                                      style: AppTypography.labelLarge()
                                                           .copyWith(
                                                             fontSize: 12.0,
                                                             color: AppColors.lightTextPrimary,
@@ -688,7 +689,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                         Expanded(
                                                           child: Text(
                                                             l10n.supportPhone1,
-                                                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                                            style: AppTypography.labelLarge()
                                                                 .copyWith(
                                                                   fontSize: 12.0,
                                                                   color:
@@ -735,7 +736,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                         Expanded(
                                                           child: Text(
                                                             l10n.supportPhone2,
-                                                            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600)
+                                                            style: AppTypography.labelLarge()
                                                                 .copyWith(
                                                                   fontSize: 12.0,
                                                                   color:
@@ -768,7 +769,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     obscureText: true,
                                     maxLength: 4,
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
+                                    style: AppTypography.buttonMedium()
                                         .copyWith(
                                           fontSize: 20.0,
                                           letterSpacing: 8,
@@ -820,7 +821,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     obscureText: true,
                                     maxLength: 4,
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
+                                    style: AppTypography.buttonMedium()
                                         .copyWith(
                                           fontSize: 20.0,
                                           letterSpacing: 8,
@@ -878,7 +879,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           end: Alignment.bottomRight,
                                         ),
                                         borderRadius: AppRadius.forCard,
-                                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 8.0, offset: Offset(0, 4))]
+                                        boxShadow: [BoxShadow(color: AppColors.black.withValues(alpha: 0.2), blurRadius: 8.0, offset: Offset(0, 4))]
                                             .map(
                                               (shadow) => shadow.copyWith(
                                                 color: (canSubmit
@@ -894,8 +895,8 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             ? null
                                             : () => _saveNewPin(),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.transparent,
-                                          shadowColor: Colors.transparent,
+                                          backgroundColor: AppColors.transparent,
+                                          shadowColor: AppColors.transparent,
                                           padding: const EdgeInsets.symmetric(
                                             vertical: 18,
                                           ),
@@ -916,7 +917,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                               )
                                             : Text(
                                                 l10n.resetPin,
-                                                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)
+                                                style: AppTypography.buttonMedium()
                                                     .copyWith(
                                                       color: AppColors.white,
                                                       fontSize: 18.0,
@@ -931,7 +932,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     Text(
                                       l10n.pleaseVerifyMobile,
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400)
+                                      style: AppTypography.bodyMedium()
                                           .copyWith(
                                             fontSize: 12.0,
                                             color: AppColors.lightTextPrimary.withOpacity(0.7),
@@ -1027,7 +1028,7 @@ class CelebrationPainter extends CustomPainter {
   Color _getColorForType(FloatingType type) {
     switch (type) {
       case FloatingType.coin:
-        return const Color(0xFFFFC107);
+        return AppColors.amber;
       case FloatingType.star:
         return AppColors.lightSecondary;
       case FloatingType.sparkle:

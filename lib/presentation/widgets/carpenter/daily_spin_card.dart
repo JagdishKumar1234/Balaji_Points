@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/providers/daily_spin_provider.dart';
@@ -27,7 +28,7 @@ class DailySpinCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.3),
+            color: AppColors.orange.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -39,13 +40,13 @@ class DailySpinCard extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: AppColors.white.withOpacity(0.3),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.casino_rounded,
               size: 32,
-              color: Colors.white,
+              color: AppColors.white,
             ),
           ),
           const SizedBox(width: 16),
@@ -58,7 +59,7 @@ class DailySpinCard extends ConsumerWidget {
                 const Text(
                   'Daily Spin',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -69,7 +70,7 @@ class DailySpinCard extends ConsumerWidget {
                       ? 'Tap to spin and win points!'
                       : 'Already spun today. Come back tomorrow!',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: AppColors.white.withOpacity(0.9),
                     fontSize: 14,
                   ),
                 ),
@@ -90,12 +91,12 @@ class DailySpinCard extends ConsumerWidget {
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                     ),
                   )
                 : const Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.white,
+                    color: AppColors.white,
                     size: 20,
                   ),
           ),

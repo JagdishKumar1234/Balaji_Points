@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
         borderRadius: AppRadius.forCard,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF9C27B0).withValues(alpha: 0.3),
+            color: AppColors.purple.withValues(alpha: 0.3),
             blurRadius: 10.0,
             offset: Offset(0, 4.0),
           ),
@@ -131,7 +132,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
                       offer.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                      style: AppTypography.buttonMedium().copyWith(
                         color: AppColors.white,
                         fontSize: 24.0,
                       ),
@@ -143,7 +144,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
                       offer.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                      style: AppTypography.bodyMedium().copyWith(
                         color: AppColors.white.withValues(alpha: 0.9),
                         fontSize: 16.0,
                       ),
@@ -202,7 +203,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
                         ),
                         child: Text(
                           offer.actionText,
-                          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                          style: AppTypography.buttonMedium().copyWith(
                             color: const Color(0xFF7B1FA2),
                             fontSize: 14.0,
                           ),

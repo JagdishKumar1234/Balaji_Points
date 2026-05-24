@@ -104,7 +104,7 @@ class TopCarpentersDisplay extends StatelessWidget {
           CircleAvatar(
             radius: rank == 1 ? 35 : 30,
             backgroundColor: isCurrentUser
-                ? Colors.white
+                ? AppColors.white
                 : trophyColor.withValues(alpha: 0.2),
             child: Text(
               _getInitials(carpenter.name),
@@ -124,7 +124,7 @@ class TopCarpentersDisplay extends StatelessWidget {
             style: TextStyle(
               fontSize: rank == 1 ? 14 : 12,
               fontWeight: FontWeight.bold,
-              color: isCurrentUser ? Colors.blue.shade700 : Colors.black87,
+              color: isCurrentUser ? Colors.blue.shade700 : AppColors.black87,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -172,7 +172,7 @@ class TopCarpentersDisplay extends StatelessWidget {
                 style: TextStyle(
                   fontSize: rank == 1 ? 32 : 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
               ),
             ),

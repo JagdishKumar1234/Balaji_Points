@@ -89,7 +89,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       dateStr,
                       style: AppTypography.bodyMedium().copyWith(
                         fontSize: 13,
-                        color: Colors.grey[600],
+                        color: AppColors.grey600,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -106,7 +106,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                           shopAddress,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: AppColors.grey700,
                           ),
                         ),
                       if (shopGstNo.isNotEmpty)
@@ -114,7 +114,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                           'GST: $shopGstNo',
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: AppColors.grey700,
                           ),
                         ),
                       if (shopPhone.isNotEmpty)
@@ -122,7 +122,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                           'Phone: $shopPhone',
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: AppColors.grey700,
                           ),
                         ),
                       if (shopEmail.isNotEmpty)
@@ -130,7 +130,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                           shopEmail,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: AppColors.grey700,
                           ),
                         ),
                       const SizedBox(height: 12),
@@ -148,7 +148,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                           carpenterName,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: AppColors.grey700,
                           ),
                         ),
                       if (carpenterPhone.isNotEmpty)
@@ -156,7 +156,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                           carpenterPhone,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: AppColors.grey700,
                           ),
                         ),
                       const SizedBox(height: 12),
@@ -173,7 +173,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                         address,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 13,
-                          color: Colors.grey[700],
+                          color: AppColors.grey700,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -208,7 +208,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                               'x$qty @ ₹${price.toStringAsFixed(0)}',
                               style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 13,
-                                color: Colors.grey[600],
+                                color: AppColors.grey600,
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -260,10 +260,10 @@ class _OrdersManagementState extends State<OrdersManagement> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: AppColors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -355,7 +355,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       Icon(
                         Icons.receipt_long_outlined,
                         size: 72,
-                        color: Colors.grey[300],
+                        color: AppColors.grey300,
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -371,7 +371,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                         textAlign: TextAlign.center,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 13,
-                          color: Colors.grey[600],
+                          color: AppColors.grey600,
                         ),
                       ),
                     ],
@@ -431,7 +431,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                                   style:
                                       AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color: AppColors.grey600,
                                   ),
                                 ),
                                 if (carpenterName.isNotEmpty ||
@@ -449,7 +449,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                                     style:
                                         AppTypography.bodyMedium().copyWith(
                                       fontSize: 12,
-                                      color: Colors.grey[700],
+                                      color: AppColors.grey700,
                                     ),
                                   ),
                                 ] else
@@ -506,7 +506,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                                     vertical: 6,
                                   ),
                                   side: BorderSide(
-                                    color: Colors.grey[300]!,
+                                    color: AppColors.grey300!,
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -542,11 +542,11 @@ class _StatusChip extends StatelessWidget {
   Color _backgroundForStatus() {
     switch (status) {
       case 'completed':
-        return Colors.green.withValues(alpha: 0.2);
+        return AppColors.success.withValues(alpha: 0.2);
       case 'processing':
-        return Colors.orange.withValues(alpha: 0.2);
+        return AppColors.orange.withValues(alpha: 0.2);
       case 'cancelled':
-        return Colors.red.withValues(alpha: 0.15);
+        return AppColors.red.withValues(alpha: 0.15);
       default:
         return Colors.blueGrey.withValues(alpha: 0.15);
     }

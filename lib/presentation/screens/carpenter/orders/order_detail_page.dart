@@ -489,7 +489,7 @@ class _StatusChip extends StatelessWidget {
 
   static Color _fg(String s) {
     switch (s) {
-      case 'completed': return const Color(0xFF166534);
+      case 'completed': return AppColors.successDark;
       case 'processing': return const Color(0xFF92400E);
       case 'cancelled': return const Color(0xFF991B1B);
       default: return AppColors.grey700;

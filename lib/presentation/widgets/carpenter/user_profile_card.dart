@@ -80,10 +80,10 @@ class _UserProfileCardState extends State<UserProfileCard>
             height: 50,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
+              border: Border.all(color: AppColors.white, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: AppColors.black.withOpacity(0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -91,7 +91,7 @@ class _UserProfileCardState extends State<UserProfileCard>
             ),
             child: CircleAvatar(
               radius: 24,
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               backgroundImage: _isValidImageUrl(widget.userImageUrl)
                   ? NetworkImage(widget.userImageUrl!)
                   : null,
@@ -111,7 +111,7 @@ class _UserProfileCardState extends State<UserProfileCard>
                 Text(
                   widget.userName,
                   style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 16,
                   ),
                   maxLines: 1,
@@ -125,7 +125,7 @@ class _UserProfileCardState extends State<UserProfileCard>
                     Text(
                       '${widget.tier} Tier',
                       style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w500).copyWith(
-                        color: Colors.white.withOpacity(0.9),
+                        color: AppColors.white.withOpacity(0.9),
                         fontSize: 12,
                       ),
                     ),
@@ -139,10 +139,10 @@ class _UserProfileCardState extends State<UserProfileCard>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: AppColors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Colors.white.withOpacity(0.3),
+                color: AppColors.white.withOpacity(0.3),
                 width: 1,
               ),
             ),
@@ -168,7 +168,7 @@ class _UserProfileCardState extends State<UserProfileCard>
                 Text(
                   _formatPoints(widget.totalPoints),
                   style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 18,
                   ),
                 ),

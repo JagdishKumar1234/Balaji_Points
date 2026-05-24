@@ -71,7 +71,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             child: Text(
               l10n.cancel,
               style: AppTypography.bodySmall().copyWith(
-                color: Colors.grey[600],
+                color: AppColors.grey600,
                 fontSize: 16,
               ),
             ),
@@ -114,7 +114,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${l10n.logoutFailed}: ${e.toString()}'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.red,
             ),
           );
         }
@@ -139,7 +139,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE53935),
+              backgroundColor: AppColors.errorDark,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -226,9 +226,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.white,
           foregroundColor: AppColors.lightPrimary,
           elevation: 0,
           scrolledUnderElevation: 0,
@@ -330,7 +330,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             preferredSize: const Size.fromHeight(1),
             child: Container(
               height: 1,
-              color: Colors.black.withValues(alpha: 0.08),
+              color: AppColors.black.withValues(alpha: 0.08),
             ),
           ),
         ),

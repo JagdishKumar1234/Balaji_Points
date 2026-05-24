@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -26,7 +27,7 @@ class HomeHeader extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 30,
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             child: Icon(Icons.person, color: Colors.pinkAccent, size: 40),
           ),
           const SizedBox(width: 20),
@@ -36,14 +37,14 @@ class HomeHeader extends StatelessWidget {
               Text(
                 "Hello, Jagdish 👋",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
                 "Your Points: 1,250",
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+                style: TextStyle(color: AppColors.white70, fontSize: 16),
               ),
             ],
           ),

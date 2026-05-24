@@ -141,10 +141,10 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
     final isSaving = ref.watch(authProvider) is PinSetupLoading;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         leading: BackButton(
           color: AppColors.lightPrimary,
@@ -479,8 +479,8 @@ class _GradientButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
+          backgroundColor: AppColors.transparent,
+          shadowColor: AppColors.transparent,
           minimumSize: const Size(double.infinity, AppSpacing.buttonHeight),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
         ),

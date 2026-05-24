@@ -61,7 +61,7 @@ class _OffersManagementState extends State<OffersManagement> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.red,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -82,7 +82,7 @@ class _OffersManagementState extends State<OffersManagement> {
             content: Text(
               success ? l10n.offerDeletedSuccess : l10n.failedToDeleteOffer,
             ),
-            backgroundColor: success ? Colors.green : Colors.red,
+            backgroundColor: success ? AppColors.success : AppColors.red,
           ),
         );
       }
@@ -93,7 +93,7 @@ class _OffersManagementState extends State<OffersManagement> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         child: Stack(
           children: [
             Center(
@@ -104,7 +104,7 @@ class _OffersManagementState extends State<OffersManagement> {
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       padding: const EdgeInsets.all(20),
-                      color: Colors.white,
+                      color: AppColors.white,
                       child: const Text('Failed to load image'),
                     );
                   },
@@ -115,7 +115,7 @@ class _OffersManagementState extends State<OffersManagement> {
               top: 40,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),
@@ -246,7 +246,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                   child: Icon(
                                     Icons.broken_image,
                                     size: 50,
-                                    color: Colors.grey,
+                                    color: AppColors.grey500,
                                   ),
                                 ),
                               );
@@ -335,7 +335,7 @@ class _OffersManagementState extends State<OffersManagement> {
                               children: [
                                 const Icon(
                                   Icons.stars,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 8),
@@ -343,7 +343,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                   l10n.points(points),
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                   ),
                                 ),
                               ],
@@ -429,7 +429,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                   onPressed: () =>
                                       _deleteOffer(offerId, bannerUrl),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: Colors.red,
+                                    foregroundColor: AppColors.red,
                                     side: BorderSide(color: Colors.red[300]!),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
@@ -532,7 +532,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.failedToPickImage}: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }
@@ -550,7 +550,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
               primary: AppColors.lightPrimary,
-              onPrimary: Colors.white,
+              onPrimary: AppColors.white,
               onSurface: AppColors.lightPrimary,
             ),
           ),
@@ -650,7 +650,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                     ? l10n.offerUpdatedSuccess
                     : l10n.offerCreatedSuccess,
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
             ),
           );
         } else {
@@ -663,7 +663,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.error}: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }
@@ -709,19 +709,19 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.local_offer, color: Colors.white, size: 28),
+                  const Icon(Icons.local_offer, color: AppColors.white, size: 28),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       isEditMode ? l10n.editOffer : l10n.createNewOffer,
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
-                        color: Colors.white,
+                        color: AppColors.white,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
+                    icon: const Icon(Icons.close, color: AppColors.white),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -977,13 +977,13 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                 });
                               },
                               activeTrackColor: AppColors.lightSecondary,
-                              activeColor: Colors.white,
+                              activeColor: AppColors.white,
                             ),
                             Text(
                               _isActive ? l10n.active : l10n.inactive,
                               style: AppTypography.labelLarge().copyWith(
                                 fontSize: 14,
-                                color: _isActive ? Colors.green : Colors.grey,
+                                color: _isActive ? AppColors.success : AppColors.grey500,
                               ),
                             ),
                           ],
@@ -1030,7 +1030,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                               : _saveOffer,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.lightSecondary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -1043,7 +1043,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
+                                      AppColors.white,
                                     ),
                                   ),
                                 )
@@ -1053,7 +1053,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                       : l10n.createOffer,
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                   ),
                                 ),
                         ),

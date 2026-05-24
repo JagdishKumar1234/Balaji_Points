@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 
 class HomeCard extends StatelessWidget {
   final IconData icon;
@@ -16,7 +17,7 @@ class HomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -37,7 +38,7 @@ class HomeCard extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                color: Colors.grey[800],
+                color: AppColors.grey800,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
               ),

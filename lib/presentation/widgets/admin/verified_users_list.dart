@@ -26,7 +26,7 @@ class VerifiedUsersList extends StatelessWidget {
             return Center(
               child: Text(
                 'Error: ${snapshot.error}',
-                style: AppTypography.bodyMedium().copyWith(color: Colors.red),
+                style: AppTypography.bodyMedium().copyWith(color: AppColors.red),
               ),
             );
           }
@@ -74,11 +74,11 @@ class VerifiedUsersList extends StatelessWidget {
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: AppColors.black.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -106,7 +106,7 @@ class VerifiedUsersList extends StatelessWidget {
                         '${firstName[0]}${lastName.isNotEmpty ? lastName[0] : ''}',
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 18,
-                          color: Colors.white,
+                          color: AppColors.white,
                         ),
                       ),
                     ),
@@ -210,7 +210,7 @@ class VerifiedUsersList extends StatelessWidget {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.lightPrimary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 12,
@@ -260,11 +260,11 @@ class VerifiedUsersList extends StatelessWidget {
       case 'bronze':
         return Colors.brown;
       case 'silver':
-        return Colors.grey;
+        return AppColors.grey500;
       case 'gold':
         return Colors.amber;
       case 'platinum':
-        return Colors.blue;
+        return AppColors.info;
       default:
         return AppColors.lightPrimary;
     }
@@ -292,14 +292,14 @@ class CarpenterDetailPage extends StatelessWidget {
         backgroundColor: AppColors.lightPrimary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           userName,
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
       ),
@@ -391,7 +391,7 @@ class CarpenterDetailPage extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.white,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -419,7 +419,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                 margin: const EdgeInsets.only(bottom: 8),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(
@@ -467,8 +467,8 @@ class CarpenterDetailPage extends StatelessWidget {
                                       ),
                                       decoration: BoxDecoration(
                                         color: status == 'approved'
-                                            ? Colors.green.withOpacity(0.1)
-                                            : Colors.orange.withOpacity(0.1),
+                                            ? AppColors.success.withOpacity(0.1)
+                                            : AppColors.orange.withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
@@ -502,13 +502,13 @@ class CarpenterDetailPage extends StatelessWidget {
   Widget _buildStatItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 32),
+        Icon(icon, color: AppColors.white, size: 32),
         const SizedBox(height: 8),
         Text(
           value,
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
         const SizedBox(height: 4),
@@ -516,7 +516,7 @@ class CarpenterDetailPage extends StatelessWidget {
           label,
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 12,
-            color: Colors.white.withOpacity(0.9),
+            color: AppColors.white.withOpacity(0.9),
           ),
         ),
       ],

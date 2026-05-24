@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,7 +69,7 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
     final fgMuted = fg.withValues(alpha: 0.72);
 
     final overlayStyle = SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
+      statusBarColor: AppColors.transparent,
       statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
     );
@@ -99,7 +100,7 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
                                   title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                                  style: AppTypography.buttonMedium().copyWith(
                                     fontSize: 17,
                                     color: fg,
                                   ),
@@ -108,7 +109,7 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
                                   subtitle!,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w400).copyWith(
+                                  style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
                                     color: fgMuted,
                                   ),
@@ -121,7 +122,7 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
                                 title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
+                                style: AppTypography.buttonMedium().copyWith(
                                   fontSize: 18,
                                   color: fg,
                                 ),

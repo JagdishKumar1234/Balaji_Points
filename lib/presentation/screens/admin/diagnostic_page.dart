@@ -223,7 +223,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         foregroundColor: AppColors.lightPrimary,
         elevation: 0,
         leading: IconButton(
@@ -250,11 +250,11 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error, color: Colors.red, size: 64),
+                  const Icon(Icons.error, color: AppColors.red, size: 64),
                   const SizedBox(height: 16),
                   Text(
                     'Error: $_error',
-                    style: const TextStyle(color: Colors.red),
+                    style: const TextStyle(color: AppColors.red),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -345,7 +345,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               value?.toString() ?? 'null',
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 14,
-                color: Colors.grey[700],
+                color: AppColors.grey700,
               ),
             ),
           ),
@@ -444,14 +444,14 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
           padding: EdgeInsets.all(8.0),
           child: Text(
             '❌ No pending bills found for this user!',
-            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
           ),
         )
       else
         ...matchingBills.map(
           (bill) => Card(
             margin: const EdgeInsets.only(bottom: 8),
-            color: Colors.grey[100],
+            color: AppColors.grey100,
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -485,7 +485,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
                       padding: EdgeInsets.only(top: 8),
                       child: Text(
                         '⚠️ This bill won\'t show in default admin view (not today)',
-                        style: TextStyle(color: Colors.orange, fontSize: 12),
+                        style: TextStyle(color: AppColors.orange, fontSize: 12),
                       ),
                     ),
                 ],

@@ -90,7 +90,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        backgroundColor: Colors.black87,
+        backgroundColor: AppColors.black87,
         child: Stack(
           children: [
             Center(
@@ -102,11 +102,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                         errorBuilder: (_, __, ___) => Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.error, color: Colors.red, size: 60),
+                            const Icon(Icons.error, color: AppColors.red, size: 60),
                             const SizedBox(height: 8),
                             Text(
                               l10n.failedToLoadImage,
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(color: AppColors.white),
                             ),
                           ],
                         ),
@@ -114,11 +114,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
+                          const Icon(Icons.image_not_supported, size: 60, color: AppColors.grey500),
                           const SizedBox(height: 8),
                           Text(
                             l10n.noImageAvailable,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: AppColors.white),
                           ),
                         ],
                       ),
@@ -128,7 +128,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               top: 20,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -146,7 +146,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       title: l10n.approveBill,
       message: l10n.approveBillConfirmation(amountText, phone),
       confirmText: l10n.approve,
-      confirmColor: Colors.green,
+      confirmColor: AppColors.success,
     );
 
     if (confirmed != true) return;
@@ -164,7 +164,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid bill amount'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
         setState(() => _isProcessing = false);
@@ -183,7 +183,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Bill approved successfully'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.success,
           ),
         );
         Navigator.pop(context, true); // Return true to indicate action taken
@@ -191,7 +191,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to approve bill'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }
@@ -200,7 +200,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.red,
         ),
       );
     } finally {
@@ -215,7 +215,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       title: 'Reject Bill',
       message: 'Are you sure you want to reject this bill?',
       confirmText: 'Reject',
-      confirmColor: Colors.red,
+      confirmColor: AppColors.red,
     );
 
     if (confirmed != true) return;
@@ -231,7 +231,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Bill rejected successfully'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.orange,
           ),
         );
         Navigator.pop(context, true); // Return true to indicate action taken
@@ -239,7 +239,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to reject bill'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }
@@ -248,7 +248,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.red,
         ),
       );
     } finally {
@@ -264,7 +264,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       title: l10n.withdrawBill,
       message: l10n.withdrawBillConfirmation,
       confirmText: l10n.withdraw,
-      confirmColor: Colors.orange,
+      confirmColor: AppColors.orange,
     );
 
     if (confirmed != true) return;
@@ -280,7 +280,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Bill withdrawn successfully. Points have been reversed.'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.orange,
           ),
         );
         Navigator.pop(context, true); // Return true to indicate action taken
@@ -288,7 +288,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to withdraw bill'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.red,
           ),
         );
       }
@@ -297,7 +297,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.red,
         ),
       );
     } finally {
@@ -341,7 +341,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             ),
             child: Text(
               confirmText,
-              style: AppTypography.labelLarge().copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
             ),
           ),
         ],
@@ -358,7 +358,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.white,
           foregroundColor: AppColors.lightPrimary,
           elevation: 0,
           leading: IconButton(
@@ -381,7 +381,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.white,
           foregroundColor: AppColors.lightPrimary,
           elevation: 0,
           leading: IconButton(
@@ -432,7 +432,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         foregroundColor: AppColors.lightPrimary,
         elevation: 0,
         leading: IconButton(
@@ -448,7 +448,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           preferredSize: const Size.fromHeight(1),
           child: Container(
             height: 1,
-            color: Colors.black.withValues(alpha: 0.08),
+            color: AppColors.black.withValues(alpha: 0.08),
           ),
         ),
       ),
@@ -467,10 +467,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: status == 'approved'
-                            ? Colors.green
+                            ? AppColors.success
                             : status == 'rejected'
-                                ? Colors.red
-                                : Colors.orange,
+                                ? AppColors.red
+                                : AppColors.orange,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -482,7 +482,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 : status == 'rejected'
                                     ? Icons.cancel
                                     : Icons.pending,
-                            color: Colors.white,
+                            color: AppColors.white,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -494,7 +494,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                     : 'PENDING APPROVAL',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 14,
-                              color: Colors.white,
+                              color: AppColors.white,
                               letterSpacing: 1.2,
                             ),
                           ),
@@ -516,7 +516,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Colors.white,
+                              AppColors.white,
                               AppColors.lightPrimary.withValues(alpha: 0.03),
                             ],
                           ),
@@ -644,7 +644,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Colors.white,
+                              AppColors.white,
                               AppColors.lightSecondary.withValues(alpha: 0.05),
                             ],
                           ),
@@ -674,7 +674,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: Colors.green.withValues(alpha: 0.1),
+                                      color: AppColors.success.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: Colors.green.shade300, width: 2),
                                     ),
@@ -746,7 +746,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     // Dates Information Card
                     Card(
                       elevation: 4,
-                      shadowColor: Colors.blue.withValues(alpha: 0.2),
+                      shadowColor: AppColors.info.withValues(alpha: 0.2),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: Container(
                         decoration: BoxDecoration(
@@ -755,8 +755,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Colors.white,
-                              Colors.blue.withValues(alpha: 0.03),
+                              AppColors.white,
+                              AppColors.info.withValues(alpha: 0.03),
                             ],
                           ),
                         ),
@@ -784,7 +784,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   icon: Icons.receipt_long,
                                   label: 'Bill Date',
                                   date: billDate.toDate(),
-                                  color: Colors.blue,
+                                  color: AppColors.info,
                                 ),
                                 const SizedBox(height: 8),
                               ],
@@ -793,7 +793,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   icon: Icons.upload_file,
                                   label: 'Submitted',
                                   date: createdAt.toDate(),
-                                  color: Colors.grey,
+                                  color: AppColors.grey500,
                                 ),
                                 const SizedBox(height: 8),
                               ],
@@ -802,7 +802,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   icon: status == 'approved' ? Icons.check_circle : Icons.cancel,
                                   label: status == 'approved' ? 'Approved' : 'Rejected',
                                   date: approvedAt.toDate(),
-                                  color: status == 'approved' ? Colors.green : Colors.red,
+                                  color: status == 'approved' ? AppColors.success : AppColors.red,
                                 ),
                             ],
                           ),
@@ -825,7 +825,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Colors.white,
+                                AppColors.white,
                                 AppColors.lightPrimary.withValues(alpha: 0.02),
                               ],
                             ),
@@ -923,7 +923,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           // Action Buttons (for pending and approved bills)
           if (status == 'pending')
             Container(
-              color: Colors.white,
+              color: AppColors.white,
               padding: const EdgeInsets.all(16),
               child: SafeArea(
                 top: false,
@@ -938,7 +938,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                                 ),
                               )
                             : const Icon(Icons.close, size: 20),
@@ -948,7 +948,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red.shade600,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
@@ -965,7 +965,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                                 ),
                               )
                             : const Icon(Icons.check_circle, size: 20),
@@ -975,7 +975,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green.shade600,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
@@ -994,13 +994,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white,
-                    Colors.orange.withValues(alpha: 0.05),
+                    AppColors.white,
+                    AppColors.orange.withValues(alpha: 0.05),
                   ],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withValues(alpha: 0.15),
+                    color: AppColors.orange.withValues(alpha: 0.15),
                     blurRadius: 12,
                     offset: const Offset(0, -4),
                   ),
@@ -1022,14 +1022,14 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.orange.withValues(alpha: 0.4),
+                        color: AppColors.orange.withValues(alpha: 0.4),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: Material(
-                    color: Colors.transparent,
+                    color: AppColors.transparent,
                     child: InkWell(
                       onTap: _isProcessing ? null : _withdrawBill,
                       borderRadius: BorderRadius.circular(16),
@@ -1044,19 +1044,19 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                                 ),
                               )
                             else
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.2),
+                                  color: AppColors.white.withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
                                   Icons.restore,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   size: 20,
                                 ),
                               ),
@@ -1069,7 +1069,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   l10n.withdrawApproval,
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 17,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     letterSpacing: 0.3,
                                   ),
                                 ),
@@ -1078,7 +1078,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   l10n.reversePointsAndUndoApproval,
                                   style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
-                                    color: Colors.white.withValues(alpha: 0.9),
+                                    color: AppColors.white.withValues(alpha: 0.9),
                                   ),
                                 ),
                               ],
@@ -1100,13 +1100,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white,
-                    Colors.green.withValues(alpha: 0.05),
+                    AppColors.white,
+                    AppColors.success.withValues(alpha: 0.05),
                   ],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withValues(alpha: 0.15),
+                    color: AppColors.success.withValues(alpha: 0.15),
                     blurRadius: 12,
                     offset: const Offset(0, -4),
                   ),
@@ -1128,14 +1128,14 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withValues(alpha: 0.4),
+                        color: AppColors.success.withValues(alpha: 0.4),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: Material(
-                    color: Colors.transparent,
+                    color: AppColors.transparent,
                     child: InkWell(
                       onTap: _isProcessing ? null : _approveBill,
                       borderRadius: BorderRadius.circular(16),
@@ -1150,19 +1150,19 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                                 ),
                               )
                             else
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.2),
+                                  color: AppColors.white.withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
                                   Icons.check_circle,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   size: 20,
                                 ),
                               ),
@@ -1175,7 +1175,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   l10n.approveBillAction,
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 17,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     letterSpacing: 0.3,
                                   ),
                                 ),
@@ -1184,7 +1184,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   l10n.awardPointsAndMarkAsApproved,
                                   style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
-                                    color: Colors.white.withValues(alpha: 0.9),
+                                    color: AppColors.white.withValues(alpha: 0.9),
                                   ),
                                 ),
                               ],

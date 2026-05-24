@@ -21,12 +21,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
   static const List<_SectionCard> _sections = [
     _SectionCard(id: 'pending', label: 'Pending Bills', icon: Icons.receipt_long, color: Color(0xFFE8F5E9)),   // green
     _SectionCard(id: 'history', label: 'Bill History', icon: Icons.history, color: Color(0xFFE3F2FD)),         // blue
-    _SectionCard(id: 'offers', label: 'Offers', icon: Icons.local_offer, color: Color(0xFFFFF3E0)),            // orange
+    _SectionCard(id: 'offers', label: 'Offers', icon: Icons.local_offer, color: AppColors.orangeBackground),            // orange
     _SectionCard(id: 'users', label: 'Users', icon: Icons.people, color: Color(0xFFF3E5F5)),                  // purple
     _SectionCard(id: 'notifications', label: 'Notifications', icon: Icons.notifications, color: Color(0xFFFFEBEE)), // red/pink
     _SectionCard(id: 'products', label: 'Products', icon: Icons.inventory_2, color: Color(0xFFE0F7FA)),       // cyan
     _SectionCard(id: 'orders', label: 'Orders', icon: Icons.shopping_bag, color: Color(0xFFFFEBEE)),          // red/pink
-    _SectionCard(id: 'spin', label: 'Spin', icon: Icons.casino, color: Color(0xFFFFF8E1)),                    // amber
+    _SectionCard(id: 'spin', label: 'Spin', icon: Icons.casino, color: AppColors.rank1Background),                    // amber
   ];
 
   int _refreshKey = 0;
@@ -197,7 +197,7 @@ class _SectionTile extends StatelessWidget {
                 spreadRadius: 0,
               ),
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
+                color: AppColors.black.withValues(alpha: 0.06),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -260,7 +260,7 @@ class _SectionTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(999),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
+                          color: AppColors.black.withValues(alpha: 0.2),
                           blurRadius: 4,
                           offset: const Offset(0, 1),
                         ),
@@ -270,7 +270,7 @@ class _SectionTile extends StatelessWidget {
                       '$secondaryCount',
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 12,
-                        color: Colors.white,
+                        color: AppColors.white,
                       ),
                     ),
                   ),
@@ -289,7 +289,7 @@ class _SectionTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(999),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
+                          color: AppColors.black.withValues(alpha: 0.2),
                           blurRadius: 4,
                           offset: const Offset(0, 1),
                         ),
@@ -299,7 +299,7 @@ class _SectionTile extends StatelessWidget {
                       '$count',
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 12,
-                        color: Colors.white,
+                        color: AppColors.white,
                       ),
                     ),
                   ),
@@ -324,11 +324,11 @@ class _SectionTile extends StatelessWidget {
   Color _iconColorFor(Color bg) {
     if (bg.value == const Color(0xFFE8F5E9).value) return const Color(0xFF2E7D32);
     if (bg.value == const Color(0xFFE3F2FD).value) return const Color(0xFF1565C0);
-    if (bg.value == const Color(0xFFFFF3E0).value) return const Color(0xFFE65100);
+    if (bg.value == AppColors.orangeBackground.value) return const Color(0xFFE65100);
     if (bg.value == const Color(0xFFF3E5F5).value) return const Color(0xFF7B1FA2);
     if (bg.value == const Color(0xFFE0F7FA).value) return const Color(0xFF00838F);
     if (bg.value == const Color(0xFFFFEBEE).value) return const Color(0xFFC62828);
-    if (bg.value == const Color(0xFFFFF8E1).value) return const Color(0xFFF9A825);
+    if (bg.value == AppColors.rank1Background.value) return const Color(0xFFF9A825);
     return AppColors.lightPrimary;
   }
 }
