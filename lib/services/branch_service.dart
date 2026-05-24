@@ -16,15 +16,19 @@ class BranchService {
 
   // ── Seed ───────────────────────────────────────────────────────────────────
 
-  /// Idempotent: creates the default branch document if it does not exist.
+  static const String _seedName =
+      'Sri Balaji Plywood and Hardware - E Road';
+
+  /// Idempotent seed: creates the default branch doc if missing, or corrects
+  /// the name if it was previously saved with a different value.
   Future<void> seedDefaultBranch() async {
     try {
       final ref = _branches.doc(kDefaultBranchId);
       final snap = await ref.get();
       if (!snap.exists) {
         await ref.set({
-          'name': 'Sri Balaji Plywood & Hardware - E Road Branch',
-          'shortName': 'Erode Branch',
+          'name': _seedName,
+          'shortName': 'E Road Branch',
           'address': '150 VCTV Main Road, Erode',
           'phone': '96006-09121',
           'isActive': true,
@@ -32,6 +36,10 @@ class BranchService {
           'createdBy': 'system',
         });
         AppLogger.info('BranchService: seeded default branch erode_main');
+      } else if (snap.data()?['name'] != _seedName) {
+        // Correct the name if it was saved differently in a prior version.
+        await ref.update({'name': _seedName});
+        AppLogger.info('BranchService: updated erode_main branch name');
       }
     } catch (e) {
       AppLogger.error('BranchService.seedDefaultBranch', e);
