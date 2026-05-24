@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 
 class VerifiedUsersList extends StatelessWidget {
   const VerifiedUsersList({super.key});
@@ -9,7 +9,7 @@ class VerifiedUsersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DesignToken.woodenBackground,
+      backgroundColor: AppColors.woodenBackground,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -26,7 +26,7 @@ class VerifiedUsersList extends StatelessWidget {
             return Center(
               child: Text(
                 'Error: ${snapshot.error}',
-                style: AppTextStyles.nunitoRegular.copyWith(color: Colors.red),
+                style: AppTypography.bodyMedium().copyWith(color: Colors.red),
               ),
             );
           }
@@ -39,14 +39,14 @@ class VerifiedUsersList extends StatelessWidget {
                   Icon(
                     Icons.people_outline,
                     size: 64,
-                    color: DesignToken.textDark.withOpacity(0.5),
+                    color: AppColors.lightPrimary.withOpacity(0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No Verified Carpenters',
-                    style: AppTextStyles.nunitoSemiBold.copyWith(
+                    style: AppTypography.labelLarge().copyWith(
                       fontSize: 18,
-                      color: DesignToken.textDark.withOpacity(0.7),
+                      color: AppColors.lightPrimary.withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -95,7 +95,7 @@ class VerifiedUsersList extends StatelessWidget {
                     height: 50,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [DesignToken.primary, DesignToken.secondary],
+                        colors: [AppColors.lightPrimary, AppColors.lightSecondary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -104,7 +104,7 @@ class VerifiedUsersList extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '${firstName[0]}${lastName.isNotEmpty ? lastName[0] : ''}',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 18,
                           color: Colors.white,
                         ),
@@ -116,9 +116,9 @@ class VerifiedUsersList extends StatelessWidget {
                     children: [
                       Text(
                         '$firstName $lastName',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 16,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -127,14 +127,14 @@ class VerifiedUsersList extends StatelessWidget {
                           Icon(
                             Icons.phone,
                             size: 14,
-                            color: DesignToken.textDark.withOpacity(0.6),
+                            color: AppColors.lightPrimary.withOpacity(0.6),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             phone,
-                            style: AppTextStyles.nunitoRegular.copyWith(
+                            style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: DesignToken.textDark.withOpacity(0.6),
+                              color: AppColors.lightPrimary.withOpacity(0.6),
                             ),
                           ),
                         ],
@@ -160,7 +160,7 @@ class VerifiedUsersList extends StatelessWidget {
                         ),
                         child: Text(
                           tier,
-                          style: AppTextStyles.nunitoSemiBold.copyWith(
+                          style: AppTypography.labelLarge().copyWith(
                             fontSize: 11,
                             color: _getTierColor(tier),
                           ),
@@ -174,9 +174,9 @@ class VerifiedUsersList extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             '$totalPoints',
-                            style: AppTextStyles.nunitoBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 14,
-                              color: DesignToken.textDark,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                         ],
@@ -204,12 +204,12 @@ class VerifiedUsersList extends StatelessWidget {
                       icon: const Icon(Icons.person, size: 18),
                       label: Text(
                         'View Details',
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignToken.primary,
+                        backgroundColor: AppColors.lightPrimary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -233,21 +233,21 @@ class VerifiedUsersList extends StatelessWidget {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: DesignToken.textDark.withOpacity(0.6)),
+        Icon(icon, size: 16, color: AppColors.lightPrimary.withOpacity(0.6)),
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: AppTextStyles.nunitoMedium.copyWith(
+          style: AppTypography.bodySmall().copyWith(
             fontSize: 13,
-            color: DesignToken.textDark.withOpacity(0.7),
+            color: AppColors.lightPrimary.withOpacity(0.7),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: AppTextStyles.nunitoSemiBold.copyWith(
+            style: AppTypography.labelLarge().copyWith(
               fontSize: 13,
-              color: DesignToken.textDark,
+              color: AppColors.lightPrimary,
             ),
           ),
         ),
@@ -266,7 +266,7 @@ class VerifiedUsersList extends StatelessWidget {
       case 'platinum':
         return Colors.blue;
       default:
-        return DesignToken.primary;
+        return AppColors.lightPrimary;
     }
   }
 }
@@ -287,9 +287,9 @@ class CarpenterDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DesignToken.primary,
+      backgroundColor: AppColors.lightPrimary,
       appBar: AppBar(
-        backgroundColor: DesignToken.primary,
+        backgroundColor: AppColors.lightPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -297,7 +297,7 @@ class CarpenterDetailPage extends StatelessWidget {
         ),
         title: Text(
           userName,
-          style: AppTextStyles.nunitoBold.copyWith(
+          style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
             color: Colors.white,
           ),
@@ -318,7 +318,7 @@ class CarpenterDetailPage extends StatelessWidget {
           final tier = data?['tier'] ?? 'Bronze';
 
           return Container(
-            color: DesignToken.woodenBackground,
+            color: AppColors.woodenBackground,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -328,14 +328,14 @@ class CarpenterDetailPage extends StatelessWidget {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [DesignToken.primary, DesignToken.secondary],
+                        colors: [AppColors.lightPrimary, AppColors.lightSecondary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: DesignToken.primary.withOpacity(0.3),
+                          color: AppColors.lightPrimary.withOpacity(0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -381,9 +381,9 @@ class CarpenterDetailPage extends StatelessWidget {
                         children: [
                           Text(
                             'Purchase Bills',
-                            style: AppTextStyles.nunitoBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 18,
-                              color: DesignToken.textDark,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -397,8 +397,8 @@ class CarpenterDetailPage extends StatelessWidget {
                               child: Center(
                                 child: Text(
                                   'No bills yet',
-                                  style: AppTextStyles.nunitoRegular.copyWith(
-                                    color: DesignToken.textDark.withOpacity(
+                                  style: AppTypography.bodyMedium().copyWith(
+                                    color: AppColors.lightPrimary.withOpacity(
                                       0.5,
                                     ),
                                   ),
@@ -432,29 +432,29 @@ class CarpenterDetailPage extends StatelessWidget {
                                       children: [
                                         Text(
                                           '₹${amount.toStringAsFixed(0)}',
-                                          style: AppTextStyles.nunitoBold
+                                          style: AppTypography.labelLarge()
                                               .copyWith(
                                                 fontSize: 18,
-                                                color: DesignToken.primary,
+                                                color: AppColors.lightPrimary,
                                               ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           'Points: $points',
-                                          style: AppTextStyles.nunitoRegular
+                                          style: AppTypography.bodyMedium()
                                               .copyWith(
                                                 fontSize: 13,
-                                                color: DesignToken.textDark
+                                                color: AppColors.lightPrimary
                                                     .withOpacity(0.7),
                                               ),
                                         ),
                                         if (createdAt != null)
                                           Text(
                                             _formatDate(createdAt.toDate()),
-                                            style: AppTextStyles.nunitoRegular
+                                            style: AppTypography.bodyMedium()
                                                 .copyWith(
                                                   fontSize: 12,
-                                                  color: DesignToken.textDark
+                                                  color: AppColors.lightPrimary
                                                       .withOpacity(0.5),
                                                 ),
                                           ),
@@ -473,7 +473,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                       ),
                                       child: Text(
                                         status.toUpperCase(),
-                                        style: AppTextStyles.nunitoSemiBold
+                                        style: AppTypography.labelLarge()
                                             .copyWith(
                                               fontSize: 11,
                                               color: status == 'approved'
@@ -506,7 +506,7 @@ class CarpenterDetailPage extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           value,
-          style: AppTextStyles.nunitoBold.copyWith(
+          style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
             color: Colors.white,
           ),
@@ -514,7 +514,7 @@ class CarpenterDetailPage extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: AppTextStyles.nunitoRegular.copyWith(
+          style: AppTypography.bodyMedium().copyWith(
             fontSize: 12,
             color: Colors.white.withOpacity(0.9),
           ),

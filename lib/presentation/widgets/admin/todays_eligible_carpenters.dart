@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:intl/intl.dart';
 
 class TodaysEligibleCarpenters extends StatelessWidget {
@@ -151,12 +151,12 @@ class TodaysEligibleCarpenters extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(DesignToken.secondary),
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.lightSecondary),
           ),
           const SizedBox(height: 16),
           Text(
             'Loading eligible carpenters...',
-            style: AppTextStyles.nunitoRegular.copyWith(
+            style: AppTypography.bodyMedium().copyWith(
               fontSize: 14,
               color: Colors.grey.shade600,
             ),
@@ -182,7 +182,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'Error loading data',
-            style: AppTextStyles.nunitoBold.copyWith(
+            style: AppTypography.labelLarge().copyWith(
               fontSize: 16,
               color: Colors.red.shade800,
             ),
@@ -190,7 +190,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             error,
-            style: AppTextStyles.nunitoRegular.copyWith(
+            style: AppTypography.bodyMedium().copyWith(
               fontSize: 12,
               color: Colors.red.shade600,
             ),
@@ -227,16 +227,16 @@ class TodaysEligibleCarpenters extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'No Eligible Carpenters Today',
-            style: AppTextStyles.nunitoBold.copyWith(
+            style: AppTypography.labelLarge().copyWith(
               fontSize: 18,
-              color: DesignToken.textDark,
+              color: AppColors.lightPrimary,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             'No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!',
-            style: AppTextStyles.nunitoRegular.copyWith(
+            style: AppTypography.bodyMedium().copyWith(
               fontSize: 14,
               color: Colors.grey.shade600,
             ),
@@ -272,8 +272,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  DesignToken.secondary,
-                  DesignToken.secondary.withValues(alpha: 0.8),
+                  AppColors.lightSecondary,
+                  AppColors.lightSecondary.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: const BorderRadius.only(
@@ -302,7 +302,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     children: [
                       Text(
                         'Today\'s Eligible Carpenters',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 20,
                           color: Colors.white,
                         ),
@@ -310,7 +310,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '$todayStr • ${carpenters.length} eligible',
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 13,
                           color: Colors.white.withValues(alpha: 0.9),
                         ),
@@ -352,7 +352,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
         color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: DesignToken.secondary.withValues(alpha: 0.2),
+          color: AppColors.lightSecondary.withValues(alpha: 0.2),
           width: 1.5,
         ),
       ),
@@ -363,15 +363,15 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: DesignToken.secondary.withValues(alpha: 0.15),
+              color: AppColors.lightSecondary.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 '$rank',
-                style: AppTextStyles.nunitoBold.copyWith(
+                style: AppTypography.labelLarge().copyWith(
                   fontSize: 18,
-                  color: DesignToken.secondary,
+                  color: AppColors.lightSecondary,
                 ),
               ),
             ),
@@ -385,7 +385,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: DesignToken.secondary.withValues(alpha: 0.3),
+                color: AppColors.lightSecondary.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -396,21 +396,21 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: DesignToken.secondary.withValues(alpha: 0.1),
+                          color: AppColors.lightSecondary.withValues(alpha: 0.1),
                           child: Icon(
                             Icons.person,
                             size: 28,
-                            color: DesignToken.secondary,
+                            color: AppColors.lightSecondary,
                           ),
                         );
                       },
                     )
                   : Container(
-                      color: DesignToken.secondary.withValues(alpha: 0.1),
+                      color: AppColors.lightSecondary.withValues(alpha: 0.1),
                       child: Icon(
                         Icons.person,
                         size: 28,
-                        color: DesignToken.secondary,
+                        color: AppColors.lightSecondary,
                       ),
                     ),
             ),
@@ -424,9 +424,9 @@ class TodaysEligibleCarpenters extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: AppTextStyles.nunitoSemiBold.copyWith(
+                  style: AppTypography.labelLarge().copyWith(
                     fontSize: 16,
-                    color: DesignToken.textDark,
+                    color: AppColors.lightPrimary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -438,7 +438,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       phone,
-                      style: AppTextStyles.nunitoRegular.copyWith(
+                      style: AppTypography.bodyMedium().copyWith(
                         fontSize: 13,
                         color: Colors.grey.shade600,
                       ),
@@ -470,7 +470,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '$billsCount',
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 13,
                         color: Colors.green.shade800,
                       ),
@@ -500,7 +500,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '+$totalPoints',
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 13,
                         color: Colors.amber.shade900,
                       ),

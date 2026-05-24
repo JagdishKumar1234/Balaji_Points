@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
 import 'package:balaji_points/services/fcm_service.dart';
@@ -59,18 +59,18 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           l10n.logout,
-          style: AppTextStyles.nunitoBold.copyWith(fontSize: 22),
+          style: AppTypography.labelLarge().copyWith(fontSize: 22),
         ),
         content: Text(
           l10n.logoutConfirmation,
-          style: AppTextStyles.nunitoRegular.copyWith(fontSize: 16),
+          style: AppTypography.bodyMedium().copyWith(fontSize: 16),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               l10n.cancel,
-              style: AppTextStyles.nunitoMedium.copyWith(
+              style: AppTypography.bodySmall().copyWith(
                 color: Colors.grey[600],
                 fontSize: 16,
               ),
@@ -79,15 +79,15 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.error,
-              foregroundColor: DesignToken.white,
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               l10n.logout,
-              style: AppTextStyles.nunitoSemiBold.copyWith(fontSize: 16),
+              style: AppTypography.labelLarge().copyWith(fontSize: 16),
             ),
           ),
         ],
@@ -139,8 +139,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.redShade600,
-              foregroundColor: DesignToken.white,
+              backgroundColor: const Color(0xFFE53935),
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -192,7 +192,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${docs.length} notification(s) deleted'),
-          backgroundColor: DesignToken.primary,
+          backgroundColor: AppColors.lightPrimary,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -202,7 +202,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Delete failed: $e'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -213,7 +213,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           // Check for dialogs first
           if (Navigator.of(context).canPop()) {
@@ -229,7 +229,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          foregroundColor: DesignToken.textDark,
+          foregroundColor: AppColors.lightPrimary,
           elevation: 0,
           scrolledUnderElevation: 0,
           titleSpacing: _showDashboard ? 0 : null,
@@ -257,14 +257,14 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: DesignToken.primary.withValues(
+                              color: AppColors.lightPrimary.withValues(
                                 alpha: 0.15,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
                               Icons.forest,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                               size: 22,
                             ),
                           ),
@@ -278,9 +278,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                         children: [
                           Text(
                             'Balaji Points - Admin Panel',
-                            style: AppTextStyles.nunitoBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 17,
-                              color: DesignToken.textDark,
+                              color: AppColors.lightPrimary,
                               letterSpacing: 0.3,
                             ),
                             maxLines: 1,
@@ -289,9 +289,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                           const SizedBox(height: 2),
                           Text(
                             AppConstants.shopNameShort,
-                            style: AppTextStyles.nunitoRegular.copyWith(
+                            style: AppTypography.bodyMedium().copyWith(
                               fontSize: 11,
-                              color: DesignToken.textDark.withValues(
+                              color: AppColors.lightPrimary.withValues(
                                 alpha: 0.65,
                               ),
                             ),
@@ -307,9 +307,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
               ? _usersCountTitle()
               : Text(
                   _sectionTitle(_selectedSection!),
-                  style: AppTextStyles.nunitoBold.copyWith(
+                  style: AppTypography.labelLarge().copyWith(
                     fontSize: 18,
-                    color: DesignToken.textDark,
+                    color: AppColors.lightPrimary,
                   ),
                 ),
           centerTitle: !_showDashboard,
@@ -335,7 +335,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ),
         ),
         body: Container(
-          color: DesignToken.woodenBackground,
+          color: AppColors.woodenBackground,
           child: _showDashboard
               ? AdminDashboard(onOpenSection: _openSection)
               : _buildSectionContent(_selectedSection!),
@@ -385,18 +385,18 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Text(
             'Users - ...',
-            style: AppTextStyles.nunitoBold.copyWith(
+            style: AppTypography.labelLarge().copyWith(
               fontSize: 18,
-              color: DesignToken.textDark,
+              color: AppColors.lightPrimary,
             ),
           );
         }
 
         return Text(
           'Users - $count',
-          style: AppTextStyles.nunitoBold.copyWith(
+          style: AppTypography.labelLarge().copyWith(
             fontSize: 18,
-            color: DesignToken.textDark,
+            color: AppColors.lightPrimary,
           ),
         );
       },

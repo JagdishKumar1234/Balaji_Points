@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import '../../../services/user_service.dart';
 import '../../../core/logger.dart';
 
@@ -19,7 +19,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DesignToken.woodenBackground,
+      backgroundColor: AppColors.woodenBackground,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('pending_users')
@@ -35,7 +35,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
             return Center(
               child: Text(
                 'Error: ${snapshot.error}',
-                style: AppTextStyles.nunitoRegular.copyWith(color: Colors.red),
+                style: AppTypography.bodyMedium().copyWith(color: Colors.red),
               ),
             );
           }
@@ -48,22 +48,22 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                   Icon(
                     Icons.pending_actions,
                     size: 64,
-                    color: DesignToken.textDark.withOpacity(0.5),
+                    color: AppColors.lightPrimary.withOpacity(0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No Pending Requests',
-                    style: AppTextStyles.nunitoSemiBold.copyWith(
+                    style: AppTypography.labelLarge().copyWith(
                       fontSize: 18,
-                      color: DesignToken.textDark.withOpacity(0.7),
+                      color: AppColors.lightPrimary.withOpacity(0.7),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'All carpenters have been verified',
-                    style: AppTextStyles.nunitoRegular.copyWith(
+                    style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
-                      color: DesignToken.textDark.withOpacity(0.5),
+                      color: AppColors.lightPrimary.withOpacity(0.5),
                     ),
                   ),
                 ],
@@ -113,15 +113,15 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: DesignToken.primary.withOpacity(0.1),
+                          color: AppColors.lightPrimary.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Text(
                             '${firstName[0]}${lastName.isNotEmpty ? lastName[0] : ''}',
-                            style: AppTextStyles.nunitoBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 18,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                         ),
@@ -134,9 +134,9 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                           children: [
                             Text(
                               '$firstName $lastName',
-                              style: AppTextStyles.nunitoBold.copyWith(
+                              style: AppTypography.labelLarge().copyWith(
                                 fontSize: 16,
-                                color: DesignToken.textDark,
+                                color: AppColors.lightPrimary,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -145,14 +145,14 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                                 Icon(
                                   Icons.phone,
                                   size: 14,
-                                  color: DesignToken.textDark.withOpacity(0.6),
+                                  color: AppColors.lightPrimary.withOpacity(0.6),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   phone,
-                                  style: AppTextStyles.nunitoRegular.copyWith(
+                                  style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 13,
-                                    color: DesignToken.textDark.withOpacity(
+                                    color: AppColors.lightPrimary.withOpacity(
                                       0.6,
                                     ),
                                   ),
@@ -178,7 +178,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                         ),
                         child: Text(
                           'Pending',
-                          style: AppTextStyles.nunitoSemiBold.copyWith(
+                          style: AppTypography.labelLarge().copyWith(
                             fontSize: 11,
                             color: Colors.orange.shade700,
                           ),
@@ -228,7 +228,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                             ),
                             child: Text(
                               'Reject',
-                              style: AppTextStyles.nunitoSemiBold.copyWith(
+                              style: AppTypography.labelLarge().copyWith(
                                 fontSize: 14,
                                 color: Colors.red.shade700,
                               ),
@@ -247,7 +247,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                                     '$firstName $lastName',
                                   ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: DesignToken.secondary,
+                              backgroundColor: AppColors.lightSecondary,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -267,7 +267,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                                   )
                                 : Text(
                                     'Approve',
-                                    style: AppTextStyles.nunitoBold.copyWith(
+                                    style: AppTypography.labelLarge().copyWith(
                                       fontSize: 14,
                                       color: Colors.white,
                                     ),
@@ -289,21 +289,21 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: DesignToken.textDark.withOpacity(0.6)),
+        Icon(icon, size: 16, color: AppColors.lightPrimary.withOpacity(0.6)),
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: AppTextStyles.nunitoMedium.copyWith(
+          style: AppTypography.bodySmall().copyWith(
             fontSize: 13,
-            color: DesignToken.textDark.withOpacity(0.7),
+            color: AppColors.lightPrimary.withOpacity(0.7),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: AppTextStyles.nunitoSemiBold.copyWith(
+            style: AppTypography.labelLarge().copyWith(
               fontSize: 13,
-              color: DesignToken.textDark,
+              color: AppColors.lightPrimary,
             ),
           ),
         ),
@@ -326,16 +326,16 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Approve Carpenter',
-          style: AppTextStyles.nunitoBold.copyWith(
+          style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
-            color: DesignToken.primary,
+            color: AppColors.lightPrimary,
           ),
         ),
         content: Text(
           'Are you sure you want to approve $userName?\n\nThis will create a verified user account.',
-          style: AppTextStyles.nunitoRegular.copyWith(
+          style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: DesignToken.textDark,
+            color: AppColors.lightPrimary,
           ),
         ),
         actions: [
@@ -343,22 +343,22 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               'Cancel',
-              style: AppTextStyles.nunitoSemiBold.copyWith(
-                color: DesignToken.textDark,
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.lightPrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.secondary,
+              backgroundColor: AppColors.lightSecondary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               'Approve',
-              style: AppTextStyles.nunitoBold.copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: Colors.white),
             ),
           ),
         ],
@@ -434,16 +434,16 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Reject Carpenter',
-          style: AppTextStyles.nunitoBold.copyWith(
+          style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
             color: Colors.red.shade700,
           ),
         ),
         content: Text(
           'Are you sure you want to reject $userName?\n\nThis action cannot be undone.',
-          style: AppTextStyles.nunitoRegular.copyWith(
+          style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: DesignToken.textDark,
+            color: AppColors.lightPrimary,
           ),
         ),
         actions: [
@@ -451,8 +451,8 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               'Cancel',
-              style: AppTextStyles.nunitoSemiBold.copyWith(
-                color: DesignToken.textDark,
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.lightPrimary,
               ),
             ),
           ),
@@ -466,7 +466,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
             ),
             child: Text(
               'Reject',
-              style: AppTextStyles.nunitoBold.copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: Colors.white),
             ),
           ),
         ],

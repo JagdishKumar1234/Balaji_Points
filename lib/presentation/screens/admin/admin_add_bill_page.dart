@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/bill_service.dart';
 import 'package:balaji_points/services/session_service.dart';
@@ -79,10 +79,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: DesignToken.primary,
+              primary: AppColors.lightPrimary,
               onPrimary: Colors.white,
               surface: Colors.white,
-              onSurface: DesignToken.textDark,
+              onSurface: AppColors.lightPrimary,
             ),
           ),
           child: child!,
@@ -117,7 +117,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -145,7 +145,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -166,7 +166,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
             ListTile(
               leading: const Icon(
                 Icons.photo_library,
-                color: DesignToken.primary,
+                color: AppColors.lightPrimary,
               ),
               title: Text(l10n?.selectImage ?? 'Choose from Gallery'),
               onTap: () {
@@ -175,7 +175,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: DesignToken.primary),
+              leading: const Icon(Icons.camera_alt, color: AppColors.lightPrimary),
               title: Text(l10n?.selectImage ?? 'Take Photo'),
               onTap: () {
                 Navigator.pop(context);
@@ -183,7 +183,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.cancel, color: DesignToken.error),
+              leading: const Icon(Icons.cancel, color: AppColors.error),
               title: Text(l10n?.cancel ?? 'Cancel'),
               onTap: () => Navigator.pop(context),
             ),
@@ -206,7 +206,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Please select a carpenter'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -220,7 +220,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           content: Text(
             l10n?.enterValidAmount ?? 'Please enter a valid amount',
           ),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -240,7 +240,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               content: Text(
                 l10n?.sessionExpired ?? 'Please login to submit bills',
               ),
-              backgroundColor: DesignToken.error,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -297,7 +297,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 l10n?.billSubmitted ??
                     'Bill submitted successfully! It will be reviewed.',
               ),
-              backgroundColor: DesignToken.success,
+              backgroundColor: AppColors.success,
               duration: const Duration(seconds: 3),
             ),
           );
@@ -315,7 +315,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 l10n?.billSubmitError ??
                     'Failed to submit bill. Please try again.',
               ),
-              backgroundColor: DesignToken.error,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -329,7 +329,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -340,7 +340,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: !_hasFormData(),
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
@@ -370,10 +370,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           final points = _calculatePoints(amount);
 
           return Scaffold(
-            backgroundColor: DesignToken.woodenBackground,
+            backgroundColor: AppColors.woodenBackground,
             appBar: AppBar(
               backgroundColor: Colors.white,
-              foregroundColor: DesignToken.textDark,
+              foregroundColor: AppColors.lightPrimary,
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -381,8 +381,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               ),
               title: Text(
                 'Add Bill for Carpenter',
-                style: AppTextStyles.nunitoBold.copyWith(
-                  color: DesignToken.textDark,
+                style: AppTypography.labelLarge().copyWith(
+                  color: AppColors.lightPrimary,
                   fontSize: 18,
                 ),
               ),
@@ -404,9 +404,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Carpenter Selection
                           Text(
                             'Carpenter *',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -424,9 +424,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Amount Field
                           Text(
                             l10n?.billAmount ?? 'Bill Amount (₹) *',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -435,50 +435,50 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             controller: _amountController,
                             keyboardType: TextInputType.number,
                             onChanged: (_) => setState(() {}),
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
+                            style: AppTypography.bodyMedium().copyWith(
+                              color: AppColors.lightPrimary,
                               fontSize: 18,
                             ),
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: DesignToken.white,
+                              fillColor: AppColors.white,
                               hintText:
                                   l10n?.enterBillAmount ?? 'Enter bill amount',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
+                              hintStyle: AppTypography.bodyMedium().copyWith(
+                                color: AppColors.grey400,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
+                                  color: AppColors.lightPrimary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
                                   Icons.currency_rupee,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                               suffixText: amount > 0 ? '$points pts' : null,
-                              suffixStyle: AppTextStyles.nunitoBold.copyWith(
-                                color: DesignToken.secondary,
+                              suffixStyle: AppTypography.labelLarge().copyWith(
+                                color: AppColors.lightSecondary,
                                 fontSize: 14,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: const BorderSide(
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                   width: 2,
                                 ),
                               ),
@@ -502,9 +502,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Bill Date Field
                           Text(
                             l10n?.billDate ?? 'Bill Date *',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -517,33 +517,33 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 vertical: 18,
                               ),
                               decoration: BoxDecoration(
-                                color: DesignToken.white,
+                                color: AppColors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
                                     Icons.calendar_today,
-                                    color: DesignToken.primary,
+                                    color: AppColors.lightPrimary,
                                     size: 24,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       DateFormat('dd MMM yyyy').format(_billDate),
-                                      style: AppTextStyles.nunitoRegular
+                                      style: AppTypography.bodyMedium()
                                           .copyWith(
-                                            color: DesignToken.textDark,
+                                            color: AppColors.lightPrimary,
                                             fontSize: 16,
                                           ),
                                     ),
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,
-                                    color: DesignToken.primary.withOpacity(0.5),
+                                    color: AppColors.lightPrimary.withOpacity(0.5),
                                     size: 16,
                                   ),
                                 ],
@@ -556,9 +556,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Bill Image Section
                           Text(
                             l10n?.billImage ?? 'Bill Image (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -568,10 +568,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             child: Container(
                               height: 200,
                               decoration: BoxDecoration(
-                                color: DesignToken.white,
+                                color: AppColors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                   width: 2,
                                   style: BorderStyle.solid,
                                 ),
@@ -591,16 +591,16 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                         Icon(
                                           Icons.add_photo_alternate,
                                           size: 64,
-                                          color: DesignToken.primary
+                                          color: AppColors.lightPrimary
                                               .withOpacity(0.5),
                                         ),
                                         const SizedBox(height: 12),
                                         Text(
                                           l10n?.tapToAddBillImage ??
                                               'Tap to add bill image',
-                                          style: AppTextStyles.nunitoRegular
+                                          style: AppTypography.bodyMedium()
                                               .copyWith(
-                                                color: DesignToken.textDark
+                                                color: AppColors.lightPrimary
                                                     .withOpacity(0.6),
                                                 fontSize: 14,
                                               ),
@@ -616,55 +616,55 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           Text(
                             l10n?.storeVendorNameOptional ??
                                 'Store/Vendor Name (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
 
                           TextFormField(
                             controller: _storeNameController,
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
+                            style: AppTypography.bodyMedium().copyWith(
+                              color: AppColors.lightPrimary,
                               fontSize: 16,
                             ),
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: DesignToken.white,
+                              fillColor: AppColors.white,
                               hintText:
                                   l10n?.enterStoreOrVendorNameOptional ??
                                   'Enter store or vendor name (optional)',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
+                              hintStyle: AppTypography.bodyMedium().copyWith(
+                                color: AppColors.grey400,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
+                                  color: AppColors.lightPrimary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
                                   Icons.store,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: const BorderSide(
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                   width: 2,
                                 ),
                               ),
@@ -677,55 +677,55 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           Text(
                             l10n?.billInvoiceNumberOptional ??
                                 'Bill/Invoice Number (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
 
                           TextFormField(
                             controller: _billNumberController,
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
+                            style: AppTypography.bodyMedium().copyWith(
+                              color: AppColors.lightPrimary,
                               fontSize: 16,
                             ),
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: DesignToken.white,
+                              fillColor: AppColors.white,
                               hintText:
                                   l10n?.enterBillOrInvoiceNumberOptional ??
                                   'Enter bill or invoice number (optional)',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
+                              hintStyle: AppTypography.bodyMedium().copyWith(
+                                color: AppColors.grey400,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
+                                  color: AppColors.lightPrimary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
                                   Icons.receipt,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: const BorderSide(
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                   width: 2,
                                 ),
                               ),
@@ -737,9 +737,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Notes Field (Optional)
                           Text(
                             l10n?.notesOptional ?? 'Notes (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -747,46 +747,46 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           TextFormField(
                             controller: _notesController,
                             maxLines: 3,
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
+                            style: AppTypography.bodyMedium().copyWith(
+                              color: AppColors.lightPrimary,
                               fontSize: 16,
                             ),
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: DesignToken.white,
+                              fillColor: AppColors.white,
                               hintText:
                                   l10n?.addAnyAdditionalNotes ??
                                   'Add any additional notes...',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
+                              hintStyle: AppTypography.bodyMedium().copyWith(
+                                color: AppColors.grey400,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
+                                  color: AppColors.lightPrimary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
                                   Icons.note,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
+                                  color: AppColors.lightPrimary.withOpacity(0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: const BorderSide(
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                   width: 2,
                                 ),
                               ),
@@ -804,7 +804,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: DesignToken.white,
+                    color: AppColors.white,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -819,8 +819,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                       child: ElevatedButton(
                         onPressed: _isSubmitting ? null : _submitBill,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: DesignToken.primary,
-                          foregroundColor: DesignToken.white,
+                          backgroundColor: AppColors.lightPrimary,
+                          foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -840,9 +840,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                               )
                             : Text(
                                 'Submit Bill',
-                                style: AppTextStyles.nunitoBold.copyWith(
+                                style: AppTypography.labelLarge().copyWith(
                                   fontSize: 18,
-                                  color: DesignToken.white,
+                                  color: AppColors.white,
                                 ),
                               ),
                       ),

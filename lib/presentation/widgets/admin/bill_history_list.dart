@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
 import 'package:balaji_points/core/utils/bill_query_utils.dart';
@@ -153,7 +153,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: DesignToken.primary,
+              primary: AppColors.lightPrimary,
               onPrimary: Colors.white,
             ),
           ),
@@ -179,7 +179,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: DesignToken.primary,
+              primary: AppColors.lightPrimary,
               onPrimary: Colors.white,
             ),
           ),
@@ -247,7 +247,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('No bills to export. Apply filters or wait for data.'),
-            backgroundColor: DesignToken.warning,
+            backgroundColor: AppColors.warning,
           ),
         );
       }
@@ -310,7 +310,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('No bills match current filters for export.'),
-              backgroundColor: DesignToken.warning,
+              backgroundColor: AppColors.warning,
             ),
           );
         }
@@ -470,7 +470,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Export failed: $e'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -528,7 +528,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           const SizedBox(width: 6),
                           _buildCompactStatusChip('rejected', 'Rejected', Colors.red),
                           const SizedBox(width: 6),
-                          _buildCompactStatusChip('all', 'All', DesignToken.primary),
+                          _buildCompactStatusChip('all', 'All', AppColors.lightPrimary),
                         ],
                       ),
                     ),
@@ -539,7 +539,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                     decoration: BoxDecoration(
                       color: (_billsForExport.isEmpty || _isExporting)
                           ? Colors.grey.withValues(alpha: 0.1)
-                          : DesignToken.primary.withValues(alpha: 0.12),
+                          : AppColors.lightPrimary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: IconButton(
@@ -549,14 +549,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                               ),
                             )
                           : Icon(
                               Icons.picture_as_pdf,
                               color: _billsForExport.isEmpty
                                   ? Colors.grey[600]
-                                  : DesignToken.primary,
+                                  : AppColors.lightPrimary,
                               size: 22,
                             ),
                       onPressed: _isExporting ? null : _exportBillsToPdf,
@@ -573,14 +573,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                   Container(
                     decoration: BoxDecoration(
                       color: _showFilters
-                          ? DesignToken.primary.withValues(alpha: 0.1)
+                          ? AppColors.lightPrimary.withValues(alpha: 0.1)
                           : Colors.grey.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: IconButton(
                       icon: Icon(
                         _showFilters ? Icons.filter_list : Icons.filter_list_outlined,
-                        color: _showFilters ? DesignToken.primary : Colors.grey[700],
+                        color: _showFilters ? AppColors.lightPrimary : Colors.grey[700],
                         size: 20,
                       ),
                       onPressed: () => setState(() => _showFilters = !_showFilters),
@@ -611,7 +611,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _startDate != null
-                                  ? DesignToken.primary.withValues(alpha: 0.4)
+                                  ? AppColors.lightPrimary.withValues(alpha: 0.4)
                                   : Colors.grey.withValues(alpha: 0.2),
                               width: 1,
                             ),
@@ -622,7 +622,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               Icon(
                                 Icons.calendar_today,
                                 size: 14,
-                                color: _startDate != null ? DesignToken.primary : Colors.grey[600],
+                                color: _startDate != null ? AppColors.lightPrimary : Colors.grey[600],
                               ),
                               const SizedBox(width: 6),
                               Expanded(
@@ -630,9 +630,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                   _startDate != null
                                       ? DateFormat('dd MMM').format(_startDate!)
                                       : 'From',
-                                  style: AppTextStyles.nunitoMedium.copyWith(
+                                  style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
-                                    color: _startDate != null ? DesignToken.textDark : Colors.grey[600],
+                                    color: _startDate != null ? AppColors.lightPrimary : Colors.grey[600],
                                   ),
                                 ),
                               ),
@@ -657,7 +657,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _endDate != null
-                                  ? DesignToken.primary.withValues(alpha: 0.4)
+                                  ? AppColors.lightPrimary.withValues(alpha: 0.4)
                                   : Colors.grey.withValues(alpha: 0.2),
                               width: 1,
                             ),
@@ -668,7 +668,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               Icon(
                                 Icons.event,
                                 size: 14,
-                                color: _endDate != null ? DesignToken.primary : Colors.grey[600],
+                                color: _endDate != null ? AppColors.lightPrimary : Colors.grey[600],
                               ),
                               const SizedBox(width: 6),
                               Expanded(
@@ -676,9 +676,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                   _endDate != null
                                       ? DateFormat('dd MMM').format(_endDate!)
                                       : 'To',
-                                  style: AppTextStyles.nunitoMedium.copyWith(
+                                  style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
-                                    color: _endDate != null ? DesignToken.textDark : Colors.grey[600],
+                                    color: _endDate != null ? AppColors.lightPrimary : Colors.grey[600],
                                   ),
                                 ),
                               ),
@@ -699,10 +699,10 @@ class _BillHistoryListState extends State<BillHistoryList> {
                 TextField(
                   controller: _carpenterNameController,
                   onChanged: (value) => setState(() => _carpenterNameFilter = value.toLowerCase()),
-                  style: AppTextStyles.nunitoRegular.copyWith(fontSize: 13),
+                  style: AppTypography.bodyMedium().copyWith(fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Search carpenter...',
-                    hintStyle: AppTextStyles.nunitoRegular.copyWith(
+                    hintStyle: AppTypography.bodyMedium().copyWith(
                       color: Colors.grey[500],
                       fontSize: 13,
                     ),
@@ -736,7 +736,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: DesignToken.primary.withValues(alpha: 0.5),
+                        color: AppColors.lightPrimary.withValues(alpha: 0.5),
                         width: 1,
                       ),
                     ),
@@ -766,13 +766,13 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       const SizedBox(height: 16),
                       Text(
                         'Error loading bills',
-                        style: AppTextStyles.nunitoBold.copyWith(fontSize: 18),
+                        style: AppTypography.labelLarge().copyWith(fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         snap.error.toString(),
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.nunitoRegular.copyWith(fontSize: 14, color: Colors.grey[600]),
+                        style: AppTypography.bodyMedium().copyWith(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -781,7 +781,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
 
               if (!snap.hasData) {
                 return const Center(
-                  child: CircularProgressIndicator(color: DesignToken.primary),
+                  child: CircularProgressIndicator(color: AppColors.lightPrimary),
                 );
               }
 
@@ -798,7 +798,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       const SizedBox(height: 16),
                       Text(
                         _hasActiveFilters() ? 'No bills found matching filters' : 'No bills found',
-                        style: AppTextStyles.nunitoRegular.copyWith(fontSize: 16, color: Colors.grey[600]),
+                        style: AppTypography.bodyMedium().copyWith(fontSize: 16, color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -911,9 +911,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                       height: 36,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: DesignToken.primary.withValues(alpha: 0.1),
+                                        color: AppColors.lightPrimary.withValues(alpha: 0.1),
                                         border: Border.all(
-                                          color: DesignToken.primary.withValues(alpha: 0.3),
+                                          color: AppColors.lightPrimary.withValues(alpha: 0.3),
                                           width: 1,
                                         ),
                                       ),
@@ -924,12 +924,12 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 fit: BoxFit.cover,
                                                 errorBuilder: (_, __, ___) => Icon(
                                                   Icons.person,
-                                                  color: DesignToken.primary,
+                                                  color: AppColors.lightPrimary,
                                                   size: 20,
                                                 ),
                                               ),
                                             )
-                                          : Icon(Icons.person, color: DesignToken.primary, size: 20),
+                                          : Icon(Icons.person, color: AppColors.lightPrimary, size: 20),
                                     ),
                                     const SizedBox(width: 10),
                                     // Name, Phone & Status
@@ -942,9 +942,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                               Flexible(
                                                 child: Text(
                                                   carpenterName,
-                                                  style: AppTextStyles.nunitoBold.copyWith(
+                                                  style: AppTypography.labelLarge().copyWith(
                                                     fontSize: 14,
-                                                    color: DesignToken.textDark,
+                                                    color: AppColors.lightPrimary,
                                                     height: 1.2,
                                                   ),
                                                   maxLines: 1,
@@ -972,7 +972,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                     const SizedBox(width: 3),
                                                     Text(
                                                       status == 'approved' ? 'Approved' : 'Rejected',
-                                                      style: AppTextStyles.nunitoBold.copyWith(
+                                                      style: AppTypography.labelLarge().copyWith(
                                                         fontSize: 9,
                                                         color: status == 'approved' ? Colors.green.shade700 : Colors.red.shade700,
                                                       ),
@@ -986,7 +986,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                             const SizedBox(height: 2),
                                             Text(
                                               phone,
-                                              style: AppTextStyles.nunitoRegular.copyWith(
+                                              style: AppTypography.bodyMedium().copyWith(
                                                 fontSize: 11,
                                                 color: Colors.grey[600],
                                                 height: 1.2,
@@ -1011,7 +1011,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(8),
                                                 border: Border.all(
-                                                  color: DesignToken.primary.withValues(alpha: 0.3),
+                                                  color: AppColors.lightPrimary.withValues(alpha: 0.3),
                                                   width: 1.5,
                                                 ),
                                               ),
@@ -1071,13 +1071,13 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 color: Colors.green.withValues(alpha: 0.15),
                                                 borderRadius: BorderRadius.circular(6),
                                                 border: Border.all(
-                                                  color: DesignToken.primary.withValues(alpha: 0.25),
+                                                  color: AppColors.lightPrimary.withValues(alpha: 0.25),
                                                   width: 1,
                                                 ),
                                               ),
                                               child: Text(
                                                 '₹${amount.toStringAsFixed(0)}',
-                                                style: AppTextStyles.nunitoBold.copyWith(
+                                                style: AppTypography.labelLarge().copyWith(
                                                   fontSize: 13,
                                                   color: Colors.green.shade700,
                                                   height: 1,
@@ -1089,10 +1089,10 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: DesignToken.primary.withValues(alpha: 0.15),
+                                                color: AppColors.lightPrimary.withValues(alpha: 0.15),
                                                 borderRadius: BorderRadius.circular(6),
                                                 border: Border.all(
-                                                  color: DesignToken.primary.withValues(alpha: 0.25),
+                                                  color: AppColors.lightPrimary.withValues(alpha: 0.25),
                                                   width: 1,
                                                 ),
                                               ),
@@ -1102,14 +1102,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                   Icon(
                                                     Icons.stars,
                                                     size: 10,
-                                                    color: DesignToken.primary,
+                                                    color: AppColors.lightPrimary,
                                                   ),
                                                   const SizedBox(width: 3),
                                                   Text(
                                                     '$points',
-                                                    style: AppTextStyles.nunitoBold.copyWith(
+                                                    style: AppTypography.labelLarge().copyWith(
                                                       fontSize: 11,
-                                                      color: DesignToken.primary,
+                                                      color: AppColors.lightPrimary,
                                                       height: 1,
                                                     ),
                                                   ),
@@ -1242,7 +1242,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         ),
         child: Text(
           label,
-          style: AppTextStyles.nunitoSemiBold.copyWith(
+          style: AppTypography.labelLarge().copyWith(
             fontSize: 11,
             color: isSelected ? Colors.white : color,
           ),

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:balaji_points/config/theme.dart' hide AppColors;
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/presentation/widgets/home_nav_bar.dart';
 
 /// Admin-only notifications screen.
@@ -71,8 +71,8 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.redShade600,
-              foregroundColor: DesignToken.white,
+              backgroundColor: const Color(0xFFE53935),
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Delete'),
@@ -121,7 +121,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${docs.length} notification(s) deleted'),
-            backgroundColor: DesignToken.primary,
+            backgroundColor: AppColors.lightPrimary,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -131,7 +131,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Delete failed: $e'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -174,11 +174,11 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
   Color _getNotificationColor(String? type) {
     switch (type) {
       case 'newPendingBill':
-        return DesignToken.blueShade600;
+        return AppColors.info;
       case 'newUserRegistered':
-        return DesignToken.greenShade600;
+        return AppColors.success;
       default:
-        return DesignToken.primary;
+        return AppColors.lightPrimary;
     }
   }
 
@@ -224,7 +224,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
             height: 1,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: DesignToken.primaryGradient,
+                colors: AppColors.primaryGradient,
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -257,17 +257,17 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                       const SizedBox(height: 24),
                       Text(
                         'No Notifications',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 24,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'You don\'t have any admin notifications yet',
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
-                          color: DesignToken.grey600,
+                          color: AppColors.grey600,
                         ),
                       ),
                     ],
@@ -293,7 +293,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                   onRefresh: () async {
                     await Future.delayed(const Duration(milliseconds: 500));
                   },
-                  color: DesignToken.primary,
+                  color: AppColors.lightPrimary,
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: sortedNotifications.length,
@@ -316,14 +316,14 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                         background: Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                            color: DesignToken.redShade600,
+                            color: const Color(0xFFE53935),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 24),
                           child: const Icon(
                             Icons.delete_rounded,
-                            color: DesignToken.white,
+                            color: AppColors.white,
                             size: 26,
                           ),
                         ),
@@ -348,8 +348,8 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                       onPressed: () =>
                                           Navigator.of(context).pop(true),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: DesignToken.redShade600,
-                                        foregroundColor: DesignToken.white,
+                                        backgroundColor: const Color(0xFFE53935),
+                                        foregroundColor: AppColors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -373,13 +373,13 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                               boxShadow: [
                                 BoxShadow(
                                   color:
-                                      DesignToken.black.withValues(alpha: 0.04),
+                                      AppColors.black.withValues(alpha: 0.04),
                                   blurRadius: 10,
                                   offset: const Offset(0, 2),
                                 ),
                                 BoxShadow(
                                   color:
-                                      DesignToken.black.withValues(alpha: 0.02),
+                                      AppColors.black.withValues(alpha: 0.02),
                                   blurRadius: 4,
                                   offset: const Offset(0, 1),
                                 ),
@@ -431,10 +431,10 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                             Expanded(
                                               child: Text(
                                                 title,
-                                                style: AppTextStyles.nunitoBold
+                                                style: AppTypography.labelLarge()
                                                     .copyWith(
                                                   fontSize: 15,
-                                                  color: DesignToken.textDark,
+                                                  color: AppColors.lightPrimary,
                                                   letterSpacing: -0.2,
                                                 ),
                                               ),
@@ -444,7 +444,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                               _formatTimestamp(sentAt),
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: DesignToken.grey600,
+                                                color: AppColors.grey600,
                                               ),
                                             ),
                                           ],
@@ -455,10 +455,10 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                             body,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: AppTextStyles.nunitoRegular
+                                            style: AppTypography.bodyMedium()
                                                 .copyWith(
                                               fontSize: 13,
-                                              color: DesignToken.grey600,
+                                              color: AppColors.grey600,
                                             ),
                                           ),
                                         ],

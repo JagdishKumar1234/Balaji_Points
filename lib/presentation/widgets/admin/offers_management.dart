@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/offer_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -42,18 +42,18 @@ class _OffersManagementState extends State<OffersManagement> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           l10n.deleteOffer,
-          style: AppTextStyles.nunitoBold.copyWith(fontSize: 20),
+          style: AppTypography.labelLarge().copyWith(fontSize: 20),
         ),
         content: Text(
           l10n.deleteOfferConfirmation,
-          style: AppTextStyles.nunitoRegular.copyWith(fontSize: 16),
+          style: AppTypography.bodyMedium().copyWith(fontSize: 16),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               l10n.cancel,
-              style: AppTextStyles.nunitoMedium.copyWith(
+              style: AppTypography.bodySmall().copyWith(
                 color: Colors.grey[600],
               ),
             ),
@@ -66,7 +66,7 @@ class _OffersManagementState extends State<OffersManagement> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text(l10n.delete, style: AppTextStyles.nunitoSemiBold),
+            child: Text(l10n.delete, style: AppTypography.labelLarge()),
           ),
         ],
       ),
@@ -130,7 +130,7 @@ class _OffersManagementState extends State<OffersManagement> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: DesignToken.woodenBackground,
+      backgroundColor: AppColors.woodenBackground,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('offers')
@@ -146,13 +146,13 @@ class _OffersManagementState extends State<OffersManagement> {
                   const SizedBox(height: 16),
                   Text(
                     l10n.errorLoadingOffers,
-                    style: AppTextStyles.nunitoBold.copyWith(fontSize: 18),
+                    style: AppTypography.labelLarge().copyWith(fontSize: 18),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     snapshot.error.toString(),
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.nunitoRegular.copyWith(
+                    style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
                       color: Colors.grey[600],
                     ),
@@ -164,7 +164,7 @@ class _OffersManagementState extends State<OffersManagement> {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: DesignToken.primary),
+              child: CircularProgressIndicator(color: AppColors.lightPrimary),
             );
           }
 
@@ -183,15 +183,15 @@ class _OffersManagementState extends State<OffersManagement> {
                   const SizedBox(height: 20),
                   Text(
                     l10n.noOffersCreated,
-                    style: AppTextStyles.nunitoBold.copyWith(
+                    style: AppTypography.labelLarge().copyWith(
                       fontSize: 20,
-                      color: DesignToken.textDark,
+                      color: AppColors.lightPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.createFirstOffer,
-                    style: AppTextStyles.nunitoRegular.copyWith(
+                    style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
                       color: Colors.grey[600],
                     ),
@@ -267,9 +267,9 @@ class _OffersManagementState extends State<OffersManagement> {
                               Expanded(
                                 child: Text(
                                   title,
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 18,
-                                    color: DesignToken.textDark,
+                                    color: AppColors.lightPrimary,
                                   ),
                                 ),
                               ),
@@ -286,7 +286,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                 ),
                                 child: Text(
                                   isActive ? l10n.active : l10n.inactive,
-                                  style: AppTextStyles.nunitoSemiBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 12,
                                     color: isActive
                                         ? Colors.green[900]
@@ -303,7 +303,7 @@ class _OffersManagementState extends State<OffersManagement> {
                           if (description.isNotEmpty)
                             Text(
                               description,
-                              style: AppTextStyles.nunitoRegular.copyWith(
+                              style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 14,
                                 color: Colors.grey[700],
                               ),
@@ -322,8 +322,8 @@ class _OffersManagementState extends State<OffersManagement> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  DesignToken.primary,
-                                  DesignToken.secondary,
+                                  AppColors.lightPrimary,
+                                  AppColors.lightSecondary,
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -341,7 +341,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                 const SizedBox(width: 8),
                                 Text(
                                   l10n.points(points),
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
                                     color: Colors.white,
                                   ),
@@ -365,7 +365,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                 createdAt != null
                                     ? '${l10n.createdLabel}: ${DateFormat('dd MMM yyyy').format(createdAt.toDate())}'
                                     : l10n.noDate,
-                                style: AppTextStyles.nunitoRegular.copyWith(
+                                style: AppTypography.bodyMedium().copyWith(
                                   fontSize: 12,
                                   color: Colors.grey[600],
                                 ),
@@ -384,7 +384,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                       'dd MMM',
                                     ).format(validUntil.toDate()),
                                   ),
-                                  style: AppTextStyles.nunitoRegular.copyWith(
+                                  style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
                                     color: Colors.orange[700],
                                   ),
@@ -405,9 +405,9 @@ class _OffersManagementState extends State<OffersManagement> {
                                     _showEditOfferDialog(offer);
                                   },
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: DesignToken.primary,
+                                    foregroundColor: AppColors.lightPrimary,
                                     side: const BorderSide(
-                                      color: DesignToken.primary,
+                                      color: AppColors.lightPrimary,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
@@ -419,7 +419,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                   icon: const Icon(Icons.edit, size: 18),
                                   label: Text(
                                     l10n.edit,
-                                    style: AppTextStyles.nunitoSemiBold,
+                                    style: AppTypography.labelLarge(),
                                   ),
                                 ),
                               ),
@@ -441,7 +441,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                   icon: const Icon(Icons.delete, size: 18),
                                   label: Text(
                                     l10n.delete,
-                                    style: AppTextStyles.nunitoSemiBold,
+                                    style: AppTypography.labelLarge(),
                                   ),
                                 ),
                               ),
@@ -459,11 +459,11 @@ class _OffersManagementState extends State<OffersManagement> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateOfferDialog,
-        backgroundColor: DesignToken.secondary,
+        backgroundColor: AppColors.lightSecondary,
         icon: const Icon(Icons.add),
         label: Text(
           l10n.createOffer,
-          style: AppTextStyles.nunitoBold.copyWith(fontSize: 16),
+          style: AppTypography.labelLarge().copyWith(fontSize: 16),
         ),
       ),
     );
@@ -549,9 +549,9 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: DesignToken.primary,
+              primary: AppColors.lightPrimary,
               onPrimary: Colors.white,
-              onSurface: DesignToken.textDark,
+              onSurface: AppColors.lightPrimary,
             ),
           ),
           child: child!,
@@ -701,7 +701,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [DesignToken.primary, DesignToken.secondary],
+                  colors: [AppColors.lightPrimary, AppColors.lightSecondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -714,7 +714,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                   Expanded(
                     child: Text(
                       isEditMode ? l10n.editOffer : l10n.createNewOffer,
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
                         color: Colors.white,
                       ),
@@ -776,7 +776,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                     const SizedBox(height: 8),
                                     Text(
                                       l10n.tapToUploadBanner,
-                                      style: AppTextStyles.nunitoMedium
+                                      style: AppTypography.bodySmall()
                                           .copyWith(
                                             fontSize: 14,
                                             color: Colors.grey[600],
@@ -792,13 +792,13 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                       // Title
                       TextFormField(
                         controller: _titleController,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
                           labelText: l10n.offerTitleLabel,
-                          labelStyle: AppTextStyles.nunitoMedium.copyWith(
-                            color: DesignToken.primary,
+                          labelStyle: AppTypography.bodySmall().copyWith(
+                            color: AppColors.lightPrimary,
                           ),
                           hintText: l10n.offerTitleHint,
                           border: OutlineInputBorder(
@@ -807,7 +807,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                               width: 2,
                             ),
                           ),
@@ -825,14 +825,14 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                       // Description
                       TextFormField(
                         controller: _descriptionController,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         maxLines: 3,
                         decoration: InputDecoration(
                           labelText: l10n.descriptionLabel,
-                          labelStyle: AppTextStyles.nunitoMedium.copyWith(
-                            color: DesignToken.primary,
+                          labelStyle: AppTypography.bodySmall().copyWith(
+                            color: AppColors.lightPrimary,
                           ),
                           hintText: l10n.descriptionHint,
                           border: OutlineInputBorder(
@@ -841,7 +841,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                               width: 2,
                             ),
                           ),
@@ -853,19 +853,19 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                       // Points (Optional)
                       TextFormField(
                         controller: _pointsController,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           labelText: l10n.pointsRequiredLabel.replaceAll('*', '').trim(),
-                          labelStyle: AppTextStyles.nunitoMedium.copyWith(
-                            color: DesignToken.primary,
+                          labelStyle: AppTypography.bodySmall().copyWith(
+                            color: AppColors.lightPrimary,
                           ),
                           hintText: l10n.pointsHint,
                           prefixIcon: const Icon(
                             Icons.stars,
-                            color: DesignToken.secondary,
+                            color: AppColors.lightSecondary,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -873,7 +873,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                               width: 2,
                             ),
                           ),
@@ -907,7 +907,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                             children: [
                               const Icon(
                                 Icons.event,
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -919,10 +919,10 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                           ).format(_validUntil!),
                                         )
                                       : l10n.setValidUntilDate,
-                                  style: AppTextStyles.nunitoRegular.copyWith(
+                                  style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 16,
                                     color: _validUntil != null
-                                        ? DesignToken.textDark
+                                        ? AppColors.lightPrimary
                                         : Colors.grey[600],
                                   ),
                                 ),
@@ -958,13 +958,13 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                           children: [
                             const Icon(
                               Icons.visibility,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 l10n.offerStatus,
-                                style: AppTextStyles.nunitoMedium.copyWith(
+                                style: AppTypography.bodySmall().copyWith(
                                   fontSize: 16,
                                 ),
                               ),
@@ -976,12 +976,12 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                   _isActive = value;
                                 });
                               },
-                              activeTrackColor: DesignToken.secondary,
+                              activeTrackColor: AppColors.lightSecondary,
                               activeColor: Colors.white,
                             ),
                             Text(
                               _isActive ? l10n.active : l10n.inactive,
-                              style: AppTextStyles.nunitoSemiBold.copyWith(
+                              style: AppTypography.labelLarge().copyWith(
                                 fontSize: 14,
                                 color: _isActive ? Colors.green : Colors.grey,
                               ),
@@ -1005,16 +1005,16 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    DesignToken.primary,
+                                    AppColors.lightPrimary,
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Text(
                                 l10n.uploadingBanner,
-                                style: AppTextStyles.nunitoMedium.copyWith(
+                                style: AppTypography.bodySmall().copyWith(
                                   fontSize: 14,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                             ],
@@ -1029,7 +1029,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                               ? null
                               : _saveOffer,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: DesignToken.secondary,
+                            backgroundColor: AppColors.lightSecondary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -1051,7 +1051,7 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
                                   isEditMode
                                       ? l10n.updateOffer
                                       : l10n.createOffer,
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
                                     color: Colors.white,
                                   ),

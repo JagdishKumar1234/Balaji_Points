@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:intl/intl.dart';
 
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 
 class OrdersManagement extends StatefulWidget {
   const OrdersManagement({super.key});
@@ -75,9 +75,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       children: [
                         Text(
                           'Order ${order['orderId'] ?? ''}',
-                          style: AppTextStyles.nunitoBold.copyWith(
+                          style: AppTypography.labelLarge().copyWith(
                             fontSize: 18,
-                            color: DesignToken.textDark,
+                            color: AppColors.lightPrimary,
                           ),
                         ),
                         const Spacer(),
@@ -87,7 +87,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                     const SizedBox(height: 8),
                     Text(
                       dateStr,
-                      style: AppTextStyles.nunitoRegular.copyWith(
+                      style: AppTypography.bodyMedium().copyWith(
                         fontSize: 13,
                         color: Colors.grey[600],
                       ),
@@ -96,15 +96,15 @@ class _OrdersManagementState extends State<OrdersManagement> {
                     if (shopName.isNotEmpty || shopAddress.isNotEmpty) ...[
                       Text(
                         shopName.isNotEmpty ? shopName : 'Shop details',
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       if (shopAddress.isNotEmpty)
                         Text(
                           shopAddress,
-                          style: AppTextStyles.nunitoRegular.copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
                             color: Colors.grey[700],
                           ),
@@ -112,7 +112,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       if (shopGstNo.isNotEmpty)
                         Text(
                           'GST: $shopGstNo',
-                          style: AppTextStyles.nunitoRegular.copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
                             color: Colors.grey[700],
                           ),
@@ -120,7 +120,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       if (shopPhone.isNotEmpty)
                         Text(
                           'Phone: $shopPhone',
-                          style: AppTextStyles.nunitoRegular.copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
                             color: Colors.grey[700],
                           ),
@@ -128,7 +128,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       if (shopEmail.isNotEmpty)
                         Text(
                           shopEmail,
-                          style: AppTextStyles.nunitoRegular.copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
                             color: Colors.grey[700],
                           ),
@@ -138,15 +138,15 @@ class _OrdersManagementState extends State<OrdersManagement> {
                     if (carpenterName.isNotEmpty || carpenterPhone.isNotEmpty) ...[
                       Text(
                         'Carpenter',
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       if (carpenterName.isNotEmpty)
                         Text(
                           carpenterName,
-                          style: AppTextStyles.nunitoRegular.copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
                             color: Colors.grey[700],
                           ),
@@ -154,7 +154,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       if (carpenterPhone.isNotEmpty)
                         Text(
                           carpenterPhone,
-                          style: AppTextStyles.nunitoRegular.copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
                             color: Colors.grey[700],
                           ),
@@ -164,14 +164,14 @@ class _OrdersManagementState extends State<OrdersManagement> {
                     if (address.isNotEmpty) ...[
                       Text(
                         'Shipping address',
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       Text(
                         address,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 13,
                           color: Colors.grey[700],
                         ),
@@ -180,9 +180,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                     ],
                     Text(
                       'Items',
-                      style: AppTextStyles.nunitoSemiBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 15,
-                        color: DesignToken.textDark,
+                        color: AppColors.lightPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -198,15 +198,15 @@ class _OrdersManagementState extends State<OrdersManagement> {
                             Expanded(
                               child: Text(
                                 name,
-                                style: AppTextStyles.nunitoRegular.copyWith(
+                                style: AppTypography.bodyMedium().copyWith(
                                   fontSize: 14,
-                                  color: DesignToken.textDark,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                             ),
                             Text(
                               'x$qty @ ₹${price.toStringAsFixed(0)}',
-                              style: AppTextStyles.nunitoRegular.copyWith(
+                              style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 13,
                                 color: Colors.grey[600],
                               ),
@@ -214,9 +214,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                             const SizedBox(width: 8),
                             Text(
                               '₹${lineTotal.toStringAsFixed(0)}',
-                              style: AppTextStyles.nunitoSemiBold.copyWith(
+                              style: AppTypography.labelLarge().copyWith(
                                 fontSize: 14,
-                                color: DesignToken.textDark,
+                                color: AppColors.lightPrimary,
                               ),
                             ),
                           ],
@@ -229,16 +229,16 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       children: [
                         Text(
                           'Total',
-                          style: AppTextStyles.nunitoSemiBold.copyWith(
+                          style: AppTypography.labelLarge().copyWith(
                             fontSize: 16,
-                            color: DesignToken.textDark,
+                            color: AppColors.lightPrimary,
                           ),
                         ),
                         Text(
                           '₹${total.toStringAsFixed(0)}',
-                          style: AppTextStyles.nunitoBold.copyWith(
+                          style: AppTypography.labelLarge().copyWith(
                             fontSize: 18,
-                            color: DesignToken.primary,
+                            color: AppColors.lightPrimary,
                           ),
                         ),
                       ],
@@ -276,7 +276,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
               children: [
                 Text(
                   'Orders',
-                  style: AppTextStyles.nunitoSemiBold,
+                  style: AppTypography.labelLarge(),
                 ),
                 const SizedBox(width: 12),
                 ChoiceChip(
@@ -331,9 +331,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                   child: Text(
                     'Error loading orders:\n${snapshot.error}',
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.nunitoRegular.copyWith(
+                    style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
-                      color: DesignToken.error,
+                      color: AppColors.error,
                     ),
                   ),
                 );
@@ -342,7 +342,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child:
-                      CircularProgressIndicator(color: DesignToken.primary),
+                      CircularProgressIndicator(color: AppColors.lightPrimary),
                 );
               }
 
@@ -360,16 +360,16 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       const SizedBox(height: 12),
                       Text(
                         'No orders yet',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 18,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'New orders will appear here as carpenters place them.',
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 13,
                           color: Colors.grey[600],
                         ),
@@ -418,9 +418,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style:
-                                      AppTextStyles.nunitoSemiBold.copyWith(
+                                      AppTypography.labelLarge().copyWith(
                                     fontSize: 15,
-                                    color: DesignToken.textDark,
+                                    color: AppColors.lightPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -429,7 +429,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style:
-                                      AppTextStyles.nunitoRegular.copyWith(
+                                      AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
                                     color: Colors.grey[600],
                                   ),
@@ -447,7 +447,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style:
-                                        AppTextStyles.nunitoRegular.copyWith(
+                                        AppTypography.bodyMedium().copyWith(
                                       fontSize: 12,
                                       color: Colors.grey[700],
                                     ),
@@ -457,9 +457,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                                 Text(
                                   '₹${total.toStringAsFixed(0)}',
                                   style:
-                                      AppTextStyles.nunitoBold.copyWith(
+                                      AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
-                                    color: DesignToken.primary,
+                                    color: AppColors.lightPrimary,
                                   ),
                                 ),
                               ],
@@ -589,7 +589,7 @@ class _StatusChip extends StatelessWidget {
       ),
       child: Text(
         _labelForStatus(),
-        style: AppTextStyles.nunitoSemiBold.copyWith(
+        style: AppTypography.labelLarge().copyWith(
           fontSize: 11,
           color: _textColorForStatus(),
         ),

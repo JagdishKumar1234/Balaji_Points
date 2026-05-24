@@ -2,9 +2,9 @@
 // This page verifies Firestore data for user 9894223355
 
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:intl/intl.dart';
 
 class DiagnosticPage extends StatefulWidget {
@@ -224,7 +224,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        foregroundColor: DesignToken.textDark,
+        foregroundColor: AppColors.lightPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -232,7 +232,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         ),
         title: Text(
           'Diagnostic: User ${widget.phoneNumber}',
-          style: TextStyle(fontSize: 18, color: DesignToken.textDark),
+          style: TextStyle(fontSize: 18, color: AppColors.lightPrimary),
         ),
         centerTitle: true,
         actions: [
@@ -311,9 +311,9 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
           children: [
             Text(
               title,
-              style: AppTextStyles.nunitoBold.copyWith(
+              style: AppTypography.labelLarge().copyWith(
                 fontSize: 18,
-                color: DesignToken.primary,
+                color: AppColors.lightPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -334,16 +334,16 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
             width: 180,
             child: Text(
               '$label:',
-              style: AppTextStyles.nunitoSemiBold.copyWith(
+              style: AppTypography.labelLarge().copyWith(
                 fontSize: 14,
-                color: DesignToken.textDark,
+                color: AppColors.lightPrimary,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value?.toString() ?? 'null',
-              style: AppTextStyles.nunitoRegular.copyWith(
+              style: AppTypography.bodyMedium().copyWith(
                 fontSize: 14,
                 color: Colors.grey[700],
               ),

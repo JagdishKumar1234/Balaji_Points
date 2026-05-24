@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 
 /// Admin dashboard: 7 manage cards with counts (bills, orders) and pattern background.
 class AdminDashboard extends StatefulWidget {
@@ -49,7 +49,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           child: RefreshIndicator(
             onRefresh: _onRefresh,
-            color: DesignToken.primary,
+            color: AppColors.lightPrimary,
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               key: ValueKey<int>(_refreshKey),
               stream: FirebaseFirestore.instance
@@ -237,9 +237,9 @@ class _SectionTile extends StatelessWidget {
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 13,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                     ],
@@ -268,7 +268,7 @@ class _SectionTile extends StatelessWidget {
                     ),
                     child: Text(
                       '$secondaryCount',
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 12,
                         color: Colors.white,
                       ),
@@ -297,7 +297,7 @@ class _SectionTile extends StatelessWidget {
                     ),
                     child: Text(
                       '$count',
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 12,
                         color: Colors.white,
                       ),
@@ -329,7 +329,7 @@ class _SectionTile extends StatelessWidget {
     if (bg.value == const Color(0xFFE0F7FA).value) return const Color(0xFF00838F);
     if (bg.value == const Color(0xFFFFEBEE).value) return const Color(0xFFC62828);
     if (bg.value == const Color(0xFFFFF8E1).value) return const Color(0xFFF9A825);
-    return DesignToken.primary;
+    return AppColors.lightPrimary;
   }
 }
 
@@ -344,9 +344,9 @@ class _DashboardPatternPainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        DesignToken.woodenBackground,
-        Color.lerp(DesignToken.woodenBackground, DesignToken.woodenBase, 0.12)!,
-        Color.lerp(DesignToken.woodenBackground, DesignToken.woodenBase, 0.06)!,
+        AppColors.woodenBackground,
+        Color.lerp(AppColors.woodenBackground, AppColors.woodenBase, 0.12)!,
+        Color.lerp(AppColors.woodenBackground, AppColors.woodenBase, 0.06)!,
       ],
       stops: const [0.0, 0.5, 1.0],
     );
@@ -355,7 +355,7 @@ class _DashboardPatternPainter extends CustomPainter {
     // Horizontal wood-grain lines (stylish, subtle)
     const grainSpacing = 28.0;
     final grainPaint = Paint()
-      ..color = DesignToken.woodenDark.withValues(alpha: 0.06)
+      ..color = AppColors.woodenDark.withValues(alpha: 0.06)
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
     for (double y = 0; y < size.height + grainSpacing; y += grainSpacing) {
@@ -365,7 +365,7 @@ class _DashboardPatternPainter extends CustomPainter {
     // Diagonal weave (left-going) – warm tint
     const diagonalSpacing = 32.0;
     final diagPaint = Paint()
-      ..color = DesignToken.woodenDark.withValues(alpha: 0.055)
+      ..color = AppColors.woodenDark.withValues(alpha: 0.055)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     for (double d = -size.height; d < size.width + size.height; d += diagonalSpacing) {
@@ -378,7 +378,7 @@ class _DashboardPatternPainter extends CustomPainter {
 
     // Diagonal weave (right-going) – crosshatch
     final diag2Paint = Paint()
-      ..color = DesignToken.woodenDark.withValues(alpha: 0.035)
+      ..color = AppColors.woodenDark.withValues(alpha: 0.035)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     for (double d = -size.height; d < size.width + size.height; d += diagonalSpacing) {
@@ -392,7 +392,7 @@ class _DashboardPatternPainter extends CustomPainter {
     // Subtle dot grid for texture
     const dotSpacing = 20.0;
     final dotPaint = Paint()
-      ..color = DesignToken.woodenDark.withValues(alpha: 0.08)
+      ..color = AppColors.woodenDark.withValues(alpha: 0.08)
       ..style = PaintingStyle.fill;
     for (double x = 0; x < size.width + dotSpacing; x += dotSpacing) {
       for (double y = 0; y < size.height + dotSpacing; y += dotSpacing) {

@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../core/theme/design_token.dart';
-import '../../../config/theme.dart' hide AppColors;
 import '../../../services/product_service.dart';
 
 class ProductsManagement extends StatefulWidget {
@@ -69,11 +69,11 @@ class _ProductsManagementState extends State<ProductsManagement> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Delete product',
-          style: AppTextStyles.nunitoBold,
+          style: AppTypography.labelLarge(),
         ),
         content: Text(
           'Are you sure you want to delete this product?\nThis action cannot be undone.',
-          style: AppTextStyles.nunitoRegular,
+          style: AppTypography.bodyMedium(),
         ),
         actions: [
           TextButton(
@@ -83,8 +83,8 @@ class _ProductsManagementState extends State<ProductsManagement> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.error,
-              foregroundColor: DesignToken.white,
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -103,7 +103,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
           content: Text(
             success ? 'Product deleted successfully' : 'Failed to delete product',
           ),
-          backgroundColor: success ? Colors.green : DesignToken.error,
+          backgroundColor: success ? Colors.green : AppColors.error,
         ),
       );
     }
@@ -148,7 +148,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DesignToken.woodenBackground,
+      backgroundColor: AppColors.woodenBackground,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('products')
@@ -162,9 +162,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
                 child: Text(
                   'Error loading products:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.nunitoRegular.copyWith(
+                  style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
-                    color: DesignToken.error,
+                    color: AppColors.error,
                   ),
                 ),
               ),
@@ -173,7 +173,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: DesignToken.primary),
+              child: CircularProgressIndicator(color: AppColors.lightPrimary),
             );
           }
 
@@ -192,15 +192,15 @@ class _ProductsManagementState extends State<ProductsManagement> {
                   const SizedBox(height: 20),
                   Text(
                     'No products added yet',
-                    style: AppTextStyles.nunitoBold.copyWith(
+                    style: AppTypography.labelLarge().copyWith(
                       fontSize: 20,
-                      color: DesignToken.textDark,
+                      color: AppColors.lightPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Tap on "Add product" to create your first product.',
-                    style: AppTextStyles.nunitoRegular.copyWith(
+                    style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
                       color: Colors.grey[600],
                     ),
@@ -276,9 +276,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
                               Expanded(
                                 child: Text(
                                   name.isNotEmpty ? name : 'Unnamed product',
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 18,
-                                    color: DesignToken.textDark,
+                                    color: AppColors.lightPrimary,
                                   ),
                                 ),
                               ),
@@ -295,7 +295,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                 ),
                                 child: Text(
                                   isActive ? 'Active' : 'Hidden',
-                                  style: AppTextStyles.nunitoSemiBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 11,
                                     color: isActive
                                         ? Colors.green[900]
@@ -313,7 +313,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: DesignToken.primary.withValues(
+                                color: AppColors.lightPrimary.withValues(
                                   alpha: 0.08,
                                 ),
                                 borderRadius: BorderRadius.circular(999),
@@ -324,7 +324,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                   const Icon(
                                     Icons.category_outlined,
                                     size: 16,
-                                    color: DesignToken.primary,
+                                    color: AppColors.lightPrimary,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
@@ -332,9 +332,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                         ? '$mainCategory • $subCategory'
                                         : mainCategory,
                                     style:
-                                        AppTextStyles.nunitoSemiBold.copyWith(
+                                        AppTypography.labelLarge().copyWith(
                                       fontSize: 12,
-                                      color: DesignToken.primary,
+                                      color: AppColors.lightPrimary,
                                     ),
                                   ),
                                 ],
@@ -375,9 +375,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                     data,
                                   ),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: DesignToken.primary,
+                                    foregroundColor: AppColors.lightPrimary,
                                     side: const BorderSide(
-                                      color: DesignToken.primary,
+                                      color: AppColors.lightPrimary,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
@@ -396,7 +396,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                   onPressed: () =>
                                       _deleteProduct(productId, imageUrl),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: DesignToken.error,
+                                    foregroundColor: AppColors.error,
                                     side: BorderSide(
                                       color: Colors.red[300]!,
                                     ),
@@ -425,11 +425,11 @@ class _ProductsManagementState extends State<ProductsManagement> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateProductDialog,
-        backgroundColor: DesignToken.secondary,
+        backgroundColor: AppColors.lightSecondary,
         icon: const Icon(Icons.add),
         label: Text(
           'Add product',
-          style: AppTextStyles.nunitoBold,
+          style: AppTypography.labelLarge(),
         ),
       ),
     );
@@ -463,7 +463,7 @@ class _ProductInfoChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '$label:',
-            style: AppTextStyles.nunitoSemiBold.copyWith(
+            style: AppTypography.labelLarge().copyWith(
               fontSize: 12,
               color: Colors.grey[800],
             ),
@@ -471,7 +471,7 @@ class _ProductInfoChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             value,
-            style: AppTextStyles.nunitoRegular.copyWith(
+            style: AppTypography.bodyMedium().copyWith(
               fontSize: 12,
               color: Colors.grey[800],
             ),
@@ -589,7 +589,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to pick image: $e'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -617,7 +617,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to pick PDF: $e'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -751,7 +751,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     } finally {
@@ -779,7 +779,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [DesignToken.primary, DesignToken.secondary],
+                  colors: [AppColors.lightPrimary, AppColors.lightSecondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -792,7 +792,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                   Expanded(
                     child: Text(
                       title,
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
                         color: Colors.white,
                       ),
@@ -858,7 +858,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   const SizedBox(height: 8),
                                   Text(
                                     'Tap to upload product images',
-                                    style: AppTextStyles.nunitoMedium.copyWith(
+                                    style: AppTypography.bodySmall().copyWith(
                                       fontSize: 14,
                                       color: Colors.grey[600],
                                     ),
@@ -874,7 +874,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
                             'Total photos: ${_existingImageUrls.length + _newImageFiles.length}',
-                            style: AppTextStyles.nunitoRegular.copyWith(
+                            style: AppTypography.bodyMedium().copyWith(
                               fontSize: 12,
                               color: Colors.grey[600],
                             ),
@@ -894,15 +894,15 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                               children: [
                                 const Icon(
                                   Icons.picture_as_pdf,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     'Catalog PDF (optional)',
-                                    style: AppTextStyles.nunitoMedium.copyWith(
+                                    style: AppTypography.bodySmall().copyWith(
                                       fontSize: 14,
-                                      color: DesignToken.textDark,
+                                      color: AppColors.lightPrimary,
                                     ),
                                   ),
                                 ),
@@ -926,7 +926,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                             : 'No PDF selected'),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: AppTextStyles.nunitoRegular.copyWith(
+                                    style: AppTypography.bodyMedium().copyWith(
                                       fontSize: 13,
                                       color: Colors.grey[700],
                                     ),
@@ -970,16 +970,16 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          DesignToken.primary,
+                                          AppColors.lightPrimary,
                                         ),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
                                       'Uploading PDF...',
-                                      style: AppTextStyles.nunitoMedium.copyWith(
+                                      style: AppTypography.bodySmall().copyWith(
                                         fontSize: 13,
-                                        color: DesignToken.primary,
+                                        color: AppColors.lightPrimary,
                                       ),
                                     ),
                                   ],
@@ -991,7 +991,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _nameController,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
@@ -1002,7 +1002,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                               width: 2,
                             ),
                           ),
@@ -1019,7 +1019,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                         controller: _priceController,
                         keyboardType:
                             const TextInputType.numberWithOptions(decimal: true),
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
@@ -1033,7 +1033,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       TextFormField(
                         controller: _descriptionController,
                         maxLines: 3,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
@@ -1103,7 +1103,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _sizeController,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
@@ -1117,7 +1117,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _thicknessController,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
@@ -1131,7 +1131,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _qualityController,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
@@ -1153,13 +1153,13 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           children: [
                             const Icon(
                               Icons.visibility,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 'Show product to carpenters',
-                                style: AppTextStyles.nunitoMedium,
+                                style: AppTypography.bodySmall(),
                               ),
                             ),
                             Switch(
@@ -1169,7 +1169,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   _isActive = value;
                                 });
                               },
-                              activeTrackColor: DesignToken.secondary,
+                              activeTrackColor: AppColors.lightSecondary,
                               activeColor: Colors.white,
                             ),
                           ],
@@ -1188,16 +1188,16 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    DesignToken.primary,
+                                    AppColors.lightPrimary,
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Text(
                                 'Uploading image...',
-                                style: AppTextStyles.nunitoMedium.copyWith(
+                                style: AppTypography.bodySmall().copyWith(
                                   fontSize: 14,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                             ],
@@ -1212,7 +1212,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                               ? null
                               : _saveProduct,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: DesignToken.secondary,
+                            backgroundColor: AppColors.lightSecondary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -1232,7 +1232,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                 )
                               : Text(
                                   _isEditMode ? 'Update product' : 'Save product',
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
                                     color: Colors.white,
                                   ),

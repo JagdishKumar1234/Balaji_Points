@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/bill_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -319,18 +319,18 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           title,
-          style: AppTextStyles.nunitoBold.copyWith(fontSize: 20, color: confirmColor),
+          style: AppTypography.labelLarge().copyWith(fontSize: 20, color: confirmColor),
         ),
         content: Text(
           message,
-          style: AppTextStyles.nunitoRegular.copyWith(fontSize: 16),
+          style: AppTypography.bodyMedium().copyWith(fontSize: 16),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               'Cancel',
-              style: AppTextStyles.nunitoSemiBold.copyWith(color: Colors.grey[600]),
+              style: AppTypography.labelLarge().copyWith(color: Colors.grey[600]),
             ),
           ),
           ElevatedButton(
@@ -341,7 +341,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             ),
             child: Text(
               confirmText,
-              style: AppTextStyles.nunitoBold.copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: Colors.white),
             ),
           ),
         ],
@@ -359,7 +359,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          foregroundColor: DesignToken.textDark,
+          foregroundColor: AppColors.lightPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -367,12 +367,12 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           title: Text(
             'Bill Details',
-            style: AppTextStyles.nunitoBold.copyWith(fontSize: 18, color: DesignToken.textDark),
+            style: AppTypography.labelLarge().copyWith(fontSize: 18, color: AppColors.lightPrimary),
           ),
           centerTitle: true,
         ),
         body: const Center(
-          child: CircularProgressIndicator(color: DesignToken.primary),
+          child: CircularProgressIndicator(color: AppColors.lightPrimary),
         ),
       );
     }
@@ -382,7 +382,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          foregroundColor: DesignToken.textDark,
+          foregroundColor: AppColors.lightPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -390,7 +390,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           title: Text(
             'Bill Details',
-            style: AppTextStyles.nunitoBold.copyWith(fontSize: 18, color: DesignToken.textDark),
+            style: AppTypography.labelLarge().copyWith(fontSize: 18, color: AppColors.lightPrimary),
           ),
           centerTitle: true,
         ),
@@ -398,11 +398,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, size: 64, color: DesignToken.grey600),
+              Icon(Icons.error_outline, size: 64, color: AppColors.grey600),
               const SizedBox(height: 16),
               Text(
                 'Bill not found',
-                style: AppTextStyles.nunitoBold.copyWith(fontSize: 18, color: DesignToken.textDark),
+                style: AppTypography.labelLarge().copyWith(fontSize: 18, color: AppColors.lightPrimary),
               ),
             ],
           ),
@@ -433,7 +433,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        foregroundColor: DesignToken.textDark,
+        foregroundColor: AppColors.lightPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -441,7 +441,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         ),
         title: Text(
           'Bill Details',
-          style: AppTextStyles.nunitoBold.copyWith(fontSize: 18, color: DesignToken.textDark),
+          style: AppTypography.labelLarge().copyWith(fontSize: 18, color: AppColors.lightPrimary),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -456,7 +456,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         children: [
           Expanded(
             child: Container(
-              color: DesignToken.woodenBackground,
+              color: AppColors.woodenBackground,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -492,7 +492,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 : status == 'rejected'
                                     ? 'REJECTED'
                                     : 'PENDING APPROVAL',
-                            style: AppTextStyles.nunitoBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 14,
                               color: Colors.white,
                               letterSpacing: 1.2,
@@ -507,7 +507,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     // Carpenter Information Card
                     Card(
                       elevation: 4,
-                      shadowColor: DesignToken.primary.withValues(alpha: 0.3),
+                      shadowColor: AppColors.lightPrimary.withValues(alpha: 0.3),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: Container(
                         decoration: BoxDecoration(
@@ -517,7 +517,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             end: Alignment.bottomRight,
                             colors: [
                               Colors.white,
-                              DesignToken.primary.withValues(alpha: 0.03),
+                              AppColors.lightPrimary.withValues(alpha: 0.03),
                             ],
                           ),
                         ),
@@ -528,13 +528,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.person_outline, size: 20, color: DesignToken.primary),
+                                  Icon(Icons.person_outline, size: 20, color: AppColors.lightPrimary),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Carpenter Information',
-                                    style: AppTextStyles.nunitoBold.copyWith(
+                                    style: AppTypography.labelLarge().copyWith(
                                       fontSize: 16,
-                                      color: DesignToken.primary,
+                                      color: AppColors.lightPrimary,
                                     ),
                                   ),
                                 ],
@@ -548,9 +548,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   height: 70,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: DesignToken.primary.withValues(alpha: 0.1),
+                                    color: AppColors.lightPrimary.withValues(alpha: 0.1),
                                     border: Border.all(
-                                      color: DesignToken.primary.withValues(alpha: 0.3),
+                                      color: AppColors.lightPrimary.withValues(alpha: 0.3),
                                       width: 3,
                                     ),
                                   ),
@@ -561,12 +561,12 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                             fit: BoxFit.cover,
                                             errorBuilder: (_, __, ___) => Icon(
                                               Icons.person,
-                                              color: DesignToken.primary,
+                                              color: AppColors.lightPrimary,
                                               size: 36,
                                             ),
                                           ),
                                         )
-                                      : Icon(Icons.person, color: DesignToken.primary, size: 36),
+                                      : Icon(Icons.person, color: AppColors.lightPrimary, size: 36),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
@@ -575,9 +575,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                     children: [
                                       Text(
                                         carpenterName,
-                                        style: AppTextStyles.nunitoBold.copyWith(
+                                        style: AppTypography.labelLarge().copyWith(
                                           fontSize: 18,
-                                          color: DesignToken.textDark,
+                                          color: AppColors.lightPrimary,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -588,7 +588,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                             const SizedBox(width: 4),
                                             Text(
                                               carpenterPhone,
-                                              style: AppTextStyles.nunitoRegular.copyWith(
+                                              style: AppTypography.bodyMedium().copyWith(
                                                 fontSize: 14,
                                                 color: Colors.grey[700],
                                               ),
@@ -602,19 +602,19 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                           const SizedBox(width: 4),
                                           Text(
                                             '$carpenterTier Tier',
-                                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                                            style: AppTypography.labelLarge().copyWith(
                                               fontSize: 13,
                                               color: Colors.amber[700],
                                             ),
                                           ),
                                           const SizedBox(width: 12),
-                                          Icon(Icons.stars, size: 14, color: DesignToken.secondary),
+                                          Icon(Icons.stars, size: 14, color: AppColors.lightSecondary),
                                           const SizedBox(width: 4),
                                           Text(
                                             '$carpenterPoints pts',
-                                            style: AppTextStyles.nunitoSemiBold.copyWith(
+                                            style: AppTypography.labelLarge().copyWith(
                                               fontSize: 13,
-                                              color: DesignToken.secondary,
+                                              color: AppColors.lightSecondary,
                                             ),
                                           ),
                                         ],
@@ -635,7 +635,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     // Bill Amount & Points Card
                     Card(
                       elevation: 4,
-                      shadowColor: DesignToken.secondary.withValues(alpha: 0.3),
+                      shadowColor: AppColors.lightSecondary.withValues(alpha: 0.3),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: Container(
                         decoration: BoxDecoration(
@@ -645,7 +645,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             end: Alignment.bottomRight,
                             colors: [
                               Colors.white,
-                              DesignToken.secondary.withValues(alpha: 0.05),
+                              AppColors.lightSecondary.withValues(alpha: 0.05),
                             ],
                           ),
                         ),
@@ -656,13 +656,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.receipt_long, size: 20, color: DesignToken.primary),
+                                  Icon(Icons.receipt_long, size: 20, color: AppColors.lightPrimary),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Bill Summary',
-                                    style: AppTextStyles.nunitoBold.copyWith(
+                                    style: AppTypography.labelLarge().copyWith(
                                       fontSize: 16,
-                                      color: DesignToken.primary,
+                                      color: AppColors.lightPrimary,
                                     ),
                                   ),
                                 ],
@@ -684,7 +684,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                         const SizedBox(height: 8),
                                         Text(
                                           '₹${amount.toStringAsFixed(0)}',
-                                          style: AppTextStyles.nunitoBold.copyWith(
+                                          style: AppTypography.labelLarge().copyWith(
                                             fontSize: 24,
                                             color: Colors.green.shade700,
                                           ),
@@ -692,7 +692,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                         const SizedBox(height: 4),
                                         Text(
                                           'Bill Amount',
-                                          style: AppTextStyles.nunitoRegular.copyWith(
+                                          style: AppTypography.bodyMedium().copyWith(
                                             fontSize: 12,
                                             color: Colors.grey[600],
                                           ),
@@ -706,25 +706,25 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: DesignToken.secondary.withValues(alpha: 0.1),
+                                      color: AppColors.lightSecondary.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: DesignToken.secondary.withValues(alpha: 0.5), width: 2),
+                                      border: Border.all(color: AppColors.lightSecondary.withValues(alpha: 0.5), width: 2),
                                     ),
                                     child: Column(
                                       children: [
-                                        Icon(Icons.monetization_on, size: 32, color: DesignToken.secondary),
+                                        Icon(Icons.monetization_on, size: 32, color: AppColors.lightSecondary),
                                         const SizedBox(height: 8),
                                         Text(
                                           '$points',
-                                          style: AppTextStyles.nunitoBold.copyWith(
+                                          style: AppTypography.labelLarge().copyWith(
                                             fontSize: 24,
-                                            color: DesignToken.secondary,
+                                            color: AppColors.lightSecondary,
                                           ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           'Points Earned',
-                                          style: AppTextStyles.nunitoRegular.copyWith(
+                                          style: AppTypography.bodyMedium().copyWith(
                                             fontSize: 12,
                                             color: Colors.grey[600],
                                           ),
@@ -767,13 +767,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.timeline, size: 20, color: DesignToken.primary),
+                                  Icon(Icons.timeline, size: 20, color: AppColors.lightPrimary),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Timeline',
-                                    style: AppTextStyles.nunitoBold.copyWith(
+                                    style: AppTypography.labelLarge().copyWith(
                                       fontSize: 16,
-                                      color: DesignToken.primary,
+                                      color: AppColors.lightPrimary,
                                     ),
                                   ),
                                 ],
@@ -816,7 +816,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     if (imageUrl.isNotEmpty) ...[
                       Card(
                         elevation: 4,
-                        shadowColor: DesignToken.primary.withValues(alpha: 0.2),
+                        shadowColor: AppColors.lightPrimary.withValues(alpha: 0.2),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         child: Container(
                           decoration: BoxDecoration(
@@ -826,7 +826,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                               end: Alignment.bottomRight,
                               colors: [
                                 Colors.white,
-                                DesignToken.primary.withValues(alpha: 0.02),
+                                AppColors.lightPrimary.withValues(alpha: 0.02),
                               ],
                             ),
                           ),
@@ -840,13 +840,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(Icons.image_outlined, size: 20, color: DesignToken.primary),
+                                        Icon(Icons.image_outlined, size: 20, color: AppColors.lightPrimary),
                                         const SizedBox(width: 8),
                                         Text(
                                           'Bill Image',
-                                          style: AppTextStyles.nunitoBold.copyWith(
+                                          style: AppTypography.labelLarge().copyWith(
                                             fontSize: 16,
-                                            color: DesignToken.primary,
+                                            color: AppColors.lightPrimary,
                                           ),
                                         ),
                                       ],
@@ -856,7 +856,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                       icon: const Icon(Icons.zoom_in, size: 18),
                                       label: const Text('View Full Size'),
                                       style: TextButton.styleFrom(
-                                        foregroundColor: DesignToken.primary,
+                                        foregroundColor: AppColors.lightPrimary,
                                       ),
                                     ),
                                   ],
@@ -868,12 +868,12 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                        color: DesignToken.primary.withValues(alpha: 0.2),
+                                        color: AppColors.lightPrimary.withValues(alpha: 0.2),
                                         width: 2,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: DesignToken.primary.withValues(alpha: 0.1),
+                                          color: AppColors.lightPrimary.withValues(alpha: 0.1),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -944,7 +944,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             : const Icon(Icons.close, size: 20),
                         label: Text(
                           l10n.reject,
-                          style: AppTextStyles.nunitoBold.copyWith(fontSize: 16),
+                          style: AppTypography.labelLarge().copyWith(fontSize: 16),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red.shade600,
@@ -971,7 +971,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             : const Icon(Icons.check_circle, size: 20),
                         label: Text(
                           l10n.approveBill,
-                          style: AppTextStyles.nunitoBold.copyWith(fontSize: 16),
+                          style: AppTypography.labelLarge().copyWith(fontSize: 16),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green.shade600,
@@ -1067,7 +1067,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                               children: [
                                 Text(
                                   l10n.withdrawApproval,
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 17,
                                     color: Colors.white,
                                     letterSpacing: 0.3,
@@ -1076,7 +1076,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 const SizedBox(height: 2),
                                 Text(
                                   l10n.reversePointsAndUndoApproval,
-                                  style: AppTextStyles.nunitoRegular.copyWith(
+                                  style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
                                     color: Colors.white.withValues(alpha: 0.9),
                                   ),
@@ -1173,7 +1173,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                               children: [
                                 Text(
                                   l10n.approveBillAction,
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 17,
                                     color: Colors.white,
                                     letterSpacing: 0.3,
@@ -1182,7 +1182,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 const SizedBox(height: 2),
                                 Text(
                                   l10n.awardPointsAndMarkAsApproved,
-                                  style: AppTextStyles.nunitoRegular.copyWith(
+                                  style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
                                     color: Colors.white.withValues(alpha: 0.9),
                                   ),
@@ -1225,7 +1225,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             children: [
               Text(
                 label,
-                style: AppTextStyles.nunitoRegular.copyWith(
+                style: AppTypography.bodyMedium().copyWith(
                   fontSize: 12,
                   color: Colors.grey[600],
                 ),
@@ -1233,9 +1233,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               const SizedBox(height: 2),
               Text(
                 DateFormat('dd MMM yyyy, hh:mm a').format(date),
-                style: AppTextStyles.nunitoSemiBold.copyWith(
+                style: AppTypography.labelLarge().copyWith(
                   fontSize: 14,
-                  color: DesignToken.textDark,
+                  color: AppColors.lightPrimary,
                 ),
               ),
             ],

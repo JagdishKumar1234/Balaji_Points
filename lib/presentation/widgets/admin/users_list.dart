@@ -1,8 +1,8 @@
 import 'package:balaji_points/services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/pin_auth_service.dart';
 import 'package:printing/printing.dart';
@@ -83,7 +83,7 @@ class _UsersListState extends State<UsersList> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('No carpenters to export for current filters.'),
-            backgroundColor: DesignToken.warning,
+            backgroundColor: AppColors.warning,
           ),
         );
         return;
@@ -300,7 +300,7 @@ class _UsersListState extends State<UsersList> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to export carpenter list: $e'),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -375,7 +375,7 @@ class _UsersListState extends State<UsersList> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.failedToDeleteCarpenter),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -390,16 +390,16 @@ class _UsersListState extends State<UsersList> {
           children: [
             Icon(
               Icons.warning_amber_rounded,
-              color: DesignToken.error,
+              color: AppColors.error,
               size: 28,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 l10n.deleteCarpenter,
-                style: AppTextStyles.nunitoBold.copyWith(
+                style: AppTypography.labelLarge().copyWith(
                   fontSize: 20,
-                  color: DesignToken.error,
+                  color: AppColors.error,
                 ),
               ),
             ),
@@ -407,9 +407,9 @@ class _UsersListState extends State<UsersList> {
         ),
         content: Text(
           l10n.deleteCarpenterConfirmation.replaceAll('{userName}', userName),
-          style: AppTextStyles.nunitoRegular.copyWith(
+          style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: DesignToken.textDark,
+            color: AppColors.lightPrimary,
           ),
         ),
         actions: [
@@ -417,23 +417,23 @@ class _UsersListState extends State<UsersList> {
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               l10n.cancel,
-              style: AppTextStyles.nunitoSemiBold.copyWith(
-                color: DesignToken.textDark,
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.lightPrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.error,
+              backgroundColor: AppColors.error,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               l10n.delete,
-              style: AppTextStyles.nunitoBold.copyWith(
-                color: DesignToken.white,
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.white,
               ),
             ),
           ),
@@ -449,7 +449,7 @@ class _UsersListState extends State<UsersList> {
         context: context,
         barrierDismissible: false,
         builder: (context) => const Center(
-          child: CircularProgressIndicator(color: DesignToken.primary),
+          child: CircularProgressIndicator(color: AppColors.lightPrimary),
         ),
       );
     }
@@ -464,7 +464,7 @@ class _UsersListState extends State<UsersList> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.carpenterDeletedSuccess),
-              backgroundColor: DesignToken.success,
+              backgroundColor: AppColors.success,
               duration: const Duration(seconds: 2),
             ),
           );
@@ -472,7 +472,7 @@ class _UsersListState extends State<UsersList> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.failedToDeleteCarpenter),
-              backgroundColor: DesignToken.error,
+              backgroundColor: AppColors.error,
               duration: const Duration(seconds: 3),
             ),
           );
@@ -501,7 +501,7 @@ class _UsersListState extends State<UsersList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 4),
             action: SnackBarAction(
               label: 'Dismiss',
@@ -535,15 +535,15 @@ class _UsersListState extends State<UsersList> {
                           _searchQuery = value.toLowerCase();
                         });
                       },
-                      style: AppTextStyles.nunitoRegular.copyWith(fontSize: 16),
+                      style: AppTypography.bodyMedium().copyWith(fontSize: 16),
                       decoration: InputDecoration(
                         hintText: l10n.searchByNameOrPhone,
-                        hintStyle: AppTextStyles.nunitoRegular.copyWith(
+                        hintStyle: AppTypography.bodyMedium().copyWith(
                           color: Colors.grey[400],
                         ),
                         prefixIcon: const Icon(
                           Icons.search,
-                          color: DesignToken.primary,
+                          color: AppColors.lightPrimary,
                         ),
                         filled: true,
                         fillColor: Colors.grey[100],
@@ -567,7 +567,7 @@ class _UsersListState extends State<UsersList> {
                         icon: const Icon(Icons.add),
                         label: Text(l10n.add),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: DesignToken.primary,
+                          backgroundColor: AppColors.lightPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -578,7 +578,7 @@ class _UsersListState extends State<UsersList> {
                         decoration: BoxDecoration(
                           color: _isExporting
                               ? Colors.grey.withValues(alpha: 0.1)
-                              : DesignToken.primary.withValues(alpha: 0.12),
+                              : AppColors.lightPrimary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: IconButton(
@@ -588,12 +588,12 @@ class _UsersListState extends State<UsersList> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: DesignToken.primary,
+                                    color: AppColors.lightPrimary,
                                   ),
                                 )
                               : Icon(
                                   Icons.picture_as_pdf,
-                                  color: DesignToken.primary,
+                                  color: AppColors.lightPrimary,
                                   size: 22,
                                 ),
                           onPressed: _isExporting ? null : _exportUsersToPdf,
@@ -620,17 +620,17 @@ class _UsersListState extends State<UsersList> {
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: DesignToken.primary.withOpacity(0.3),
+                        color: AppColors.lightPrimary.withOpacity(0.3),
                         width: 1,
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: _selectedSort,
-                        icon: Icon(Icons.arrow_drop_down, color: DesignToken.primary),
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        icon: Icon(Icons.arrow_drop_down, color: AppColors.lightPrimary),
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                         items: [
                           DropdownMenuItem(value: 'points', child: Text('Points (High to Low)')),
@@ -670,14 +670,14 @@ class _UsersListState extends State<UsersList> {
                             child: FilterChip(
                               selected: isSelected,
                               label: Text(tierLabel),
-                              labelStyle: AppTextStyles.nunitoSemiBold.copyWith(
+                              labelStyle: AppTypography.labelLarge().copyWith(
                                 fontSize: 14,
                                 color: isSelected
                                     ? Colors.white
-                                    : DesignToken.textDark,
+                                    : AppColors.lightPrimary,
                               ),
                               backgroundColor: Colors.grey[200],
-                              selectedColor: DesignToken.primary,
+                              selectedColor: AppColors.lightPrimary,
                               onSelected: (selected) {
                                 setState(() {
                                   _selectedTier = tier;
@@ -714,13 +714,13 @@ class _UsersListState extends State<UsersList> {
                       const SizedBox(height: 16),
                       Text(
                         l10n.errorLoadingUsers,
-                        style: AppTextStyles.nunitoBold.copyWith(fontSize: 18),
+                        style: AppTypography.labelLarge().copyWith(fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         snapshot.error.toString(),
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
                           color: Colors.grey[600],
                         ),
@@ -733,7 +733,7 @@ class _UsersListState extends State<UsersList> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: const CircularProgressIndicator(
-                    color: DesignToken.primary,
+                    color: AppColors.lightPrimary,
                   ),
                 );
               }
@@ -854,9 +854,9 @@ class _UsersListState extends State<UsersList> {
                       const SizedBox(height: 20),
                       Text(
                         l10n.noUsersFound,
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 20,
-                          color: DesignToken.textDark,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -864,7 +864,7 @@ class _UsersListState extends State<UsersList> {
                         _searchQuery.isNotEmpty
                             ? l10n.tryDifferentSearch
                             : l10n.noCarpentersYet,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
                           color: Colors.grey[600],
                         ),
@@ -918,8 +918,8 @@ class _UsersListState extends State<UsersList> {
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(
                                       colors: [
-                                        DesignToken.primary,
-                                        DesignToken.secondary,
+                                        AppColors.lightPrimary,
+                                        AppColors.lightSecondary,
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
@@ -929,7 +929,7 @@ class _UsersListState extends State<UsersList> {
                                   child: Center(
                                     child: Text(
                                       '#${index + 1}',
-                                      style: AppTextStyles.nunitoBold.copyWith(
+                                      style: AppTypography.labelLarge().copyWith(
                                         fontSize: 14,
                                         color: Colors.white,
                                       ),
@@ -952,12 +952,12 @@ class _UsersListState extends State<UsersList> {
                                                 return Container(
                                                   width: 48,
                                                   height: 48,
-                                                  color: DesignToken.primary
+                                                  color: AppColors.lightPrimary
                                                       .withOpacity(0.1),
                                                   child: Icon(
                                                     Icons.person,
                                                     size: 24,
-                                                    color: DesignToken.primary,
+                                                    color: AppColors.lightPrimary,
                                                   ),
                                                 );
                                               },
@@ -967,7 +967,7 @@ class _UsersListState extends State<UsersList> {
                                             return Container(
                                               width: 48,
                                               height: 48,
-                                              color: DesignToken.primary
+                                              color: AppColors.lightPrimary
                                                   .withOpacity(0.1),
                                               child: Center(
                                                 child: CircularProgressIndicator(
@@ -984,7 +984,7 @@ class _UsersListState extends State<UsersList> {
                                                   valueColor:
                                                       AlwaysStoppedAnimation<
                                                         Color
-                                                      >(DesignToken.primary),
+                                                      >(AppColors.lightPrimary),
                                                 ),
                                               ),
                                             );
@@ -993,12 +993,12 @@ class _UsersListState extends State<UsersList> {
                                       : Container(
                                           width: 48,
                                           height: 48,
-                                          color: DesignToken.primary
+                                          color: AppColors.lightPrimary
                                               .withOpacity(0.1),
                                           child: Icon(
                                             Icons.person,
                                             size: 24,
-                                            color: DesignToken.primary,
+                                            color: AppColors.lightPrimary,
                                           ),
                                         ),
                                 ),
@@ -1012,10 +1012,10 @@ class _UsersListState extends State<UsersList> {
                                     children: [
                                       Text(
                                         '$firstName $lastName',
-                                        style: AppTextStyles.nunitoBold
+                                        style: AppTypography.labelLarge()
                                             .copyWith(
                                               fontSize: 16,
-                                              color: DesignToken.textDark,
+                                              color: AppColors.lightPrimary,
                                             ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -1023,7 +1023,7 @@ class _UsersListState extends State<UsersList> {
                                       const SizedBox(height: 2),
                                       Text(
                                         phone,
-                                        style: AppTextStyles.nunitoRegular
+                                        style: AppTypography.bodyMedium()
                                             .copyWith(
                                               fontSize: 13,
                                               color: Colors.grey[600],
@@ -1037,9 +1037,9 @@ class _UsersListState extends State<UsersList> {
                                 OutlinedButton(
                                   onPressed: () => _deleteCarpenter(user),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: DesignToken.error,
+                                    foregroundColor: AppColors.error,
                                     side: BorderSide(
-                                      color: DesignToken.error,
+                                      color: AppColors.error,
                                       width: 1.5,
                                     ),
                                     padding: const EdgeInsets.symmetric(
@@ -1055,10 +1055,10 @@ class _UsersListState extends State<UsersList> {
                                   ),
                                   child: Text(
                                     l10n.delete,
-                                    style: AppTextStyles.nunitoSemiBold
+                                    style: AppTypography.labelLarge()
                                         .copyWith(
                                           fontSize: 13,
-                                          color: DesignToken.error,
+                                          color: AppColors.error,
                                         ),
                                   ),
                                 ),
@@ -1082,7 +1082,7 @@ class _UsersListState extends State<UsersList> {
                                   ),
                                   child: Text(
                                     tier,
-                                    style: AppTextStyles.nunitoBold.copyWith(
+                                    style: AppTypography.labelLarge().copyWith(
                                       fontSize: 11,
                                       color: Colors.white,
                                     ),
@@ -1098,16 +1098,16 @@ class _UsersListState extends State<UsersList> {
                                       Icon(
                                         Icons.stars,
                                         size: 16,
-                                        color: DesignToken.secondary,
+                                        color: AppColors.lightSecondary,
                                       ),
                                       const SizedBox(width: 4),
                                       Flexible(
                                         child: Text(
                                           '$totalPoints Points',
-                                          style: AppTextStyles.nunitoSemiBold
+                                          style: AppTypography.labelLarge()
                                               .copyWith(
                                                 fontSize: 14,
-                                                color: DesignToken.primary,
+                                                color: AppColors.lightPrimary,
                                               ),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
@@ -1136,7 +1136,7 @@ class _UsersListState extends State<UsersList> {
                                             DateFormat(
                                               'dd MMM yyyy',
                                             ).format(createdAt),
-                                            style: AppTextStyles.nunitoRegular
+                                            style: AppTypography.bodyMedium()
                                                 .copyWith(
                                                   fontSize: 12,
                                                   color: Colors.grey[600],
@@ -1282,7 +1282,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
           children: [
             Text(
               l10n.addCarpenter,
-              style: AppTextStyles.nunitoBold.copyWith(fontSize: 18),
+              style: AppTypography.labelLarge().copyWith(fontSize: 18),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -1345,7 +1345,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
                     child: ElevatedButton(
                       onPressed: _createCarpenter,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignToken.primary,
+                        backgroundColor: AppColors.lightPrimary,
                       ),
                       child: const Text('Create'),
                     ),
@@ -1383,7 +1383,7 @@ class _ApprovedBillsList extends StatelessWidget {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(20.0),
-              child: CircularProgressIndicator(color: DesignToken.primary),
+              child: CircularProgressIndicator(color: AppColors.lightPrimary),
             ),
           );
         }
@@ -1397,9 +1397,9 @@ class _ApprovedBillsList extends StatelessWidget {
             ),
             child: Text(
               'Error loading bills: ${snapshot.error}',
-              style: AppTextStyles.nunitoRegular.copyWith(
+              style: AppTypography.bodyMedium().copyWith(
                 fontSize: 14,
-                color: DesignToken.error,
+                color: AppColors.error,
               ),
             ),
           );
@@ -1414,7 +1414,7 @@ class _ApprovedBillsList extends StatelessWidget {
             ),
             child: Text(
               'No approved bills yet',
-              style: AppTextStyles.nunitoRegular.copyWith(
+              style: AppTypography.bodyMedium().copyWith(
                 fontSize: 14,
                 color: Colors.grey[600],
               ),
@@ -1473,16 +1473,16 @@ class _ApprovedBillsList extends StatelessWidget {
                             if (storeName.isNotEmpty)
                               Text(
                                 storeName,
-                                style: AppTextStyles.nunitoBold.copyWith(
+                                style: AppTypography.labelLarge().copyWith(
                                   fontSize: 16,
-                                  color: DesignToken.textDark,
+                                  color: AppColors.lightPrimary,
                                 ),
                               ),
                             if (billNumber.isNotEmpty) ...[
                               const SizedBox(height: 4),
                               Text(
                                 'Bill #$billNumber',
-                                style: AppTextStyles.nunitoRegular.copyWith(
+                                style: AppTypography.bodyMedium().copyWith(
                                   fontSize: 12,
                                   color: Colors.grey[600],
                                 ),
@@ -1502,7 +1502,7 @@ class _ApprovedBillsList extends StatelessWidget {
                                     DateFormat(
                                       'dd MMM yyyy, hh:mm a',
                                     ).format(displayDate),
-                                    style: AppTextStyles.nunitoRegular.copyWith(
+                                    style: AppTypography.bodyMedium().copyWith(
                                       fontSize: 12,
                                       color: Colors.grey[600],
                                     ),
@@ -1518,9 +1518,9 @@ class _ApprovedBillsList extends StatelessWidget {
                         children: [
                           Text(
                             '₹${amount.toStringAsFixed(0)}',
-                            style: AppTextStyles.nunitoBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 18,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -1530,14 +1530,14 @@ class _ApprovedBillsList extends StatelessWidget {
                               Icon(
                                 Icons.stars,
                                 size: 16,
-                                color: DesignToken.secondary,
+                                color: AppColors.lightSecondary,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '$pointsEarned Points',
-                                style: AppTextStyles.nunitoSemiBold.copyWith(
+                                style: AppTypography.labelLarge().copyWith(
                                   fontSize: 14,
-                                  color: DesignToken.secondary,
+                                  color: AppColors.lightSecondary,
                                 ),
                               ),
                             ],
@@ -1560,8 +1560,8 @@ class _ApprovedBillsList extends StatelessWidget {
                       icon: const Icon(Icons.undo, size: 18),
                       label: const Text('Withdraw Points'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: DesignToken.error,
-                        side: BorderSide(color: DesignToken.error, width: 1.5),
+                        foregroundColor: AppColors.error,
+                        side: BorderSide(color: AppColors.error, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -1594,16 +1594,16 @@ class _ApprovedBillsList extends StatelessWidget {
           children: [
             Icon(
               Icons.warning_amber_rounded,
-              color: DesignToken.error,
+              color: AppColors.error,
               size: 28,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Withdraw Points',
-                style: AppTextStyles.nunitoBold.copyWith(
+                style: AppTypography.labelLarge().copyWith(
                   fontSize: 20,
-                  color: DesignToken.error,
+                  color: AppColors.error,
                 ),
               ),
             ),
@@ -1615,9 +1615,9 @@ class _ApprovedBillsList extends StatelessWidget {
           children: [
             Text(
               'Are you sure you want to withdraw points from this bill?',
-              style: AppTextStyles.nunitoRegular.copyWith(
+              style: AppTypography.bodyMedium().copyWith(
                 fontSize: 16,
-                color: DesignToken.textDark,
+                color: AppColors.lightPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -1635,15 +1635,15 @@ class _ApprovedBillsList extends StatelessWidget {
                     children: [
                       Text(
                         'Amount:',
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         '₹${amount.toStringAsFixed(0)}',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: DesignToken.primary,
+                          color: AppColors.lightPrimary,
                         ),
                       ),
                     ],
@@ -1654,15 +1654,15 @@ class _ApprovedBillsList extends StatelessWidget {
                     children: [
                       Text(
                         'Points to withdraw:',
-                        style: AppTextStyles.nunitoSemiBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         '$points',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: DesignToken.error,
+                          color: AppColors.error,
                         ),
                       ),
                     ],
@@ -1673,7 +1673,7 @@ class _ApprovedBillsList extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'This action cannot be undone. The points will be deducted from the carpenter\'s account.',
-              style: AppTextStyles.nunitoRegular.copyWith(
+              style: AppTypography.bodyMedium().copyWith(
                 fontSize: 13,
                 color: Colors.grey[600],
               ),
@@ -1685,22 +1685,22 @@ class _ApprovedBillsList extends StatelessWidget {
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               l10n.cancel,
-              style: AppTextStyles.nunitoSemiBold.copyWith(
-                color: DesignToken.textDark,
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.lightPrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.error,
+              backgroundColor: AppColors.error,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               'Withdraw',
-              style: AppTextStyles.nunitoBold.copyWith(color: Colors.white),
+              style: AppTypography.labelLarge().copyWith(color: Colors.white),
             ),
           ),
         ],
@@ -1719,7 +1719,7 @@ class _ApprovedBillsList extends StatelessWidget {
       builder: (dialogContext) => PopScope(
         canPop: false, // Prevent back button from closing
         child: const Center(
-          child: CircularProgressIndicator(color: DesignToken.primary),
+          child: CircularProgressIndicator(color: AppColors.lightPrimary),
         ),
       ),
     );
@@ -1740,7 +1740,7 @@ class _ApprovedBillsList extends StatelessWidget {
                   ? 'Points withdrawn successfully'
                   : 'Failed to withdraw points. Please try again.',
             ),
-            backgroundColor: success ? DesignToken.success : DesignToken.error,
+            backgroundColor: success ? AppColors.success : AppColors.error,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -1755,7 +1755,7 @@ class _ApprovedBillsList extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error withdrawing points: ${e.toString()}'),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -1797,7 +1797,7 @@ class UserDetailsScreen extends StatelessWidget {
             ),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [DesignToken.primary, DesignToken.secondary],
+                colors: [AppColors.lightPrimary, AppColors.lightSecondary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -1823,7 +1823,7 @@ class UserDetailsScreen extends StatelessWidget {
                               child: Icon(
                                 Icons.person,
                                 size: 35,
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                               ),
                             );
                           },
@@ -1842,7 +1842,7 @@ class UserDetailsScreen extends StatelessWidget {
                                             loadingProgress.expectedTotalBytes!
                                       : null,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    DesignToken.primary,
+                                    AppColors.lightPrimary,
                                   ),
                                 ),
                               ),
@@ -1856,7 +1856,7 @@ class UserDetailsScreen extends StatelessWidget {
                           child: Icon(
                             Icons.person,
                             size: 35,
-                            color: DesignToken.primary,
+                            color: AppColors.lightPrimary,
                           ),
                         ),
                 ),
@@ -1867,14 +1867,14 @@ class UserDetailsScreen extends StatelessWidget {
                     children: [
                       Text(
                         '$firstName $lastName',
-                        style: AppTextStyles.nunitoBold.copyWith(
+                        style: AppTypography.labelLarge().copyWith(
                           fontSize: 20,
                           color: Colors.white,
                         ),
                       ),
                       Text(
                         phone,
-                        style: AppTextStyles.nunitoRegular.copyWith(
+                        style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
                           color: Colors.white.withOpacity(0.9),
                         ),
@@ -1918,15 +1918,15 @@ class UserDetailsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              DesignToken.primary.withOpacity(0.1),
-                              DesignToken.secondary.withOpacity(0.1),
+                              AppColors.lightPrimary.withOpacity(0.1),
+                              AppColors.lightSecondary.withOpacity(0.1),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: DesignToken.primary.withOpacity(0.3),
+                            color: AppColors.lightPrimary.withOpacity(0.3),
                           ),
                         ),
                         child: Column(
@@ -1937,14 +1937,14 @@ class UserDetailsScreen extends StatelessWidget {
                                 Icon(
                                   Icons.stars,
                                   size: 32,
-                                  color: DesignToken.secondary,
+                                  color: AppColors.lightSecondary,
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
                                   '$currentPoints',
-                                  style: AppTextStyles.nunitoBold.copyWith(
+                                  style: AppTypography.labelLarge().copyWith(
                                     fontSize: 36,
-                                    color: DesignToken.primary,
+                                    color: AppColors.lightPrimary,
                                   ),
                                 ),
                               ],
@@ -1952,7 +1952,7 @@ class UserDetailsScreen extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               l10n.totalPointsLabel,
-                              style: AppTextStyles.nunitoRegular.copyWith(
+                              style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 14,
                                 color: Colors.grey[600],
                               ),
@@ -1969,7 +1969,7 @@ class UserDetailsScreen extends StatelessWidget {
                               ),
                               child: Text(
                                 l10n.tierLabel(currentTier),
-                                style: AppTextStyles.nunitoBold.copyWith(
+                                style: AppTypography.labelLarge().copyWith(
                                   fontSize: 16,
                                   color: Colors.white,
                                 ),
@@ -1987,10 +1987,10 @@ class UserDetailsScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: DesignToken.primary.withOpacity(0.05),
+                      color: AppColors.lightPrimary.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: DesignToken.primary.withOpacity(0.2),
+                        color: AppColors.lightPrimary.withOpacity(0.2),
                         width: 1,
                       ),
                     ),
@@ -2001,15 +2001,15 @@ class UserDetailsScreen extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.lock_reset,
-                              color: DesignToken.primary,
+                              color: AppColors.lightPrimary,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
                             Text(
                               l10n.adminResetPin,
-                              style: AppTextStyles.nunitoBold.copyWith(
+                              style: AppTypography.labelLarge().copyWith(
                                 fontSize: 16,
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                               ),
                             ),
                           ],
@@ -2017,9 +2017,9 @@ class UserDetailsScreen extends StatelessWidget {
                         const SizedBox(height: 12),
                         Text(
                           l10n.adminResetPinSubtitle,
-                          style: AppTextStyles.nunitoRegular.copyWith(
+                          style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: DesignToken.textDark.withOpacity(0.7),
+                            color: AppColors.lightPrimary.withOpacity(0.7),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -2036,9 +2036,9 @@ class UserDetailsScreen extends StatelessWidget {
                             icon: const Icon(Icons.vpn_key, size: 18),
                             label: Text(l10n.adminResetPin),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: DesignToken.primary,
+                              foregroundColor: AppColors.lightPrimary,
                               side: BorderSide(
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                                 width: 1.5,
                               ),
                               shape: RoundedRectangleBorder(
@@ -2059,10 +2059,10 @@ class UserDetailsScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: DesignToken.error.withOpacity(0.1),
+                        color: AppColors.error.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: DesignToken.error.withOpacity(0.3),
+                          color: AppColors.error.withOpacity(0.3),
                           width: 1,
                         ),
                       ),
@@ -2073,15 +2073,15 @@ class UserDetailsScreen extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.warning_amber_rounded,
-                                color: DesignToken.error,
+                                color: AppColors.error,
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 l10n.dangerZone,
-                                style: AppTextStyles.nunitoBold.copyWith(
+                                style: AppTypography.labelLarge().copyWith(
                                   fontSize: 16,
-                                  color: DesignToken.error,
+                                  color: AppColors.error,
                                 ),
                               ),
                             ],
@@ -2089,9 +2089,9 @@ class UserDetailsScreen extends StatelessWidget {
                           const SizedBox(height: 12),
                           Text(
                             l10n.deleteCarpenterWarning,
-                            style: AppTextStyles.nunitoRegular.copyWith(
+                            style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: DesignToken.textDark.withOpacity(0.7),
+                              color: AppColors.lightPrimary.withOpacity(0.7),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -2107,9 +2107,9 @@ class UserDetailsScreen extends StatelessWidget {
                               icon: const Icon(Icons.delete_outline, size: 18),
                               label: Text(l10n.deleteCarpenter),
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: DesignToken.error,
+                                foregroundColor: AppColors.error,
                                 side: BorderSide(
-                                  color: DesignToken.error,
+                                  color: AppColors.error,
                                   width: 1.5,
                                 ),
                                 shape: RoundedRectangleBorder(
@@ -2130,9 +2130,9 @@ class UserDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text(
                     'Points History',
-                    style: AppTextStyles.nunitoBold.copyWith(
+                    style: AppTypography.labelLarge().copyWith(
                       fontSize: 18,
-                      color: DesignToken.textDark,
+                      color: AppColors.lightPrimary,
                     ),
                   ),
 
@@ -2183,7 +2183,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.pinMismatch),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -2211,7 +2211,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.adminResetPinSuccess(carpenterName)),
-            backgroundColor: DesignToken.success,
+            backgroundColor: AppColors.success,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -2221,7 +2221,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.adminResetPinFailed),
-            backgroundColor: DesignToken.error,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -2231,7 +2231,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.adminResetPinFailed),
-          backgroundColor: DesignToken.error,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -2261,7 +2261,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [DesignToken.primary, DesignToken.secondary],
+                    colors: [AppColors.lightPrimary, AppColors.lightSecondary],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -2279,7 +2279,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                         children: [
                           Text(
                             l10n.adminResetPinTitle(carpenterName),
-                            style: AppTextStyles.nunitoBold.copyWith(
+                            style: AppTypography.labelLarge().copyWith(
                               fontSize: 18,
                               color: Colors.white,
                             ),
@@ -2287,7 +2287,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                           const SizedBox(height: 4),
                           Text(
                             phone,
-                            style: AppTextStyles.nunitoRegular.copyWith(
+                            style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
                               color: Colors.white.withOpacity(0.9),
                             ),
@@ -2313,9 +2313,9 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                   children: [
                     Text(
                       l10n.adminResetPinSubtitle,
-                      style: AppTextStyles.nunitoRegular.copyWith(
+                      style: AppTypography.bodyMedium().copyWith(
                         fontSize: 14,
-                        color: DesignToken.textDark.withOpacity(0.7),
+                        color: AppColors.lightPrimary.withOpacity(0.7),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -2327,34 +2327,34 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                       obscureText: true,
                       maxLength: 4,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
                         letterSpacing: 8,
-                        color: DesignToken.primary,
+                        color: AppColors.lightPrimary,
                       ),
                       decoration: InputDecoration(
                         labelText: l10n.enterNewPinForCarpenter,
                         counterText: "",
                         filled: true,
-                        fillColor: DesignToken.primary.withOpacity(0.05),
+                        fillColor: AppColors.lightPrimary.withOpacity(0.05),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: DesignToken.primary.withOpacity(0.3),
+                            color: AppColors.lightPrimary.withOpacity(0.3),
                             width: 1.5,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: DesignToken.primary.withOpacity(0.2),
+                            color: AppColors.lightPrimary.withOpacity(0.2),
                             width: 1.5,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: DesignToken.primary,
+                            color: AppColors.lightPrimary,
                             width: 2,
                           ),
                         ),
@@ -2377,34 +2377,34 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                       obscureText: true,
                       maxLength: 4,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.nunitoBold.copyWith(
+                      style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
                         letterSpacing: 8,
-                        color: DesignToken.primary,
+                        color: AppColors.lightPrimary,
                       ),
                       decoration: InputDecoration(
                         labelText: l10n.confirmNewPinForCarpenter,
                         counterText: "",
                         filled: true,
-                        fillColor: DesignToken.primary.withOpacity(0.05),
+                        fillColor: AppColors.lightPrimary.withOpacity(0.05),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: DesignToken.primary.withOpacity(0.3),
+                            color: AppColors.lightPrimary.withOpacity(0.3),
                             width: 1.5,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: DesignToken.primary.withOpacity(0.2),
+                            color: AppColors.lightPrimary.withOpacity(0.2),
                             width: 1.5,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: DesignToken.primary,
+                            color: AppColors.lightPrimary,
                             width: 2,
                           ),
                         ),
@@ -2437,15 +2437,15 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               side: BorderSide(
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                                 width: 1.5,
                               ),
                             ),
                             child: Text(
                               l10n.cancel,
-                              style: AppTextStyles.nunitoSemiBold.copyWith(
+                              style: AppTypography.labelLarge().copyWith(
                                 fontSize: 16,
-                                color: DesignToken.primary,
+                                color: AppColors.lightPrimary,
                               ),
                             ),
                           ),
@@ -2457,8 +2457,8 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  DesignToken.secondary,
-                                  DesignToken.secondary.withOpacity(0.8),
+                                  AppColors.lightSecondary,
+                                  AppColors.lightSecondary.withOpacity(0.8),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -2490,7 +2490,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                                     )
                                   : Text(
                                       l10n.adminResetPin,
-                                      style: AppTextStyles.nunitoBold.copyWith(
+                                      style: AppTypography.labelLarge().copyWith(
                                         fontSize: 16,
                                         color: Colors.white,
                                       ),
