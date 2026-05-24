@@ -1,6 +1,6 @@
-# Compiled JavaScript files
-*.js
+# Compiled JavaScript output (index.js is source — not ignored)
 *.js.map
+*.min.js
 
 # Node.js dependencies
 node_modules/

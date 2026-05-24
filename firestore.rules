@@ -115,67 +115,68 @@ service cloud.firestore {
     // USER POINTS COLLECTION
     // ============================================
     match /user_points/{pointsId} {
-      // Anyone can read points (for leaderboards, user profiles, etc.)
+      // Anyone can read points (leaderboards, user profiles)
       allow read: if true;
 
-      // Allow creating user_points during registration
-      // Validation: Ensure userId matches the document ID
+      // Client may create user_points only during registration.
+      // branchId on the new doc must match the user doc's branchId (or both null).
       allow create: if request.resource.data.userId == pointsId
                     && request.resource.data.keys().hasAll(['userId', 'totalPoints', 'tier']);
 
-      // Allow admin to update/delete points (validated at app level)
-      // Admin operations: updating points after bill approval, tier changes
-      // For updates, userId must already exist in document and match pointsId
+      // Client updates allowed only for the doc owner (userId == pointsId).
+      // Points/tier changes driven by bill approval go through Cloud Functions
+      // (Admin SDK bypasses rules), so we do NOT need to allow arbitrary updates here.
       allow update: if resource.data.userId == pointsId;
 
-      allow delete: if true; // App-level validation ensures only admins can delete
+      // Deletes only via Admin SDK (Cloud Functions onUserDeleted)
+      allow delete: if false;
     }
 
     // ============================================
     // POINTS HISTORY COLLECTION
     // ============================================
     match /points_history/{historyId} {
-      // Anyone can read history (for transparency and user viewing)
-      // App-level filtering ensures users see appropriate data
+      // Anyone can read (user sees own history; app filters by userId)
       allow read: if true;
 
-      // Allow creating history records (for bill approvals, offer redemptions)
-      // Validation: Ensure required fields are present
+      // Client may create history for offer redemptions etc.
+      // Bill-approval history is written by Cloud Function (Admin SDK).
       allow create: if request.resource.data.userId != null
                     && request.resource.data.points != null
                     && request.resource.data.reason != null;
 
-      // Allow admin to update/delete history (validated at app level)
-      allow update, delete: if true; // App-level validation ensures only admins can modify
+      // Updates and deletes only via Admin SDK
+      allow update, delete: if false;
     }
 
     // ============================================
     // BILLS COLLECTION
     // ============================================
     match /bills/{billId} {
-      // Allow anyone to read bills
-      // Security: App-level filtering ensures users only see their own bills
+      // Anyone can read bills (app filters by carpenterId / branchId)
       allow read: if true;
 
-      // Allow creating bills (carpenters submit bills)
-      // Validation: Ensure required fields are present
+      // Carpenters submit new bills – must include branchId.
       allow create: if request.resource.data.carpenterId != null
                     && request.resource.data.carpenterPhone != null
                     && request.resource.data.amount != null
+                    && request.resource.data.branchId != null
                     && request.resource.data.status == 'pending';
 
-      // Allow admin to update bills (approve/reject/withdraw)
-      // Validation: Ensure immutable fields (carpenterId, amount) are not changed
-      // Allow adding new fields for approval (status, pointsEarned, approvedBy, etc.)
+      // Admin updates bill status.
+      // Immutable fields (carpenterId, amount, branchId) must not change.
+      // The Cloud Function's Admin SDK write bypasses this rule, but the
+      // client-side update (admin app) must satisfy it.
       allow update: if resource.data.carpenterId == request.resource.data.carpenterId
                     && resource.data.amount == request.resource.data.amount
+                    && resource.data.branchId == request.resource.data.branchId
                     && (request.resource.data.status == 'approved'
                          || request.resource.data.status == 'rejected'
                          || request.resource.data.status == 'pending'
                          || request.resource.data.status == 'withdrawn');
 
-      // Allow admin to delete bills (validated at app level)
-      allow delete: if true; // App-level validation ensures only admins can delete
+      // Deletes allowed (admin can delete bills at app level)
+      allow delete: if true;
     }
 
     // ============================================

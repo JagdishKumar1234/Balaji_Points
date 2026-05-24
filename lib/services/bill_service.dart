@@ -71,6 +71,8 @@ class BillService {
         AppLogger.info('  Image uploaded: $imageUrl');
       }
 
+      final branchId = await _sessionService.getBranchId();
+
       final billData = {
         'billId': billId,
         'carpenterId': carpenterId,
@@ -79,6 +81,7 @@ class BillService {
         'imageUrl': imageUrl ?? '',
         'status': 'pending',
         'pointsEarned': 0,
+        'branchId': branchId,
         'billDate': Timestamp.fromDate(billDate ?? DateTime.now()),
         'storeName': storeName ?? '',
         'billNumber': billNumber ?? '',
@@ -171,6 +174,27 @@ class BillService {
         AppLogger.info('  Image uploaded: $imageUrl');
       }
 
+      // Use carpenter's branchId (looked up from their user doc) so the bill
+      // is always stamped with the correct branch — not the admin's session branch.
+      String? carpenterBranchId;
+      try {
+        final carpenterDoc =
+            await _firestore.collection('users').doc(carpenterId).get();
+        carpenterBranchId = carpenterDoc.data()?['branchId'] as String?;
+        if (carpenterBranchId == null) {
+          final q = await _firestore
+              .collection('users')
+              .where('phone', isEqualTo: carpenterPhone)
+              .limit(1)
+              .get();
+          if (q.docs.isNotEmpty) {
+            carpenterBranchId = q.docs.first.data()['branchId'] as String?;
+          }
+        }
+      } catch (_) {}
+      // Fallback to admin's session branch if carpenter doc lookup fails
+      carpenterBranchId ??= await _sessionService.getBranchId();
+
       final billData = {
         'billId': billId,
         'carpenterId': carpenterId,
@@ -179,6 +203,7 @@ class BillService {
         'imageUrl': imageUrl ?? '',
         'status': 'pending',
         'pointsEarned': 0,
+        'branchId': carpenterBranchId,
         'billDate': Timestamp.fromDate(billDate ?? DateTime.now()),
         'storeName': storeName ?? '',
         'billNumber': billNumber ?? '',
