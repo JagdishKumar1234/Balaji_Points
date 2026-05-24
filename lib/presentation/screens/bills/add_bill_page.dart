@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/bill_service.dart';
 import 'package:balaji_points/services/user_service.dart';
@@ -34,7 +34,6 @@ class _AddBillPageState extends State<AddBillPage> {
   File? _selectedImage;
   DateTime? _billDate;
   bool _isSubmitting = false;
-  Map<String, dynamic>? _userData;
 
   bool _hasFormData() {
     return _amountController.text.trim().isNotEmpty ||
@@ -51,18 +50,14 @@ class _AddBillPageState extends State<AddBillPage> {
     _checkProfileCompletion();
   }
 
-  /// Check if profile is complete, redirect to edit profile if not
   Future<void> _checkProfileCompletion() async {
     try {
-      _userData = await _userService.getCurrentUserData();
-
-      final firstName = (_userData?['firstName'] as String? ?? '').trim();
-      final lastName = (_userData?['lastName'] as String? ?? '').trim();
-      final profileImage = (_userData?['profileImage'] as String? ?? '').trim();
-
+      final userData = await _userService.getCurrentUserData();
+      final firstName = (userData?['firstName'] as String? ?? '').trim();
+      final lastName = (userData?['lastName'] as String? ?? '').trim();
+      final profileImage = (userData?['profileImage'] as String? ?? '').trim();
       if (firstName.isEmpty || lastName.isEmpty || profileImage.isEmpty) {
         if (mounted) {
-          // Show dialog and redirect to edit profile
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _showProfileIncompleteDialog();
           });
@@ -85,12 +80,12 @@ class _AddBillPageState extends State<AddBillPage> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: DesignToken.orangeShade50,
+                color: AppColors.orangeBackground,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.person_add_alt_1,
-                color: DesignToken.orangeShade700,
+                color: AppColors.orangeDark,
                 size: 24,
               ),
             ),
@@ -98,7 +93,7 @@ class _AddBillPageState extends State<AddBillPage> {
             Expanded(
               child: Text(
                 l10n?.profileIncomplete ?? 'Profile Incomplete',
-                style: AppTextStyles.nunitoBold.copyWith(fontSize: 20),
+                style: AppTypography.h4(),
               ),
             ),
           ],
@@ -106,24 +101,24 @@ class _AddBillPageState extends State<AddBillPage> {
         content: Text(
           l10n?.completeProfileMessage ??
               'Please complete your profile (first name, last name, and profile picture) to add bills and earn points.',
-          style: AppTextStyles.nunitoRegular.copyWith(fontSize: 16),
+          style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
         ),
         actions: [
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.go('/'); // Go back to home
+              context.go('/');
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.grey600,
-              foregroundColor: DesignToken.white,
+              backgroundColor: AppColors.grey600,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               l10n?.back ?? 'Go Back',
-              style: AppTextStyles.nunitoSemiBold.copyWith(fontSize: 16),
+              style: AppTypography.labelLarge(color: AppColors.white),
             ),
           ),
           ElevatedButton(
@@ -132,15 +127,15 @@ class _AddBillPageState extends State<AddBillPage> {
               context.push('/edit-profile');
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: DesignToken.orangeShade600,
-              foregroundColor: DesignToken.white,
+              backgroundColor: AppColors.orange,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
               l10n?.completeProfile ?? 'Complete Profile',
-              style: AppTextStyles.nunitoSemiBold.copyWith(fontSize: 16),
+              style: AppTypography.labelLarge(color: AppColors.white),
             ),
           ),
         ],
@@ -166,11 +161,11 @@ class _AddBillPageState extends State<AddBillPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: DesignToken.primary,
-              onPrimary: DesignToken.white,
-              surface: DesignToken.white,
-              onSurface: DesignToken.textDark,
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.lightPrimary,
+              onPrimary: AppColors.white,
+              surface: AppColors.white,
+              onSurface: AppColors.lightTextPrimary,
             ),
           ),
           child: child!,
@@ -178,9 +173,7 @@ class _AddBillPageState extends State<AddBillPage> {
       },
     );
     if (picked != null && picked != _billDate) {
-      setState(() {
-        _billDate = picked;
-      });
+      setState(() => _billDate = picked);
     }
   }
 
@@ -192,22 +185,14 @@ class _AddBillPageState extends State<AddBillPage> {
         maxHeight: 1920,
         imageQuality: 85,
       );
-
-      if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-        });
-      }
+      if (image != null) setState(() => _selectedImage = File(image.path));
     } catch (e) {
       AppLogger.error('Error picking image', e);
       if (mounted) {
-        final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: DesignToken.error,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ));
       }
     }
   }
@@ -220,22 +205,14 @@ class _AddBillPageState extends State<AddBillPage> {
         maxHeight: 1920,
         imageQuality: 85,
       );
-
-      if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-        });
-      }
+      if (image != null) setState(() => _selectedImage = File(image.path));
     } catch (e) {
       AppLogger.error('Error taking photo', e);
       if (mounted) {
-        final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: DesignToken.error,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ));
       }
     }
   }
@@ -252,26 +229,17 @@ class _AddBillPageState extends State<AddBillPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(
-                Icons.photo_library,
-                color: DesignToken.primary,
-              ),
+              leading: const Icon(Icons.photo_library, color: AppColors.lightPrimary),
               title: Text(l10n?.selectImage ?? 'Choose from Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage();
-              },
+              onTap: () { Navigator.pop(context); _pickImage(); },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: DesignToken.primary),
+              leading: const Icon(Icons.camera_alt, color: AppColors.lightPrimary),
               title: Text(l10n?.selectImage ?? 'Take Photo'),
-              onTap: () {
-                Navigator.pop(context);
-                _takePhoto();
-              },
+              onTap: () { Navigator.pop(context); _takePhoto(); },
             ),
             ListTile(
-              leading: const Icon(Icons.cancel, color: DesignToken.error),
+              leading: const Icon(Icons.cancel, color: AppColors.error),
               title: Text(l10n?.cancel ?? 'Cancel'),
               onTap: () => Navigator.pop(context),
             ),
@@ -282,50 +250,34 @@ class _AddBillPageState extends State<AddBillPage> {
   }
 
   Future<void> _submitBill() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    // Use current date if bill date not selected
     final billDate = _billDate ?? DateTime.now();
-
     final l10n = AppLocalizations.of(context);
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n?.enterValidAmount ?? 'Please enter a valid amount',
-          ),
-          backgroundColor: DesignToken.error,
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l10n?.enterValidAmount ?? 'Please enter a valid amount'),
+        backgroundColor: AppColors.error,
+      ));
       return;
     }
 
-    setState(() {
-      _isSubmitting = true;
-    });
+    setState(() => _isSubmitting = true);
 
     try {
-      // Get user phone number from session (PIN-based auth)
       final phoneNumber = await _sessionService.getPhoneNumber();
       if (phoneNumber == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n?.sessionExpired ?? 'Please login to submit bills',
-              ),
-              backgroundColor: DesignToken.error,
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n?.sessionExpired ?? 'Please login to submit bills'),
+            backgroundColor: AppColors.error,
+          ));
         }
         return;
       }
 
       final carpenterId = await _sessionService.getUserId() ?? phoneNumber;
-
       final success = await _billService.submitBill(
         carpenterId: carpenterId,
         carpenterPhone: phoneNumber,
@@ -344,77 +296,102 @@ class _AddBillPageState extends State<AddBillPage> {
       );
 
       if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-
+        setState(() => _isSubmitting = false);
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n?.billSubmitted ??
-                    'Bill submitted successfully! Admin will review it.',
-              ),
-              backgroundColor: DesignToken.success,
-              duration: const Duration(seconds: 3),
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              l10n?.billSubmitted ?? 'Bill submitted successfully! Admin will review it.',
             ),
-          );
-
-          // Navigate back after a short delay
+            backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 3),
+          ));
           Future.delayed(const Duration(seconds: 1), () {
-            if (mounted) {
-              context.pop();
-            }
+            if (mounted) context.pop();
           });
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n?.billSubmitError ??
-                    'Failed to submit bill. Please try again.',
-              ),
-              backgroundColor: DesignToken.error,
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              l10n?.billSubmitError ?? 'Failed to submit bill. Please try again.',
             ),
-          );
+            backgroundColor: AppColors.error,
+          ));
         }
       }
     } catch (e) {
       AppLogger.error('Error submitting bill', e);
       if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: DesignToken.error,
-          ),
-        );
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ));
       }
     }
   }
 
+  InputDecoration _fieldDecoration({
+    required String hint,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      filled: true,
+      fillColor: AppColors.white,
+      hintText: hint,
+      hintStyle: AppTypography.bodyMedium(color: AppColors.grey400),
+      prefixIcon: Container(
+        margin: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.lightPrimary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: AppColors.lightPrimary),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: AppColors.lightPrimary.withValues(alpha: 0.3)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: AppColors.lightPrimary.withValues(alpha: 0.3)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.lightPrimary, width: 2),
+      ),
+    );
+  }
+
+  Widget _sectionLabel(String label) => Text(
+        label,
+        style: AppTypography.labelLarge(color: AppColors.lightPrimary)
+            .copyWith(fontWeight: FontWeight.w600),
+      );
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final borderColor = isDark
+        ? AppColors.white.withValues(alpha: 0.12)
+        : AppColors.black.withValues(alpha: 0.08);
+
     return PopScope(
       canPop: !_hasFormData(),
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, _) async {
         if (!didPop) {
-          // Check for dialogs first
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
             return;
           }
-
           if (_hasFormData()) {
-            final l10n = AppLocalizations.of(context);
             final shouldDiscard = await BackButtonHandler.showDiscardDialog(
               context,
-              customMessage:
-                  l10n?.discardBillMessage ??
+              customMessage: l10n?.discardBillMessage ??
                   'You have unsaved bill data. Do you want to discard it?',
             );
             if (shouldDiscard == true && mounted) {
+              // ignore: use_build_context_synchronously
               context.pop();
             }
           } else {
@@ -422,497 +399,254 @@ class _AddBillPageState extends State<AddBillPage> {
           }
         }
       },
-      child: Builder(
-        builder: (context) {
-          final l10n = AppLocalizations.of(context);
-          final theme = Theme.of(context);
-          final isDark = theme.brightness == Brightness.dark;
-          final borderColor = isDark
-              ? Colors.white.withValues(alpha: 0.12)
-              : Colors.black.withValues(alpha: 0.08);
-          return Scaffold(
-            backgroundColor: theme.scaffoldBackgroundColor,
-            body: Column(
-              children: [
-                // Top nav bar consistent with Profile/Add Profile screens
-                HomeNavBar(
-                  title: l10n?.addBill ?? 'Add Bill',
-                  showLogo: false,
-                  showProfileButton: false,
-                  showBackButton: true,
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        body: Column(
+          children: [
+            HomeNavBar(
+              title: l10n?.addBill ?? 'Add Bill',
+              showLogo: false,
+              showProfileButton: false,
+              showBackButton: true,
+            ),
+            Container(height: 1, color: borderColor),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                  24, 24, 24,
+                  MediaQuery.of(context).padding.bottom + 160,
                 ),
-                // Light divider under nav bar
-                Container(
-                  height: 1,
-                  color: borderColor,
-                ),
-                // Scrollable Form Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      24,
-                      24,
-                      24,
-                      MediaQuery.of(context).padding.bottom + 160,
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 12),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 12),
 
-                          // Bill Image Section
-                          Text(
-                            l10n?.billImage ?? 'Bill Image',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
-                              fontSize: 14,
-                              color: DesignToken.primary,
+                      // Bill Image
+                      _sectionLabel(l10n?.billImage ?? 'Bill Image'),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: _showImageSourceDialog,
+                        child: Container(
+                          height: 180,
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppColors.lightPrimary.withValues(alpha: 0.3),
+                              width: 2,
                             ),
                           ),
-                          const SizedBox(height: 12),
-
-                          GestureDetector(
-                            onTap: _showImageSourceDialog,
-                            child: Container(
-                              height: 180,
-                              decoration: BoxDecoration(
-                                color: DesignToken.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                  width: 2,
-                                  style: BorderStyle.solid,
-                                ),
-                              ),
-                              child: _selectedImage != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(14),
-                                      child: Image.file(
-                                        _selectedImage!,
-                                        fit: BoxFit.cover,
+                          child: _selectedImage != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                                )
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_photo_alternate,
+                                      size: 64,
+                                      color: AppColors.lightPrimary.withValues(alpha: 0.5),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      l10n?.tapToAddBillImage ?? 'Tap to add bill image',
+                                      style: AppTypography.bodyMedium(
+                                        color: AppColors.lightTextSecondary,
                                       ),
-                                    )
-                                  : Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.add_photo_alternate,
-                                          size: 64,
-                                          color: DesignToken.primary
-                                              .withOpacity(0.5),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Text(
-                                          l10n?.tapToAddBillImage ??
-                                              'Tap to add bill image',
-                                          style: AppTextStyles.nunitoRegular
-                                              .copyWith(
-                                                color: DesignToken.textDark
-                                                    .withOpacity(0.6),
-                                                fontSize: 14,
-                                              ),
-                                        ),
-                                      ],
                                     ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Amount Field (moved to top)
-                          Text(
-                            l10n?.billAmount ?? 'Bill Amount (₹)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
-                              fontSize: 14,
-                              color: DesignToken.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          TextFormField(
-                            controller: _amountController,
-                            keyboardType: TextInputType.number,
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
-                              fontSize: 16,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: DesignToken.white,
-                              hintText:
-                                  l10n?.enterBillAmount ?? 'Enter bill amount',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
-                              ),
-                              prefixIcon: Container(
-                                margin: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                  ],
                                 ),
-                                child: const Icon(
-                                  Icons.currency_rupee,
-                                  color: DesignToken.primary,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: DesignToken.primary,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return l10n?.enterBillAmount ??
-                                    'Please enter bill amount';
-                              }
-                              final amount = double.tryParse(value.trim());
-                              if (amount == null || amount <= 0) {
-                                return l10n?.enterValidAmount ??
-                                    'Please enter a valid amount';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 32),
-
-                          // Bill Date Field
-                          Text(
-                            l10n?.billDateOptional ?? 'Bill Date (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
-                              fontSize: 16,
-                              color: DesignToken.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          GestureDetector(
-                            onTap: _selectDate,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 18,
-                              ),
-                              decoration: BoxDecoration(
-                                color: DesignToken.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today,
-                                    color: DesignToken.primary,
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      _billDate != null
-                                          ? '${_billDate!.day}/${_billDate!.month}/${_billDate!.year}'
-                                          : (l10n?.selectBillDateOptional ??
-                                                'Select bill date (optional)'),
-                                      style: AppTextStyles.nunitoRegular
-                                          .copyWith(
-                                            color: _billDate != null
-                                                ? DesignToken.textDark
-                                                : DesignToken.grey400,
-                                            fontSize: 16,
-                                          ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: DesignToken.primary.withOpacity(0.5),
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Store Name Field
-                          Text(
-                            l10n?.storeVendorNameOptional ??
-                                'Store/Vendor Name (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
-                              fontSize: 16,
-                              color: DesignToken.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          TextFormField(
-                            controller: _storeNameController,
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
-                              fontSize: 16,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: DesignToken.white,
-                              hintText:
-                                  l10n?.enterStoreOrVendorNameOptional ??
-                                  'Enter store or vendor name (optional)',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
-                              ),
-                              prefixIcon: Container(
-                                margin: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.store,
-                                  color: DesignToken.primary,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: DesignToken.primary,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Bill Number Field
-                          Text(
-                            l10n?.billInvoiceNumberOptional ??
-                                'Bill/Invoice Number (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
-                              fontSize: 16,
-                              color: DesignToken.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          TextFormField(
-                            controller: _billNumberController,
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
-                              fontSize: 16,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: DesignToken.white,
-                              hintText:
-                                  l10n?.enterBillOrInvoiceNumberOptional ??
-                                  'Enter bill or invoice number (optional)',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
-                              ),
-                              prefixIcon: Container(
-                                margin: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.receipt,
-                                  color: DesignToken.primary,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: DesignToken.primary,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Notes Field (Optional)
-                          Text(
-                            l10n?.notesOptional ?? 'Notes (Optional)',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
-                              fontSize: 16,
-                              color: DesignToken.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          TextFormField(
-                            controller: _notesController,
-                            maxLines: 3,
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              color: DesignToken.textDark,
-                              fontSize: 16,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: DesignToken.white,
-                              hintText:
-                                  l10n?.addAnyAdditionalNotes ??
-                                  'Add any additional notes...',
-                              hintStyle: AppTextStyles.nunitoRegular.copyWith(
-                                color: DesignToken.grey400,
-                              ),
-                              prefixIcon: Container(
-                                margin: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: DesignToken.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.note,
-                                  color: DesignToken.primary,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: DesignToken.primary.withOpacity(0.3),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: DesignToken.primary,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Info Text
-                          const SizedBox(height: 24),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
 
-                // Fixed Submit Button at Bottom (shell reserves tab bar space)
-                Container(
-                  margin: EdgeInsets.only(
-                    bottom: CarpenterShellLayout.scrollEndMargin,
-                  ),
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: DesignToken.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: DesignToken.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, -2),
+                      const SizedBox(height: 24),
+
+                      // Amount
+                      _sectionLabel(l10n?.billAmount ?? 'Bill Amount (₹)'),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _amountController,
+                        keyboardType: TextInputType.number,
+                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        decoration: _fieldDecoration(
+                          hint: l10n?.enterBillAmount ?? 'Enter bill amount',
+                          icon: Icons.currency_rupee,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return l10n?.enterBillAmount ?? 'Please enter bill amount';
+                          }
+                          final amt = double.tryParse(value.trim());
+                          if (amt == null || amt <= 0) {
+                            return l10n?.enterValidAmount ?? 'Please enter a valid amount';
+                          }
+                          return null;
+                        },
                       ),
+
+                      const SizedBox(height: 32),
+
+                      // Bill Date
+                      _sectionLabel(l10n?.billDateOptional ?? 'Bill Date (Optional)'),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: _selectDate,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppColors.lightPrimary.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today, color: AppColors.lightPrimary, size: 24),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  _billDate != null
+                                      ? '${_billDate!.day}/${_billDate!.month}/${_billDate!.year}'
+                                      : (l10n?.selectBillDateOptional ?? 'Select bill date (optional)'),
+                                  style: AppTypography.bodyMedium(
+                                    color: _billDate != null
+                                        ? AppColors.lightTextPrimary
+                                        : AppColors.grey400,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: AppColors.lightPrimary.withValues(alpha: 0.5),
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Store Name
+                      _sectionLabel(
+                        l10n?.storeVendorNameOptional ?? 'Store/Vendor Name (Optional)',
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _storeNameController,
+                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        decoration: _fieldDecoration(
+                          hint: l10n?.enterStoreOrVendorNameOptional ??
+                              'Enter store or vendor name (optional)',
+                          icon: Icons.store,
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Bill Number
+                      _sectionLabel(
+                        l10n?.billInvoiceNumberOptional ?? 'Bill/Invoice Number (Optional)',
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _billNumberController,
+                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        decoration: _fieldDecoration(
+                          hint: l10n?.enterBillOrInvoiceNumberOptional ??
+                              'Enter bill or invoice number (optional)',
+                          icon: Icons.receipt,
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Notes
+                      _sectionLabel(l10n?.notesOptional ?? 'Notes (Optional)'),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _notesController,
+                        maxLines: 3,
+                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        decoration: _fieldDecoration(
+                          hint: l10n?.addAnyAdditionalNotes ?? 'Add any additional notes...',
+                          icon: Icons.note,
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
                     ],
                   ),
-                  child: SafeArea(
-                    top: false,
-                    bottom: false,
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Container(
-                        decoration: BoxDecoration(
+                ),
+              ),
+            ),
+
+            // Fixed Submit Button
+            Container(
+              margin: EdgeInsets.only(bottom: CarpenterShellLayout.scrollEndMargin),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                top: false,
+                bottom: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.lightSecondary.withValues(alpha: 0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitBill,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.lightSecondary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 56),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: DesignToken.secondary.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
                         ),
-                        child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : _submitBill,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: DesignToken.secondary,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: const Size(double.infinity, 56),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      DesignToken.white,
-                                    ),
-                                  ),
-                                )
-                              : Text(
-                                  l10n?.submitBill ?? 'Submit Bill',
-                                  style: AppTextStyles.nunitoBold.copyWith(
-                                    fontSize: 18,
-                                    color: DesignToken.white,
-                                  ),
-                                ),
-                        ),
+                        elevation: 0,
                       ),
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                              ),
+                            )
+                          : Text(
+                              l10n?.submitBill ?? 'Submit Bill',
+                              style: AppTypography.buttonLarge(color: AppColors.white),
+                            ),
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
