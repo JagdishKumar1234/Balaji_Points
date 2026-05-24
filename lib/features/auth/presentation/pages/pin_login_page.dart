@@ -10,6 +10,8 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/services/biometric_service.dart';
+import 'package:balaji_points/services/session_service.dart';
 import '../providers/auth_provider.dart';
 
 class PINLoginPage extends ConsumerStatefulWidget {
@@ -41,6 +43,24 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
     );
   }
 
+  Future<void> _onAuthenticated(AuthAuthenticated state) async {
+    final session = SessionService();
+    final bio = BiometricService();
+    final asked = await session.hasAskedBiometric();
+    if (!asked && await bio.isAvailable()) {
+      if (!mounted) return;
+      final enable = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const _BiometricOptInDialog(),
+      );
+      await session.setBiometricEnabled(enabled: enable ?? false);
+      await session.markAskedBiometric();
+    }
+    if (!mounted) return;
+    context.go(state.role.trim().toLowerCase() == 'admin' ? '/admin' : '/');
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -49,7 +69,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
 
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is AuthAuthenticated) {
-        context.go(state.role.trim().toLowerCase() == 'admin' ? '/admin' : '/');
+        _onAuthenticated(state);
       } else if (state is AuthError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(state.message),
@@ -357,6 +377,54 @@ class _GradientButton extends StatelessWidget {
                 style: AppTypography.buttonLarge(color: AppColors.white),
               ),
       ),
+    );
+  }
+}
+
+// ── Biometric opt-in dialog ──────────────────────────────────────────────────
+
+class _BiometricOptInDialog extends StatelessWidget {
+  const _BiometricOptInDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
+      title: Row(
+        children: [
+          const Icon(Icons.fingerprint, color: AppColors.lightSecondary, size: 28),
+          const SizedBox(width: AppSpacing.sm),
+          Text(
+            'Enable Biometrics',
+            style: AppTypography.h5(color: AppColors.lightPrimary),
+          ),
+        ],
+      ),
+      content: Text(
+        'Use fingerprint or face unlock to sign in faster next time.',
+        style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(
+            'Not Now',
+            style: AppTypography.labelLarge(color: AppColors.lightTextSecondary),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.lightSecondary,
+            foregroundColor: AppColors.white,
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
+          ),
+          child: Text(
+            'Enable',
+            style: AppTypography.labelLarge(color: AppColors.white),
+          ),
+        ),
+      ],
     );
   }
 }

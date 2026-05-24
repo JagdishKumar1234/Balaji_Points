@@ -65,6 +65,7 @@ dependencies:
   pdf: any
   printing: any
   file_picker: ^10.3.10
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:

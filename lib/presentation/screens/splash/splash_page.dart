@@ -8,6 +8,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/services/biometric_service.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
 import 'package:balaji_points/services/app_startup_service.dart';
@@ -47,6 +48,19 @@ class _SplashPageState extends State<SplashPage> {
       if (!mounted) return;
 
       if (isLoggedIn) {
+        final bioEnabled = await _sessionService.isBiometricEnabled();
+        if (bioEnabled) {
+          final authenticated = await BiometricService().authenticate(
+            localizedReason: 'Verify your identity to open Balaji Points',
+          );
+          if (!mounted) return;
+          if (!authenticated) {
+            // Biometric failed/cancelled — fall back to login screen
+            context.go('/login');
+            return;
+          }
+        }
+
         FCMService().processPendingNavigation();
         await Future<void>.delayed(const Duration(milliseconds: 120));
         if (!mounted) return;

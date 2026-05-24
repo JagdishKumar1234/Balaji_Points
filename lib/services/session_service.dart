@@ -25,6 +25,8 @@ class SessionService {
   static const String _keyFirstName = 'first_name';
   static const String _keyLastName = 'last_name';
   static const String _keyProfileImage = 'profile_image';
+  static const String _keyBiometricEnabled = 'biometric_enabled';
+  static const String _keyHasAskedBiometric = 'has_asked_biometric';
 
   /// Save user session after successful login
   Future<void> saveSession({
@@ -108,6 +110,33 @@ class SessionService {
       'profileImage': await getProfileImage(),
     };
   }
+
+  // ── Biometric preferences ───────────────────────────────────────────────────
+
+  /// Whether the user has opted in to biometric login for this device.
+  Future<bool> isBiometricEnabled() async {
+    final value = await _storage.read(key: _keyBiometricEnabled);
+    return value == 'true';
+  }
+
+  /// Persist biometric opt-in / opt-out choice.
+  Future<void> setBiometricEnabled({required bool enabled}) async {
+    await _storage.write(key: _keyBiometricEnabled, value: enabled ? 'true' : 'false');
+  }
+
+  /// Whether the app has already asked the user about biometric login once.
+  /// Used to show the prompt only once after first successful PIN login.
+  Future<bool> hasAskedBiometric() async {
+    final value = await _storage.read(key: _keyHasAskedBiometric);
+    return value == 'true';
+  }
+
+  /// Mark that the biometric opt-in prompt has been shown to the user.
+  Future<void> markAskedBiometric() async {
+    await _storage.write(key: _keyHasAskedBiometric, value: 'true');
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
 
   /// Clear session (logout)
   Future<void> clearSession() async {
