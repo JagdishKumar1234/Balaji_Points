@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
-import 'core/theme/app_theme.dart';
+import 'core/design/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'config/routes.dart';
 import 'presentation/widgets/loading_overlay.dart';
@@ -24,8 +24,8 @@ class BalajiPointsApp extends ConsumerWidget {
       title: AppConstants.appName,
 
       // Theme Configuration (Light & Dark)
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppThemeData.light,
+      darkTheme: AppThemeData.dark,
       themeMode: themeMode,
 
       // Localization Configuration

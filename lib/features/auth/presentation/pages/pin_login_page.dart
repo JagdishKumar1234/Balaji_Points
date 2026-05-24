@@ -376,7 +376,8 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                 ),
               ],
             ),
-          );
+          ),
+        );
   }
 }
 
