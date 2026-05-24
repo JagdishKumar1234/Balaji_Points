@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/features/auth/domain/entities/user.dart';
+import 'package:balaji_points/core/models/user.dart';
 
 /// Data model for User
 /// 

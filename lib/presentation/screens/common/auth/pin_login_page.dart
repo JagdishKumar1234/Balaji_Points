@@ -12,7 +12,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/auth/biometric_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
-import '../providers/auth_provider.dart';
+import '../../../../providers/auth_provider.dart';
 
 class PINLoginPage extends ConsumerStatefulWidget {
   final String phoneNumber;

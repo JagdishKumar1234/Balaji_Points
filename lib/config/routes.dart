@@ -9,10 +9,10 @@ import 'package:balaji_points/presentation/screens/carpenter/profile/edit_profil
 import 'package:balaji_points/presentation/screens/carpenter/profile/profile_page.dart';
 import 'package:balaji_points/presentation/screens/common/splash/splash_page.dart';
 
-import 'package:balaji_points/features/auth/presentation/pages/login_page.dart';
-import 'package:balaji_points/features/auth/presentation/pages/pin_setup_page.dart';
-import 'package:balaji_points/features/auth/presentation/pages/pin_login_page.dart';
-import 'package:balaji_points/features/auth/presentation/pages/reset_pin_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/login_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/pin_setup_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/pin_login_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/reset_pin_page.dart';
 
 import 'package:balaji_points/presentation/screens/carpenter/spin/daily_spin_page.dart';
 import 'package:balaji_points/presentation/screens/carpenter/wallet/wallet_page.dart';

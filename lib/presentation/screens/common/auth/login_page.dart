@@ -12,7 +12,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
-import '../providers/auth_provider.dart';
+import '../../../../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});

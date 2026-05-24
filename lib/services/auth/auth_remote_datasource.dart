@@ -3,7 +3,7 @@ import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
-import 'package:balaji_points/features/auth/data/models/user_model.dart';
+import 'package:balaji_points/core/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<bool> checkUserExists(String phoneNumber);
