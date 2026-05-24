@@ -67,11 +67,11 @@ class _ProductsManagementState extends State<ProductsManagement> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
+        title: Text(
           'Delete product',
           style: AppTextStyles.nunitoBold,
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to delete this product?\nThis action cannot be undone.',
           style: AppTextStyles.nunitoRegular,
         ),
@@ -427,7 +427,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
         onPressed: _showCreateProductDialog,
         backgroundColor: DesignToken.secondary,
         icon: const Icon(Icons.add),
-        label: const Text(
+        label: Text(
           'Add product',
           style: AppTextStyles.nunitoBold,
         ),
@@ -1156,7 +1156,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                               color: DesignToken.primary,
                             ),
                             const SizedBox(width: 12),
-                            const Expanded(
+                            Expanded(
                               child: Text(
                                 'Show product to carpenters',
                                 style: AppTextStyles.nunitoMedium,

@@ -107,13 +107,6 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
 
-  # Custom fonts
-  fonts:
-    - family: Nunito
-      fonts:
-        - asset: assets/fonts/Nunito-VariableFont_wght.ttf
-        - asset: assets/fonts/Nunito-Italic-VariableFont_wght.ttf
-          style: italic
 
 flutter_launcher_icons:
   android: true

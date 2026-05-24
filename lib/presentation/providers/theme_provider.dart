@@ -3,50 +3,51 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 
-/// Theme mode notifier for managing light/dark theme
+/// Persists and exposes the app ThemeMode (light / dark / system).
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
   ThemeMode build() {
-    _loadThemeMode();
-    return ThemeMode.light;
+    _load();
+    return ThemeMode.system;
   }
 
-  /// Load theme mode from shared preferences
-  Future<void> _loadThemeMode() async {
+  Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeModeString = prefs.getString(AppConstants.keyThemeMode);
-
-    if (themeModeString != null) {
+    final saved = prefs.getString(AppConstants.keyThemeMode);
+    if (saved != null) {
       state = ThemeMode.values.firstWhere(
-        (mode) => mode.toString() == themeModeString,
-        orElse: () => ThemeMode.light,
+        (m) => m.toString() == saved,
+        orElse: () => ThemeMode.system,
       );
     }
   }
 
-  /// Toggle between light and dark theme
-  Future<void> toggleTheme() async {
-    state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    await _saveThemeMode();
-  }
-
-  /// Set specific theme mode
   Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
-    await _saveThemeMode();
-  }
-
-  /// Save theme mode to shared preferences
-  Future<void> _saveThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(AppConstants.keyThemeMode, state.toString());
+    await prefs.setString(AppConstants.keyThemeMode, mode.toString());
   }
 
-  /// Check if current theme is dark
+  Future<void> toggleTheme() async {
+    await setThemeMode(state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light);
+  }
+
   bool get isDarkMode => state == ThemeMode.dark;
 }
 
-/// Provider for theme mode
 final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
   () => ThemeModeNotifier(),
 );
+
+/// Convenience: `ref.watch(themeIsDarkProvider)` → bool.
+/// Follows system theme when mode == ThemeMode.system.
+final themeIsDarkProvider = Provider<bool>((ref) {
+  final mode = ref.watch(themeModeProvider);
+  if (mode == ThemeMode.system) {
+    // PlatformDispatcher is accessible without a BuildContext
+    final brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    return brightness == Brightness.dark;
+  }
+  return mode == ThemeMode.dark;
+});

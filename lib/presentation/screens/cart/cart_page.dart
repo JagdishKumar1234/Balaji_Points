@@ -407,7 +407,7 @@ class _CartPageState extends State<CartPage> {
                                       Icons.delete_outline,
                                       size: 18,
                                     ),
-                                    label: const Text(
+                                    label: Text(
                                       'Remove',
                                       style: AppTextStyles.nunitoRegular,
                                     ),
@@ -501,7 +501,7 @@ class _CartPageState extends State<CartPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                           ),
                           icon: const Icon(Icons.shopping_bag),
-                          label: const Text(
+                          label: Text(
                             'Place Order (WhatsApp)',
                             style: AppTextStyles.nunitoBold,
                           ),

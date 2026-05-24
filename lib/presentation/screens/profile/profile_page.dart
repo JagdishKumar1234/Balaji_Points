@@ -1120,8 +1120,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   Widget _buildThemeToggleButton(WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark;
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -1141,25 +1139,50 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         child: Row(
           children: [
             Icon(
-              isDark ? Icons.dark_mode : Icons.light_mode,
+              themeMode == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : themeMode == ThemeMode.light
+                      ? Icons.light_mode
+                      : Icons.brightness_auto,
               color: DesignToken.primary,
               size: 24,
             ),
             const SizedBox(width: 16),
             Text(
-              l10n.darkMode,
+              'Theme',
               style: AppTextStyles.nunitoSemiBold.copyWith(
                 fontSize: 16,
-                color: DesignToken.textDark,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const Spacer(),
-            Switch(
-              value: isDark,
-              onChanged: (value) {
-                ref.read(themeModeProvider.notifier).toggleTheme();
+            SegmentedButton<ThemeMode>(
+              style: SegmentedButton.styleFrom(
+                selectedBackgroundColor: DesignToken.primary,
+                selectedForegroundColor: DesignToken.white,
+                side: BorderSide(color: theme.colorScheme.outline),
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(36, 32),
+                textStyle: AppTextStyles.nunitoMedium.copyWith(fontSize: 11),
+              ),
+              segments: const [
+                ButtonSegment(
+                  value: ThemeMode.light,
+                  icon: Icon(Icons.light_mode, size: 16),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.system,
+                  icon: Icon(Icons.brightness_auto, size: 16),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.dark,
+                  icon: Icon(Icons.dark_mode, size: 16),
+                ),
+              ],
+              selected: {themeMode},
+              onSelectionChanged: (modes) {
+                ref.read(themeModeProvider.notifier).setThemeMode(modes.first);
               },
-              activeTrackColor: DesignToken.primary,
             ),
           ],
         ),

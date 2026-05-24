@@ -274,7 +274,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Orders',
                   style: AppTextStyles.nunitoSemiBold,
                 ),
