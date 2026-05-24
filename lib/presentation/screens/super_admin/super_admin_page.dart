@@ -21,7 +21,7 @@ class SuperAdminPage extends StatefulWidget {
 
 class _SuperAdminPageState extends State<SuperAdminPage>
     with DoubleTapExitMixin {
-  int _tab = 0; // 0 = branches, 1 = create admin
+  int _tab = 0; // 0 = branches, 1 = create admin, 2 = create super admin
 
   Future<void> _logout() async {
     final confirmed = await showDialog<bool>(
@@ -91,11 +91,17 @@ class _SuperAdminPageState extends State<SuperAdminPage>
                     onTap: () => setState(() => _tab = 0)),
                 _TabBtn(label: 'Create Admin', index: 1, current: _tab,
                     onTap: () => setState(() => _tab = 1)),
+                _TabBtn(label: 'Super Admin', index: 2, current: _tab,
+                    onTap: () => setState(() => _tab = 2)),
               ],
             ),
           ),
         ),
-        body: _tab == 0 ? const _BranchesTab() : const _CreateAdminTab(),
+        body: switch (_tab) {
+          1 => const _CreateAdminTab(),
+          2 => const _CreateSuperAdminTab(),
+          _ => const _BranchesTab(),
+        },
       ),
     );
   }
@@ -706,6 +712,261 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
                       'Note the PIN shown in the success message — '
                       'share it securely with the admin. '
                       'They can change it after first login.',
+                      style: AppTypography.bodySmall(
+                          color: AppColors.lightTextSecondary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionLabel(String text) => Text(
+        text,
+        style: AppTypography.labelLarge(color: AppColors.lightPrimary),
+      );
+
+  Widget _field(
+    TextEditingController ctrl,
+    String label, {
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
+      controller: ctrl,
+      keyboardType: keyboardType,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: AppRadius.forInput),
+        isDense: true,
+      ),
+    );
+  }
+}
+
+// ── Create super admin tab ────────────────────────────────────────────────────
+// Super admins are platform-level — no branchId is set or required.
+
+class _CreateSuperAdminTab extends StatefulWidget {
+  const _CreateSuperAdminTab();
+
+  @override
+  State<_CreateSuperAdminTab> createState() => _CreateSuperAdminTabState();
+}
+
+class _CreateSuperAdminTabState extends State<_CreateSuperAdminTab> {
+  final _formKey = GlobalKey<FormState>();
+  final _phoneCtrl = TextEditingController();
+  final _firstCtrl = TextEditingController();
+  final _lastCtrl = TextEditingController();
+  final _pinCtrl = TextEditingController();
+  final _confirmPinCtrl = TextEditingController();
+  bool _saving = false;
+  bool _obscurePin = true;
+
+  @override
+  void dispose() {
+    _phoneCtrl.dispose();
+    _firstCtrl.dispose();
+    _lastCtrl.dispose();
+    _pinCtrl.dispose();
+    _confirmPinCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _create() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _saving = true);
+    try {
+      final pin = _pinCtrl.text.trim();
+
+      // Create user with default carpenter role first, then promote.
+      final ok = await PinAuthService().setPinForPhone(
+        phone: _phoneCtrl.text.trim(),
+        pin: pin,
+        firstName: _firstCtrl.text.trim(),
+        lastName: _lastCtrl.text.trim(),
+        // No branchId — super admins are not branch-scoped.
+      );
+      if (!ok) throw Exception('Failed to create user.');
+
+      final phone = PinAuthService().normalizePhone(_phoneCtrl.text.trim());
+      final snap = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: phone)
+          .limit(1)
+          .get();
+      if (snap.docs.isEmpty) throw Exception('User doc not found after creation.');
+
+      final userId = snap.docs.first.id;
+      await BranchService().assignSuperAdmin(userId);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'Super admin created\nPhone: ${_phoneCtrl.text.trim()}  PIN: $pin'),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 8),
+      ));
+      _formKey.currentState!.reset();
+      _phoneCtrl.clear();
+      _firstCtrl.clear();
+      _lastCtrl.clear();
+      _pinCtrl.clear();
+      _confirmPinCtrl.clear();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColors.error,
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.info.withValues(alpha: 0.08),
+                borderRadius: AppRadius.forCard,
+                border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.admin_panel_settings,
+                      color: AppColors.info, size: 20),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'Super admins manage all branches and have no branch assignment.',
+                      style: AppTypography.bodySmall(
+                          color: AppColors.lightTextSecondary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _sectionLabel('Account Details'),
+            const SizedBox(height: AppSpacing.sm),
+            _field(_firstCtrl, 'First Name *',
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null),
+            const SizedBox(height: AppSpacing.sm),
+            _field(_lastCtrl, 'Last Name'),
+            const SizedBox(height: AppSpacing.sm),
+            _field(
+              _phoneCtrl,
+              'Phone Number * (10 digits)',
+              keyboardType: TextInputType.phone,
+              validator: (v) {
+                final s = v?.trim() ?? '';
+                if (s.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(s)) {
+                  return 'Enter valid 10-digit phone';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _sectionLabel('Set PIN'),
+            const SizedBox(height: AppSpacing.sm),
+            TextFormField(
+              controller: _pinCtrl,
+              keyboardType: TextInputType.number,
+              obscureText: _obscurePin,
+              maxLength: 4,
+              textAlign: TextAlign.center,
+              style: AppTypography.h4(color: AppColors.lightPrimary)
+                  .copyWith(letterSpacing: 10),
+              decoration: InputDecoration(
+                labelText: '4-digit PIN *',
+                counterText: '',
+                border: OutlineInputBorder(borderRadius: AppRadius.forInput),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                      _obscurePin ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () =>
+                      setState(() => _obscurePin = !_obscurePin),
+                ),
+              ),
+              validator: (v) =>
+                  (v == null || v.length != 4) ? 'Enter 4-digit PIN' : null,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TextFormField(
+              controller: _confirmPinCtrl,
+              keyboardType: TextInputType.number,
+              obscureText: _obscurePin,
+              maxLength: 4,
+              textAlign: TextAlign.center,
+              style: AppTypography.h4(color: AppColors.lightPrimary)
+                  .copyWith(letterSpacing: 10),
+              decoration: InputDecoration(
+                labelText: 'Confirm PIN *',
+                counterText: '',
+                border: OutlineInputBorder(borderRadius: AppRadius.forInput),
+              ),
+              validator: (v) {
+                if (v == null || v.length != 4) return 'Enter 4-digit PIN';
+                if (v != _pinCtrl.text.trim()) return 'PINs do not match';
+                return null;
+              },
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            ElevatedButton.icon(
+              onPressed: _saving ? null : _create,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.lightPrimary,
+                foregroundColor: AppColors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.forButton),
+              ),
+              icon: _saving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          color: AppColors.white, strokeWidth: 2))
+                  : const Icon(Icons.shield),
+              label: Text('Create Super Admin',
+                  style: AppTypography.labelLarge(color: AppColors.white)),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.1),
+                borderRadius: AppRadius.forCard,
+                border:
+                    Border.all(color: AppColors.warning.withValues(alpha: 0.4)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline,
+                      color: AppColors.warning, size: 20),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'Note the PIN shown in the success message — '
+                      'share it securely. They can change it after first login.',
                       style: AppTypography.bodySmall(
                           color: AppColors.lightTextSecondary),
                     ),

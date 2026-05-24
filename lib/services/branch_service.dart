@@ -117,11 +117,8 @@ class BranchService {
     }
   }
 
-  // ── Super admin: create branch admin user ─────────────────────────────────
+  // ── Super admin: promote user roles ──────────────────────────────────────
 
-  /// Creates a PIN-based admin user in the `users` collection for a specific branch.
-  /// The caller (super admin UI) must provide a hashed PIN — this is handled
-  /// by PinAuthService.setPinForPhone which is called from the UI layer.
   Future<bool> assignAdminToBranch({
     required String userId,
     required String branchId,
@@ -135,6 +132,22 @@ class BranchService {
       return true;
     } catch (e) {
       AppLogger.error('BranchService.assignAdminToBranch', e);
+      return false;
+    }
+  }
+
+  /// Promotes a user to super_admin. No branchId is set — super admins are
+  /// platform-level and must not be scoped to any branch.
+  Future<bool> assignSuperAdmin(String userId) async {
+    try {
+      await _db.collection('users').doc(userId).update({
+        'role': 'super_admin',
+        'branchId': FieldValue.delete(),
+      });
+      AppLogger.info('BranchService: assigned $userId as super_admin');
+      return true;
+    } catch (e) {
+      AppLogger.error('BranchService.assignSuperAdmin', e);
       return false;
     }
   }
