@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 
@@ -93,11 +94,10 @@ class OrderDetailPage extends StatelessWidget {
           final carpenterPhone = (data['carpenterPhone'] as String?) ?? '';
           final orderNo = data['orderId'] as String? ?? orderId;
 
-          const bottomNavHeight = 98.0;
-          final bottomSafe = MediaQuery.of(context).padding.bottom;
-
           return Padding(
-            padding: EdgeInsets.only(bottom: bottomNavHeight + bottomSafe),
+            padding: CarpenterShellLayout.scrollViewPadding(
+              MediaQuery.of(context),
+            ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(

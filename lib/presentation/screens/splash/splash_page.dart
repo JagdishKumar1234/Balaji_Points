@@ -7,6 +7,7 @@ import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
+import 'package:balaji_points/services/app_startup_service.dart';
 import 'package:balaji_points/services/onboarding_prefs.dart';
 
 class SplashPage extends StatefulWidget {
@@ -29,6 +30,12 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> _runSplashSequence() async {
     await Future<void>.delayed(const Duration(milliseconds: 750));
     if (!mounted) return;
+
+    final blockedByStartup = await AppStartupService().runPreLaunchChecks(
+      context,
+    );
+    if (!mounted || blockedByStartup) return;
+
     await _checkAuthAndNavigate();
   }
 
@@ -36,7 +43,6 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     try {
-      // Check if user has an active session
       final isLoggedIn = await _sessionService.isLoggedIn();
 
       if (!mounted) return;
@@ -62,7 +68,6 @@ class _SplashPageState extends State<SplashPage> {
           context.go('/');
         }
       } else {
-        // No session: first install → onboarding, then login; returning → login
         final onboardingDone = await OnboardingPrefs.isCompleted();
         if (!mounted) return;
         if (onboardingDone) {

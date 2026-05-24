@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'app.dart';
 import 'firebase_options.dart';
@@ -72,27 +73,29 @@ class _Bootstrap extends StatelessWidget {
 
   static Future<void> _init() async {
     try {
-      // Initialize Firebase
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-
-      // Setup dependency injection
       await setupDependencyInjection();
 
-      // FCM (Safe Initialization)
+      final packageInfo = await PackageInfo.fromPlatform();
+      AppLogger.appLaunchBanner(
+        version: packageInfo.version,
+        build: int.tryParse(packageInfo.buildNumber) ?? 0,
+      );
+
       try {
         FirebaseMessaging.onBackgroundMessage(
           _firebaseMessagingBackgroundHandler,
         );
         await FCMService().initialize();
       } catch (fcmError) {
-        AppLogger.warning('⚠️ FCM initialization failed: $fcmError');
+        AppLogger.warning('FCM init failed');
       }
-      
-      AppLogger.info('✅ App initialized');
+
+      AppLogger.startup('Bootstrap OK');
     } catch (e) {
-      AppLogger.error('❌ App initialization failed', e);
+      AppLogger.error('Bootstrap failed', e);
       rethrow;
     }
   }

@@ -378,6 +378,16 @@ service cloud.firestore {
     }
 
     // ============================================
+    // APP CONFIG (force / optional update metadata)
+    // ============================================
+    match /app_config/{docId} {
+      // Public read — checked on splash before login (PIN auth has no request.auth)
+      allow read: if true;
+      // Writes only from Firebase Console / Admin SDK (not client apps)
+      allow write: if false;
+    }
+
+    // ============================================
     // DEFAULT DENY RULE
     // ============================================
     // Deny all other collections by default

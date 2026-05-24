@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balaji_points/services/pin_auth_service.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
+import 'package:balaji_points/services/user_migration_service.dart';
 import 'package:balaji_points/features/auth/domain/entities/user.dart';
 import 'package:balaji_points/features/auth/presentation/bloc/auth_event.dart';
 import 'package:balaji_points/features/auth/presentation/bloc/auth_state.dart';
@@ -24,14 +25,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PinAuthService _pinAuthService;
   final SessionService _sessionService;
   final FCMService _fcmService;
+  final UserMigrationService _userMigrationService;
 
   AuthBloc({
     required PinAuthService pinAuthService,
     required SessionService sessionService,
     required FCMService fcmService,
+    required UserMigrationService userMigrationService,
   })  : _pinAuthService = pinAuthService,
         _sessionService = sessionService,
         _fcmService = fcmService,
+        _userMigrationService = userMigrationService,
         super(const AuthInitial()) {
     on<CheckUserExistsEvent>(_onCheckUserExists);
     on<LoginWithPinEvent>(_onLoginWithPin);
@@ -80,40 +84,57 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
 
-      // Save session if remember me is checked
+      final legacyDocId =
+          userData['docId'] as String? ?? userData['id'] as String? ?? event.phoneNumber;
+      final postLogin = await _userMigrationService.completePostPinLogin(
+        phone: event.phoneNumber,
+        legacyDocId: legacyDocId,
+      );
+      final sessionUserId = postLogin?.firebaseUid ??
+          postLogin?.sessionUserId ??
+          userData['id'] as String? ??
+          event.phoneNumber;
+
       if (event.rememberMe) {
         await _sessionService.saveSession(
           phoneNumber: event.phoneNumber,
-          userId: userData['id'] as String? ?? event.phoneNumber,
+          userId: sessionUserId,
           role: userData['role'] as String? ?? 'carpenter',
           firstName: userData['firstName'] as String?,
           lastName: userData['lastName'] as String?,
         );
       }
 
-      // Refresh FCM token after successful login
-      try {
-        // FCM token refresh handled in datasource
-      // await _fcmService.initialize(event.phoneNumber);
-      } catch (e) {
-        // Don't fail login if FCM fails
+      if (postLogin != null) {
+        try {
+          await _fcmService.refreshTokenAfterLogin(
+            uid: postLogin.firebaseUid,
+            phone: postLogin.phone,
+          );
+        } catch (e) {
+          AppLogger.warning('FCM refresh after login failed: $e');
+        }
       }
 
-      // Create User entity from Firebase data
+      final displayName = _buildDisplayName(
+        userData['firstName'] as String?,
+        userData['lastName'] as String?,
+      );
+      final role = userData['role'] as String? ?? 'carpenter';
+
+      AppLogger.auth(
+        'Login: ${displayName.isEmpty ? "User" : displayName} · $role',
+      );
+
       final user = User(
-        id: userData['id'] as String? ?? 
-            userData['userId'] as String? ?? 
-            event.phoneNumber,
+        id: sessionUserId,
         email: userData['email'] as String? ?? '',
         phoneNumber: event.phoneNumber,
-        displayName: _buildDisplayName(
-          userData['firstName'] as String?,
-          userData['lastName'] as String?,
-        ),
+        displayName: displayName,
         photoUrl: userData['profileImage'] as String?,
-        role: userData['role'] as String? ?? 'carpenter',
-        isEmailVerified: true, // Phone-verified user
-        createdAt: DateTime.now(), // Will be replaced with Firestore timestamp
+        role: role,
+        isEmailVerified: true,
+        createdAt: DateTime.now(),
       );
 
       emit(AuthAuthenticatedState(user, role: user.role));
@@ -155,28 +176,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
 
-      // Save session
+      final legacyDocId =
+          userData['docId'] as String? ?? userData['id'] as String? ?? event.phoneNumber;
+      final postLogin = await _userMigrationService.completePostPinLogin(
+        phone: event.phoneNumber,
+        legacyDocId: legacyDocId,
+      );
+      final sessionUserId = postLogin?.firebaseUid ??
+          postLogin?.sessionUserId ??
+          userData['id'] as String? ??
+          event.phoneNumber;
+
       await _sessionService.saveSession(
         phoneNumber: event.phoneNumber,
-        userId: userData['id'] as String? ?? event.phoneNumber,
+        userId: sessionUserId,
         role: userData['role'] as String? ?? 'carpenter',
         firstName: userData['firstName'] as String?,
         lastName: userData['lastName'] as String?,
       );
 
-      // Refresh FCM token
-      try {
-        // FCM token refresh handled in datasource
-      // await _fcmService.initialize(event.phoneNumber);
-      } catch (e) {
-        // Don't fail setup if FCM fails
+      if (postLogin != null) {
+        try {
+          await _fcmService.refreshTokenAfterLogin(
+            uid: postLogin.firebaseUid,
+            phone: postLogin.phone,
+          );
+        } catch (e) {
+          AppLogger.warning('FCM refresh after setup failed: $e');
+        }
       }
 
-      // Create User entity
       final user = User(
-        id: userData['id'] as String? ?? 
-            userData['userId'] as String? ?? 
-            event.phoneNumber,
+        id: sessionUserId,
         email: userData['email'] as String? ?? '',
         phoneNumber: event.phoneNumber,
         displayName: _buildDisplayName(

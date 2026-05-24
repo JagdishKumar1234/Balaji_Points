@@ -5,6 +5,8 @@ class AppConstants {
   // App Info
   static const String appName = 'Balaji Points';
   static const String appVersion = '1.0.0';
+  static const String appConfigCollection = 'app_config';
+  static const String appConfigDocument = 'version';
 
   // Points Conversion
   static const int pointsPerThousandRupees = 1;
@@ -101,12 +103,14 @@ class AppConstants {
 
   // Regex Patterns
   static const String phoneRegex = r'^[0-9]+$';
-  static const String emailRegex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+  static const String emailRegex =
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
   static const String nameRegex = r'^[a-zA-Z ]+$';
 
   // Error Messages (for fallback when localization fails)
   static const String defaultError = 'An error occurred';
-  static const String networkError = 'Network error. Please check your internet connection.';
+  static const String networkError =
+      'Network error. Please check your internet connection.';
   static const String permissionDenied = 'Permission denied';
   static const String sessionExpired = 'Session expired. Please login again.';
 

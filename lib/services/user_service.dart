@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../core/logger.dart';
 import 'session_service.dart';
 import 'notification_service.dart';
+import 'user_migration_service.dart';
 
 class UserService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SessionService _sessionService = SessionService();
+  final UserMigrationService _userMigrationService = UserMigrationService();
 
   /// Check if phone number exists in pending_users
   Future<bool> checkPendingUser(String phoneNumber) async {
@@ -202,11 +204,13 @@ class UserService {
     }
   }
 
-  /// User doc ID from session (userId and phone are same for PIN auth; prefer userId).
+  /// Canonical Firestore user document id (`users/{firebaseUid}`).
   Future<String?> _getUserDocId() async {
-    final userId = await _sessionService.getUserId();
-    if (userId != null && userId.isNotEmpty) return userId;
-    return _sessionService.getPhoneNumber();
+    final phone = await _sessionService.getPhoneNumber();
+    if (phone == null || phone.isEmpty) {
+      return _sessionService.getUserId();
+    }
+    return _userMigrationService.resolveCanonicalUserId(phone: phone);
   }
 
   /// Fresh user data from Firestore (server) with session profile merged for instant display.

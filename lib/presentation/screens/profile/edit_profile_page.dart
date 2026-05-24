@@ -9,6 +9,7 @@ import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/user_service.dart';
 import 'package:balaji_points/services/storage_service.dart';
 import 'package:balaji_points/services/session_service.dart';
+import 'package:balaji_points/services/user_migration_service.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/home_nav_bar.dart';
@@ -29,6 +30,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final UserService _userService = UserService();
   final StorageService _storageService = StorageService();
   final SessionService _sessionService = SessionService();
+  final UserMigrationService _userMigrationService = UserMigrationService();
 
   File? _imageFile;
   String? _existingImageUrl;
@@ -228,38 +230,26 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       }
 
       debugPrint('EditProfilePage: === SAVING USER DATA ===');
-      debugPrint('  User ID (phone): $phoneNumber');
+      debugPrint('  Phone: $phoneNumber');
       debugPrint('  First Name: "$sanitizedFirstName"');
       debugPrint('  Last Name: "$sanitizedLastName"');
       debugPrint('  Profile Image: ${profileImageUrl ?? "none"}');
       debugPrint('  Update Data: $updateData');
 
-      // ✅ DATA SAFETY FIX: Get current data as backup before update
-      // Primary source of truth: document keyed by phone number.
-      final sessionUserId = await _sessionService.getUserId();
-      final usersCollection = FirebaseFirestore.instance.collection('users');
-
-      final primaryRef = usersCollection.doc(phoneNumber);
-      final primarySnapshot = await primaryRef.get();
+      final canonicalRef = await _userMigrationService.resolveCanonicalUserRef(
+        phone: phoneNumber,
+      );
+      final primarySnapshot = await canonicalRef.get();
       final currentData = primarySnapshot.data();
 
-      // Save to Firestore: always update phone-based doc
-      await primaryRef.set(updateData, SetOptions(merge: true));
+      await canonicalRef.set(updateData, SetOptions(merge: true));
 
-      // Also update legacy UID-based doc if it exists and is different
-      if (sessionUserId != null && sessionUserId != phoneNumber) {
-        final legacyRef = usersCollection.doc(sessionUserId);
-        final legacySnap = await legacyRef.get();
-        if (legacySnap.exists) {
-          await legacyRef.set(updateData, SetOptions(merge: true));
-        }
-      }
+      debugPrint(
+        'EditProfilePage: ✅ Data saved to users/${canonicalRef.id}',
+      );
 
-      debugPrint('EditProfilePage: ✅ Data saved successfully to Firestore!');
-
-      // ✅ DATA SAFETY FIX: Verify the save by reading back and comparing
       final verifyDoc =
-          await primaryRef.get(GetOptions(source: Source.server));
+          await canonicalRef.get(GetOptions(source: Source.server));
       final savedData = verifyDoc.data();
 
       debugPrint('EditProfilePage: Verified saved data:');
@@ -278,7 +268,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           debugPrint(
             'EditProfilePage: ⚠️ Data mismatch detected, attempting restore...',
           );
-          await primaryRef.set(currentData, SetOptions(merge: true));
+          await canonicalRef.set(currentData, SetOptions(merge: true));
         }
         throw Exception('Data verification failed - firstName mismatch');
       }

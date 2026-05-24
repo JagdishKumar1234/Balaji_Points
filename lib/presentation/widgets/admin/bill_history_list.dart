@@ -9,6 +9,7 @@ import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
+import 'package:balaji_points/core/utils/bill_query_utils.dart';
 import 'package:intl/intl.dart';
 
 /// Bill History Widget - Shows all approved bills with filters
@@ -754,7 +755,6 @@ class _BillHistoryListState extends State<BillHistoryList> {
             stream: _firestore
                     .collection('bills')
                     .where('status', whereIn: ['approved', 'rejected'])
-                    .orderBy('createdAt', descending: true)
                     .snapshots(),
             builder: (_, snap) {
               if (snap.hasError) {
@@ -785,7 +785,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                 );
               }
 
-              var bills = snap.data!.docs;
+              var bills = sortBillsByCreatedAtDesc(snap.data!.docs);
               bills = _filterBills(bills);
               _billsForExport = bills;
 

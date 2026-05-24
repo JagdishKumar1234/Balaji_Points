@@ -8,6 +8,7 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/services/pin_auth_service.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
+import 'package:balaji_points/services/user_migration_service.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +31,8 @@ class _PINLoginPageState extends State<PINLoginPage>
   bool _rememberMe = true; // Remember me is checked by default
   final _pinAuthService = PinAuthService();
   final _sessionService = SessionService();
+  final _userMigrationService = UserMigrationService();
+  final _fcmService = FCMService();
 
   @override
   void initState() {
@@ -66,11 +69,23 @@ class _PINLoginPageState extends State<PINLoginPage>
       return;
     }
 
+    final legacyDocId =
+        userData['docId'] as String? ?? userData['id'] as String? ?? phone;
+    final postLogin = await _userMigrationService.completePostPinLogin(
+      phone: phone,
+      legacyDocId: legacyDocId,
+    );
+
+    final sessionUserId = postLogin?.firebaseUid ??
+        postLogin?.sessionUserId ??
+        userData['id'] as String? ??
+        phone;
+
     // Save session after successful login (only if remember me is checked)
     if (_rememberMe) {
       await _sessionService.saveSession(
         phoneNumber: phone,
-        userId: userData['id'] as String? ?? phone,
+        userId: sessionUserId,
         role: userData['role'] as String? ?? 'carpenter',
         firstName: userData['firstName'] as String?,
         lastName: userData['lastName'] as String?,
@@ -78,19 +93,17 @@ class _PINLoginPageState extends State<PINLoginPage>
       );
     }
 
-    // IMPORTANT: Refresh and save FCM token after every login
-    // This ensures the user always has an up-to-date token in Firestore
-    try {
-      print('🔔 Refreshing FCM token after login for user: $phone');
-      AppLogger.info('Refreshing FCM token after login');
-      final fcmService = FCMService();
-      // Re-initialize FCM to get fresh token and save to Firestore
-      await fcmService.initialize();
-      print('✅ FCM token refreshed and saved after login');
-    } catch (e) {
-      print('⚠️ Failed to refresh FCM token after login: $e');
-      AppLogger.warning('Failed to refresh FCM token after login: $e');
-      // Continue login flow even if FCM fails
+    // FCM token → canonical user doc (UID after migration)
+    if (postLogin != null) {
+      try {
+        AppLogger.info('Refreshing FCM token after login for ${postLogin.phone}');
+        await _fcmService.refreshTokenAfterLogin(
+          uid: postLogin.firebaseUid,
+          phone: postLogin.phone,
+        );
+      } catch (e) {
+        AppLogger.warning('Failed to refresh FCM token after login: $e');
+      }
     }
 
     if (!mounted) return;

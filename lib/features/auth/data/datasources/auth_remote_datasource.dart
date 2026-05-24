@@ -2,6 +2,7 @@
 import 'package:balaji_points/services/pin_auth_service.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
+import 'package:balaji_points/services/user_migration_service.dart';
 import 'package:balaji_points/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -28,14 +29,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final PinAuthService _pinAuthService;
   final SessionService _sessionService;
   final FCMService _fcmService;
+  final UserMigrationService _userMigrationService;
 
   AuthRemoteDataSourceImpl({
     required PinAuthService pinAuthService,
     required SessionService sessionService,
     required FCMService fcmService,
+    required UserMigrationService userMigrationService,
   })  : _pinAuthService = pinAuthService,
         _sessionService = sessionService,
-        _fcmService = fcmService;
+        _fcmService = fcmService,
+        _userMigrationService = userMigrationService;
 
   @override
   Future<bool> checkUserExists(String phoneNumber) async {
@@ -46,6 +50,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel> verifyPin(String phoneNumber, String pin) async {
     final result = await _pinAuthService.verifyPin(phone: phoneNumber, pin: pin);
     if (result == null) throw Exception('Invalid PIN');
+
+    final legacyDocId =
+        result['docId'] as String? ?? result['id'] as String? ?? phoneNumber;
+    final postLogin = await _userMigrationService.completePostPinLogin(
+      phone: phoneNumber,
+      legacyDocId: legacyDocId,
+    );
+
+    if (postLogin != null) {
+      result['id'] = postLogin.sessionUserId;
+      result['docId'] = postLogin.sessionUserId;
+      result['uid'] = postLogin.firebaseUid;
+      await _fcmService.refreshTokenAfterLogin(
+        uid: postLogin.firebaseUid,
+        phone: postLogin.phone,
+      );
+    }
+
     return UserModel.fromJson(result);
   }
 
@@ -96,12 +118,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await _sessionService.clearSession();
     }
     
-    // Save FCM token after login
+    // FCM token is saved in verifyPin after migration (refreshTokenAfterLogin).
     try {
-      final phoneNumber = user.phoneNumber ?? '';
-      if (phoneNumber.isNotEmpty) {
-        await _fcmService.initialize();
-      }
+      await _fcmService.initialize();
     } catch (e) {
       // Continue even if FCM fails
     }

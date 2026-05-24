@@ -35,7 +35,11 @@ import 'package:balaji_points/presentation/screens/orders/order_detail_page.dart
 import 'package:balaji_points/presentation/screens/info/about_us_page.dart';
 import 'package:balaji_points/presentation/screens/onboarding/onboarding_page.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/core/logger.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+String? _lastLoggedRoutePath;
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -43,6 +47,12 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/splash',
 
     redirect: (context, state) async {
+      final path = state.uri.path;
+      if (_lastLoggedRoutePath != path) {
+        _lastLoggedRoutePath = path;
+        AppLogger.nav(path);
+      }
+
       // Prevent admin from entering carpenter notifications route.
       if (state.uri.path == '/notifications') {
         final role =

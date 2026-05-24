@@ -45,27 +45,12 @@ class PinAuthService {
       final normalized = normalizePhone(phone);
       final usersRef = _firestore.collection('users');
 
-      // Find user by phone
-      final existingQuery = await usersRef
-          .where('phone', isEqualTo: normalized)
-          .limit(1)
-          .get();
-
       final salt = _generateSalt();
       final pinHash = _hashPin(pin, salt);
 
-      DocumentSnapshot<Map<String, dynamic>>? existingDoc;
-      if (existingQuery.docs.isNotEmpty) {
-        existingDoc = existingQuery.docs.first;
-      } else {
-        final byId = await usersRef.doc(normalized).get();
-        if (byId.exists) {
-          existingDoc = byId;
-        }
-      }
+      final existingDoc = await _resolveDocForAuth(normalized);
 
       if (existingDoc != null) {
-        // Update existing user
         final doc = existingDoc;
         final data = <String, dynamic>{
           'pinHash': pinHash,
@@ -128,6 +113,51 @@ class PinAuthService {
     }
   }
 
+  /// Picks the canonical user doc (UID) when a legacy phone doc was migrated.
+  Future<DocumentSnapshot<Map<String, dynamic>>?> _resolveDocForAuth(
+    String normalized,
+  ) async {
+    final usersRef = _firestore.collection('users');
+
+    DocumentSnapshot<Map<String, dynamic>>? legacy;
+
+    final phoneDoc = await usersRef.doc(normalized).get();
+    if (phoneDoc.exists) {
+      legacy = phoneDoc;
+    } else {
+      final query = await usersRef
+          .where('phone', isEqualTo: normalized)
+          .limit(5)
+          .get();
+      if (query.docs.isNotEmpty) {
+        legacy = query.docs.first;
+      }
+    }
+
+    if (legacy == null || !legacy.exists) {
+      return null;
+    }
+
+    final migratedTo = legacy.data()?['migratedToUid'] as String?;
+    if (migratedTo != null && migratedTo.isNotEmpty) {
+      final canonical = await usersRef.doc(migratedTo).get();
+      if (canonical.exists) {
+        return canonical;
+      }
+    }
+
+    final all = await usersRef
+        .where('phone', isEqualTo: normalized)
+        .get();
+    for (final doc in all.docs) {
+      if (doc.id == normalized) continue;
+      if (doc.data()['legacyAccount'] == true) continue;
+      return doc;
+    }
+
+    return legacy;
+  }
+
   /// Verify phone + PIN. Returns user data if valid, null otherwise.
   Future<Map<String, dynamic>?> verifyPin({
     required String phone,
@@ -135,19 +165,15 @@ class PinAuthService {
   }) async {
     try {
       final normalized = normalizePhone(phone);
-      final usersRef = _firestore.collection('users');
+      final doc = await _resolveDocForAuth(normalized);
 
-      final query = await usersRef
-          .where('phone', isEqualTo: normalized)
-          .limit(1)
-          .get();
-
-      if (query.docs.isEmpty) {
+      if (doc == null || !doc.exists) {
         return null;
       }
-
-      final doc = query.docs.first;
       final data = doc.data();
+      if (data == null) {
+        return null;
+      }
       final salt = data['pinSalt'] as String?;
       final storedHash = data['pinHash'] as String?;
 

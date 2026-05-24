@@ -1,8 +1,11 @@
+import 'package:balaji_points/config/theme.dart' hide AppColors;
+import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/core/theme/design_token.dart';
+import 'package:balaji_points/presentation/widgets/carpenter/carpenter_top_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
 
+/// Simple top navigation bar for carpenter shell screens (top safe area included).
 class HomeNavBar extends StatelessWidget {
   final String? userImageUrl;
   final String? title;
@@ -29,258 +32,87 @@ class HomeNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Debug: Log the image URL
-    if (userImageUrl != null && userImageUrl!.isNotEmpty) {
-      debugPrint('HomeNavBar: Loading profile image from: $userImageUrl');
-    } else {
-      debugPrint('HomeNavBar: No profile image URL available');
+    final mq = MediaQuery.of(context);
+    final topInset = CarpenterShellLayout.topInset(mq);
+
+    Widget? leading;
+    if (showBackButton) {
+      leading = IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: onBackTap ??
+            () {
+              if (Navigator.of(context).canPop()) context.pop();
+            },
+      );
+    } else if (showProfileButton) {
+      leading = IconButton(
+        onPressed: onProfileTap ?? () => context.push('/profile'),
+        icon: CircleAvatar(
+          radius: 18,
+          backgroundColor: DesignToken.primary.withValues(alpha: 0.12),
+          backgroundImage: userImageUrl != null && userImageUrl!.isNotEmpty
+              ? NetworkImage(userImageUrl!)
+              : null,
+          child: userImageUrl == null || userImageUrl!.isEmpty
+              ? const Icon(Icons.person, size: 20, color: DesignToken.primary)
+              : null,
+        ),
+      );
     }
 
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final appBarColor =
-        theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface;
-    final appBarForeground =
-        theme.appBarTheme.foregroundColor ?? theme.colorScheme.onSurface;
-
-    return Container(
-      color: appBarColor,
-      child: SafeArea(
-        bottom: false,
-        child: Container(
-          height: kToolbarHeight, // Material Design standard: 56dp
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          decoration: BoxDecoration(
-            color: appBarColor,
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
+    Widget? center;
+    if (showLogo) {
+      center = Row(
+        children: [
+          Image.asset(
+            'assets/images/balaji_point_logo.png',
+            width: 28,
+            height: 28,
+            errorBuilder: (_, __, ___) => const Icon(
+              Icons.storefront_rounded,
+              color: DesignToken.primary,
+              size: 24,
             ),
-            border: Border(
-              bottom: BorderSide(
-                color: DesignToken.carpenterAppBarBottomBorderColor(isDark),
-                width: 1,
-              ),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
-          child: Row(
-            children: [
-              // Left side - Profile Image, Back Button, or empty space
-              if (showProfileButton)
-                _buildProfileButton(context)
-              else if (showBackButton)
-                _buildBackButton(context)
-              else
-                const SizedBox(width: 44),
-
-              // Center - Logo and Title
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (showLogo) ...[
-                      // Logo with modern styling
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(
-                          'assets/images/balaji_point_logo.png',
-                          width: 28,
-                          height: 28,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: 28,
-                              height: 28,
-                              decoration: BoxDecoration(
-                                color: DesignToken.secondary,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Icon(
-                                Icons.star,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                    ],
-                    // Title and Subtitle
-                    Flexible(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: showLogo
-                            ? CrossAxisAlignment.start
-                            : CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            title ?? 'Balaji Points',
-                            style: AppTextStyles.nunitoBold.copyWith(
-                              fontSize: subtitle != null ? 18 : 22,
-                              color: appBarForeground,
-                              letterSpacing: 0.5,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (subtitle != null) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              subtitle!,
-                              style: AppTextStyles.nunitoRegular.copyWith(
-                                fontSize: 11,
-                                color: appBarForeground.withValues(alpha: 0.7),
-                                letterSpacing: 0.3,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Right side - Actions or Balance space
-              if (actions != null && actions!.isNotEmpty)
-                Row(mainAxisSize: MainAxisSize.min, children: actions!)
-              else
-                const SizedBox(width: 44),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileButton(BuildContext context) {
-    return GestureDetector(
-      onTap:
-          onProfileTap ??
-          () {
-            debugPrint('Profile button tapped, navigating to /profile');
-            context.push('/profile');
-          },
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [
-              Colors.white.withValues(alpha: 0.2),
-              Colors.white.withValues(alpha: 0.1),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.3),
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ClipOval(
-          child: userImageUrl != null && userImageUrl!.isNotEmpty
-              ? Image.network(
-                  userImageUrl!,
-                  key: ValueKey<String>(userImageUrl!),
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: DesignToken.secondary.withValues(alpha: 0.3),
-                      child: Center(
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                : null,
-                            strokeWidth: 2,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    debugPrint('HomeNavBar: Error loading image: $error');
-                    return Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            DesignToken.secondary,
-                            DesignToken.secondary.withValues(alpha: 0.8),
-                          ],
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    );
-                  },
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        DesignToken.secondary,
-                        DesignToken.secondary.withValues(alpha: 0.8),
-                      ],
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 24,
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title ?? 'Balaji Points',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.nunitoBold.copyWith(
+                    fontSize: 17,
+                    color: DesignToken.textDark,
                   ),
                 ),
-        ),
-      ),
-    );
-  }
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.nunitoRegular.copyWith(
+                      fontSize: 12,
+                      color: DesignToken.textDark.withValues(alpha: 0.65),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
 
-  Widget _buildBackButton(BuildContext context) {
-    final theme = Theme.of(context);
-    final appBarForeground =
-        theme.appBarTheme.foregroundColor ?? theme.colorScheme.onSurface;
-    return IconButton(
-      icon: Icon(Icons.arrow_back, color: appBarForeground, size: 24),
-      onPressed:
-          onBackTap ??
-          () {
-            if (Navigator.of(context).canPop()) {
-              context.pop();
-            }
-          },
-      tooltip: 'Back',
+    return CarpenterTopNavBar(
+      topInset: topInset,
+      title: title ?? 'Balaji Points',
+      subtitle: showLogo ? null : subtitle,
+      center: center,
+      leading: leading,
+      actions: actions,
     );
   }
 }

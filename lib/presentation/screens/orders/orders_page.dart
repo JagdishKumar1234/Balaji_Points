@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/session_service.dart';
@@ -169,12 +170,10 @@ class _OrdersPageState extends State<OrdersPage> {
             );
           }
 
-          // Avoid scrolling content under the bottom dashboard tab bar.
-          const bottomNavHeight = 98.0;
-          final bottomSafe = MediaQuery.of(context).padding.bottom;
-
           return Padding(
-            padding: EdgeInsets.only(bottom: bottomNavHeight + bottomSafe),
+            padding: CarpenterShellLayout.scrollViewPadding(
+              MediaQuery.of(context),
+            ),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: docs.length,

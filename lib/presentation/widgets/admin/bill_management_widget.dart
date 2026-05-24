@@ -4,6 +4,7 @@ import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import '../../../services/bill_service.dart';
 import '../../../core/logger.dart';
+import 'package:balaji_points/core/utils/bill_query_utils.dart';
 
 class BillManagementWidget extends StatefulWidget {
   const BillManagementWidget({super.key});
@@ -41,14 +42,10 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _filterStatus == 'all'
-                  ? FirebaseFirestore.instance
-                        .collection('bills')
-                        .orderBy('createdAt', descending: true)
-                        .snapshots()
+                  ? FirebaseFirestore.instance.collection('bills').snapshots()
                   : FirebaseFirestore.instance
                         .collection('bills')
                         .where('status', isEqualTo: _filterStatus)
-                        .orderBy('createdAt', descending: true)
                         .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -89,7 +86,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                   );
                 }
 
-                final bills = snapshot.data!.docs;
+                final bills = sortBillsByCreatedAtDesc(snapshot.data!.docs);
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),

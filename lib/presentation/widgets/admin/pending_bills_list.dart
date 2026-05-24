@@ -6,6 +6,7 @@ import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/services/bill_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
+import 'package:balaji_points/core/utils/bill_query_utils.dart';
 import 'package:intl/intl.dart';
 
 class PendingBillsList extends StatefulWidget {
@@ -699,8 +700,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
               StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('bills')
-                    .where('status', isEqualTo: "pending")
-                    .orderBy('createdAt', descending: true)
+                    .where('status', isEqualTo: 'pending')
                     .snapshots(),
                 builder: (context, snap) {
                   if (snap.hasError) {
@@ -715,7 +715,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     );
                   }
 
-                  var bills = snap.data!.docs;
+                  var bills = sortBillsByCreatedAtDesc(snap.data!.docs);
 
                   // Apply date filter
                   bills = _filterBills(bills);

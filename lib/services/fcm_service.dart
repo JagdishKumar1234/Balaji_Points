@@ -11,6 +11,7 @@ import '../config/routes.dart';
 import '../core/logger.dart';
 import 'local_notification_service.dart';
 import 'session_service.dart';
+import 'user_migration_service.dart';
 
 /// Firebase Cloud Messaging Service for device token management
 class FCMService {
@@ -22,6 +23,7 @@ class FCMService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SessionService _sessionService = SessionService();
+  final UserMigrationService _userMigrationService = UserMigrationService();
   final LocalNotificationService _localNotificationService =
       LocalNotificationService();
 
@@ -79,72 +81,77 @@ class FCMService {
     }
   }
 
-  /// Save FCM token to Firestore for the current user
+  /// Save FCM token to the canonical user document (UID-first after migration).
   Future<void> _saveTokenToFirestore(String token) async {
     try {
-      final Set<String> targetDocIds = {};
-
-      // 1️⃣ Firebase Auth user (Admin via Auth)
       final authUser = _auth.currentUser;
-      if (authUser != null) {
-        targetDocIds.add(authUser.uid);
-      }
-
-      // 2️⃣ PIN login phone number
       final phone = await _sessionService.getPhoneNumber();
-      if (phone != null && phone.isNotEmpty) {
-        targetDocIds.add(phone);
+
+      if (authUser != null && phone != null && phone.isNotEmpty) {
+        await saveTokenForUser(token, uid: authUser.uid, phone: phone);
+        return;
       }
 
-      // 3️⃣ Session userId
+      // Fallback: session-only (pre-migration / logged-in without Auth)
       final sessionUserId = await _sessionService.getUserId();
       if (sessionUserId != null && sessionUserId.isNotEmpty) {
-        targetDocIds.add(sessionUserId);
+        await _firestore.collection('users').doc(sessionUserId).set({
+          'fcmToken': token,
+          'lastTokenUpdate': FieldValue.serverTimestamp(),
+          'platform': defaultTargetPlatform.name,
+        }, SetOptions(merge: true));
+        AppLogger.info(
+          '✅ FCM token saved to users/$sessionUserId (session fallback)',
+        );
       }
+    } catch (e) {
+      AppLogger.error('Error saving FCM token', e);
+    }
+  }
 
-      final tokenData = {
+  /// Writes token to the canonical UID document only.
+  /// This avoids writing FCM tokens to legacy phone-keyed docs.
+  Future<void> saveTokenForUser(
+    String token, {
+    required String uid,
+    required String phone,
+  }) async {
+    try {
+      final normalizedPhone = phone.isNotEmpty
+          ? _userMigrationService.normalizePhone(phone)
+          : null;
+      final userRef = _firestore.collection('users').doc(uid);
+
+      final data = <String, dynamic>{
+        'uid': uid,
         'fcmToken': token,
         'lastTokenUpdate': FieldValue.serverTimestamp(),
         'platform': defaultTargetPlatform.name,
       };
 
-      // Track which doc IDs were successfully updated
-      final Set<String> updatedDocIds = {};
-
-      // Save token to collected IDs (only the current user's documents)
-      for (final docId in targetDocIds) {
-        try {
-          // Use update first (existing doc), fall back to set+merge (new doc)
-          final docRef = _firestore.collection('users').doc(docId);
-          final docSnap = await docRef.get();
-          if (docSnap.exists) {
-            await docRef.update(tokenData);
-            updatedDocIds.add(docId);
-            AppLogger.info('✅ FCM token saved to users/$docId');
-          }
-        } catch (e) {
-          AppLogger.warning('Could not save token to users/$docId: $e');
-        }
+      if (normalizedPhone != null) {
+        data['phone'] = normalizedPhone;
       }
 
-      // ✅ Find the actual user document by phone field
-      // This handles cases where the doc ID is auto-generated (not the phone number)
-      if (phone != null && phone.isNotEmpty) {
-        final userDocs = await _firestore
-            .collection('users')
-            .where('phone', isEqualTo: phone)
-            .get();
-
-        for (final doc in userDocs.docs) {
-          if (!updatedDocIds.contains(doc.id)) {
-            await doc.reference.update(tokenData);
-            updatedDocIds.add(doc.id);
-            AppLogger.info('✅ FCM token saved to users/${doc.id} (by phone lookup)');
-          }
-        }
-      }
+      await userRef.set(data, SetOptions(merge: true));
+      AppLogger.info('✅ FCM token saved to users/$uid');
     } catch (e) {
-      AppLogger.error('Error saving FCM token', e);
+      AppLogger.error('Error saving FCM token for user', e);
+    }
+  }
+
+  /// Call after PIN login once migration has run.
+  Future<void> refreshTokenAfterLogin({
+    required String uid,
+    required String phone,
+  }) async {
+    try {
+      final token = await _messaging.getToken();
+      if (token == null) return;
+      _token = token;
+      await saveTokenForUser(token, uid: uid, phone: phone);
+    } catch (e) {
+      AppLogger.error('Error refreshing FCM token after login', e);
     }
   }
 

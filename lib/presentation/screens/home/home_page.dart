@@ -27,6 +27,8 @@ import 'package:intl/intl.dart';
 import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/core/logger.dart';
+import 'package:balaji_points/presentation/widgets/carpenter/carpenter_top_nav_bar.dart';
 
 /// Decode width in physical pixels for [Image] `cacheWidth` to cut memory & jank.
 int _imageCacheWidthPx(BuildContext context, double logicalWidth) {
@@ -215,12 +217,12 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> _loadInitialData() async {
-    // Load user data immediately (most important)
     await _loadUserData();
-
-    // Load other data in parallel for better performance
     await Future.wait([_loadOffers(), _refreshRankings()]);
     _refreshCurrentUserRankFuture();
+    AppLogger.data(
+      'Home ready · offers=${_offers.length} · carpenters=${_topCarpenters.length}',
+    );
   }
 
   void _refreshCurrentUserRankFuture() {
@@ -279,6 +281,7 @@ class _HomePageState extends State<HomePage>
   // ------------------ Offers ------------------
   Future<void> _loadOffers() async {
     setState(() => _isLoadingOffers = true);
+    AppLogger.data('Fetching offers…');
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('offers')
@@ -304,7 +307,7 @@ class _HomePageState extends State<HomePage>
         });
       }
     } catch (e, st) {
-      debugPrint('Error loading offers: $e\n$st');
+      AppLogger.error('Offers load failed', e, st);
       if (mounted) {
         setState(() => _isLoadingOffers = false);
       }
@@ -318,13 +321,14 @@ class _HomePageState extends State<HomePage>
       final rankedCarpenters = await _fetchRankedCarpenters();
       final top10 = rankedCarpenters.take(10).toList();
 
-      if (mounted)
+      if (mounted) {
         setState(() {
           _topCarpenters = top10;
           _isLoadingCarpenters = false;
         });
+      }
     } catch (e, st) {
-      debugPrint('Error loading carpenters: $e\n$st');
+      AppLogger.error('Top carpenters load failed', e, st);
       if (mounted) setState(() => _isLoadingCarpenters = false);
     }
   }
@@ -852,8 +856,7 @@ class _HomePageState extends State<HomePage>
     final mediaQuery = MediaQuery.of(context);
     final topInset = mediaQuery.padding.top;
     final drawerFooterBottom =
-        CarpenterShellLayout.bottomPaddingForScrollView(mediaQuery) +
-            DesignToken.spacingSM;
+        CarpenterShellLayout.chromeHeight(mediaQuery) + DesignToken.spacingSM;
     final bool isDarkTheme = theme.brightness == Brightness.dark;
     final Color titleColor = isDarkTheme
         ? DesignToken.white
@@ -1572,269 +1575,97 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // ── Home Top App Bar (light: flat #F1F5F9, blueprint text colors) ────────
-  Widget _buildHomeAppBarRow(
-    BuildContext context,
-    AppLocalizations l10n,
-    Color headerTextColor,
-    Color headerSubTextColor,
-  ) {
-    final topInset = MediaQuery.paddingOf(context).top;
-    // Avoid SafeArea here: total height is [topInset + kToolbarHeight]; SafeArea would
-    // shrink the inner Row and force the title Column into ~40px → RenderFlex overflow.
-    return Padding(
-      padding: EdgeInsets.only(
-        top: topInset,
-        left: DesignToken.layoutScreenPaddingX,
-        right: DesignToken.layoutScreenPaddingX,
-        bottom: DesignToken.spacingMD,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-            Builder(
-              builder: (context) => InkWell(
-                borderRadius: BorderRadius.circular(DesignToken.radiusRound),
-                onTap: () => Scaffold.of(context).openDrawer(),
-                child: Container(
-                  width: DesignToken.height5XL - DesignToken.spacingSM,
-                  height: DesignToken.height5XL - DesignToken.spacingSM,
-                  decoration: BoxDecoration(
-                    color: headerTextColor.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(DesignToken.radiusRound),
-                  ),
-                  child: Icon(
-                    Icons.menu_rounded,
-                    color: headerTextColor,
-                    size: DesignToken.iconSizeSM + 6,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: DesignToken.widthMD),
-            Container(
-              width: DesignToken.height5XL - DesignToken.spacingSM,
-              height: DesignToken.height5XL - DesignToken.spacingSM,
-              decoration: BoxDecoration(
-                color: headerTextColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(DesignToken.spacingSM + 2),
-                border: Border.all(
-                  color: headerTextColor.withValues(alpha: 0.35),
-                  width: 1.5,
-                ),
-              ),
-              padding: const EdgeInsets.all(DesignToken.paddingSM - 2),
-              child: Image.asset(
-                'assets/images/balaji_point_logo.png',
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => Icon(
-                  Icons.storefront_rounded,
-                  color: headerTextColor,
-                  size: DesignToken.iconSizeSM + 6,
-                ),
-              ),
-            ),
-            SizedBox(width: DesignToken.widthMD),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Balaji Points',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.nunitoBold.copyWith(
-                      color: headerTextColor,
-                      fontSize: DesignToken.fontSizeLG,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                  SizedBox(height: DesignToken.heightXS / 2),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_rounded,
-                        color: headerSubTextColor,
-                        size: DesignToken.fontSizeSM - 1,
-                      ),
-                      SizedBox(width: DesignToken.widthXS / 2),
-                      Expanded(
-                        child: Text(
-                          '${l10n.companyName} · ${l10n.homeStoreBranch}',
-                          style: AppTextStyles.nunitoRegular.copyWith(
-                            color: headerSubTextColor,
-                            fontSize: DesignToken.fontSizeSM - 1,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () => context.push('/cart'),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: DesignToken.height5XL - DesignToken.spacingSM,
-                    height: DesignToken.height5XL - DesignToken.spacingSM,
-                    decoration: BoxDecoration(
-                      color: headerTextColor.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(DesignToken.spacingSM + 2),
-                      border: Border.all(
-                        color: headerTextColor.withValues(alpha: 0.35),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.shopping_cart_outlined,
-                      color: headerTextColor,
-                      size: DesignToken.iconSizeSM + 6,
-                    ),
-                  ),
-                  if (_cartItemCount > 0)
-                    Positioned(
-                      top: -DesignToken.spacingSM,
-                      right: -DesignToken.spacingSM,
-                      child: Container(
-                        constraints: const BoxConstraints(
-                          minWidth: 18,
-                          minHeight: 18,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: DesignToken.paddingXS,
-                          vertical: 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: DesignToken.error,
-                          borderRadius: BorderRadius.circular(9),
-                          border: Border.all(
-                            color: DesignToken.white,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Text(
-                          _cartItemCount > 99 ? '99+' : '$_cartItemCount',
-                          style: TextStyle(
-                            color: DesignToken.white,
-                            fontSize: DesignToken.fontSizeXS,
-                            fontWeight: FontWeight.bold,
-                            height: 1,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-    );
-  }
-
   PreferredSizeWidget _buildHomeAppBar(BuildContext context, ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
-
-    final Color barColor = isDark
-        ? DesignToken.navyBackground
-        : DesignToken.carpenterAppBackground;
-
-    final Color headerTextColor = isDark
-        ? DesignToken.white
-        : DesignToken.textDark;
-    final Color headerSubTextColor = isDark
+    final mq = MediaQuery.of(context);
+    final fg = isDark ? DesignToken.white : DesignToken.textDark;
+    final fgMuted = isDark
         ? DesignToken.white.withValues(alpha: 0.85)
         : DesignToken.textDark.withValues(alpha: 0.70);
 
-    final overlayStyle = SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: isDark
-          ? Brightness.light
-          : Brightness.dark,
-      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-    );
-
-    final topInset = MediaQuery.paddingOf(context).top;
-    return PreferredSize(
-      preferredSize: Size.fromHeight(topInset + kToolbarHeight),
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: overlayStyle,
-        child: isDark
-            ? Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: DesignToken.primaryGradient,
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(DesignToken.radiusXL),
-                    bottomRight: Radius.circular(DesignToken.radiusXL),
-                  ),
-                ),
-                child: Container(
-                  margin: const EdgeInsets.all(1.0),
-                  decoration: BoxDecoration(
-                    color: barColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(DesignToken.radiusXL - 1),
-                      bottomRight: Radius.circular(DesignToken.radiusXL - 1),
-                    ),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: DesignToken.carpenterAppBarBottomBorderColor(true),
-                        width: 1,
-                      ),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: DesignToken.black.withValues(alpha: 0.35),
-                        blurRadius: DesignToken.offerCarouselShadowBlur,
-                        offset: Offset(0, DesignToken.offerCarouselShadowDy / 2),
-                      ),
-                    ],
-                  ),
-                  child: _buildHomeAppBarRow(
-                    context,
-                    l10n,
-                    headerTextColor,
-                    headerSubTextColor,
-                  ),
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  color: DesignToken.homeHeaderTint,
-                  border: Border(
-                    bottom: BorderSide(
-                      color: DesignToken.carpenterAppBarBottomBorderColor(false),
-                      width: 1,
-                    ),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: DesignToken.black.withValues(alpha: 0.05),
-                      blurRadius: DesignToken.offerCarouselShadowBlur,
-                      offset: Offset(0, DesignToken.spacingXS),
-                    ),
-                  ],
-                ),
-                child: _buildHomeAppBarRow(
-                  context,
-                  l10n,
-                  DesignToken.homeTextPrimary,
-                  DesignToken.homeTextMuted,
-                ),
-              ),
+    return CarpenterTopNavBar(
+      topInset: CarpenterShellLayout.topInset(mq),
+      title: 'Balaji Points',
+      backgroundColor: isDark
+          ? DesignToken.navyBackground
+          : DesignToken.carpenterAppBackground,
+      foregroundColor: fg,
+      leading: Builder(
+        builder: (ctx) => IconButton(
+          icon: Icon(Icons.menu_rounded, color: fg),
+          onPressed: () => Scaffold.of(ctx).openDrawer(),
+        ),
       ),
+      center: Row(
+        children: [
+          Image.asset(
+            'assets/images/balaji_point_logo.png',
+            width: 28,
+            height: 28,
+            errorBuilder: (_, __, ___) =>
+                Icon(Icons.storefront_rounded, color: fg, size: 24),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Balaji Points',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.nunitoBold.copyWith(
+                    color: fg,
+                    fontSize: DesignToken.fontSizeLG,
+                  ),
+                ),
+                Text(
+                  '${l10n.companyName} · ${l10n.homeStoreBranch}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.nunitoRegular.copyWith(
+                    color: fgMuted,
+                    fontSize: DesignToken.fontSizeSM - 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        IconButton(
+          onPressed: () => context.push('/cart'),
+          icon: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(Icons.shopping_cart_outlined, color: fg),
+              if (_cartItemCount > 0)
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: DesignToken.error,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      _cartItemCount > 99 ? '99+' : '$_cartItemCount',
+                      style: const TextStyle(
+                        color: DesignToken.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/config/theme.dart' hide AppColors;
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -842,9 +843,11 @@ class _AddBillPageState extends State<AddBillPage> {
                   ),
                 ),
 
-                // Fixed Submit Button at Bottom - lifted above bottom tab bar
+                // Fixed Submit Button at Bottom (shell reserves tab bar space)
                 Container(
-                  margin: const EdgeInsets.only(bottom: 80),
+                  margin: EdgeInsets.only(
+                    bottom: CarpenterShellLayout.scrollEndMargin,
+                  ),
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: DesignToken.white,

@@ -16,6 +16,9 @@ class LocalNotificationService {
       FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
+  /// Callback for when notification is tapped
+  Function(String?)? onNotificationTapped;
+
   /// Initialize local notifications
   Future<void> initialize() async {
     if (_initialized) {
@@ -127,7 +130,8 @@ class LocalNotificationService {
 
       if (channelId == 'balaji_points_important') {
         channelName = 'Important Notifications';
-        channelDescription = 'Important notifications like bill approvals and tier upgrades';
+        channelDescription =
+            'Important notifications like bill approvals and tier upgrades';
       } else {
         channelName = 'Balaji Points Notifications';
         channelDescription = 'General notifications from Balaji Points app';
@@ -176,14 +180,24 @@ class LocalNotificationService {
   void _onNotificationTapped(NotificationResponse response) {
     AppLogger.info('Notification tapped: ${response.payload}');
 
-    // Navigate to notifications screen when notification is tapped
+    // Call custom callback if set (e.g., for update notifications)
+    if (onNotificationTapped != null) {
+      onNotificationTapped!(response.payload);
+      return;
+    }
+
+    // Default behavior: Navigate to notifications screen
     try {
       final context = navigatorKey.currentContext;
       if (context != null) {
         context.pushNamed('notifications');
-        AppLogger.info('✅ Navigated to notifications screen from local notification tap');
+        AppLogger.info(
+          '✅ Navigated to notifications screen from local notification tap',
+        );
       } else {
-        AppLogger.warning('Navigator context not available for notification tap');
+        AppLogger.warning(
+          'Navigator context not available for notification tap',
+        );
       }
     } catch (e) {
       AppLogger.error('Error navigating from notification tap', e);

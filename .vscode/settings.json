@@ -1,5 +1,5 @@
 {
-  "chat.notifyWindowOnConfirmation": false,
+  "chat.notifyWindowOnConfirmation": "off",
   "cmake.sourceDirectory": "/Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/linux",
   "java.configuration.updateBuildConfiguration": "automatic"
 }

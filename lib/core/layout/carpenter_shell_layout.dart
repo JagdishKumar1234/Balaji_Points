@@ -1,19 +1,30 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
-/// Bottom chrome for the carpenter [DashboardPage]: notched bar + FAB stack.
-/// Keep scroll/padding math in sync with [DashboardPage] `_kStackHeight` (98).
+/// Layout math for carpenter shell top / bottom navigation bars.
 class CarpenterShellLayout {
   CarpenterShellLayout._();
 
-  /// Height of the custom bottom bar + FAB overlap (matches dashboard stack).
-  static const double barStackHeight = 98.0;
+  static const double navBarHeight = kToolbarHeight; // 56
 
-  /// Extra margin above the bar for comfortable scroll end.
-  static const double scrollEndMargin = 24.0;
+  static double topInset(MediaQueryData mq) =>
+      math.max(mq.padding.top, mq.viewPadding.top);
 
-  /// Use as `SingleChildScrollView` / `ListView` bottom padding inside the shell.
-  static double bottomPaddingForScrollView(MediaQueryData mq) =>
-      scrollEndMargin + barStackHeight + mq.padding.bottom;
+  static double bottomInset(MediaQueryData mq) =>
+      math.max(mq.padding.bottom, mq.viewPadding.bottom);
+
+  /// Total top chrome: status bar + toolbar.
+  static double topChromeHeight(MediaQueryData mq) =>
+      navBarHeight + topInset(mq);
+
+  /// Total bottom chrome: tab bar + home indicator area.
+  static double chromeHeight(MediaQueryData mq) =>
+      navBarHeight + bottomInset(mq);
+
+  static const double scrollEndMargin = 0.0;
+
+  static double bottomPaddingForScrollView(MediaQueryData mq) => scrollEndMargin;
 
   static EdgeInsets scrollViewPadding(MediaQueryData mq) => EdgeInsets.only(
         bottom: bottomPaddingForScrollView(mq),

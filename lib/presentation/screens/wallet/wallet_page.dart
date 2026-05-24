@@ -20,13 +20,14 @@ class _WalletPageState extends State<WalletPage> {
   final SessionService _sessionService = SessionService();
   final UserPointsSyncService _userPointsSyncService = UserPointsSyncService();
   int _refreshKey = 0;
-  String? _userId;
+  List<String> _carpenterIds = [];
+  bool _idsLoaded = false;
   VoidCallback? _userPointsListener;
 
   @override
   void initState() {
     super.initState();
-    _loadUserId();
+    _loadCarpenterIds();
     _startGlobalPointsSync();
   }
 
@@ -38,11 +39,12 @@ class _WalletPageState extends State<WalletPage> {
     super.dispose();
   }
 
-  Future<void> _loadUserId() async {
-    final phoneNumber = await _sessionService.getPhoneNumber();
+  Future<void> _loadCarpenterIds() async {
+    final ids = await _sessionService.getCarpenterQueryIds();
     if (mounted) {
       setState(() {
-        _userId = phoneNumber;
+        _carpenterIds = ids;
+        _idsLoaded = true;
       });
     }
   }
@@ -59,6 +61,7 @@ class _WalletPageState extends State<WalletPage> {
   }
 
   Future<void> _handleRefresh() async {
+    await _loadCarpenterIds();
     setState(() {
       _refreshKey++; // Force rebuild of StreamBuilders
     });
@@ -71,8 +74,7 @@ class _WalletPageState extends State<WalletPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Use phone number from session (PIN-based auth)
-    final userId = _userId ?? 'loading';
+    final idsReady = _idsLoaded && _carpenterIds.isNotEmpty;
 
     final theme = Theme.of(context);
     final pageBackground = theme.scaffoldBackgroundColor;
@@ -120,7 +122,7 @@ class _WalletPageState extends State<WalletPage> {
                             child: _buildStatCard(
                               icon: Icons.pending_actions,
                               label: l10n.pending,
-                              value: _buildPendingCount(userId),
+                              value: _buildPendingCount(idsReady),
                               color: DesignToken.orange,
                             ),
                           ),
@@ -129,7 +131,7 @@ class _WalletPageState extends State<WalletPage> {
                             child: _buildStatCard(
                               icon: Icons.check_circle,
                               label: l10n.approved,
-                              value: _buildApprovedCount(userId),
+                              value: _buildApprovedCount(idsReady),
                               color: DesignToken.success,
                             ),
                           ),
@@ -212,7 +214,7 @@ class _WalletPageState extends State<WalletPage> {
                       const SizedBox(height: 8),
 
                       // Bills List
-                      _buildBillsList(userId),
+                      _buildBillsList(idsReady),
 
                       const SizedBox(height: 14),
                     ],
@@ -316,7 +318,7 @@ class _WalletPageState extends State<WalletPage> {
     final totalPoints = (pointsData?['totalPoints'] as num?)?.toInt() ?? 0;
     final tier = pointsData?['tier'] as String? ?? 'Bronze';
     final isReady = pointsData != null;
-    if (!isReady && (_userId == null)) {
+    if (!isReady && !_idsLoaded) {
       // Show loading state
       return Container(
         padding: const EdgeInsets.all(20),
@@ -531,9 +533,8 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
-  Widget _buildPendingCount(String userId) {
-    if (userId == 'loading' || _userId == null) {
-      // Show loading state
+  Widget _buildPendingCount(bool idsReady) {
+    if (!idsReady) {
       return Text(
         '...',
         style: AppTextStyles.nunitoBold.copyWith(
@@ -546,7 +547,7 @@ class _WalletPageState extends State<WalletPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('bills')
-          .where('carpenterId', isEqualTo: userId)
+          .where('carpenterId', whereIn: _carpenterIds)
           .where('status', isEqualTo: 'pending')
           .snapshots(),
       builder: (context, snapshot) {
@@ -562,9 +563,8 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
-  Widget _buildApprovedCount(String userId) {
-    if (userId == 'loading' || _userId == null) {
-      // Show loading state
+  Widget _buildApprovedCount(bool idsReady) {
+    if (!idsReady) {
       return Text(
         '...',
         style: AppTextStyles.nunitoBold.copyWith(
@@ -577,7 +577,7 @@ class _WalletPageState extends State<WalletPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('bills')
-          .where('carpenterId', isEqualTo: userId)
+          .where('carpenterId', whereIn: _carpenterIds)
           .where('status', isEqualTo: 'approved')
           .snapshots(),
       builder: (context, snapshot) {
@@ -633,174 +633,23 @@ class _WalletPageState extends State<WalletPage> {
     }
   }
 
-  Widget _buildBillsList(String userId) {
-    if (userId == 'loading' || _userId == null) {
-      // Show loading state
-      final mockBills = [
-        {
-          'storeName': 'Sri Balaji Hardware',
-          'amount': 2500.0,
-          'status': 'approved',
-          'pointsEarned': 2,
-          'date': DateTime.now().subtract(const Duration(days: 2)),
-        },
-        {
-          'storeName': 'K K Timber & Plywood',
-          'amount': 5000.0,
-          'status': 'pending',
-          'pointsEarned': 0,
-          'date': DateTime.now().subtract(const Duration(days: 1)),
-        },
-        {
-          'storeName': 'Hardware Store',
-          'amount': 1200.0,
-          'status': 'approved',
-          'pointsEarned': 1,
-          'date': DateTime.now().subtract(const Duration(hours: 5)),
-        },
-      ];
-
-      return ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: mockBills.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 6),
-        itemBuilder: (context, index) {
-          final bill = mockBills[index];
-          final amount = bill['amount'] as double;
-          final status = bill['status'] as String;
-          final pointsEarned = bill['pointsEarned'] as int;
-          final storeName = bill['storeName'] as String;
-          final date = bill['date'] as DateTime;
-
-          final theme = Theme.of(context);
-          final isDark = theme.brightness == Brightness.dark;
-          final cardBg = isDark ? theme.colorScheme.surface : DesignToken.white;
-          return Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: DesignToken.primary.withOpacity(isDark ? 0.14 : 0.09),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: DesignToken.black.withValues(alpha: 0.06),
-                  blurRadius: 14,
-                  spreadRadius: 0.5,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    _getStatusIcon(status),
-                    color: _getStatusColor(status),
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        storeName,
-                        style: AppTextStyles.nunitoBold.copyWith(
-                          fontSize: 14,
-                          color: DesignToken.textDark,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            '₹${amount.toStringAsFixed(0)}',
-                            style: AppTextStyles.nunitoSemiBold.copyWith(
-                              fontSize: 13,
-                              color: DesignToken.primary,
-                            ),
-                          ),
-                          if (pointsEarned > 0) ...[
-                            const SizedBox(width: 6),
-                            Text(
-                              '• $pointsEarned pts',
-                              style: AppTextStyles.nunitoRegular.copyWith(
-                                fontSize: 12,
-                                color: DesignToken.textDark.withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatDate(date),
-                        style: AppTextStyles.nunitoRegular.copyWith(
-                          fontSize: 11,
-                          color: DesignToken.textDark.withOpacity(0.5),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: _getStatusColor(status).withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    _getStatusLabel(status, context),
-                    style: AppTextStyles.nunitoSemiBold.copyWith(
-                      fontSize: 11,
-                      color: _getStatusColor(status),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+  Widget _buildBillsList(bool idsReady) {
+    if (!idsReady) {
+      return const Padding(
+        padding: EdgeInsets.all(32),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
-
-    // Show real bills when logged in
-    debugPrint('WalletPage: === LOADING BILLS ===');
-    debugPrint('  User ID (carpenterId): $userId');
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('bills')
-          .where('carpenterId', isEqualTo: userId)
+          .where('carpenterId', whereIn: _carpenterIds)
           .orderBy('createdAt', descending: true)
           .limit(10)
           .snapshots(),
       builder: (context, snapshot) {
-        debugPrint(
-          'WalletPage: StreamBuilder state: ${snapshot.connectionState}',
-        );
-        debugPrint('  Has data: ${snapshot.hasData}');
-        debugPrint('  Docs count: ${snapshot.data?.docs.length ?? 0}');
-
         if (snapshot.hasError) {
-          debugPrint('WalletPage: ❌ ERROR loading bills: ${snapshot.error}');
           final theme = Theme.of(context);
           final isDark = theme.brightness == Brightness.dark;
           return Container(
@@ -848,7 +697,6 @@ class _WalletPageState extends State<WalletPage> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          debugPrint('WalletPage: No bills found for user $userId');
           final theme = Theme.of(context);
           final isDarkEmpty = theme.brightness == Brightness.dark;
           return Container(
@@ -889,7 +737,6 @@ class _WalletPageState extends State<WalletPage> {
         }
 
         final bills = snapshot.data!.docs;
-        debugPrint('WalletPage: ✅ Found ${bills.length} bills');
 
         return ListView.separated(
           shrinkWrap: true,
@@ -903,10 +750,6 @@ class _WalletPageState extends State<WalletPage> {
             final pointsEarned = bill['pointsEarned'] ?? 0;
             final createdAt = bill['createdAt'] as Timestamp?;
             final storeName = bill['storeName'] ?? '';
-
-            debugPrint(
-              '  Bill[$index]: amount=$amount, status=$status, carpenterId=${bill['carpenterId']}, createdAt=$createdAt',
-            );
 
             final theme = Theme.of(context);
             final isDark = theme.brightness == Brightness.dark;

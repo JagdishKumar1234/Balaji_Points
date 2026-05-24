@@ -67,6 +67,16 @@ class SessionService {
     return await _storage.read(key: _keyUserId);
   }
 
+  /// IDs used when querying bills / points (session userId + phone).
+  Future<List<String>> getCarpenterQueryIds() async {
+    final userId = await getUserId();
+    final phone = await getPhoneNumber();
+    return {
+      if (userId != null && userId.trim().isNotEmpty) userId.trim(),
+      if (phone != null && phone.trim().isNotEmpty) phone.trim(),
+    }.toList();
+  }
+
   /// Get stored user role
   Future<String?> getUserRole() async {
     return await _storage.read(key: _keyUserRole);
