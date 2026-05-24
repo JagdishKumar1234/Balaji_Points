@@ -41,12 +41,6 @@ dependencies:
   go_router: ^14.0.0
   flutter_riverpod: ^3.0.3
 
-  # State Management & Architecture
-  flutter_bloc: ^8.1.3
-  equatable: ^2.0.5
-  dartz: ^0.10.1
-  get_it: ^7.6.4
-
   # Firebase
   firebase_core: ^4.2.0
   firebase_auth: ^6.1.1
@@ -100,12 +94,12 @@ flutter:
     - assets/images/balaji_point_logo.png
     # Furniture / plywood showcase images used on home screen
     - assets/images/background_image.png
-    - "docs/furnitures_pics/22 Gorgeous Brown Kitchen Cabinet Designs.jpeg"
-    - "docs/furnitures_pics/Elegant Sage Green Kitchen with Brass Accents & Marble Island.jpeg"
-    - "docs/furnitures_pics/_ (6).jpeg"
-    - "docs/furnitures_pics/luxirous lifestyle.jpeg"
-    - "docs/furnitures_pics/_ (10).jpeg"
-    - "docs/furnitures_pics/Home Office_Todos os direitos da autoria e imagem são reservados aos responsáveis_.jpeg"
+    - assets/images/furniture/brown_kitchen_cabinet.jpeg
+    - assets/images/furniture/sage_green_kitchen.jpeg
+    - assets/images/furniture/furniture_6.jpeg
+    - assets/images/furniture/luxurious_lifestyle.jpeg
+    - assets/images/furniture/furniture_10.jpeg
+    - assets/images/furniture/home_office.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

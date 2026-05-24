@@ -1,7 +1,6 @@
 // filepath: lib/config/routes.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:balaji_points/presentation/screens/dashboard/dashboard_page.dart';
@@ -10,13 +9,10 @@ import 'package:balaji_points/presentation/screens/profile/edit_profile_page.dar
 import 'package:balaji_points/presentation/screens/profile/profile_page.dart';
 import 'package:balaji_points/presentation/screens/splash/splash_page.dart';
 
-// NEW ARCHITECTURE - Auth screens (Clean Architecture + BLoC)
 import 'package:balaji_points/features/auth/presentation/pages/login_page.dart';
 import 'package:balaji_points/features/auth/presentation/pages/pin_setup_page.dart';
 import 'package:balaji_points/features/auth/presentation/pages/pin_login_page.dart';
 import 'package:balaji_points/features/auth/presentation/pages/reset_pin_page.dart';
-import 'package:balaji_points/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:balaji_points/injection/dependency_injection.dart';
 
 import 'package:balaji_points/presentation/screens/spin/daily_spin_page.dart';
 import 'package:balaji_points/presentation/screens/wallet/wallet_page.dart';
@@ -141,23 +137,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, _) => const OnboardingPage(),
       ),
 
-      // NEW ARCHITECTURE - Auth routes with BLoC
       GoRoute(
         path: '/login',
-        builder: (context, _) => BlocProvider(
-          create: (_) => getIt<AuthBloc>(),
-          child: const LoginPage(),
-        ),
+        builder: (context, _) => const LoginPage(),
       ),
 
       GoRoute(
         path: '/pin-setup',
         builder: (context, state) {
           final phone = state.uri.queryParameters['phone'] ?? '';
-          return BlocProvider(
-            create: (_) => getIt<AuthBloc>(),
-            child: PINSetupPage(phoneNumber: phone),
-          );
+          return PINSetupPage(phoneNumber: phone);
         },
       ),
 
@@ -165,10 +154,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/pin-login',
         builder: (context, state) {
           final phone = state.uri.queryParameters['phone'] ?? '';
-          return BlocProvider(
-            create: (_) => getIt<AuthBloc>(),
-            child: PINLoginPage(phoneNumber: phone),
-          );
+          return PINLoginPage(phoneNumber: phone);
         },
       ),
 
@@ -176,10 +162,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/pin-reset',
         builder: (context, state) {
           final phone = state.uri.queryParameters['phone'] ?? '';
-          return BlocProvider(
-            create: (_) => getIt<AuthBloc>(),
-            child: ResetPINPage(phoneNumber: phone),
-          );
+          return ResetPINPage(phoneNumber: phone);
         },
       ),
 

@@ -6,23 +6,20 @@ import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
+import '../providers/auth_provider.dart';
 
-class PINSetupPage extends StatefulWidget {
+class PINSetupPage extends ConsumerStatefulWidget {
   final String? phoneNumber;
 
   const PINSetupPage({super.key, this.phoneNumber});
 
   @override
-  State<PINSetupPage> createState() => _PINSetupPageState();
+  ConsumerState<PINSetupPage> createState() => _PINSetupPageState();
 }
 
-class _PINSetupPageState extends State<PINSetupPage>
-{
+class _PINSetupPageState extends ConsumerState<PINSetupPage> {
   final _phoneController = TextEditingController();
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
@@ -63,12 +60,10 @@ class _PINSetupPageState extends State<PINSetupPage>
       return;
     }
 
-    context.read<AuthBloc>().add(
-      SetupPinEvent(
-        phoneNumber: phone,
-        pin: pin,
-        firstName: '',
-      ),
+    ref.read(authProvider.notifier).setupPin(
+      phoneNumber: phone,
+      pin: pin,
+      firstName: '',
     );
   }
 
@@ -106,24 +101,17 @@ class _PINSetupPageState extends State<PINSetupPage>
           }
         }
       },
-      child: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is PinSetupSuccessState) {
+      child: Builder(builder: (context) {
+        ref.listen<AuthState>(authProvider, (_, state) {
+          if (state is PinSetupSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.pinCreatedSuccess),
-                backgroundColor: DesignToken.success,
-              ),
+              SnackBar(content: Text(l10n.pinCreatedSuccess), backgroundColor: DesignToken.success),
             );
             context.go('/');
-          } else if (state is PinSetupErrorState) {
+          } else if (state is PinSetupError) {
             ScaffoldMessenger.of(context).clearSnackBars();
-
             String errorMessage = state.message;
-            
-            // Check if account already exists
-            if (errorMessage.contains('already exists') || 
-                errorMessage.contains('User already exists')) {
+            if (errorMessage.contains('already exists') || errorMessage.contains('User already exists')) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(l10n.accountExistsUseReset),
@@ -143,14 +131,11 @@ class _PINSetupPageState extends State<PINSetupPage>
                 ),
               );
             } else {
-              // Show generic error
               if (errorMessage.contains('permission-denied')) {
-                errorMessage =
-                    'Permission denied. Please check Firebase configuration or contact support.';
+                errorMessage = 'Permission denied. Please check Firebase configuration or contact support.';
               } else if (errorMessage.contains('network')) {
                 errorMessage = l10n.networkError;
               }
-
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(errorMessage),
@@ -163,11 +148,11 @@ class _PINSetupPageState extends State<PINSetupPage>
               );
             }
           }
-        },
-        builder: (context, state) {
-          final isSaving = state is PinSetupLoadingState;
+        });
 
-          return Scaffold(
+        final isSaving = ref.watch(authProvider) is PinSetupLoading;
+
+        return Scaffold(
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: true,
             appBar: AppBar(
@@ -486,8 +471,7 @@ class _PINSetupPageState extends State<PINSetupPage>
               ],
             ),
           );
-        },
-      ),
+      }),
     );
   }
 }

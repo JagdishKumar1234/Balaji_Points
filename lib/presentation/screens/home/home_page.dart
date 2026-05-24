@@ -107,40 +107,37 @@ class _HomePageState extends State<HomePage>
       title: 'Bedroom',
       icon: Icons.bed_rounded,
       background: Color(0xFFF5F0FF),
-      imageAsset: 'docs/furnitures_pics/luxirous lifestyle.jpeg',
+      imageAsset: 'assets/images/furniture/luxurious_lifestyle.jpeg',
     ),
     _HomeProductCategory(
       title: 'Kitchen',
       icon: Icons.kitchen_rounded,
       background: Color(0xFFFFF3E0),
-      imageAsset:
-          'docs/furnitures_pics/22 Gorgeous Brown Kitchen Cabinet Designs.jpeg',
+      imageAsset: 'assets/images/furniture/brown_kitchen_cabinet.jpeg',
     ),
     _HomeProductCategory(
       title: 'Living Room',
       icon: Icons.chair_rounded,
       background: Color(0xFFE3F2FD),
-      imageAsset: 'docs/furnitures_pics/_ (6).jpeg',
+      imageAsset: 'assets/images/furniture/furniture_6.jpeg',
     ),
     _HomeProductCategory(
       title: 'Wardrobe',
       icon: Icons.checkroom_rounded,
       background: Color(0xFFE8F5E9),
-      imageAsset: 'docs/furnitures_pics/_ (10).jpeg',
+      imageAsset: 'assets/images/furniture/furniture_10.jpeg',
     ),
     _HomeProductCategory(
       title: 'Office',
       icon: Icons.workspaces_rounded,
       background: Color(0xFFE8F0FE),
-      imageAsset:
-          'docs/furnitures_pics/Home Office_Todos os direitos da autoria e imagem são reservados aos responsáveis_.jpeg',
+      imageAsset: 'assets/images/furniture/home_office.jpeg',
     ),
     _HomeProductCategory(
       title: 'Bathroom',
       icon: Icons.bathtub_rounded,
       background: Color(0xFFF3E5F5),
-      imageAsset:
-          'docs/furnitures_pics/Elegant Sage Green Kitchen with Brass Accents & Marble Island.jpeg',
+      imageAsset: 'assets/images/furniture/sage_green_kitchen.jpeg',
     ),
   ];
 
@@ -148,34 +145,31 @@ class _HomePageState extends State<HomePage>
     _ProductHeroCardData(
       title: 'Surfaces that\nradiate luxury',
       subtitle: 'Decorative laminates,\nveneers and acrylic panels.',
-      imageAsset:
-          'docs/furnitures_pics/22 Gorgeous Brown Kitchen Cabinet Designs.jpeg',
+      imageAsset: 'assets/images/furniture/brown_kitchen_cabinet.jpeg',
       icon: Icons.layers_rounded,
     ),
     _ProductHeroCardData(
       title: 'Bedroom that feels premium',
       subtitle: 'Warm finishes for\ncozy master bedrooms.',
-      imageAsset: 'docs/furnitures_pics/luxirous lifestyle.jpeg',
+      imageAsset: 'assets/images/furniture/luxurious_lifestyle.jpeg',
       icon: Icons.bed_rounded,
     ),
     _ProductHeroCardData(
       title: 'Kitchen that inspires',
       subtitle: 'Modern finishes for\npremium modular kitchens.',
-      imageAsset:
-          'docs/furnitures_pics/Elegant Sage Green Kitchen with Brass Accents & Marble Island.jpeg',
+      imageAsset: 'assets/images/furniture/sage_green_kitchen.jpeg',
       icon: Icons.kitchen_rounded,
     ),
     _ProductHeroCardData(
       title: 'Living room that welcomes',
       subtitle: 'TV units & wall panels\nfor family time.',
-      imageAsset: 'docs/furnitures_pics/_ (6).jpeg',
+      imageAsset: 'assets/images/furniture/furniture_6.jpeg',
       icon: Icons.weekend_rounded,
     ),
     _ProductHeroCardData(
       title: 'Office that boosts focus',
       subtitle: 'Create productive workspaces\nwith designer surfaces.',
-      imageAsset:
-          'docs/furnitures_pics/Home Office_Todos os direitos da autoria e imagem são reservados aos responsáveis_.jpeg',
+      imageAsset: 'assets/images/furniture/home_office.jpeg',
       icon: Icons.chair_rounded,
     ),
   ];

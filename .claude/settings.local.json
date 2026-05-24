@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git reset *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(git checkout *)",
+      "Bash(rm -f balaji-points-release.apk DEPLOY_FUNCTIONS.sh)",
+      "Bash(rm -rf build/)",
+      "Bash(rm -f scripts/serviceAccountKey.json.json pglite-debug.log POINTS_SYNC_AND_RESET_PIN_REPORT.md cleanup_disk_space.sh balaji_points.iml l10n.yaml)",
+      "Bash(rm -rf scripts/node_modules/ docs/ .dist/ .idea/)",
+      "Bash(mkdir -p /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/assets/images/furniture)",
+      "Bash(git show *)"
+    ]
+  }
+}

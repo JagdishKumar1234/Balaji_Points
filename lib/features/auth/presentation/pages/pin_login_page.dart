@@ -5,32 +5,24 @@ import 'package:balaji_points/config/theme.dart' as LegacyTheme;
 import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
+import '../providers/auth_provider.dart';
 
-class PINLoginPage extends StatefulWidget {
+class PINLoginPage extends ConsumerStatefulWidget {
   final String phoneNumber;
 
   const PINLoginPage({super.key, required this.phoneNumber});
 
   @override
-  State<PINLoginPage> createState() => _PINLoginPageState();
+  ConsumerState<PINLoginPage> createState() => _PINLoginPageState();
 }
 
-class _PINLoginPageState extends State<PINLoginPage>
-{
+class _PINLoginPageState extends ConsumerState<PINLoginPage> {
   final _pinController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool _rememberMe = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -40,16 +32,10 @@ class _PINLoginPageState extends State<PINLoginPage>
 
   void _login() {
     if (!_formKey.currentState!.validate()) return;
-
-    final pin = _pinController.text.trim();
-    final phone = widget.phoneNumber;
-
-    context.read<AuthBloc>().add(
-      LoginWithPinEvent(
-        phoneNumber: phone,
-        pin: pin,
-        rememberMe: _rememberMe,
-      ),
+    ref.read(authProvider.notifier).loginWithPin(
+      phoneNumber: widget.phoneNumber,
+      pin: _pinController.text.trim(),
+      rememberMe: _rememberMe,
     );
   }
 
@@ -67,32 +53,30 @@ class _PINLoginPageState extends State<PINLoginPage>
     final topInset = MediaQuery.of(context).padding.top;
     final l10n = AppLocalizations.of(context)!;
 
+    ref.listen<AuthState>(authProvider, (_, state) {
+      if (state is AuthAuthenticated) {
+        final role = state.role.toLowerCase();
+        if (role == 'admin') {
+          context.go('/admin');
+        } else {
+          context.go('/');
+        }
+      } else if (state is AuthError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.message),
+            backgroundColor: DesignToken.error,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    });
+
+    final isLoggingIn = ref.watch(authProvider) is AuthLoading;
+
     return PopScope(
       canPop: true,
-      child: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthAuthenticatedState) {
-            // Navigate based on role
-            final role = (state.role ?? "carpenter").toLowerCase();
-            if (role == 'admin') {
-              context.go('/admin');
-            } else {
-              context.go('/');
-            }
-          } else if (state is AuthErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: DesignToken.error,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          final isLoggingIn = state is AuthLoadingState;
-
-          return Scaffold(
+      child: Scaffold(
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: true,
 
@@ -393,9 +377,6 @@ class _PINLoginPageState extends State<PINLoginPage>
               ],
             ),
           );
-        },
-      ),
-    );
   }
 }
 

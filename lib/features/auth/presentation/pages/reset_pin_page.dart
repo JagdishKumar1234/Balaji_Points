@@ -9,24 +9,21 @@ import 'package:balaji_points/services/pin_auth_service.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
+import '../providers/auth_provider.dart';
 
-class ResetPINPage extends StatefulWidget {
+class ResetPINPage extends ConsumerStatefulWidget {
   final String? phoneNumber;
 
   const ResetPINPage({super.key, this.phoneNumber});
 
   @override
-  State<ResetPINPage> createState() => _ResetPINPageState();
+  ConsumerState<ResetPINPage> createState() => _ResetPINPageState();
 }
 
-class _ResetPINPageState extends State<ResetPINPage>
-{
+class _ResetPINPageState extends ConsumerState<ResetPINPage> {
   final _phoneController = TextEditingController();
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
@@ -194,13 +191,11 @@ class _ResetPINPageState extends State<ResetPINPage>
         return;
       }
 
-      context.read<AuthBloc>().add(
-            ResetPinEvent(
-              phoneNumber: phone,
-              oldPin: currentPin,
-              newPin: pin,
-            ),
-          );
+      ref.read(authProvider.notifier).resetPin(
+        phoneNumber: phone,
+        oldPin: currentPin,
+        newPin: pin,
+      );
       return;
     }
 
@@ -287,36 +282,27 @@ class _ResetPINPageState extends State<ResetPINPage>
           }
         }
       },
-      child: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is ResetPinSuccessState) {
+      child: Builder(builder: (context) {
+        ref.listen<AuthState>(authProvider, (_, state) {
+          if (state is ResetPinSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.pinResetSuccess),
-                backgroundColor: DesignToken.success,
-              ),
+              SnackBar(content: Text(l10n.pinResetSuccess), backgroundColor: DesignToken.success),
             );
-
             _currentPinController.clear();
             _pinController.clear();
             _confirmPinController.clear();
-
             context.pop();
-          } else if (state is ResetPinErrorState) {
+          } else if (state is ResetPinError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: DesignToken.error,
-              ),
+              SnackBar(content: Text(state.message), backgroundColor: DesignToken.error),
             );
           }
-        },
-        builder: (context, state) {
-          final isSaving =
-              state is ResetPinLoadingState || _isForgotSaving;
-          final canSubmit = _phoneChecked && _phoneExists;
+        });
 
-          return Scaffold(
+        final isSaving = ref.watch(authProvider) is ResetPinLoading || _isForgotSaving;
+        final canSubmit = _phoneChecked && _phoneExists;
+
+        return Scaffold(
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: true,
             appBar: AppBar(
@@ -978,8 +964,7 @@ class _ResetPINPageState extends State<ResetPINPage>
               ],
             ),
           );
-        },
-      ),
+      }),
     );
   }
 }

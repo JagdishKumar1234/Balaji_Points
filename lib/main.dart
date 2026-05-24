@@ -12,7 +12,6 @@ import 'firebase_options.dart';
 import 'core/logger.dart';
 import 'services/fcm_service.dart';
 import 'services/local_notification_service.dart';
-import 'injection/dependency_injection.dart';
 
 /// -------------------------------
 /// BACKGROUND FCM HANDLER (TOP LEVEL)
@@ -76,7 +75,6 @@ class _Bootstrap extends StatelessWidget {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      await setupDependencyInjection();
 
       final packageInfo = await PackageInfo.fromPlatform();
       AppLogger.appLaunchBanner(
