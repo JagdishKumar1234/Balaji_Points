@@ -24,6 +24,11 @@ const db = admin.firestore();
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Return loyalty tier name for a given points total.
+ * @param {number} points - Total accumulated points.
+ * @return {string} Tier name.
+ */
 function calculateTier(points) {
   if (points >= 10000) return "Platinum";
   if (points >= 5000) return "Gold";
@@ -35,6 +40,8 @@ function calculateTier(points) {
  * Resolve the canonical user document for a carpenterId.
  * carpenterId may be a UID or a phone number (legacy).
  * Returns { ref, data } or null.
+ * @param {string} carpenterId - UID or phone number of the carpenter.
+ * @return {Promise<{ref: FirebaseFirestore.DocumentReference, data: object}|null>}
  */
 async function resolveUserDoc(carpenterId) {
   // Try direct doc lookup first (UID-based)
@@ -393,9 +400,9 @@ exports.onUserDeleted = onDocumentDeleted(
       if (!histSnap.empty) await histBatch.commit();
 
       // 3. Delete bills – verify branchId to avoid touching other stores
-      const billsQuery = phone
-        ? db.collection("bills").where("carpenterPhone", "==", phone)
-        : db.collection("bills").where("carpenterId", "==", userId);
+      const billsQuery = phone ?
+        db.collection("bills").where("carpenterPhone", "==", phone) :
+        db.collection("bills").where("carpenterId", "==", userId);
 
       const billsSnap = await billsQuery.get();
       const billsBatch = db.batch();
