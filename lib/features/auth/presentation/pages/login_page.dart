@@ -1,12 +1,16 @@
-import 'dart:math' as math;
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
-import 'package:balaji_points/l10n/app_localizations.dart';
+
+import 'package:balaji_points/core/design/app_animations.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/providers/locale_provider.dart';
 import '../providers/auth_provider.dart';
 
@@ -36,8 +40,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final l10n = AppLocalizations.of(context)!;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is AuthUserExists) {
@@ -45,18 +49,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       } else if (state is AuthUserNotFound) {
         context.push('/pin-setup?phone=${state.phoneNumber}');
       } else if (state is AuthError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n.error}: ${state.message}'),
-            backgroundColor: DesignToken.error,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${l10n.error}: ${state.message}'),
+          backgroundColor: AppColors.error,
+          duration: const Duration(seconds: 3),
+        ));
       }
     });
 
-    final authState = ref.watch(authProvider);
-    final isChecking = authState is AuthCheckingUser;
+    final isChecking = ref.watch(authProvider) is AuthCheckingUser;
 
     return PopScope(
       canPop: false,
@@ -66,215 +67,158 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             Navigator.of(context).pop();
             return;
           }
-          final shouldExit = await BackButtonHandler.showExitConfirmation(context);
-          if (shouldExit == true && mounted) BackButtonHandler.exitApp();
+          final exit = await BackButtonHandler.showExitConfirmation(context);
+          if (exit == true && mounted) BackButtonHandler.exitApp();
         }
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Column(
+        body: Stack(
+          fit: StackFit.expand,
           children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.asset('assets/images/background_image.png', fit: BoxFit.cover),
-                  ),
-                  SafeArea(
-                    bottom: false,
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.only(bottom: bottomInset + DesignToken.spacingXL),
-                      child: Padding(
-                        padding: DesignToken.paddingHorizontal2XL,
-                        child: Form(
-                          key: _formKey,
+            // ── Background ──
+            Image.asset('assets/images/background_image.png', fit: BoxFit.cover),
+
+            // ── Content ──
+            SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(bottom: bottomInset + AppSpacing.xl),
+                child: Padding(
+                  padding: AppSpacing.screenHorizontal,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // ── Language switcher ──
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: _LanguagePicker(),
+                        ).fadeIn(delay: AppAnimations.stagger(0)),
+
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // ── Logo ──
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            'assets/images/balaji_point_logo.png',
+                            width: 96,
+                            height: 96,
+                            fit: BoxFit.cover,
+                          ),
+                        ).enterHero(delay: AppAnimations.stagger(1)),
+
+                        const SizedBox(height: AppSpacing.md),
+
+                        // ── Title ──
+                        Text(
+                          'Balaji Points',
+                          style: AppTypography.displaySmall(
+                            color: AppColors.lightPrimary,
+                          ),
+                        ).enterHero(delay: AppAnimations.stagger(2)),
+
+                        const SizedBox(height: AppSpacing.xl2),
+
+                        Text(
+                          l10n.enterPhoneNumber,
+                          style: AppTypography.bodyLarge(
+                            color: AppColors.lightTextSecondary,
+                          ),
+                        ).fadeIn(delay: AppAnimations.stagger(3)),
+
+                        const SizedBox(height: AppSpacing.xl3),
+
+                        // ── Glass card ──
+                        _GlassCard(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              SizedBox(height: DesignToken.heightXL),
-
-                              // Language switcher
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                  padding: DesignToken.paddingHorizontalMD,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: DesignToken.white,
-                                    borderRadius: DesignToken.borderRadiusMD,
-                                    border: Border.all(color: DesignToken.primary.withOpacity(0.3)),
+                              // Phone field
+                              TextFormField(
+                                controller: _phoneController,
+                                maxLength: 10,
+                                keyboardType: TextInputType.phone,
+                                style: AppTypography.h5(color: AppColors.lightTextPrimary),
+                                decoration: InputDecoration(
+                                  labelText: l10n.mobileNumber,
+                                  labelStyle: AppTypography.bodyMedium(
+                                    color: AppColors.lightTextSecondary,
                                   ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<Locale>(
-                                      value: ref.watch(localeProvider),
-                                      onChanged: (Locale? newLocale) {
-                                        if (newLocale != null) {
-                                          ref.read(localeProvider.notifier).setLocale(newLocale);
-                                        }
-                                      },
-                                      items: [
-                                        DropdownMenuItem(value: const Locale('en'), child: Text(l10n.languageEnglish)),
-                                        DropdownMenuItem(value: const Locale('hi'), child: Text(l10n.languageHindi)),
-                                        DropdownMenuItem(value: const Locale('ta'), child: Text(l10n.languageTamil)),
-                                      ],
+                                  prefixText: '+91 ',
+                                  prefixStyle: AppTypography.h5(color: AppColors.lightPrimary),
+                                  counterText: '',
+                                  filled: true,
+                                  fillColor: AppColors.lightPrimary.withValues(alpha: 0.05),
+                                  border: OutlineInputBorder(
+                                    borderRadius: AppRadius.forInput,
+                                    borderSide: BorderSide(
+                                      color: AppColors.lightPrimary.withValues(alpha: 0.3),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: AppRadius.forInput,
+                                    borderSide: BorderSide(
+                                      color: AppColors.lightPrimary.withValues(alpha: 0.2),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: AppRadius.forInput,
+                                    borderSide: const BorderSide(
+                                      color: AppColors.lightPrimary,
+                                      width: 2,
                                     ),
                                   ),
                                 ),
+                                validator: (value) {
+                                  final v = value?.trim() ?? '';
+                                  if (v.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(v)) {
+                                    return l10n.enterValidTenDigit;
+                                  }
+                                  return null;
+                                },
                               ),
 
-                              SizedBox(height: DesignToken.heightXL),
+                              const SizedBox(height: AppSpacing.xl),
 
-                              ClipRRect(
-                                borderRadius: DesignToken.borderRadiusSM,
-                                child: Image.asset('assets/images/balaji_point_logo.png', width: 100, height: 100),
+                              // Continue button
+                              _GradientButton(
+                                onPressed: isChecking ? null : _checkUserAndNavigate,
+                                isLoading: isChecking,
+                                label: l10n.continueWithPin,
                               ),
-                              SizedBox(height: DesignToken.heightLG),
-                              Text(
-                                'Balaji Points',
-                                style: AppTextStyles.nunitoBold.copyWith(
-                                  fontSize: DesignToken.fontSize5XL,
-                                  color: DesignToken.primary,
-                                ),
-                              ),
-
-                              SizedBox(height: DesignToken.height2XL),
-                              Text(
-                                l10n.enterPhoneNumber,
-                                style: AppTextStyles.nunitoRegular.copyWith(
-                                  fontSize: DesignToken.fontSizeLG,
-                                  color: DesignToken.textDark,
-                                ),
-                              ),
-                              SizedBox(height: DesignToken.height3XL),
-
-                              // Glass card
-                              ClipRRect(
-                                borderRadius: DesignToken.borderRadius2XL,
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                  child: Container(
-                                    padding: EdgeInsets.all(DesignToken.padding3XL),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          DesignToken.white.withOpacity(0.9),
-                                          DesignToken.white.withOpacity(0.7),
-                                        ],
-                                      ),
-                                      borderRadius: DesignToken.borderRadius2XL,
-                                      border: Border.all(color: DesignToken.white.withOpacity(0.5), width: 1.5),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: DesignToken.primary.withOpacity(0.1),
-                                          blurRadius: 20,
-                                          offset: const Offset(0, 10),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: [
-                                        TextFormField(
-                                          controller: _phoneController,
-                                          maxLength: 10,
-                                          keyboardType: TextInputType.phone,
-                                          style: AppTextStyles.nunitoSemiBold.copyWith(
-                                            fontSize: DesignToken.fontSizeXL,
-                                            color: DesignToken.textDark,
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelText: l10n.mobileNumber,
-                                            labelStyle: AppTextStyles.nunitoMedium.copyWith(fontSize: DesignToken.fontSizeLG),
-                                            prefixText: '+91 ',
-                                            prefixStyle: AppTextStyles.nunitoSemiBold.copyWith(
-                                              fontSize: DesignToken.fontSizeXL,
-                                              color: DesignToken.primary,
-                                            ),
-                                            counterText: '',
-                                            filled: true,
-                                            fillColor: DesignToken.primary.withOpacity(0.05),
-                                            border: OutlineInputBorder(
-                                              borderRadius: DesignToken.borderRadiusLG,
-                                              borderSide: BorderSide(color: DesignToken.primary.withOpacity(0.3), width: 1.5),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: DesignToken.borderRadiusLG,
-                                              borderSide: BorderSide(color: DesignToken.primary.withOpacity(0.2), width: 1.5),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: DesignToken.borderRadiusLG,
-                                              borderSide: const BorderSide(color: DesignToken.primary, width: 2),
-                                            ),
-                                          ),
-                                          validator: (value) {
-                                            final v = value?.trim() ?? '';
-                                            if (v.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(v)) {
-                                              return l10n.enterValidTenDigit;
-                                            }
-                                            return null;
-                                          },
-                                        ),
-
-                                        SizedBox(height: DesignToken.height2XL),
-
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [DesignToken.secondary, DesignToken.secondary.withOpacity(0.8)],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            ),
-                                            borderRadius: DesignToken.borderRadiusLG,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: DesignToken.secondary.withOpacity(0.4),
-                                                blurRadius: 12,
-                                                offset: const Offset(0, 6),
-                                              ),
-                                            ],
-                                          ),
-                                          child: ElevatedButton(
-                                            onPressed: isChecking ? null : _checkUserAndNavigate,
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: DesignToken.transparent,
-                                              shadowColor: DesignToken.transparent,
-                                              padding: const EdgeInsets.symmetric(vertical: 18),
-                                              shape: RoundedRectangleBorder(borderRadius: DesignToken.borderRadiusLG),
-                                            ),
-                                            child: Text(
-                                              l10n.continueWithPin,
-                                              style: AppTextStyles.nunitoBold.copyWith(
-                                                fontSize: DesignToken.fontSizeXL,
-                                                color: isChecking ? DesignToken.white.withOpacity(0.7) : DesignToken.white,
-                                                letterSpacing: 0.5,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(height: DesignToken.height2XL),
-                              Text(
-                                '${l10n.poweredBy} ${l10n.companyName}',
-                                style: DesignToken.labelMedium.copyWith(
-                                  color: DesignToken.primary,
-                                  fontWeight: FontWeight.w700,
-                                  shadows: [Shadow(color: DesignToken.white, blurRadius: 10, offset: const Offset(0, 2))],
-                                ),
-                              ),
-                              SizedBox(height: DesignToken.height3XL),
                             ],
                           ),
-                        ),
-                      ),
+                        ).enterCard(delay: AppAnimations.stagger(4)),
+
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // ── Footer ──
+                        Text(
+                          '${l10n.poweredBy} ${l10n.companyName}',
+                          style: AppTypography.labelMedium(
+                            color: AppColors.lightPrimary,
+                          ).copyWith(
+                            fontWeight: FontWeight.w700,
+                            shadows: [
+                              Shadow(
+                                color: AppColors.white.withValues(alpha: 0.8),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                        ).fadeIn(delay: AppAnimations.stagger(5)),
+
+                        const SizedBox(height: AppSpacing.xl3),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -284,68 +228,138 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 }
 
-// ─── Floating animation helpers (unchanged) ────────────────────────────────────
+// ── Language picker ──────────────────────────────────────────────────────────
 
-enum FloatingType { coin, star, sparkle, points }
-
-class FloatingElement {
-  double x, y, speed;
-  FloatingType type;
-  double rotation = 0;
-  FloatingElement({required this.x, required this.y, required this.speed, required this.type});
+class _LanguagePicker extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.9),
+        borderRadius: AppRadius.sm8,
+        border: Border.all(color: AppColors.lightPrimary.withValues(alpha: 0.3)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<Locale>(
+          value: ref.watch(localeProvider),
+          style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+          onChanged: (locale) {
+            if (locale != null) ref.read(localeProvider.notifier).setLocale(locale);
+          },
+          items: [
+            DropdownMenuItem(value: const Locale('en'), child: Text(l10n.languageEnglish)),
+            DropdownMenuItem(value: const Locale('hi'), child: Text(l10n.languageHindi)),
+            DropdownMenuItem(value: const Locale('ta'), child: Text(l10n.languageTamil)),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class CelebrationPainter extends CustomPainter {
-  final double animationValue;
-  final List<FloatingElement> elements;
-  CelebrationPainter({required this.animationValue, required this.elements});
+// ── Glass-morphism card ───────────────────────────────────────────────────────
+
+class _GlassCard extends StatelessWidget {
+  final Widget child;
+  const _GlassCard({required this.child});
 
   @override
-  void paint(Canvas canvas, Size size) {
-    for (var element in elements) {
-      final y = (element.y + animationValue * element.speed) % 1.2 - 0.1;
-      final opacity = (y < 0 || y > 1) ? 0.0 : (y < 0.1 || y > 0.9 ? (y < 0.1 ? y / 0.1 : (1.0 - y) / 0.1) : 1.0);
-      if (opacity <= 0) continue;
-      final paint = Paint()
-        ..color = _colorFor(element.type).withOpacity(0.4 * opacity)
-        ..style = PaintingStyle.fill;
-      final pos = Offset(element.x * size.width, y * size.height);
-      final rot = (animationValue * 2 * math.pi * element.speed) + element.rotation;
-      canvas.save();
-      canvas.translate(pos.dx, pos.dy);
-      canvas.rotate(rot);
-      switch (element.type) {
-        case FloatingType.coin: _drawCoin(canvas, paint); break;
-        case FloatingType.star: _drawStar(canvas, paint); break;
-        case FloatingType.sparkle: _drawSparkle(canvas, paint); break;
-        case FloatingType.points: _drawPoints(canvas, paint); break;
-      }
-      canvas.restore();
-    }
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: AppRadius.forCard,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.xl3),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.white.withValues(alpha: 0.92),
+                AppColors.white.withValues(alpha: 0.72),
+              ],
+            ),
+            borderRadius: AppRadius.forCard,
+            border: Border.all(
+              color: AppColors.white.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.lightPrimary.withValues(alpha: 0.10),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: child,
+        ),
+      ),
+    );
   }
+}
 
-  Color _colorFor(FloatingType t) => switch (t) {
-    FloatingType.coin => DesignToken.amber,
-    FloatingType.star => DesignToken.secondary,
-    FloatingType.sparkle => DesignToken.primary,
-    FloatingType.points => DesignToken.success,
-  };
+// ── Gradient button ───────────────────────────────────────────────────────────
 
-  void _drawCoin(Canvas c, Paint p) { c.drawCircle(Offset.zero, 8, p); p.color = DesignToken.white.withOpacity(0.6); c.drawCircle(const Offset(-3, -3), 2, p); }
-  void _drawStar(Canvas c, Paint p) {
-    final path = Path();
-    for (int i = 0; i < 5; i++) {
-      final a = (i * 4 * math.pi / 5) - math.pi / 2;
-      i == 0 ? path.moveTo(math.cos(a) * 8, math.sin(a) * 8) : path.lineTo(math.cos(a) * 8, math.sin(a) * 8);
-      final ia = a + (2 * math.pi / 5);
-      path.lineTo(math.cos(ia) * 4, math.sin(ia) * 4);
-    }
-    path.close();
-    c.drawPath(path, p);
-  }
-  void _drawSparkle(Canvas c, Paint p) { c.drawLine(const Offset(-8, 0), const Offset(8, 0), p..strokeWidth = 2); c.drawLine(const Offset(0, -8), const Offset(0, 8), p); c.drawCircle(Offset.zero, 3, p); }
-  void _drawPoints(Canvas c, Paint p) { c.drawPath(Path()..addRRect(RRect.fromRectAndRadius(Rect.fromCenter(center: Offset.zero, width: 16, height: 12), Radius.circular(DesignToken.radiusSM))), p); p.color = DesignToken.white.withOpacity(0.8); c.drawCircle(const Offset(-4, 0), 2, p); c.drawCircle(const Offset(4, 0), 2, p); }
+class _GradientButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final String label;
+
+  const _GradientButton({
+    required this.onPressed,
+    required this.isLoading,
+    required this.label,
+  });
 
   @override
-  bool shouldRepaint(covariant CelebrationPainter old) => old.animationValue != animationValue;
+  Widget build(BuildContext context) {
+    return Container(
+      height: AppSpacing.buttonHeight,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.lightSecondary,
+            AppColors.lightSecondary.withValues(alpha: 0.82),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: AppRadius.forButton,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lightSecondary.withValues(alpha: 0.35),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          minimumSize: const Size(double.infinity, AppSpacing.buttonHeight),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
+        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  color: AppColors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : Text(
+                label,
+                style: AppTypography.buttonLarge(color: AppColors.white),
+              ),
+      ),
+    );
+  }
 }
