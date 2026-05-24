@@ -27,6 +27,7 @@ class SessionService {
   static const String _keyProfileImage = 'profile_image';
   static const String _keyBiometricEnabled = 'biometric_enabled';
   static const String _keyHasAskedBiometric = 'has_asked_biometric';
+  static const String _keyBranchId = 'branch_id';
 
   /// Save user session after successful login
   Future<void> saveSession({
@@ -36,6 +37,7 @@ class SessionService {
     String? firstName,
     String? lastName,
     String? profileImage,
+    String? branchId,
   }) async {
     await _storage.write(key: _keyIsLoggedIn, value: 'true');
     await _storage.write(key: _keyPhoneNumber, value: phoneNumber);
@@ -50,6 +52,9 @@ class SessionService {
     }
     if (profileImage != null) {
       await _storage.write(key: _keyProfileImage, value: profileImage);
+    }
+    if (branchId != null) {
+      await _storage.write(key: _keyBranchId, value: branchId);
     }
   }
 
@@ -99,6 +104,16 @@ class SessionService {
     return await _storage.read(key: _keyProfileImage);
   }
 
+  /// Get stored branch ID (null for super_admin or unset legacy users)
+  Future<String?> getBranchId() async {
+    return await _storage.read(key: _keyBranchId);
+  }
+
+  /// Update branch ID in session (called after branch migration)
+  Future<void> setBranchId(String branchId) async {
+    await _storage.write(key: _keyBranchId, value: branchId);
+  }
+
   /// Get all session data
   Future<Map<String, String?>> getSessionData() async {
     return {
@@ -108,6 +123,7 @@ class SessionService {
       'firstName': await getFirstName(),
       'lastName': await getLastName(),
       'profileImage': await getProfileImage(),
+      'branchId': await getBranchId(),
     };
   }
 

@@ -158,6 +158,7 @@ class AuthNotifier extends Notifier<AuthState> {
           role: userData['role'] as String? ?? 'carpenter',
           firstName: userData['firstName'] as String?,
           lastName: userData['lastName'] as String?,
+          branchId: userData['branchId'] as String?,
         );
       }
 
@@ -197,6 +198,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required String firstName,
     String? lastName,
     String? profileImageUrl,
+    String? branchId,
   }) async {
     state = const PinSetupLoading();
     try {
@@ -206,6 +208,7 @@ class AuthNotifier extends Notifier<AuthState> {
         firstName: firstName,
         lastName: lastName,
         profileImageUrl: profileImageUrl,
+        branchId: branchId,
       );
       if (!success) {
         state = const PinSetupError('Failed to setup PIN');
@@ -228,6 +231,7 @@ class AuthNotifier extends Notifier<AuthState> {
         role: userData['role'] as String? ?? 'carpenter',
         firstName: userData['firstName'] as String?,
         lastName: userData['lastName'] as String?,
+        branchId: userData['branchId'] as String? ?? branchId,
       );
 
       if (postLogin != null) {

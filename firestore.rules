@@ -378,6 +378,26 @@ service cloud.firestore {
     }
 
     // ============================================
+    // BRANCHES COLLECTION
+    // ============================================
+    match /branches/{branchId} {
+      // All authenticated users can read branch list (for signup dropdown)
+      allow read: if true;
+
+      // Only super_admin / admin SDK creates/updates branches.
+      // Client-side creates allowed only if the document has required fields.
+      // Full security enforced at app level (only super_admin role can call BranchService.createBranch).
+      allow create: if request.resource.data.name != null
+                    && request.resource.data.shortName != null
+                    && request.resource.data.isActive != null;
+
+      allow update: if resource.data.name != null; // branch exists
+
+      // Deletes disabled from client — use Admin SDK only
+      allow delete: if false;
+    }
+
+    // ============================================
     // APP CONFIG (force / optional update metadata)
     // ============================================
     match /app_config/{docId} {

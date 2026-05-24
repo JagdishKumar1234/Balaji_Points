@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/services/app_update_service.dart';
+import 'package:balaji_points/services/branch_migration_service.dart';
+import 'package:balaji_points/services/branch_service.dart';
 import 'package:balaji_points/services/fcm_service.dart';
 import 'package:balaji_points/services/local_notification_service.dart';
 import 'package:balaji_points/services/session_service.dart';
@@ -35,6 +37,12 @@ class AppStartupService {
 
     // Notify admin/carpenter about new version (non-blocking)
     await _updateService.notifyAdminCarpenterAboutUpdate();
+
+    // Ensure the default branch document exists in Firestore.
+    await BranchService().seedDefaultBranch();
+
+    // One-time backfill: stamp branchId on all legacy docs.
+    await BranchMigrationService().runIfNeeded();
 
     await _runMigrationAndRefreshFcm();
     return false;
@@ -107,6 +115,7 @@ class AppStartupService {
         firstName: sessionData['firstName'],
         lastName: sessionData['lastName'],
         profileImage: sessionData['profileImage'],
+        branchId: sessionData['branchId'],
       );
     }
 

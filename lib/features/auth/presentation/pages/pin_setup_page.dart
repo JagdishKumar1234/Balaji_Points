@@ -1,18 +1,19 @@
-import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:balaji_points/config/theme.dart' as LegacyTheme;
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/services/branch_service.dart';
 import '../providers/auth_provider.dart';
 
 class PINSetupPage extends ConsumerStatefulWidget {
   final String? phoneNumber;
-
   const PINSetupPage({super.key, this.phoneNumber});
 
   @override
@@ -25,12 +26,29 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
   final _confirmPinController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  // Branch selection state
+  List<Map<String, dynamic>> _branches = [];
+  String? _selectedBranchId;
+  bool _loadingBranches = true;
+
   @override
   void initState() {
     super.initState();
-
     if (widget.phoneNumber != null && widget.phoneNumber!.isNotEmpty) {
       _phoneController.text = widget.phoneNumber!;
+    }
+    _loadBranches();
+  }
+
+  Future<void> _loadBranches() async {
+    final branches = await BranchService().listActiveBranches();
+    if (mounted) {
+      setState(() {
+        _branches = branches;
+        // Auto-select if only one branch
+        if (branches.length == 1) _selectedBranchId = branches.first['id'] as String;
+        _loadingBranches = false;
+      });
     }
   }
 
@@ -46,31 +64,31 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final l10n = AppLocalizations.of(context)!;
-    final phone = _phoneController.text.trim();
     final pin = _pinController.text.trim();
     final confirm = _confirmPinController.text.trim();
 
     if (pin != confirm) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.pinsDoNotMatch),
-          backgroundColor: DesignToken.error,
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l10n.pinsDoNotMatch),
+        backgroundColor: AppColors.error,
+      ));
+      return;
+    }
+
+    if (_selectedBranchId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please select a branch to continue.'),
+        backgroundColor: AppColors.error,
+      ));
       return;
     }
 
     ref.read(authProvider.notifier).setupPin(
-      phoneNumber: phone,
+      phoneNumber: _phoneController.text.trim(),
       pin: pin,
       firstName: '',
+      branchId: _selectedBranchId,
     );
-  }
-
-  bool _hasFormData() {
-    return _phoneController.text.trim().isNotEmpty ||
-        _pinController.text.trim().isNotEmpty ||
-        _confirmPinController.text.trim().isNotEmpty;
   }
 
   @override
@@ -81,514 +99,404 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
 
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is PinSetupSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.pinCreatedSuccess), backgroundColor: DesignToken.success),
-            );
-            context.go('/');
-          } else if (state is PinSetupError) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-            String errorMessage = state.message;
-            if (errorMessage.contains('already exists') || errorMessage.contains('User already exists')) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.accountExistsUseReset),
-                  backgroundColor: DesignToken.orange,
-                  duration: const Duration(seconds: 6),
-                  behavior: SnackBarBehavior.floating,
-                  margin: DesignToken.paddingHorizontalLG,
-                  dismissDirection: DismissDirection.horizontal,
-                  action: SnackBarAction(
-                    label: l10n.resetPin,
-                    textColor: DesignToken.white,
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      context.push('/reset-pin', extra: _phoneController.text.trim());
-                    },
-                  ),
-                ),
-              );
-            } else {
-              if (errorMessage.contains('permission-denied')) {
-                errorMessage = 'Permission denied. Please check Firebase configuration or contact support.';
-              } else if (errorMessage.contains('network')) {
-                errorMessage = l10n.networkError;
-              }
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(errorMessage),
-                  backgroundColor: DesignToken.error,
-                  duration: const Duration(seconds: 5),
-                  behavior: SnackBarBehavior.floating,
-                  margin: DesignToken.paddingHorizontalLG,
-                  dismissDirection: DismissDirection.horizontal,
-                ),
-              );
-            }
-          }
-        });
-
-        final isSaving = ref.watch(authProvider) is PinSetupLoading;
-
-        return Scaffold(
-            backgroundColor: Colors.transparent,
-            extendBodyBehindAppBar: true,
-            appBar: AppBar(
-              backgroundColor: DesignToken.transparent,
-              elevation: DesignToken.elevationNone,
-              leading: BackButton(
-                color: DesignToken.primary,
-                onPressed: () => context.pop(),
-              ),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.pinCreatedSuccess),
+          backgroundColor: AppColors.success,
+        ));
+        context.go('/');
+      } else if (state is PinSetupError) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        String msg = state.message;
+        if (msg.contains('already exists') || msg.contains('User already exists')) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.accountExistsUseReset),
+            backgroundColor: AppColors.warning,
+            duration: const Duration(seconds: 6),
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: l10n.resetPin,
+              textColor: AppColors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                context.push('/reset-pin', extra: _phoneController.text.trim());
+              },
             ),
-            body: Stack(
-              fit: StackFit.expand,
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    'assets/images/background_image.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+          ));
+        } else {
+          if (msg.contains('permission-denied')) {
+            msg = 'Permission denied. Please check Firebase configuration.';
+          } else if (msg.contains('network')) {
+            msg = l10n.networkError;
+          }
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(msg),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+      }
+    });
 
-                // Main Content
-                SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(
-                    DesignToken.spacing2XL,
-                    topInset + kToolbarHeight + DesignToken.spacingSM,
-                    DesignToken.spacing2XL,
-                    bottomInset + DesignToken.spacingXL,
+    final isSaving = ref.watch(authProvider) is PinSetupLoading;
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: BackButton(
+          color: AppColors.lightPrimary,
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/images/background_image.png', fit: BoxFit.cover),
+          SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.xl,
+              topInset + kToolbarHeight + AppSpacing.sm,
+              AppSpacing.xl,
+              bottomInset + AppSpacing.xl,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const SizedBox(height: AppSpacing.sm),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/balaji_point_logo.png',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  child: Form(
-                    key: _formKey,
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    l10n.createPinTitle,
+                    style: AppTypography.h3(color: AppColors.lightPrimary),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    l10n.createPinSubtitle,
+                    style: AppTypography.bodyMedium(
+                      color: AppColors.lightPrimary.withValues(alpha: 0.7),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.xl2),
+
+                  // ── Glass card ──
+                  _GlassCard(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        SizedBox(height: DesignToken.heightSM),
-
-                        // Logo
-                        ClipRRect(
-                          borderRadius: DesignToken.borderRadiusSM,
-                          child: Image.asset(
-                            'assets/images/balaji_point_logo.png',
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
+                        // Phone
+                        TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          maxLength: 10,
+                          style: AppTypography.labelLarge(color: AppColors.lightPrimary),
+                          decoration: _inputDecoration(
+                            label: l10n.mobileNumber,
+                            prefix: '+91 ',
                           ),
-                        ),
-                        SizedBox(height: DesignToken.heightMD),
-
-                        Text(
-                          l10n.createPinTitle,
-                          style: LegacyTheme.AppTextStyles.nunitoBold.copyWith(
-                            fontSize: DesignToken.fontSize3XL,
-                            color: DesignToken.primary,
-                          ),
+                          validator: (v) {
+                            final s = v?.trim() ?? '';
+                            if (s.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(s)) {
+                              return l10n.enterValidTenDigit;
+                            }
+                            return null;
+                          },
                         ),
 
-                        SizedBox(height: DesignToken.heightXS),
-                        Text(
-                          l10n.createPinSubtitle,
-                          style: LegacyTheme.AppTextStyles.nunitoRegular.copyWith(
-                            fontSize: DesignToken.fontSizeMD,
-                            color: DesignToken.textDark.withOpacity(0.7),
-                          ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        // Branch picker
+                        _BranchPicker(
+                          branches: _branches,
+                          selected: _selectedBranchId,
+                          loading: _loadingBranches,
+                          onChanged: (id) => setState(() => _selectedBranchId = id),
                         ),
 
-                        SizedBox(height: DesignToken.height2XL),
+                        const SizedBox(height: AppSpacing.md),
 
-                        // Glass Card
-                        ClipRRect(
-                          borderRadius: DesignToken.borderRadius2XL,
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Container(
-                              padding: DesignToken.paddingAll2XL,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    DesignToken.white.withOpacity(0.9),
-                                    DesignToken.white.withOpacity(0.7),
-                                  ],
-                                ),
-                                borderRadius: DesignToken.borderRadius2XL,
-                                border: Border.all(
-                                  color: DesignToken.white.withOpacity(0.5),
-                                  width: 1.5,
-                                ),
-                                boxShadow: DesignToken.shadowLG.map((shadow) => shadow.copyWith(
-                                  color: DesignToken.primary.withOpacity(0.1),
-                                )).toList(),
-                              ),
-                              child: Column(
-                                children: [
-                                  // Phone Number
-                                  TextFormField(
-                                    controller: _phoneController,
-                                    keyboardType: TextInputType.phone,
-                                    maxLength: 10,
-                                    style: LegacyTheme.AppTextStyles.nunitoSemiBold
-                                        .copyWith(fontSize: DesignToken.fontSizeLG),
-                                    decoration: InputDecoration(
-                                      labelText: l10n.mobileNumber,
-                                      prefixText: "+91 ",
-                                      counterText: "",
-                                      filled: true,
-                                      fillColor: DesignToken.primary.withOpacity(
-                                        0.05,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(
-                                            0.3,
-                                          ),
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(
-                                            0.2,
-                                          ),
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: const BorderSide(
-                                          color: DesignToken.primary,
-                                          width: 2,
-                                        ),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      final v = value?.trim() ?? '';
-                                      if (v.length != 10 ||
-                                          !RegExp(r'^[0-9]+$').hasMatch(v)) {
-                                        return l10n.enterValidTenDigit;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-
-                                  SizedBox(height: DesignToken.heightXL),
-
-                                  // PIN
-                                  TextFormField(
-                                    controller: _pinController,
-                                    keyboardType: TextInputType.number,
-                                    obscureText: true,
-                                    maxLength: 4,
-                                    textAlign: TextAlign.center,
-                                    style: LegacyTheme.AppTextStyles.nunitoBold
-                                        .copyWith(
-                                          fontSize: DesignToken.fontSize2XL,
-                                          letterSpacing: 8,
-                                          color: DesignToken.primary,
-                                        ),
-                                    decoration: InputDecoration(
-                                      labelText: l10n.fourDigitPin,
-                                      counterText: '',
-                                      filled: true,
-                                      fillColor: DesignToken.primary.withOpacity(
-                                        0.05,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(
-                                            0.3,
-                                          ),
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(
-                                            0.2,
-                                          ),
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: const BorderSide(
-                                          color: DesignToken.primary,
-                                          width: 2,
-                                        ),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.length != 4) {
-                                        return l10n.enter4Digits;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-
-                                  SizedBox(height: DesignToken.heightLG),
-
-                                  // Confirm PIN
-                                  TextFormField(
-                                    controller: _confirmPinController,
-                                    keyboardType: TextInputType.number,
-                                    obscureText: true,
-                                    maxLength: 4,
-                                    textAlign: TextAlign.center,
-                                    style: LegacyTheme.AppTextStyles.nunitoBold
-                                        .copyWith(
-                                          fontSize: DesignToken.fontSize2XL,
-                                          letterSpacing: 8,
-                                          color: DesignToken.primary,
-                                        ),
-                                    decoration: InputDecoration(
-                                      labelText: l10n.confirmPin,
-                                      counterText: '',
-                                      filled: true,
-                                      fillColor: DesignToken.primary.withOpacity(
-                                        0.05,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(
-                                            0.3,
-                                          ),
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: BorderSide(
-                                          color: DesignToken.primary.withOpacity(
-                                            0.2,
-                                          ),
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        borderSide: const BorderSide(
-                                          color: DesignToken.primary,
-                                          width: 2,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  SizedBox(height: DesignToken.height2XL),
-
-                                  // Save Button with Gradient
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            DesignToken.secondary,
-                                            DesignToken.secondary.withOpacity(0.8),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        ),
-                                        borderRadius: DesignToken.borderRadiusLG,
-                                        boxShadow: DesignToken.shadowMD.map((shadow) => shadow.copyWith(
-                                          color: DesignToken.secondary.withOpacity(0.4),
-                                        )).toList(),
-                                      ),
-                                      child: ElevatedButton(
-                                        onPressed: isSaving ? null : _savePin,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: DesignToken.transparent,
-                                          shadowColor: DesignToken.transparent,
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 18,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: DesignToken.borderRadiusLG,
-                                          ),
-                                        ),
-                                        child: isSaving
-                                            ? const SizedBox(
-                                                width: 24,
-                                                height: 24,
-                                                child: CircularProgressIndicator(
-                                                  color: DesignToken.white,
-                                                  strokeWidth: 2.5,
-                                                ),
-                                              )
-                                            : Text(
-                                                l10n.savePin,
-                                                style: LegacyTheme
-                                                    .AppTextStyles
-                                                    .nunitoBold
-                                                    .copyWith(
-                                                      fontSize: DesignToken.fontSizeXL,
-                                                      color: DesignToken.white,
-                                                      letterSpacing: 0.5,
-                                                    ),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        // PIN
+                        TextFormField(
+                          controller: _pinController,
+                          keyboardType: TextInputType.number,
+                          obscureText: true,
+                          maxLength: 4,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.h2(color: AppColors.lightPrimary)
+                              .copyWith(letterSpacing: 12),
+                          decoration: _inputDecoration(label: l10n.fourDigitPin),
+                          validator: (v) => (v == null || v.length != 4)
+                              ? l10n.enter4Digits
+                              : null,
                         ),
 
-                        SizedBox(height: DesignToken.heightXL),
+                        const SizedBox(height: AppSpacing.md),
+
+                        // Confirm PIN
+                        TextFormField(
+                          controller: _confirmPinController,
+                          keyboardType: TextInputType.number,
+                          obscureText: true,
+                          maxLength: 4,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.h2(color: AppColors.lightPrimary)
+                              .copyWith(letterSpacing: 12),
+                          decoration: _inputDecoration(label: l10n.confirmPin),
+                          validator: (v) {
+                            if (v == null || v.length != 4) return l10n.enter4Digits;
+                            if (v != _pinController.text.trim()) return l10n.pinsDoNotMatch;
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // Save button
+                        _GradientButton(
+                          label: l10n.savePin,
+                          isLoading: isSaving,
+                          onPressed: isSaving ? null : _savePin,
+                        ),
                       ],
                     ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: AppSpacing.xl),
+                ],
+              ),
             ),
-          );
-  }
-}
-
-// Floating Element Types
-enum FloatingType { coin, star, sparkle, points }
-
-// Floating Element Data
-class FloatingElement {
-  double x;
-  double y;
-  double speed;
-  FloatingType type;
-  double rotation = 0;
-
-  FloatingElement({
-    required this.x,
-    required this.y,
-    required this.speed,
-    required this.type,
-  });
-}
-
-// Celebration Background Painter
-class CelebrationPainter extends CustomPainter {
-  final double animationValue;
-  final List<FloatingElement> elements;
-
-  CelebrationPainter({required this.animationValue, required this.elements});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    for (var element in elements) {
-      final y = (element.y + animationValue * element.speed) % 1.2 - 0.1;
-      final x = element.x;
-
-      final opacity = (y < 0 || y > 1)
-          ? 0.0
-          : (y < 0.1 || y > 0.9 ? (y < 0.1 ? y / 0.1 : (1.0 - y) / 0.1) : 1.0);
-
-      if (opacity <= 0) continue;
-
-      final paint = Paint()
-        ..color = _getColorForType(element.type).withOpacity(0.4 * opacity)
-        ..style = PaintingStyle.fill;
-
-      final position = Offset(x * size.width, y * size.height);
-      final rotation =
-          (animationValue * 2 * math.pi * element.speed) + element.rotation;
-
-      canvas.save();
-      canvas.translate(position.dx, position.dy);
-      canvas.rotate(rotation);
-
-      switch (element.type) {
-        case FloatingType.coin:
-          _drawCoin(canvas, paint);
-          break;
-        case FloatingType.star:
-          _drawStar(canvas, paint);
-          break;
-        case FloatingType.sparkle:
-          _drawSparkle(canvas, paint);
-          break;
-        case FloatingType.points:
-          _drawPoints(canvas, paint);
-          break;
-      }
-
-      canvas.restore();
-    }
-  }
-
-  Color _getColorForType(FloatingType type) {
-    switch (type) {
-      case FloatingType.coin:
-        return DesignToken.amber;
-      case FloatingType.star:
-        return DesignToken.secondary;
-      case FloatingType.sparkle:
-        return DesignToken.primary;
-      case FloatingType.points:
-        return DesignToken.success;
-    }
-  }
-
-  void _drawCoin(Canvas canvas, Paint paint) {
-    canvas.drawCircle(Offset.zero, 8, paint);
-    paint.color = DesignToken.white.withOpacity(0.6);
-    canvas.drawCircle(Offset(-3, -3), 2, paint);
-  }
-
-  void _drawStar(Canvas canvas, Paint paint) {
-    final path = Path();
-    final outerRadius = 8.0;
-    final innerRadius = 4.0;
-
-    for (int i = 0; i < 5; i++) {
-      final angle = (i * 4 * math.pi / 5) - math.pi / 2;
-      final x = math.cos(angle) * outerRadius;
-      final y = math.sin(angle) * outerRadius;
-
-      if (i == 0) {
-        path.moveTo(x, y);
-      } else {
-        path.lineTo(x, y);
-      }
-
-      final innerAngle =
-          (i * 4 * math.pi / 5) - math.pi / 2 + (2 * math.pi / 5);
-      final innerX = math.cos(innerAngle) * innerRadius;
-      final innerY = math.sin(innerAngle) * innerRadius;
-      path.lineTo(innerX, innerY);
-    }
-
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  void _drawSparkle(Canvas canvas, Paint paint) {
-    canvas.drawLine(Offset(-8, 0), Offset(8, 0), paint..strokeWidth = 2);
-    canvas.drawLine(Offset(0, -8), Offset(0, 8), paint..strokeWidth = 2);
-    canvas.drawCircle(Offset.zero, 3, paint);
-  }
-
-  void _drawPoints(Canvas canvas, Paint paint) {
-    final path = Path();
-    path.addRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCenter(center: Offset.zero, width: 16, height: 12),
-        Radius.circular(DesignToken.radiusSM),
+          ),
+        ],
       ),
     );
-    canvas.drawPath(path, paint);
-
-    paint.color = DesignToken.white.withOpacity(0.8);
-    canvas.drawCircle(Offset(-4, 0), 2, paint);
-    canvas.drawCircle(Offset(4, 0), 2, paint);
   }
 
-  @override
-  bool shouldRepaint(covariant CelebrationPainter oldDelegate) {
-    return oldDelegate.animationValue != animationValue;
+  InputDecoration _inputDecoration({required String label, String? prefix}) {
+    return InputDecoration(
+      labelText: label,
+      prefixText: prefix,
+      counterText: '',
+      filled: true,
+      fillColor: AppColors.lightPrimary.withValues(alpha: 0.05),
+      labelStyle: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+      border: OutlineInputBorder(
+        borderRadius: AppRadius.forInput,
+        borderSide: BorderSide(
+          color: AppColors.lightPrimary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: AppRadius.forInput,
+        borderSide: BorderSide(
+          color: AppColors.lightPrimary.withValues(alpha: 0.2),
+          width: 1.5,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: AppRadius.forInput,
+        borderSide: const BorderSide(color: AppColors.lightPrimary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: AppRadius.forInput,
+        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: AppRadius.forInput,
+        borderSide: const BorderSide(color: AppColors.error, width: 2),
+      ),
+    );
   }
 }
+
+// ── Branch picker ─────────────────────────────────────────────────────────────
+
+class _BranchPicker extends StatelessWidget {
+  final List<Map<String, dynamic>> branches;
+  final String? selected;
+  final bool loading;
+  final ValueChanged<String?> onChanged;
+
+  const _BranchPicker({
+    required this.branches,
+    required this.selected,
+    required this.loading,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Branch *',
+          style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.lightPrimary.withValues(alpha: 0.05),
+            borderRadius: AppRadius.forInput,
+            border: Border.all(
+              color: AppColors.lightPrimary.withValues(alpha: 0.2),
+              width: 1.5,
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: loading
+              ? const SizedBox(
+                  height: 48,
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.lightPrimary,
+                      ),
+                    ),
+                  ),
+                )
+              : DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selected,
+                    isExpanded: true,
+                    hint: Text(
+                      'Select your branch',
+                      style: AppTypography.bodyMedium(
+                        color: AppColors.lightTextSecondary,
+                      ),
+                    ),
+                    icon: const Icon(Icons.arrow_drop_down,
+                        color: AppColors.lightPrimary),
+                    style: AppTypography.bodyMedium(color: AppColors.lightPrimary),
+                    onChanged: onChanged,
+                    items: branches.map((b) {
+                      return DropdownMenuItem<String>(
+                        value: b['id'] as String,
+                        child: Text(b['name'] as String? ?? b['id'] as String),
+                      );
+                    }).toList(),
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Glass card ────────────────────────────────────────────────────────────────
+
+class _GlassCard extends StatelessWidget {
+  final Widget child;
+  const _GlassCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: AppRadius.forCard,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.xl3),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.white.withValues(alpha: 0.92),
+                AppColors.white.withValues(alpha: 0.72),
+              ],
+            ),
+            borderRadius: AppRadius.forCard,
+            border: Border.all(
+              color: AppColors.white.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.lightPrimary.withValues(alpha: 0.10),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Gradient button ───────────────────────────────────────────────────────────
+
+class _GradientButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final String label;
+
+  const _GradientButton({
+    required this.onPressed,
+    required this.isLoading,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: AppSpacing.buttonHeight,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.lightSecondary,
+            AppColors.lightSecondary.withValues(alpha: 0.82),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: AppRadius.forButton,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lightSecondary.withValues(alpha: 0.35),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          minimumSize: const Size(double.infinity, AppSpacing.buttonHeight),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
+        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  color: AppColors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : Text(label,
+                style: AppTypography.buttonLarge(color: AppColors.white)),
+      ),
+    );
+  }
+}
+

@@ -40,6 +40,7 @@ class PinAuthService {
     String? firstName,
     String? lastName,
     String? profileImageUrl,
+    String? branchId,
   }) async {
     try {
       final normalized = normalizePhone(phone);
@@ -67,6 +68,13 @@ class PinAuthService {
         if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
           data['profileImage'] = profileImageUrl;
         }
+        // branchId is immutable once set — only write if not already present
+        if (branchId != null) {
+          final existing = doc.data() as Map<String, dynamic>?;
+          if (existing == null || existing['branchId'] == null) {
+            data['branchId'] = branchId;
+          }
+        }
 
         await doc.reference.set(data, SetOptions(merge: true));
         AppLogger.info('PIN updated for existing user: $normalized');
@@ -84,6 +92,7 @@ class PinAuthService {
           'phone': normalized,
           'profileImage': profileImageUrl ?? '',
           'role': 'carpenter',
+          'branchId': branchId,
           'status': 'verified',
           'totalPoints': 0,
           'tier': 'Bronze',
@@ -98,6 +107,7 @@ class PinAuthService {
         // Initialize user_points
         await _firestore.collection('user_points').doc(uid).set({
           'userId': uid,
+          'branchId': branchId,
           'totalPoints': 0,
           'tier': 'Bronze',
           'lastUpdated': FieldValue.serverTimestamp(),

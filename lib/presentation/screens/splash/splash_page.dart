@@ -68,7 +68,10 @@ class _SplashPageState extends State<SplashPage> {
         final role = await _sessionService.getUserRole();
         if (!mounted) return;
 
-        if (role?.trim().toLowerCase() == 'admin') {
+        final normalizedRole = role?.trim().toLowerCase();
+        if (normalizedRole == 'super_admin') {
+          context.go('/super-admin');
+        } else if (normalizedRole == 'admin') {
           context.go('/admin');
         } else {
           context.go('/');

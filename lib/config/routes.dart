@@ -20,6 +20,7 @@ import 'package:balaji_points/presentation/screens/admin/admin_home_page.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_add_bill_page.dart';
 import 'package:balaji_points/presentation/screens/admin/diagnostic_page.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_notifications_page.dart';
+import 'package:balaji_points/presentation/screens/super_admin/super_admin_page.dart';
 import 'package:balaji_points/presentation/screens/bills/add_bill_page.dart';
 import 'package:balaji_points/presentation/screens/notifications/notifications_page.dart';
 import 'package:balaji_points/services/session_service.dart';
@@ -49,17 +50,33 @@ final routerProvider = Provider<GoRouter>((ref) {
         AppLogger.nav(path);
       }
 
-      // Prevent admin from entering carpenter notifications route.
-      if (state.uri.path == '/notifications') {
-        final role =
-            (await SessionService().getUserRole())?.trim().toLowerCase();
-        if (role == 'admin') return '/admin/notifications';
+      // Skip role checks for public/auth routes.
+      const publicPaths = ['/splash', '/login', '/pin-setup', '/pin-login', '/pin-reset', '/onboarding'];
+      if (publicPaths.any((p) => path.startsWith(p))) return null;
+
+      final role = (await SessionService().getUserRole())?.trim().toLowerCase();
+
+      // super_admin must never access branch admin panel.
+      if (role == 'super_admin') {
+        if (path.startsWith('/admin')) return '/super-admin';
+        return null;
       }
 
-      // Robust fallback: if anything weird is appended to the admin notifications
-      // path (extra slash/segments), normalize it back.
-      if (state.uri.path.startsWith('/admin/notifications') &&
-          state.uri.path != '/admin/notifications') {
+      // admin must never access super_admin panel.
+      if (role == 'admin') {
+        if (path == '/super-admin') return '/admin';
+        // Redirect admin notifications route.
+        if (path == '/notifications') return '/admin/notifications';
+      }
+
+      // Prevent carpenter from entering admin routes.
+      if (role == 'carpenter' || role == null) {
+        if (path.startsWith('/admin') || path == '/super-admin') return '/';
+      }
+
+      // Robust fallback: normalize admin/notifications sub-paths.
+      if (path.startsWith('/admin/notifications') &&
+          path != '/admin/notifications') {
         return '/admin/notifications';
       }
       return null;
@@ -113,7 +130,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                     final role =
                         (await SessionService().getUserRole())?.trim().toLowerCase();
                     if (!context.mounted) return;
-                    if (role == 'admin') {
+                    if (role == 'super_admin') {
+                      context.go('/super-admin');
+                    } else if (role == 'admin') {
                       context.go('/admin');
                     } else {
                       context.go('/');
@@ -264,6 +283,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/notifications',
         builder: (context, _) => const AdminNotificationsPage(),
+      ),
+      GoRoute(
+        path: '/super-admin',
+        builder: (context, _) => const SuperAdminPage(),
       ),
       // Note: trailing slash is normalized by the redirect.
     ],
