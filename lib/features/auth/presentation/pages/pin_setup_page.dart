@@ -79,31 +79,8 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
     final topInset = MediaQuery.of(context).padding.top;
     final l10n = AppLocalizations.of(context)!;
 
-    return PopScope(
-      canPop: !_hasFormData(),
-      onPopInvoked: (didPop) async {
-        if (!didPop) {
-          // Check for dialogs first
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
-            return;
-          }
-
-          if (_hasFormData()) {
-            final shouldDiscard = await BackButtonHandler.showDiscardDialog(
-              context,
-            );
-            if (shouldDiscard == true && mounted) {
-              context.pop();
-            }
-          } else {
-            context.pop();
-          }
-        }
-      },
-      child: Builder(builder: (context) {
-        ref.listen<AuthState>(authProvider, (_, state) {
-          if (state is PinSetupSuccess) {
+    ref.listen<AuthState>(authProvider, (_, state) {
+      if (state is PinSetupSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(l10n.pinCreatedSuccess), backgroundColor: DesignToken.success),
             );
@@ -471,8 +448,6 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
               ],
             ),
           );
-      }),
-    );
   }
 }
 

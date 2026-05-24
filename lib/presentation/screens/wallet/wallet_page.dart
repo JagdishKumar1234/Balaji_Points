@@ -1,224 +1,118 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
-import 'package:balaji_points/config/theme.dart' hide AppColors;
-import 'package:balaji_points/services/session_service.dart';
-import 'package:balaji_points/services/user_points_sync_service.dart';
-import '../../widgets/home_nav_bar.dart';
-import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-class WalletPage extends StatefulWidget {
+import 'package:balaji_points/core/design/app_animations.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/presentation/providers/wallet_provider.dart';
+import 'package:balaji_points/presentation/widgets/home_nav_bar.dart';
+
+class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
 
   @override
-  State<WalletPage> createState() => _WalletPageState();
-}
-
-class _WalletPageState extends State<WalletPage> {
-  final SessionService _sessionService = SessionService();
-  final UserPointsSyncService _userPointsSyncService = UserPointsSyncService();
-  int _refreshKey = 0;
-  List<String> _carpenterIds = [];
-  bool _idsLoaded = false;
-  VoidCallback? _userPointsListener;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCarpenterIds();
-    _startGlobalPointsSync();
-  }
-
-  @override
-  void dispose() {
-    if (_userPointsListener != null) {
-      _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
-    }
-    super.dispose();
-  }
-
-  Future<void> _loadCarpenterIds() async {
-    final ids = await _sessionService.getCarpenterQueryIds();
-    if (mounted) {
-      setState(() {
-        _carpenterIds = ids;
-        _idsLoaded = true;
-      });
-    }
-  }
-
-  Future<void> _startGlobalPointsSync() async {
-    _userPointsListener ??= () {
-      if (!mounted) return;
-      setState(() {});
-    };
-    _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
-    _userPointsSyncService.pointsData.addListener(_userPointsListener!);
-    await _userPointsSyncService.start();
-    _userPointsListener?.call();
-  }
-
-  Future<void> _handleRefresh() async {
-    await _loadCarpenterIds();
-    setState(() {
-      _refreshKey++; // Force rebuild of StreamBuilders
-    });
-    await _userPointsSyncService.refresh();
-    // Add a small delay to show the refresh indicator
-    await Future.delayed(const Duration(milliseconds: 500));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    final idsReady = _idsLoaded && _carpenterIds.isNotEmpty;
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final walletState = ref.watch(walletProvider);
     final theme = Theme.of(context);
-    final pageBackground = theme.scaffoldBackgroundColor;
-    final bottomPadding = CarpenterShellLayout.bottomPaddingForScrollView(
-      MediaQuery.of(context),
-    );
+    final isDark = theme.brightness == Brightness.dark;
+    final mq = MediaQuery.of(context);
+    final bottomPadding = CarpenterShellLayout.bottomPaddingForScrollView(mq);
+    final l10n = AppLocalizations.of(context)!;
+    final canvas = isDark ? theme.colorScheme.surface : AppColors.carpenterAppBackground;
+
+    final ids = walletState.carpenterIds;
+    final idsReady = walletState.idsLoaded && ids.isNotEmpty;
+
     return Scaffold(
-      backgroundColor: pageBackground,
+      backgroundColor: canvas,
       body: Column(
         children: [
-          // Standard Navigation Bar - Material Design kToolbarHeight (56dp)
           HomeNavBar(
             title: l10n.wallet,
             showLogo: false,
             showProfileButton: false,
           ),
-          // Content area
           Expanded(
-            child: Container(
-              color: pageBackground,
-              child: RefreshIndicator(
-                key: ValueKey(_refreshKey),
-                onRefresh: _handleRefresh,
-                color: DesignToken.primary,
-                backgroundColor: DesignToken.white,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.fromLTRB(16, 14, 16, bottomPadding),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildWalletIntro(theme),
+            child: RefreshIndicator(
+              onRefresh: () => ref.read(walletProvider.notifier).refresh(),
+              color: AppColors.lightPrimary,
+              backgroundColor: canvas,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(16, 14, 16, bottomPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Intro banner
+                    _WalletIntroBanner(isDark: isDark, theme: theme)
+                        .fadeIn(),
+                    const SizedBox(height: 14),
 
-                      const SizedBox(height: 14),
+                    // Total points card
+                    walletState.loading
+                        ? _ShimmerPointsCard()
+                        : _PointsCard(
+                            points: walletState.totalPoints,
+                            tier: walletState.tier,
+                          ).enterCard(delay: AppAnimations.stagger(1)),
+                    const SizedBox(height: 14),
 
-                      // Total Points Card
-                      _buildTotalPointsCard(),
-
-                      const SizedBox(height: 14),
-
-                      // Stats Cards Row
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              icon: Icons.pending_actions,
-                              label: l10n.pending,
-                              value: _buildPendingCount(idsReady),
-                              color: DesignToken.orange,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildStatCard(
-                              icon: Icons.check_circle,
-                              label: l10n.approved,
-                              value: _buildApprovedCount(idsReady),
-                              color: DesignToken.success,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      // Quick Action Button
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              DesignToken.secondary,
-                              DesignToken.purpleShade500,
-                              DesignToken.blue600,
-                            ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: DesignToken.secondary.withValues(alpha: 0.28),
-                              blurRadius: 16,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
+                    // Stats row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _StatCard(
+                            icon: Icons.pending_actions,
+                            label: l10n.pending,
+                            color: AppColors.orange,
+                            child: walletState.loading || !idsReady
+                                ? _statLoading()
+                                : _PendingCount(ids: ids),
+                          ).fadeIn(delay: AppAnimations.stagger(2)),
                         ),
-                        child: Material(
-                          color: DesignToken.transparent,
-                          child: InkWell(
-                            onTap: () => context.push('/add-bill'),
-                            borderRadius: BorderRadius.circular(18),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(7),
-                                    decoration: BoxDecoration(
-                                      color: DesignToken.white.withValues(alpha: 0.2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.add_circle_outline,
-                                      color: DesignToken.white,
-                                      size: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    l10n.addNewBill,
-                                    style: AppTextStyles.nunitoBold.copyWith(
-                                      fontSize: 16,
-                                      color: DesignToken.white,
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _StatCard(
+                            icon: Icons.check_circle,
+                            label: l10n.approved,
+                            color: AppColors.success,
+                            child: walletState.loading || !idsReady
+                                ? _statLoading()
+                                : _ApprovedCount(ids: ids),
+                          ).fadeIn(delay: AppAnimations.stagger(2)),
                         ),
-                      ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
 
-                      const SizedBox(height: 16),
+                    // Add bill CTA
+                    _AddBillButton(l10n: l10n)
+                        .enterCard(delay: AppAnimations.stagger(3)),
+                    const SizedBox(height: 16),
 
-                      // Recent Bills Section
-                      _buildSectionHeader(
-                        icon: Icons.receipt_long,
-                        title: l10n.recentBills,
-                        subtitle: 'Latest 10 updates',
-                      ),
+                    // Recent bills header
+                    _SectionHeader(
+                      icon: Icons.receipt_long,
+                      title: l10n.recentBills,
+                      subtitle: 'Latest 10 updates',
+                    ).fadeIn(delay: AppAnimations.stagger(3)),
+                    const SizedBox(height: 8),
 
-                      const SizedBox(height: 8),
+                    // Bills list
+                    if (!idsReady)
+                      const _BillsLoading()
+                    else
+                      _BillsList(ids: ids),
 
-                      // Bills List
-                      _buildBillsList(idsReady),
-
-                      const SizedBox(height: 14),
-                    ],
-                  ),
+                    const SizedBox(height: 14),
+                  ],
                 ),
               ),
             ),
@@ -228,17 +122,49 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
-  Widget _buildWalletIntro(ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
+  Widget _statLoading() {
+    return Text(
+      '...',
+      style: AppTypography.h4(color: AppColors.lightTextPrimary),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shimmer
+// ---------------------------------------------------------------------------
+
+class _ShimmerPointsCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100,
+      decoration: BoxDecoration(
+        color: AppColors.grey100,
+        borderRadius: BorderRadius.circular(22),
+      ),
+    ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Wallet intro banner
+// ---------------------------------------------------------------------------
+
+class _WalletIntroBanner extends StatelessWidget {
+  final bool isDark;
+  final ThemeData theme;
+  const _WalletIntroBanner({required this.isDark, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark
-            ? theme.colorScheme.surface.withValues(alpha: 0.8)
-            : DesignToken.white,
+        color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.8) : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: DesignToken.primary.withValues(alpha: isDark ? 0.3 : 0.12),
+          color: AppColors.lightPrimary.withValues(alpha: isDark ? 0.3 : 0.12),
         ),
       ),
       child: Row(
@@ -247,171 +173,52 @@ class _WalletPageState extends State<WalletPage> {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: DesignToken.primary.withValues(alpha: 0.12),
+              color: AppColors.lightPrimary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
               Icons.account_balance_wallet_outlined,
               size: 18,
-              color: DesignToken.primary,
+              color: AppColors.lightPrimary,
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               'Track your points and bill rewards in one place',
-              style: AppTextStyles.nunitoSemiBold.copyWith(
-                fontSize: 13,
-                color: DesignToken.textDark.withValues(alpha: 0.75),
-              ),
+              style: AppTypography.bodySmall(
+                color: AppColors.lightTextPrimary.withValues(alpha: 0.75),
+              ).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: DesignToken.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: DesignToken.primary, size: 18),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: AppTextStyles.nunitoBold.copyWith(
-                  fontSize: 18,
-                  color: DesignToken.textDark,
-                ),
-              ),
-              Text(
-                subtitle,
-                style: AppTextStyles.nunitoRegular.copyWith(
-                  fontSize: 12,
-                  color: DesignToken.textDark.withValues(alpha: 0.6),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+// ---------------------------------------------------------------------------
+// Points card
+// ---------------------------------------------------------------------------
 
-  Widget _buildTotalPointsCard() {
+class _PointsCard extends StatelessWidget {
+  final int points;
+  final String tier;
+  const _PointsCard({required this.points, required this.tier});
+
+  @override
+  Widget build(BuildContext context) {
+    final nf = NumberFormat.decimalPattern();
     final l10n = AppLocalizations.of(context)!;
-    final pointsData = _userPointsSyncService.pointsData.value;
-    final totalPoints = (pointsData?['totalPoints'] as num?)?.toInt() ?? 0;
-    final tier = pointsData?['tier'] as String? ?? 'Bronze';
-    final isReady = pointsData != null;
-    if (!isReady && !_idsLoaded) {
-      // Show loading state
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              DesignToken.primary,
-              DesignToken.primary.withOpacity(0.85),
-              DesignToken.primary.withOpacity(0.7),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: DesignToken.primary.withOpacity(0.35),
-              blurRadius: 20,
-              spreadRadius: 2,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Total Points',
-                      style: AppTextStyles.nunitoRegular.copyWith(
-                        fontSize: 14,
-                        color: DesignToken.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '0',
-                      style: AppTextStyles.nunitoBold.copyWith(
-                        fontSize: 32,
-                        color: DesignToken.white,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 7,
-                  ),
-                  decoration: BoxDecoration(
-                    color: DesignToken.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Silver',
-                    style: AppTextStyles.nunitoSemiBold.copyWith(
-                      fontSize: 14,
-                      color: DesignToken.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      );
-    }
 
-    return _buildPointsCardContent(
-      totalPoints: totalPoints,
-      tier: tier,
-      l10n: l10n,
-    );
-  }
-
-  Widget _buildPointsCardContent({
-    required int totalPoints,
-    required String tier,
-    required AppLocalizations l10n,
-  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            DesignToken.primary,
-            DesignToken.primary.withOpacity(0.85),
-            DesignToken.primary.withOpacity(0.7),
+            AppColors.lightPrimary,
+            AppColors.lightPrimary.withValues(alpha: 0.85),
+            AppColors.lightPrimary.withValues(alpha: 0.70),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -419,87 +226,87 @@ class _WalletPageState extends State<WalletPage> {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: DesignToken.primary.withOpacity(0.35),
+            color: AppColors.lightPrimary.withValues(alpha: 0.35),
             blurRadius: 20,
             spreadRadius: 2,
             offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.totalPoints,
-                    style: AppTextStyles.nunitoRegular.copyWith(
-                      fontSize: 14,
-                      color: DesignToken.white.withValues(alpha: 0.9),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$totalPoints',
-                    style: AppTextStyles.nunitoBold.copyWith(
-                      fontSize: 32,
-                      color: DesignToken.white,
-                    ),
-                  ),
-                ],
+              Text(
+                l10n.totalPoints,
+                style: AppTypography.bodySmall(
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: DesignToken.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  tier,
-                  style: AppTextStyles.nunitoSemiBold.copyWith(
-                    fontSize: 14,
-                    color: DesignToken.white,
-                  ),
-                ),
+              const SizedBox(height: 4),
+              Text(
+                nf.format(points),
+                style: AppTypography.pointsHero(color: Colors.white),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              tier,
+              style: AppTypography.bodySmall(color: Colors.white)
+                  .copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String label,
-    required Widget value,
-    required Color color,
-  }) {
+// ---------------------------------------------------------------------------
+// Stat card
+// ---------------------------------------------------------------------------
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final Widget child;
+
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final bg = isDark ? theme.colorScheme.surface : DesignToken.white;
+    final bg = isDark ? theme.colorScheme.surface : Colors.white;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: DesignToken.primary.withOpacity(isDark ? 0.14 : 0.08),
-          width: 1,
+          color: AppColors.lightPrimary.withValues(alpha: isDark ? 0.14 : 0.08),
         ),
         boxShadow: [
           BoxShadow(
-            color: DesignToken.black.withValues(alpha: 0.08),
-              blurRadius: 14,
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 14,
             spreadRadius: 1,
-              offset: const Offset(0, 6),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -510,7 +317,7 @@ class _WalletPageState extends State<WalletPage> {
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [color.withOpacity(0.2), color.withOpacity(0.1)],
+                colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.1)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -519,13 +326,396 @@ class _WalletPageState extends State<WalletPage> {
             child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(height: 14),
-          value,
+          child,
           const SizedBox(height: 6),
           Text(
             label,
-            style: AppTextStyles.nunitoMedium.copyWith(
-              fontSize: 12,
-              color: DesignToken.textDark.withOpacity(0.7),
+            style: AppTypography.labelSmall(
+              color: AppColors.lightTextPrimary.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Live count widgets
+// ---------------------------------------------------------------------------
+
+class _PendingCount extends StatelessWidget {
+  final List<String> ids;
+  const _PendingCount({required this.ids});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('bills')
+          .where('carpenterId', whereIn: ids)
+          .where('status', isEqualTo: 'pending')
+          .snapshots(),
+      builder: (context, snap) {
+        final count = snap.hasData ? snap.data!.docs.length : 0;
+        return Text(
+          '$count',
+          style: AppTypography.h4(color: AppColors.lightTextPrimary),
+        );
+      },
+    );
+  }
+}
+
+class _ApprovedCount extends StatelessWidget {
+  final List<String> ids;
+  const _ApprovedCount({required this.ids});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('bills')
+          .where('carpenterId', whereIn: ids)
+          .where('status', isEqualTo: 'approved')
+          .snapshots(),
+      builder: (context, snap) {
+        final count = snap.hasData ? snap.data!.docs.length : 0;
+        return Text(
+          '$count',
+          style: AppTypography.h4(color: AppColors.lightTextPrimary),
+        );
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Add bill button
+// ---------------------------------------------------------------------------
+
+class _AddBillButton extends StatelessWidget {
+  final AppLocalizations l10n;
+  const _AddBillButton({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.lightSecondary, Color(0xFF7C3AED), Color(0xFF2563EB)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lightSecondary.withValues(alpha: 0.28),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.push('/add-bill'),
+          borderRadius: BorderRadius.circular(18),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  l10n.addNewBill,
+                  style: AppTypography.bodyLarge(color: Colors.white)
+                      .copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.2),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Section header
+// ---------------------------------------------------------------------------
+
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  const _SectionHeader({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.lightPrimary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: AppColors.lightPrimary, size: 18),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTypography.h5(color: AppColors.lightTextPrimary),
+              ),
+              Text(
+                subtitle,
+                style: AppTypography.labelSmall(
+                  color: AppColors.lightTextPrimary.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Bills list
+// ---------------------------------------------------------------------------
+
+class _BillsLoading extends StatelessWidget {
+  const _BillsLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(32),
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class _BillsList extends StatelessWidget {
+  final List<String> ids;
+  const _BillsList({required this.ids});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('bills')
+          .where('carpenterId', whereIn: ids)
+          .orderBy('createdAt', descending: true)
+          .limit(10)
+          .snapshots(),
+      builder: (context, snap) {
+        if (snap.hasError) {
+          return _errorCard(context, snap.error.toString());
+        }
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const _BillsLoading();
+        }
+        if (!snap.hasData || snap.data!.docs.isEmpty) {
+          return _emptyCard(context);
+        }
+
+        final bills = snap.data!.docs;
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: bills.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 6),
+          itemBuilder: (context, index) {
+            final bill = bills[index].data() as Map<String, dynamic>;
+            return _BillCard(bill: bill)
+                .fadeIn(delay: AppAnimations.stagger(index));
+          },
+        );
+      },
+    );
+  }
+
+  Widget _errorCard(BuildContext context, String error) {
+    return Container(
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: AppRadius.forCard,
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+          const SizedBox(height: 12),
+          Text(
+            'Error loading bills',
+            style: AppTypography.bodyLarge(color: AppColors.error)
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            style: AppTypography.labelSmall(
+                color: AppColors.lightTextPrimary.withValues(alpha: 0.5)),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: AppRadius.forCard,
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.receipt_long_outlined,
+            size: 48,
+            color: AppColors.lightTextPrimary.withValues(alpha: 0.3),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.noBillsYet,
+            style: AppTypography.bodyLarge(
+                color: AppColors.lightTextPrimary.withValues(alpha: 0.6))
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.submitFirstBill,
+            style: AppTypography.bodySmall(
+                color: AppColors.lightTextPrimary.withValues(alpha: 0.5)),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BillCard extends StatelessWidget {
+  final Map<String, dynamic> bill;
+  const _BillCard({required this.bill});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cardBg = isDark ? theme.colorScheme.surface : Colors.white;
+
+    final amount = bill['amount'] ?? 0.0;
+    final status = (bill['status'] ?? 'pending') as String;
+    final pointsEarned = bill['pointsEarned'] ?? 0;
+    final createdAt = bill['createdAt'] as Timestamp?;
+    final storeName = (bill['storeName'] ?? '') as String;
+
+    final statusColor = _statusColor(status);
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: AppColors.lightPrimary.withValues(alpha: isDark ? 0.14 : 0.09),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 14,
+            spreadRadius: 0.5,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(_statusIcon(status), color: statusColor, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  storeName.isNotEmpty ? storeName : l10n.billLabel,
+                  style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary)
+                      .copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      '₹${(amount as num).toStringAsFixed(0)}',
+                      style: AppTypography.bodySmall(color: AppColors.lightPrimary)
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    if ((pointsEarned as num) > 0) ...[
+                      const SizedBox(width: 6),
+                      Text(
+                        '• $pointsEarned pts',
+                        style: AppTypography.labelSmall(
+                          color: AppColors.lightTextPrimary.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                if (createdAt != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    _formatDate(createdAt.toDate(), l10n),
+                    style: AppTypography.labelSmall(
+                      color: AppColors.lightTextPrimary.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+            ),
+            child: Text(
+              _statusLabel(status, l10n),
+              style: AppTypography.labelSmall(color: statusColor)
+                  .copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -533,359 +723,46 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
-  Widget _buildPendingCount(bool idsReady) {
-    if (!idsReady) {
-      return Text(
-        '...',
-        style: AppTextStyles.nunitoBold.copyWith(
-          fontSize: 20,
-          color: DesignToken.textDark,
-        ),
-      );
-    }
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: _carpenterIds)
-          .where('status', isEqualTo: 'pending')
-          .snapshots(),
-      builder: (context, snapshot) {
-        final count = snapshot.hasData ? snapshot.data!.docs.length : 0;
-        return Text(
-          '$count',
-          style: AppTextStyles.nunitoBold.copyWith(
-            fontSize: 20,
-            color: DesignToken.textDark,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildApprovedCount(bool idsReady) {
-    if (!idsReady) {
-      return Text(
-        '...',
-        style: AppTextStyles.nunitoBold.copyWith(
-          fontSize: 20,
-          color: DesignToken.textDark,
-        ),
-      );
-    }
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: _carpenterIds)
-          .where('status', isEqualTo: 'approved')
-          .snapshots(),
-      builder: (context, snapshot) {
-        final count = snapshot.hasData ? snapshot.data!.docs.length : 0;
-        return Text(
-          '$count',
-          style: AppTextStyles.nunitoBold.copyWith(
-            fontSize: 20,
-            color: DesignToken.textDark,
-          ),
-        );
-      },
-    );
-  }
-
-  Color _getStatusColor(String status) {
+  static Color _statusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'approved':
-        return DesignToken.success;
-      case 'pending':
-        return DesignToken.orange;
-      case 'rejected':
-        return DesignToken.error;
-      default:
-        return DesignToken.grey500;
+      case 'approved': return AppColors.success;
+      case 'pending':  return AppColors.orange;
+      case 'rejected': return AppColors.error;
+      default:         return AppColors.grey500;
     }
   }
 
-  String _getStatusLabel(String status, BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+  static IconData _statusIcon(String status) {
     switch (status.toLowerCase()) {
-      case 'approved':
-        return l10n.statusApproved;
-      case 'pending':
-        return l10n.statusPending;
-      case 'rejected':
-        return l10n.statusRejected;
-      default:
-        return status.toUpperCase();
+      case 'approved': return Icons.check_circle;
+      case 'pending':  return Icons.pending;
+      case 'rejected': return Icons.cancel;
+      default:         return Icons.receipt;
     }
   }
 
-  IconData _getStatusIcon(String status) {
+  static String _statusLabel(String status, AppLocalizations l10n) {
     switch (status.toLowerCase()) {
-      case 'approved':
-        return Icons.check_circle;
-      case 'pending':
-        return Icons.pending;
-      case 'rejected':
-        return Icons.cancel;
-      default:
-        return Icons.receipt;
+      case 'approved': return l10n.statusApproved;
+      case 'pending':  return l10n.statusPending;
+      case 'rejected': return l10n.statusRejected;
+      default:         return status.toUpperCase();
     }
   }
 
-  Widget _buildBillsList(bool idsReady) {
-    if (!idsReady) {
-      return const Padding(
-        padding: EdgeInsets.all(32),
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: _carpenterIds)
-          .orderBy('createdAt', descending: true)
-          .limit(10)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          final theme = Theme.of(context);
-          final isDark = theme.brightness == Brightness.dark;
-          return Container(
-              padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(
-              color: isDark ? theme.colorScheme.surface : DesignToken.white,
-                borderRadius: BorderRadius.circular(18),
-            ),
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  size: 48,
-                  color: DesignToken.error,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Error loading bills',
-                  style: AppTextStyles.nunitoSemiBold.copyWith(
-                    fontSize: 16,
-                    color: DesignToken.error,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${snapshot.error}',
-                  style: AppTextStyles.nunitoRegular.copyWith(
-                    fontSize: 12,
-                    color: DesignToken.textDark.withOpacity(0.5),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          final theme = Theme.of(context);
-          final isDarkEmpty = theme.brightness == Brightness.dark;
-          return Container(
-            padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(
-              color: isDarkEmpty
-                  ? theme.colorScheme.surface
-                  : DesignToken.white,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.receipt_long_outlined,
-                  size: 48,
-                  color: DesignToken.textDark.withOpacity(0.3),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  AppLocalizations.of(context)!.noBillsYet,
-                  style: AppTextStyles.nunitoSemiBold.copyWith(
-                    fontSize: 16,
-                    color: DesignToken.textDark.withOpacity(0.6),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.submitFirstBill,
-                  style: AppTextStyles.nunitoRegular.copyWith(
-                    fontSize: 14,
-                    color: DesignToken.textDark.withOpacity(0.5),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
-        }
-
-        final bills = snapshot.data!.docs;
-
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: bills.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 6),
-          itemBuilder: (context, index) {
-            final bill = bills[index].data() as Map<String, dynamic>;
-            final amount = bill['amount'] ?? 0.0;
-            final status = bill['status'] ?? 'pending';
-            final pointsEarned = bill['pointsEarned'] ?? 0;
-            final createdAt = bill['createdAt'] as Timestamp?;
-            final storeName = bill['storeName'] ?? '';
-
-            final theme = Theme.of(context);
-            final isDark = theme.brightness == Brightness.dark;
-            final cardBg = isDark
-                ? theme.colorScheme.surface
-                : DesignToken.white;
-            return Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: DesignToken.primary.withOpacity(isDark ? 0.14 : 0.09),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: DesignToken.black.withValues(alpha: 0.06),
-                    blurRadius: 14,
-                    spreadRadius: 0.5,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(status).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      _getStatusIcon(status),
-                      color: _getStatusColor(status),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          storeName.isNotEmpty
-                              ? storeName
-                              : AppLocalizations.of(context)!.billLabel,
-                          style: AppTextStyles.nunitoBold.copyWith(
-                            fontSize: 14,
-                            color: DesignToken.textDark,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              '₹${amount.toStringAsFixed(0)}',
-                              style: AppTextStyles.nunitoSemiBold.copyWith(
-                                fontSize: 13,
-                                color: DesignToken.primary,
-                              ),
-                            ),
-                            if (pointsEarned > 0) ...[
-                              const SizedBox(width: 6),
-                              Text(
-                                '• $pointsEarned pts',
-                                style: AppTextStyles.nunitoRegular.copyWith(
-                                  fontSize: 12,
-                                  color: DesignToken.textDark.withOpacity(0.6),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        if (createdAt != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            _formatDate(createdAt.toDate()),
-                            style: AppTextStyles.nunitoRegular.copyWith(
-                              fontSize: 11,
-                              color: DesignToken.textDark.withOpacity(0.5),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(status).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: _getStatusColor(status).withOpacity(0.3),
-                      ),
-                    ),
-                    child: Text(
-                      _getStatusLabel(status, context),
-                      style: AppTextStyles.nunitoSemiBold.copyWith(
-                        fontSize: 11,
-                        color: _getStatusColor(status),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final l10n = AppLocalizations.of(context)!;
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) {
-          return l10n.justNow;
-        }
-        return l10n.minutesAgo(difference.inMinutes);
+  static String _formatDate(DateTime date, AppLocalizations l10n) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) {
+      if (diff.inHours == 0) {
+        if (diff.inMinutes == 0) return l10n.justNow;
+        return l10n.minutesAgo(diff.inMinutes);
       }
-      return l10n.hoursAgo(difference.inHours);
-    } else if (difference.inDays == 1) {
+      return l10n.hoursAgo(diff.inHours);
+    } else if (diff.inDays == 1) {
       return l10n.yesterday;
-    } else if (difference.inDays < 7) {
-      return l10n.daysAgo(difference.inDays);
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
+    } else if (diff.inDays < 7) {
+      return l10n.daysAgo(diff.inDays);
     }
+    return '${date.day}/${date.month}/${date.year}';
   }
 }

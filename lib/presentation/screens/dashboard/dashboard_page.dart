@@ -1,56 +1,45 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
-import 'package:balaji_points/core/theme/design_token.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_bottom_nav_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:balaji_points/services/session_service.dart';
 import 'package:balaji_points/core/logger.dart';
 
-class DashboardPage extends StatefulWidget {
-  final Widget? child;
+// ---------------------------------------------------------------------------
+// Role provider — cached so DashboardPage never hits SharedPreferences twice
+// ---------------------------------------------------------------------------
 
+final _roleProvider = FutureProvider<String?>((ref) async {
+  final role = await SessionService().getUserRole();
+  AppLogger.nav('Dashboard role=$role');
+  return role?.trim().toLowerCase();
+});
+
+// ---------------------------------------------------------------------------
+// Dashboard shell — persistent bottom nav + child router outlet
+// ---------------------------------------------------------------------------
+
+class DashboardPage extends ConsumerStatefulWidget {
+  final Widget? child;
   const DashboardPage({super.key, this.child});
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  ConsumerState<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> with DoubleTapExitMixin {
-  final SessionService _sessionService = SessionService();
-  bool _roleLoaded = false;
-  bool _isAdmin = false;
+class _DashboardPageState extends ConsumerState<DashboardPage>
+    with DoubleTapExitMixin {
 
-  @override
-  void initState() {
-    super.initState();
-    _loadRole();
-  }
-
-  Future<void> _loadRole() async {
-    final role = await _sessionService.getUserRole();
-    if (!mounted) return;
-    setState(() {
-      _roleLoaded = true;
-      _isAdmin = role == 'admin';
-    });
-  }
-
-  void _onItemTapped(int index) {
-    final router = GoRouter.of(context);
+  void _onTabTapped(int index) {
     switch (index) {
-      case 0:
-        router.go('/');
-        break;
-      case 1:
-        router.go('/wallet');
-        break;
-      case 2:
-        router.go('/notifications');
-        break;
-      case 3:
-        router.go('/profile');
-        break;
+      case 0: GoRouter.of(context).go('/');
+      case 1: GoRouter.of(context).go('/wallet');
+      case 2: GoRouter.of(context).go('/notifications');
+      case 3: GoRouter.of(context).go('/profile');
     }
   }
 
@@ -58,45 +47,51 @@ class _DashboardPageState extends State<DashboardPage> with DoubleTapExitMixin {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final mq = MediaQuery.of(context);
 
-    final ThemeData shellTheme = isDark
+    // Resolve role — show content immediately; nav bar appears once role is known
+    final roleAsync = ref.watch(_roleProvider);
+    final role = roleAsync.asData?.value;
+    final isAdmin = role == 'admin';
+    final showNav = roleAsync.hasValue && !isAdmin;
+
+    // Apply light-mode canvas override (matches fintech premium feel)
+    final shellTheme = isDark
         ? theme
         : theme.copyWith(
-            scaffoldBackgroundColor: DesignToken.carpenterAppBackground,
+            scaffoldBackgroundColor: AppColors.carpenterAppBackground,
             colorScheme: theme.colorScheme.copyWith(
-              surface: DesignToken.carpenterAppBackground,
+              surface: AppColors.carpenterAppBackground,
             ),
             appBarTheme: theme.appBarTheme.copyWith(
-              backgroundColor: DesignToken.carpenterAppBackground,
+              backgroundColor: AppColors.carpenterAppBackground,
               surfaceTintColor: Colors.transparent,
             ),
           );
 
-    final location = GoRouterState.of(context).uri.path;
-    int currentIndex = 0;
-    if (location.startsWith('/wallet')) {
-      currentIndex = 1;
-    } else if (location.startsWith('/notifications')) {
-      currentIndex = 2;
-    } else if (location.startsWith('/profile')) {
-      currentIndex = 3;
-    }
+    // Active tab index from current route
+    final path = GoRouterState.of(context).uri.path;
+    final tabIndex = path.startsWith('/wallet')
+        ? 1
+        : path.startsWith('/notifications')
+            ? 2
+            : path.startsWith('/profile')
+                ? 3
+                : 0;
+
+    final bottomChromeHeight = CarpenterShellLayout.chromeHeight(mq);
 
     return Theme(
       data: shellTheme,
       child: Builder(
-        builder: (context) {
-          final t = Theme.of(context);
-          final mq = MediaQuery.of(context);
-          final showCarpenterBar = _roleLoaded && !_isAdmin;
-          final bottomChromeHeight = CarpenterShellLayout.chromeHeight(mq);
-
+        builder: (ctx) {
+          final t = Theme.of(ctx);
           return PopScope(
             canPop: false,
             onPopInvokedWithResult: (didPop, _) async {
               if (!didPop) {
-                if (Navigator.of(context).canPop()) {
-                  Navigator.of(context).pop();
+                if (Navigator.of(ctx).canPop()) {
+                  Navigator.of(ctx).pop();
                   return;
                 }
                 await handleDoubleTapExit();
@@ -106,19 +101,22 @@ class _DashboardPageState extends State<DashboardPage> with DoubleTapExitMixin {
               backgroundColor: t.scaffoldBackgroundColor,
               body: Stack(
                 children: [
+                  // ── Page content with bottom padding so it clears the nav bar ──
                   Padding(
                     padding: EdgeInsets.only(
-                      bottom: showCarpenterBar ? bottomChromeHeight : 0,
+                      bottom: showNav ? bottomChromeHeight : 0,
                     ),
                     child: widget.child ?? const SizedBox.shrink(),
                   ),
-                  if (showCarpenterBar)
+
+                  // ── Bottom nav bar ──
+                  if (showNav)
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: CarpenterBottomNavBar.fromContext(
-                        context,
-                        currentIndex: currentIndex,
-                        onTabSelected: _onItemTapped,
+                        ctx,
+                        currentIndex: tabIndex,
+                        onTabSelected: _onTabTapped,
                         onAddBillTap: () => context.push('/add-bill'),
                       ),
                     ),
