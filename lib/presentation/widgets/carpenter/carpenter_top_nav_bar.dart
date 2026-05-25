@@ -58,15 +58,10 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bg = backgroundColor ??
-        (isDark
-            ? const Color(0xFF001F3F)
-            : AppColors.lightBackground);
-    final fg = foregroundColor ??
-        (isDark ? AppColors.white : AppColors.lightTextPrimary);
+    final bg = backgroundColor ?? context.themeBackground;
+    final fg = foregroundColor ?? context.themeTextPrimary;
     final fgMuted = fg.withValues(alpha: 0.72);
+    final isDark = context.isDarkMode;
 
     final overlayStyle = SystemUiOverlayStyle(
       statusBarColor: AppColors.transparent,

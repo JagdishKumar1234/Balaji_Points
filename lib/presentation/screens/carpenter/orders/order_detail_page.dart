@@ -27,7 +27,7 @@ class OrderDetailPage extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
-        foregroundColor: AppColors.lightTextPrimary,
+        foregroundColor: context.themeTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -53,7 +53,7 @@ class OrderDetailPage extends StatelessWidget {
                 child: Text(
                   'Error loading order:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium(color: AppColors.error),
+                  style: AppTypography.bodyMedium(color: context.themeError),
                 ),
               ),
             );
@@ -62,8 +62,8 @@ class OrderDetailPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting ||
               !snapshot.hasData ||
               !snapshot.data!.exists) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.lightPrimary),
+            return Center(
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -107,7 +107,7 @@ class OrderDetailPage extends StatelessWidget {
                             Text(
                               dateStr,
                               style: AppTypography.bodySmall(
-                                color: AppColors.lightTextSecondary,
+                                color: context.themeTextSecondary,
                               ),
                             ),
                           ],
@@ -127,19 +127,19 @@ class OrderDetailPage extends StatelessWidget {
                     if (shopAddress.isNotEmpty)
                       Text(shopAddress,
                           style: AppTypography.bodySmall(
-                              color: AppColors.lightTextSecondary)),
+                              color: context.themeTextSecondary)),
                     if (shopGstNo.isNotEmpty)
                       Text('GST: $shopGstNo',
                           style: AppTypography.bodySmall(
-                              color: AppColors.lightTextSecondary)),
+                              color: context.themeTextSecondary)),
                     if (shopPhone.isNotEmpty)
                       Text('Phone: $shopPhone',
                           style: AppTypography.bodySmall(
-                              color: AppColors.lightTextSecondary)),
+                              color: context.themeTextSecondary)),
                     if (shopEmail.isNotEmpty)
                       Text(shopEmail,
                           style: AppTypography.bodySmall(
-                              color: AppColors.lightTextSecondary)),
+                              color: context.themeTextSecondary)),
                     const SizedBox(height: 16),
                   ],
 
@@ -149,11 +149,11 @@ class OrderDetailPage extends StatelessWidget {
                     if (carpenterName.isNotEmpty)
                       Text(carpenterName,
                           style: AppTypography.bodySmall(
-                              color: AppColors.lightTextSecondary)),
+                              color: context.themeTextSecondary)),
                     if (carpenterPhone.isNotEmpty)
                       Text(carpenterPhone,
                           style: AppTypography.bodySmall(
-                              color: AppColors.lightTextSecondary)),
+                              color: context.themeTextSecondary)),
                     const SizedBox(height: 16),
                   ],
 
@@ -164,7 +164,7 @@ class OrderDetailPage extends StatelessWidget {
                             .copyWith(fontWeight: FontWeight.w600)),
                     Text(address,
                         style: AppTypography.bodySmall(
-                            color: AppColors.lightTextSecondary)),
+                            color: context.themeTextSecondary)),
                     const SizedBox(height: 16),
                   ],
 
@@ -176,7 +176,7 @@ class OrderDetailPage extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.grey300),
+                      border: Border.all(color: context.themeBorder),
                     ),
                     child: Column(
                       children: [
@@ -184,9 +184,9 @@ class OrderDetailPage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 8),
-                          decoration: const BoxDecoration(
-                            color: AppColors.grey100,
-                            borderRadius: BorderRadius.vertical(
+                          decoration: BoxDecoration(
+                            color: context.themeSoftSurface,
+                            borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(12)),
                           ),
                           child: Row(
@@ -241,7 +241,7 @@ class OrderDetailPage extends StatelessWidget {
                                     '${item['quantity'] ?? 0}',
                                     textAlign: TextAlign.right,
                                     style: AppTypography.bodySmall(
-                                        color: AppColors.lightTextSecondary),
+                                        color: context.themeTextSecondary),
                                   ),
                                 ),
                                 Expanded(
@@ -250,7 +250,7 @@ class OrderDetailPage extends StatelessWidget {
                                     '₹${(item['price'] ?? 0).toStringAsFixed(0)}',
                                     textAlign: TextAlign.right,
                                     style: AppTypography.bodySmall(
-                                        color: AppColors.lightTextSecondary),
+                                        color: context.themeTextSecondary),
                                   ),
                                 ),
                                 Expanded(
@@ -286,7 +286,7 @@ class OrderDetailPage extends StatelessWidget {
                               .copyWith(fontWeight: FontWeight.w600)),
                       Text(
                         '₹${total.toStringAsFixed(0)}',
-                        style: AppTypography.h4(color: AppColors.lightPrimary),
+                        style: AppTypography.h4(color: context.themePrimary),
                       ),
                     ],
                   ),
@@ -297,7 +297,7 @@ class OrderDetailPage extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () async => _generateAndSharePdf(data),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.lightSecondary,
+                        backgroundColor: context.themeSecondary,
                         foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -483,16 +483,16 @@ class _StatusChip extends StatelessWidget {
       case 'completed': return AppColors.success.withValues(alpha: 0.15);
       case 'processing': return AppColors.warning.withValues(alpha: 0.15);
       case 'cancelled': return AppColors.error.withValues(alpha: 0.15);
-      default: return AppColors.grey400.withValues(alpha: 0.15);
+      default: return AppColors.lightTextMuted.withValues(alpha: 0.15);
     }
   }
 
   static Color _fg(String s) {
     switch (s) {
-      case 'completed': return AppColors.successDark;
+      case 'completed': return AppColors.success;
       case 'processing': return const Color(0xFF92400E);
       case 'cancelled': return const Color(0xFF991B1B);
-      default: return AppColors.grey700;
+      default: return AppColors.lightTextSecondary;
     }
   }
 

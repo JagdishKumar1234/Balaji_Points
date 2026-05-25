@@ -40,7 +40,7 @@ class _UsersListState extends State<UsersList> {
 
     setState(() => _isExporting = true);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Preparing carpenter list PDF...')),
+      SnackBar(content: Text('Preparing carpenter list PDF...')),
     );
 
     try {
@@ -53,7 +53,7 @@ class _UsersListState extends State<UsersList> {
 
       // Apply same role filter used in UI (only carpenters / non-admins)
       users = users.where((doc) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         final role = data['role'] as String?;
         if (role == 'admin') return false;
         return role == null || role.isEmpty || role == 'carpenter';
@@ -61,7 +61,7 @@ class _UsersListState extends State<UsersList> {
 
       // Apply current search + tier filters for consistency
       users = users.where((doc) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         final firstName = (data['firstName'] ?? '').toString().toLowerCase();
         final lastName = (data['lastName'] ?? '').toString().toLowerCase();
         final phone = (data['phone'] ?? '').toString().toLowerCase();
@@ -81,7 +81,7 @@ class _UsersListState extends State<UsersList> {
       if (users.isEmpty) {
         setState(() => _isExporting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('No carpenters to export for current filters.'),
             backgroundColor: AppColors.warning,
           ),
@@ -247,15 +247,15 @@ class _UsersListState extends State<UsersList> {
                   ],
                 ),
                 ...List<pw.TableRow>.generate(users.length, (index) {
-                  final data = users[index].data() as Map<String, dynamic>;
+                  final data = users[index].data();
                   final firstName =
                       (data['firstName'] ?? '').toString().trim();
                   final lastName =
                       (data['lastName'] ?? '').toString().trim();
                   final fullName =
-                      (firstName + ' ' + lastName).trim().isEmpty
+                      '$firstName $lastName'.trim().isEmpty
                           ? 'Carpenter'
-                          : (firstName + ' ' + lastName).trim();
+                          : '$firstName $lastName'.trim();
                   final phone =
                       (data['phone'] ?? '').toString().trim();
                   final points =
@@ -300,7 +300,7 @@ class _UsersListState extends State<UsersList> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to export carpenter list: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
     }
@@ -375,7 +375,7 @@ class _UsersListState extends State<UsersList> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.failedToDeleteCarpenter),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
       return;
@@ -390,7 +390,7 @@ class _UsersListState extends State<UsersList> {
           children: [
             Icon(
               Icons.warning_amber_rounded,
-              color: AppColors.error,
+              color: context.themeError,
               size: 28,
             ),
             const SizedBox(width: 12),
@@ -399,7 +399,7 @@ class _UsersListState extends State<UsersList> {
                 l10n.deleteCarpenter,
                 style: AppTypography.labelLarge().copyWith(
                   fontSize: 20,
-                  color: AppColors.error,
+                  color: context.themeError,
                 ),
               ),
             ),
@@ -409,7 +409,7 @@ class _UsersListState extends State<UsersList> {
           l10n.deleteCarpenterConfirmation.replaceAll('{userName}', userName),
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         ),
         actions: [
@@ -418,14 +418,14 @@ class _UsersListState extends State<UsersList> {
             child: Text(
               l10n.cancel,
               style: AppTypography.labelLarge().copyWith(
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -448,8 +448,8 @@ class _UsersListState extends State<UsersList> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(color: AppColors.lightPrimary),
+        builder: (context) => Center(
+          child: CircularProgressIndicator(color: context.themePrimary),
         ),
       );
     }
@@ -472,7 +472,7 @@ class _UsersListState extends State<UsersList> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.failedToDeleteCarpenter),
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
               duration: const Duration(seconds: 3),
             ),
           );
@@ -501,7 +501,7 @@ class _UsersListState extends State<UsersList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
             duration: const Duration(seconds: 4),
             action: SnackBarAction(
               label: 'Dismiss',
@@ -539,14 +539,14 @@ class _UsersListState extends State<UsersList> {
                       decoration: InputDecoration(
                         hintText: l10n.searchByNameOrPhone,
                         hintStyle: AppTypography.bodyMedium().copyWith(
-                          color: Colors.grey[400],
+                          color: context.themeTextMuted,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                         filled: true,
-                        fillColor: Colors.grey[100],
+                        fillColor: context.themeSoftSurface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -567,7 +567,7 @@ class _UsersListState extends State<UsersList> {
                         icon: const Icon(Icons.add),
                         label: Text(l10n.add),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.lightPrimary,
+                          backgroundColor: context.themePrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -577,8 +577,8 @@ class _UsersListState extends State<UsersList> {
                       Container(
                         decoration: BoxDecoration(
                           color: _isExporting
-                              ? AppColors.grey500.withValues(alpha: 0.1)
-                              : AppColors.lightPrimary.withValues(alpha: 0.12),
+                              ? context.themeTextSecondary.withValues(alpha: 0.1)
+                              : context.themePrimary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: IconButton(
@@ -588,12 +588,12 @@ class _UsersListState extends State<UsersList> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: AppColors.lightPrimary,
+                                    color: context.themePrimary,
                                   ),
                                 )
                               : Icon(
                                   Icons.picture_as_pdf,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                   size: 22,
                                 ),
                           onPressed: _isExporting ? null : _exportUsersToPdf,
@@ -617,20 +617,20 @@ class _UsersListState extends State<UsersList> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: context.themeSoftSurface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.lightPrimary.withOpacity(0.3),
+                        color: context.themePrimary.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: _selectedSort,
-                        icon: Icon(Icons.arrow_drop_down, color: AppColors.lightPrimary),
+                        icon: Icon(Icons.arrow_drop_down, color: context.themePrimary),
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                         items: [
                           DropdownMenuItem(value: 'points', child: Text('Points (High to Low)')),
@@ -674,10 +674,10 @@ class _UsersListState extends State<UsersList> {
                                 fontSize: 14,
                                 color: isSelected
                                     ? AppColors.white
-                                    : AppColors.lightPrimary,
+                                    : context.themePrimary,
                               ),
-                              backgroundColor: Colors.grey[200],
-                              selectedColor: AppColors.lightPrimary,
+                              backgroundColor: context.themeBorder,
+                              selectedColor: context.themePrimary,
                               onSelected: (selected) {
                                 setState(() {
                                   _selectedTier = tier;
@@ -709,7 +709,7 @@ class _UsersListState extends State<UsersList> {
                       Icon(
                         Icons.error_outline,
                         size: 64,
-                        color: Colors.red[300],
+                        color: context.themeError,
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -722,7 +722,7 @@ class _UsersListState extends State<UsersList> {
                         textAlign: TextAlign.center,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: context.themeTextSecondary,
                         ),
                       ),
                     ],
@@ -731,9 +731,9 @@ class _UsersListState extends State<UsersList> {
               }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: const CircularProgressIndicator(
-                    color: AppColors.lightPrimary,
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: context.themePrimary,
                   ),
                 );
               }
@@ -849,14 +849,14 @@ class _UsersListState extends State<UsersList> {
                       Icon(
                         Icons.person_off_outlined,
                         size: 80,
-                        color: Colors.grey[300],
+                        color: context.themeBorder,
                       ),
                       const SizedBox(height: 20),
                       Text(
                         l10n.noUsersFound,
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 20,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -866,7 +866,7 @@ class _UsersListState extends State<UsersList> {
                             : l10n.noCarpentersYet,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: context.themeTextSecondary,
                         ),
                       ),
                     ],
@@ -899,7 +899,7 @@ class _UsersListState extends State<UsersList> {
                     elevation: 1,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.grey.shade200, width: 1),
+                      side: BorderSide(color: context.themeBorder, width: 1),
                     ),
                     child: InkWell(
                       onTap: () => _showUserDetails(user),
@@ -916,10 +916,10 @@ class _UsersListState extends State<UsersList> {
                                   width: 36,
                                   height: 36,
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
+                                    gradient: LinearGradient(
                                       colors: [
-                                        AppColors.lightPrimary,
-                                        AppColors.lightSecondary,
+                                        context.themePrimary,
+                                        context.themeSecondary,
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
@@ -952,23 +952,24 @@ class _UsersListState extends State<UsersList> {
                                                 return Container(
                                                   width: 48,
                                                   height: 48,
-                                                  color: AppColors.lightPrimary
-                                                      .withOpacity(0.1),
+                                                  color: context.themePrimary
+                                                      .withValues(alpha: 0.1),
                                                   child: Icon(
                                                     Icons.person,
                                                     size: 24,
-                                                    color: AppColors.lightPrimary,
+                                                    color: context.themePrimary,
                                                   ),
                                                 );
                                               },
                                           loadingBuilder: (context, child, loadingProgress) {
-                                            if (loadingProgress == null)
+                                            if (loadingProgress == null) {
                                               return child;
+                                            }
                                             return Container(
                                               width: 48,
                                               height: 48,
-                                              color: AppColors.lightPrimary
-                                                  .withOpacity(0.1),
+                                              color: context.themePrimary
+                                                  .withValues(alpha: 0.1),
                                               child: Center(
                                                 child: CircularProgressIndicator(
                                                   strokeWidth: 2,
@@ -984,7 +985,7 @@ class _UsersListState extends State<UsersList> {
                                                   valueColor:
                                                       AlwaysStoppedAnimation<
                                                         Color
-                                                      >(AppColors.lightPrimary),
+                                                      >(context.themePrimary),
                                                 ),
                                               ),
                                             );
@@ -993,12 +994,12 @@ class _UsersListState extends State<UsersList> {
                                       : Container(
                                           width: 48,
                                           height: 48,
-                                          color: AppColors.lightPrimary
-                                              .withOpacity(0.1),
+                                          color: context.themePrimary
+                                              .withValues(alpha: 0.1),
                                           child: Icon(
                                             Icons.person,
                                             size: 24,
-                                            color: AppColors.lightPrimary,
+                                            color: context.themePrimary,
                                           ),
                                         ),
                                 ),
@@ -1015,7 +1016,7 @@ class _UsersListState extends State<UsersList> {
                                         style: AppTypography.labelLarge()
                                             .copyWith(
                                               fontSize: 16,
-                                              color: AppColors.lightPrimary,
+                                              color: context.themePrimary,
                                             ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -1026,7 +1027,7 @@ class _UsersListState extends State<UsersList> {
                                         style: AppTypography.bodyMedium()
                                             .copyWith(
                                               fontSize: 13,
-                                              color: Colors.grey[600],
+                                              color: context.themeTextSecondary,
                                             ),
                                       ),
                                     ],
@@ -1037,9 +1038,9 @@ class _UsersListState extends State<UsersList> {
                                 OutlinedButton(
                                   onPressed: () => _deleteCarpenter(user),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.error,
+                                    foregroundColor: context.themeError,
                                     side: BorderSide(
-                                      color: AppColors.error,
+                                      color: context.themeError,
                                       width: 1.5,
                                     ),
                                     padding: const EdgeInsets.symmetric(
@@ -1058,7 +1059,7 @@ class _UsersListState extends State<UsersList> {
                                     style: AppTypography.labelLarge()
                                         .copyWith(
                                           fontSize: 13,
-                                          color: AppColors.error,
+                                          color: context.themeError,
                                         ),
                                   ),
                                 ),
@@ -1098,7 +1099,7 @@ class _UsersListState extends State<UsersList> {
                                       Icon(
                                         Icons.stars,
                                         size: 16,
-                                        color: AppColors.lightSecondary,
+                                        color: context.themeSecondary,
                                       ),
                                       const SizedBox(width: 4),
                                       Flexible(
@@ -1107,7 +1108,7 @@ class _UsersListState extends State<UsersList> {
                                           style: AppTypography.labelLarge()
                                               .copyWith(
                                                 fontSize: 14,
-                                                color: AppColors.lightPrimary,
+                                                color: context.themePrimary,
                                               ),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
@@ -1128,7 +1129,7 @@ class _UsersListState extends State<UsersList> {
                                         Icon(
                                           Icons.calendar_today,
                                           size: 14,
-                                          color: Colors.grey[500],
+                                          color: context.themeTextSecondary,
                                         ),
                                         const SizedBox(width: 4),
                                         Flexible(
@@ -1139,7 +1140,7 @@ class _UsersListState extends State<UsersList> {
                                             style: AppTypography.bodyMedium()
                                                 .copyWith(
                                                   fontSize: 12,
-                                                  color: Colors.grey[600],
+                                                  color: context.themeTextSecondary,
                                                 ),
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
@@ -1191,7 +1192,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(s),
-        backgroundColor: isError ? AppColors.red : AppColors.success,
+        backgroundColor: isError ? context.themeError : AppColors.success,
       ),
     );
   }
@@ -1345,7 +1346,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
                     child: ElevatedButton(
                       onPressed: _createCarpenter,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.lightPrimary,
+                        backgroundColor: context.themePrimary,
                       ),
                       child: const Text('Create'),
                     ),
@@ -1380,10 +1381,10 @@ class _ApprovedBillsList extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
+          return Center(
             child: Padding(
               padding: EdgeInsets.all(20.0),
-              child: CircularProgressIndicator(color: AppColors.lightPrimary),
+              child: CircularProgressIndicator(color: context.themePrimary),
             ),
           );
         }
@@ -1392,14 +1393,14 @@ class _ApprovedBillsList extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.red[50],
+              color: context.themeError,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               'Error loading bills: ${snapshot.error}',
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 14,
-                color: AppColors.error,
+                color: context.themeError,
               ),
             ),
           );
@@ -1409,14 +1410,14 @@ class _ApprovedBillsList extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: context.themeSoftSurface,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               'No approved bills yet',
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: context.themeTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -1452,10 +1453,10 @@ class _ApprovedBillsList extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: context.themeBorder),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.grey500.withOpacity(0.1),
+                    color: context.themeTextSecondary.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -1475,7 +1476,7 @@ class _ApprovedBillsList extends StatelessWidget {
                                 storeName,
                                 style: AppTypography.labelLarge().copyWith(
                                   fontSize: 16,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                               ),
                             if (billNumber.isNotEmpty) ...[
@@ -1484,7 +1485,7 @@ class _ApprovedBillsList extends StatelessWidget {
                                 'Bill #$billNumber',
                                 style: AppTypography.bodyMedium().copyWith(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  color: context.themeTextSecondary,
                                 ),
                               ),
                             ],
@@ -1495,7 +1496,7 @@ class _ApprovedBillsList extends StatelessWidget {
                                   Icon(
                                     Icons.calendar_today,
                                     size: 14,
-                                    color: Colors.grey[600],
+                                    color: context.themeTextSecondary,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
@@ -1504,7 +1505,7 @@ class _ApprovedBillsList extends StatelessWidget {
                                     ).format(displayDate),
                                     style: AppTypography.bodyMedium().copyWith(
                                       fontSize: 12,
-                                      color: Colors.grey[600],
+                                      color: context.themeTextSecondary,
                                     ),
                                   ),
                                 ],
@@ -1520,7 +1521,7 @@ class _ApprovedBillsList extends StatelessWidget {
                             '₹${amount.toStringAsFixed(0)}',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 18,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -1530,14 +1531,14 @@ class _ApprovedBillsList extends StatelessWidget {
                               Icon(
                                 Icons.stars,
                                 size: 16,
-                                color: AppColors.lightSecondary,
+                                color: context.themeSecondary,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '$pointsEarned Points',
                                 style: AppTypography.labelLarge().copyWith(
                                   fontSize: 14,
-                                  color: AppColors.lightSecondary,
+                                  color: context.themeSecondary,
                                 ),
                               ),
                             ],
@@ -1560,8 +1561,8 @@ class _ApprovedBillsList extends StatelessWidget {
                       icon: const Icon(Icons.undo, size: 18),
                       label: const Text('Withdraw Points'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.error,
-                        side: BorderSide(color: AppColors.error, width: 1.5),
+                        foregroundColor: context.themeError,
+                        side: BorderSide(color: context.themeError, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -1594,7 +1595,7 @@ class _ApprovedBillsList extends StatelessWidget {
           children: [
             Icon(
               Icons.warning_amber_rounded,
-              color: AppColors.error,
+              color: context.themeError,
               size: 28,
             ),
             const SizedBox(width: 12),
@@ -1603,7 +1604,7 @@ class _ApprovedBillsList extends StatelessWidget {
                 'Withdraw Points',
                 style: AppTypography.labelLarge().copyWith(
                   fontSize: 20,
-                  color: AppColors.error,
+                  color: context.themeError,
                 ),
               ),
             ),
@@ -1617,14 +1618,14 @@ class _ApprovedBillsList extends StatelessWidget {
               'Are you sure you want to withdraw points from this bill?',
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 16,
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: context.themeSoftSurface,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -1643,7 +1644,7 @@ class _ApprovedBillsList extends StatelessWidget {
                         '₹${amount.toStringAsFixed(0)}',
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                       ),
                     ],
@@ -1662,7 +1663,7 @@ class _ApprovedBillsList extends StatelessWidget {
                         '$points',
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 14,
-                          color: AppColors.error,
+                          color: context.themeError,
                         ),
                       ),
                     ],
@@ -1675,7 +1676,7 @@ class _ApprovedBillsList extends StatelessWidget {
               'This action cannot be undone. The points will be deducted from the carpenter\'s account.',
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 13,
-                color: Colors.grey[600],
+                color: context.themeTextSecondary,
               ),
             ),
           ],
@@ -1686,14 +1687,14 @@ class _ApprovedBillsList extends StatelessWidget {
             child: Text(
               l10n.cancel,
               style: AppTypography.labelLarge().copyWith(
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1718,8 +1719,8 @@ class _ApprovedBillsList extends StatelessWidget {
       barrierDismissible: false,
       builder: (dialogContext) => PopScope(
         canPop: false, // Prevent back button from closing
-        child: const Center(
-          child: CircularProgressIndicator(color: AppColors.lightPrimary),
+        child: Center(
+          child: CircularProgressIndicator(color: context.themePrimary),
         ),
       ),
     );
@@ -1740,7 +1741,7 @@ class _ApprovedBillsList extends StatelessWidget {
                   ? 'Points withdrawn successfully'
                   : 'Failed to withdraw points. Please try again.',
             ),
-            backgroundColor: success ? AppColors.success : AppColors.error,
+            backgroundColor: success ? AppColors.success : context.themeError,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -1755,7 +1756,7 @@ class _ApprovedBillsList extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error withdrawing points: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -1795,9 +1796,9 @@ class UserDetailsScreen extends StatelessWidget {
               left: 20,
               right: 20,
             ),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+                colors: [context.themePrimary, context.themeSecondary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -1823,7 +1824,7 @@ class UserDetailsScreen extends StatelessWidget {
                               child: Icon(
                                 Icons.person,
                                 size: 35,
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                               ),
                             );
                           },
@@ -1842,7 +1843,7 @@ class UserDetailsScreen extends StatelessWidget {
                                             loadingProgress.expectedTotalBytes!
                                       : null,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.lightPrimary,
+                                    context.themePrimary,
                                   ),
                                 ),
                               ),
@@ -1856,7 +1857,7 @@ class UserDetailsScreen extends StatelessWidget {
                           child: Icon(
                             Icons.person,
                             size: 35,
-                            color: AppColors.lightPrimary,
+                            color: context.themePrimary,
                           ),
                         ),
                 ),
@@ -1876,7 +1877,7 @@ class UserDetailsScreen extends StatelessWidget {
                         phone,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
-                          color: AppColors.white.withOpacity(0.9),
+                          color: AppColors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -1918,15 +1919,15 @@ class UserDetailsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.lightPrimary.withOpacity(0.1),
-                              AppColors.lightSecondary.withOpacity(0.1),
+                              context.themePrimary.withValues(alpha: 0.1),
+                              context.themeSecondary.withValues(alpha: 0.1),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: AppColors.lightPrimary.withOpacity(0.3),
+                            color: context.themePrimary.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Column(
@@ -1937,14 +1938,14 @@ class UserDetailsScreen extends StatelessWidget {
                                 Icon(
                                   Icons.stars,
                                   size: 32,
-                                  color: AppColors.lightSecondary,
+                                  color: context.themeSecondary,
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
                                   '$currentPoints',
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 36,
-                                    color: AppColors.lightPrimary,
+                                    color: context.themePrimary,
                                   ),
                                 ),
                               ],
@@ -1954,7 +1955,7 @@ class UserDetailsScreen extends StatelessWidget {
                               l10n.totalPointsLabel,
                               style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 14,
-                                color: Colors.grey[600],
+                                color: context.themeTextSecondary,
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -1987,10 +1988,10 @@ class UserDetailsScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.lightPrimary.withOpacity(0.05),
+                      color: context.themePrimary.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.lightPrimary.withOpacity(0.2),
+                        color: context.themePrimary.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
@@ -2001,7 +2002,7 @@ class UserDetailsScreen extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.lock_reset,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
@@ -2009,7 +2010,7 @@ class UserDetailsScreen extends StatelessWidget {
                               l10n.adminResetPin,
                               style: AppTypography.labelLarge().copyWith(
                                 fontSize: 16,
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                               ),
                             ),
                           ],
@@ -2019,7 +2020,7 @@ class UserDetailsScreen extends StatelessWidget {
                           l10n.adminResetPinSubtitle,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
-                            color: AppColors.lightPrimary.withOpacity(0.7),
+                            color: context.themePrimary.withValues(alpha: 0.7),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -2036,9 +2037,9 @@ class UserDetailsScreen extends StatelessWidget {
                             icon: const Icon(Icons.vpn_key, size: 18),
                             label: Text(l10n.adminResetPin),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.lightPrimary,
+                              foregroundColor: context.themePrimary,
                               side: BorderSide(
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                                 width: 1.5,
                               ),
                               shape: RoundedRectangleBorder(
@@ -2059,10 +2060,10 @@ class UserDetailsScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.1),
+                        color: context.themeError.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.error.withOpacity(0.3),
+                          color: context.themeError.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -2073,7 +2074,7 @@ class UserDetailsScreen extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.warning_amber_rounded,
-                                color: AppColors.error,
+                                color: context.themeError,
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
@@ -2081,7 +2082,7 @@ class UserDetailsScreen extends StatelessWidget {
                                 l10n.dangerZone,
                                 style: AppTypography.labelLarge().copyWith(
                                   fontSize: 16,
-                                  color: AppColors.error,
+                                  color: context.themeError,
                                 ),
                               ),
                             ],
@@ -2091,7 +2092,7 @@ class UserDetailsScreen extends StatelessWidget {
                             l10n.deleteCarpenterWarning,
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: AppColors.lightPrimary.withOpacity(0.7),
+                              color: context.themePrimary.withValues(alpha: 0.7),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -2107,9 +2108,9 @@ class UserDetailsScreen extends StatelessWidget {
                               icon: const Icon(Icons.delete_outline, size: 18),
                               label: Text(l10n.deleteCarpenter),
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.error,
+                                foregroundColor: context.themeError,
                                 side: BorderSide(
-                                  color: AppColors.error,
+                                  color: context.themeError,
                                   width: 1.5,
                                 ),
                                 shape: RoundedRectangleBorder(
@@ -2132,7 +2133,7 @@ class UserDetailsScreen extends StatelessWidget {
                     'Points History',
                     style: AppTypography.labelLarge().copyWith(
                       fontSize: 18,
-                      color: AppColors.lightPrimary,
+                      color: context.themePrimary,
                     ),
                   ),
 
@@ -2183,7 +2184,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.pinMismatch),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
       return;
@@ -2221,7 +2222,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.adminResetPinFailed),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ),
         );
       }
@@ -2231,7 +2232,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.adminResetPinFailed),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
     }
@@ -2261,7 +2262,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+                    colors: [context.themePrimary, context.themeSecondary],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -2289,7 +2290,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                             phone,
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: AppColors.white.withOpacity(0.9),
+                              color: AppColors.white.withValues(alpha: 0.9),
                             ),
                           ),
                         ],
@@ -2315,7 +2316,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                       l10n.adminResetPinSubtitle,
                       style: AppTypography.bodyMedium().copyWith(
                         fontSize: 14,
-                        color: AppColors.lightPrimary.withOpacity(0.7),
+                        color: context.themePrimary.withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -2330,31 +2331,31 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
                         letterSpacing: 8,
-                        color: AppColors.lightPrimary,
+                        color: context.themePrimary,
                       ),
                       decoration: InputDecoration(
                         labelText: l10n.enterNewPinForCarpenter,
                         counterText: "",
                         filled: true,
-                        fillColor: AppColors.lightPrimary.withOpacity(0.05),
+                        fillColor: context.themePrimary.withValues(alpha: 0.05),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.lightPrimary.withOpacity(0.3),
+                            color: context.themePrimary.withValues(alpha: 0.3),
                             width: 1.5,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.lightPrimary.withOpacity(0.2),
+                            color: context.themePrimary.withValues(alpha: 0.2),
                             width: 1.5,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.lightPrimary,
+                            color: context.themePrimary,
                             width: 2,
                           ),
                         ),
@@ -2380,31 +2381,31 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 20,
                         letterSpacing: 8,
-                        color: AppColors.lightPrimary,
+                        color: context.themePrimary,
                       ),
                       decoration: InputDecoration(
                         labelText: l10n.confirmNewPinForCarpenter,
                         counterText: "",
                         filled: true,
-                        fillColor: AppColors.lightPrimary.withOpacity(0.05),
+                        fillColor: context.themePrimary.withValues(alpha: 0.05),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.lightPrimary.withOpacity(0.3),
+                            color: context.themePrimary.withValues(alpha: 0.3),
                             width: 1.5,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.lightPrimary.withOpacity(0.2),
+                            color: context.themePrimary.withValues(alpha: 0.2),
                             width: 1.5,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.lightPrimary,
+                            color: context.themePrimary,
                             width: 2,
                           ),
                         ),
@@ -2437,7 +2438,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               side: BorderSide(
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                                 width: 1.5,
                               ),
                             ),
@@ -2445,7 +2446,7 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                               l10n.cancel,
                               style: AppTypography.labelLarge().copyWith(
                                 fontSize: 16,
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                               ),
                             ),
                           ),
@@ -2457,8 +2458,8 @@ class _AdminResetPINDialogState extends State<AdminResetPINDialog> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  AppColors.lightSecondary,
-                                  AppColors.lightSecondary.withOpacity(0.8),
+                                  context.themeSecondary,
+                                  context.themeSecondary.withValues(alpha: 0.8),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,

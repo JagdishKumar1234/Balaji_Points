@@ -1,7 +1,6 @@
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/providers/daily_spin_provider.dart';
 
@@ -47,9 +46,9 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
     final spinState = ref.read(dailySpinProvider);
     if (!spinState.canSpin) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('You have already spun today. Come back tomorrow!'),
-          backgroundColor: AppColors.orange,
+          backgroundColor: AppColors.warning,
         ),
       );
       return;
@@ -139,12 +138,12 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
+        title: Text(
           '🎉 Congratulations!',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppColors.lightSecondary,
+            color: context.themeSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -153,21 +152,21 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
           children: [
             Text(
               'You won',
-              style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 18, color: context.themeTextSecondary),
             ),
             const SizedBox(height: 10),
             Text(
               '${points > 0 ? points : "10"} Points!',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: AppColors.lightSecondary,
+                color: context.themeSecondary,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               'Points have been added to your account!',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 14, color: context.themeTextSecondary),
               textAlign: TextAlign.center,
             ),
           ],
@@ -186,7 +185,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.lightSecondary,
+                backgroundColor: context.themeSecondary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
                   vertical: 12,
@@ -215,7 +214,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withOpacity(0.1),
+            color: AppColors.black.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -229,7 +228,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
             children: [
               Icon(
                 Icons.casino_rounded,
-                color: Colors.amber.shade700,
+                color: AppColors.warning,
                 size: 28,
               ),
               const SizedBox(width: 8),
@@ -238,7 +237,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.lightPrimary,
+                  color: context.themePrimary,
                 ).merge(const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)),
               ),
             ],
@@ -248,7 +247,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
             spinState.canSpin
                 ? 'Spin and win exciting points!'
                 : 'Already spun today. Come back tomorrow!',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 14, color: context.themeTextSecondary),
           ),
           const SizedBox(height: 24),
 
@@ -269,7 +268,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.amber.withOpacity(0.3),
+                            color: AppColors.warning.withValues(alpha: 0.3),
                             blurRadius: 20,
                             spreadRadius: 5,
                           ),
@@ -288,11 +287,11 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.red.shade600,
+                    color: AppColors.error,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.red.withOpacity(0.5),
+                        color: AppColors.error.withValues(alpha: 0.5),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -315,13 +314,13 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                   color: AppColors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.black.withOpacity(0.2),
+                      color: AppColors.black.withValues(alpha: 0.2),
                       blurRadius: 10,
                     ),
                   ],
-                  border: Border.all(color: Colors.amber.shade300, width: 3),
+                  border: Border.all(color: AppColors.warning, width: 3),
                 ),
-                child: Icon(Icons.star, color: Colors.amber.shade700, size: 32),
+                child: Icon(Icons.star, color: AppColors.warning, size: 32),
               ),
             ],
           ),
@@ -335,11 +334,11 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
               onPressed: spinState.canSpin && !_isSpinning ? _spin : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _isSpinning
-                    ? AppColors.grey500
+                    ? context.themeTextSecondary
                     : (spinState.canSpin
-                          ? Colors.amber.shade600
-                          : Colors.grey.shade400),
-                disabledBackgroundColor: Colors.grey.shade300,
+                          ? AppColors.warning
+                          : context.themeTextMuted),
+                disabledBackgroundColor: context.themeBorder,
                 foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
@@ -399,14 +398,14 @@ class SpinWheelPainter extends CustomPainter {
     final segmentAngle = (2 * math.pi) / segments;
 
     final colors = [
-      Colors.red.shade300,
-      Colors.orange.shade300,
-      Colors.yellow.shade300,
-      Colors.green.shade300,
-      Colors.blue.shade300,
-      Colors.indigo.shade300,
-      Colors.purple.shade300,
-      Colors.pink.shade300,
+      AppColors.error,
+      AppColors.lightSecondary,
+      AppColors.warning,
+      AppColors.success,
+      AppColors.lightPrimary,
+      AppColors.lightPrimary,
+      AppColors.lightPrimary,
+      AppColors.lightSecondary,
     ];
 
     final pointValues = [10, 20, 30, 40, 50, 60, 70, 80];
@@ -448,13 +447,13 @@ class SpinWheelPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: '${pointValues[i]}',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.white,
             fontSize: 24,
             fontWeight: FontWeight.bold,
             shadows: [
               Shadow(
-                color: AppColors.black54,
+                color: AppColors.black.withValues(alpha: 0.54),
                 blurRadius: 3,
                 offset: Offset(1, 1),
               ),
@@ -473,7 +472,7 @@ class SpinWheelPainter extends CustomPainter {
 
     // Outer border
     final borderPaint = Paint()
-      ..color = Colors.brown.shade700
+      ..color = AppColors.lightSecondary
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, borderPaint);

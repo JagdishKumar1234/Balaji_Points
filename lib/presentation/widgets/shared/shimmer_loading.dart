@@ -28,8 +28,8 @@ class ShimmerCard extends StatelessWidget {
         borderRadius: borderRadius ?? BorderRadius.circular(20),
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
+        baseColor: context.themeBorder,
+        highlightColor: context.themeSoftSurface,
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.white,
@@ -54,8 +54,8 @@ class ShimmerOfferCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
+        baseColor: context.themeBorder,
+        highlightColor: context.themeSoftSurface,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -115,8 +115,8 @@ class ShimmerTopCarpenters extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
+        baseColor: context.themeBorder,
+        highlightColor: context.themeSoftSurface,
         child: Column(
           children: [
             // Title placeholder
@@ -206,8 +206,8 @@ class ShimmerWinnerCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.lightSecondary.withValues(alpha: 0.2),
-            AppColors.lightPrimary.withValues(alpha: 0.1),
+            context.themeSecondary.withValues(alpha: 0.2),
+            context.themePrimary.withValues(alpha: 0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -273,7 +273,7 @@ class ShimmerPositionCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue.shade700, Colors.purple.shade600],
+          colors: [context.themePrimary, context.themeSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

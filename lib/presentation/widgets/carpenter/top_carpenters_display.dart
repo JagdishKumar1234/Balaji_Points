@@ -40,7 +40,7 @@ class TopCarpentersDisplay extends StatelessWidget {
         Text(
           '🏆 Top 3 Carpenters',
           style: TextStyle(
-            color: AppColors.lightSecondary,
+            color: context.themeSecondary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -53,13 +53,13 @@ class TopCarpentersDisplay extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             // Rank 2 - Left
-            if (top3.length > 1) _buildPodiumCard(top3[1], 2),
+            if (top3.length > 1) _buildPodiumCard(context, top3[1], 2),
 
             // Rank 1 - Center (tallest)
-            if (top3.isNotEmpty) _buildPodiumCard(top3[0], 1),
+            if (top3.isNotEmpty) _buildPodiumCard(context, top3[0], 1),
 
             // Rank 3 - Right
-            if (top3.length > 2) _buildPodiumCard(top3[2], 3),
+            if (top3.length > 2) _buildPodiumCard(context, top3[2], 3),
           ],
         ),
       ],
@@ -67,21 +67,21 @@ class TopCarpentersDisplay extends StatelessWidget {
   }
 
   // Podium card for top 3
-  Widget _buildPodiumCard(CarpenterRank carpenter, int rank) {
+  Widget _buildPodiumCard(BuildContext context, CarpenterRank carpenter, int rank) {
     Color trophyColor;
     double podiumHeight;
 
     switch (rank) {
       case 1:
-        trophyColor = Colors.amber;
+        trophyColor = AppColors.warning;
         podiumHeight = 120;
         break;
       case 2:
-        trophyColor = Colors.grey.shade400;
+        trophyColor = context.themeTextMuted;
         podiumHeight = 100;
         break;
       default:
-        trophyColor = Colors.brown.shade400;
+        trophyColor = context.themeSecondary;
         podiumHeight = 80;
     }
 
@@ -124,7 +124,7 @@ class TopCarpentersDisplay extends StatelessWidget {
             style: TextStyle(
               fontSize: rank == 1 ? 14 : 12,
               fontWeight: FontWeight.bold,
-              color: isCurrentUser ? Colors.blue.shade700 : AppColors.black87,
+              color: isCurrentUser ? context.themePrimary : AppColors.black.withValues(alpha: 0.87),
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

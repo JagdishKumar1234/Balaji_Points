@@ -83,7 +83,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -103,7 +103,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
           content: Text(
             success ? 'Product deleted successfully' : 'Failed to delete product',
           ),
-          backgroundColor: success ? AppColors.success : AppColors.error,
+          backgroundColor: success ? AppColors.success : context.themeError,
         ),
       );
     }
@@ -148,7 +148,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.woodenBackground,
+      backgroundColor: context.themeSoftSurface,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('products')
@@ -164,7 +164,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                   textAlign: TextAlign.center,
                   style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
-                    color: AppColors.error,
+                    color: context.themeError,
                   ),
                 ),
               ),
@@ -172,8 +172,8 @@ class _ProductsManagementState extends State<ProductsManagement> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.lightPrimary),
+            return Center(
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -187,14 +187,14 @@ class _ProductsManagementState extends State<ProductsManagement> {
                   Icon(
                     Icons.inventory_2_outlined,
                     size: 80,
-                    color: Colors.grey[300],
+                    color: context.themeBorder,
                   ),
                   const SizedBox(height: 20),
                   Text(
                     'No products added yet',
                     style: AppTypography.labelLarge().copyWith(
                       fontSize: 20,
-                      color: AppColors.lightPrimary,
+                      color: context.themePrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -202,7 +202,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                     'Tap on "Add product" to create your first product.',
                     style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
-                      color: Colors.grey[600],
+                      color: context.themeTextSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -253,12 +253,12 @@ class _ProductsManagementState extends State<ProductsManagement> {
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 height: 180,
-                                color: Colors.grey[200],
-                                child: const Center(
+                                color: context.themeBorder,
+                                child: Center(
                                   child: Icon(
                                     Icons.broken_image,
                                     size: 50,
-                                    color: AppColors.grey500,
+                                    color: context.themeTextSecondary,
                                   ),
                                 ),
                               );
@@ -278,7 +278,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                   name.isNotEmpty ? name : 'Unnamed product',
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 18,
-                                    color: AppColors.lightPrimary,
+                                    color: context.themePrimary,
                                   ),
                                 ),
                               ),
@@ -289,8 +289,8 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: isActive
-                                      ? Colors.green[100]
-                                      : Colors.grey[200],
+                                      ? AppColors.success
+                                      : context.themeBorder,
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
@@ -298,8 +298,8 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 11,
                                     color: isActive
-                                        ? Colors.green[900]
-                                        : Colors.grey[700],
+                                        ? AppColors.success
+                                        : context.themeTextSecondary,
                                   ),
                                 ),
                               ),
@@ -313,7 +313,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.lightPrimary.withValues(
+                                color: context.themePrimary.withValues(
                                   alpha: 0.08,
                                 ),
                                 borderRadius: BorderRadius.circular(999),
@@ -321,10 +321,10 @@ class _ProductsManagementState extends State<ProductsManagement> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.category_outlined,
                                     size: 16,
-                                    color: AppColors.lightPrimary,
+                                    color: context.themePrimary,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
@@ -334,7 +334,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                     style:
                                         AppTypography.labelLarge().copyWith(
                                       fontSize: 12,
-                                      color: AppColors.lightPrimary,
+                                      color: context.themePrimary,
                                     ),
                                   ),
                                 ],
@@ -375,9 +375,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                     data,
                                   ),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.lightPrimary,
-                                    side: const BorderSide(
-                                      color: AppColors.lightPrimary,
+                                    foregroundColor: context.themePrimary,
+                                    side: BorderSide(
+                                      color: context.themePrimary,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
@@ -396,9 +396,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                   onPressed: () =>
                                       _deleteProduct(productId, imageUrl),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.error,
+                                    foregroundColor: context.themeError,
                                     side: BorderSide(
-                                      color: Colors.red[300]!,
+                                      color: context.themeError,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
@@ -425,7 +425,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateProductDialog,
-        backgroundColor: AppColors.lightSecondary,
+        backgroundColor: context.themeSecondary,
         icon: const Icon(Icons.add),
         label: Text(
           'Add product',
@@ -452,20 +452,20 @@ class _ProductInfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: context.themeSoftSurface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: context.themeBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.grey[700]),
+          Icon(icon, size: 14, color: context.themeTextSecondary),
           const SizedBox(width: 4),
           Text(
             '$label:',
             style: AppTypography.labelLarge().copyWith(
               fontSize: 12,
-              color: Colors.grey[800],
+              color: context.themeTextPrimary,
             ),
           ),
           const SizedBox(width: 4),
@@ -473,7 +473,7 @@ class _ProductInfoChip extends StatelessWidget {
             value,
             style: AppTypography.bodyMedium().copyWith(
               fontSize: 12,
-              color: Colors.grey[800],
+              color: context.themeTextPrimary,
             ),
           ),
         ],
@@ -589,7 +589,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to pick image: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
     }
@@ -617,7 +617,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to pick PDF: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
     }
@@ -751,16 +751,17 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isSaving = false;
-        _isUploadingImage = false;
-        _isUploadingCatalogPdf = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+          _isUploadingImage = false;
+          _isUploadingCatalogPdf = false;
+        });
+      }
     }
   }
 
@@ -777,9 +778,9 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
           children: [
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+                  colors: [context.themePrimary, context.themeSecondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -821,9 +822,9 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                         child: Container(
                           height: 170,
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: context.themeSoftSurface,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.grey[300]!),
+                            border: Border.all(color: context.themeBorder),
                           ),
                           child: Builder(
                             builder: (context) {
@@ -853,14 +854,14 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   Icon(
                                     Icons.add_photo_alternate,
                                     size: 48,
-                                    color: Colors.grey[400],
+                                    color: context.themeTextMuted,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     'Tap to upload product images',
                                     style: AppTypography.bodySmall().copyWith(
                                       fontSize: 14,
-                                      color: Colors.grey[600],
+                                      color: context.themeTextSecondary,
                                     ),
                                   ),
                                 ],
@@ -876,7 +877,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                             'Total photos: ${_existingImageUrls.length + _newImageFiles.length}',
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 12,
-                              color: Colors.grey[600],
+                              color: context.themeTextSecondary,
                             ),
                           ),
                         ),
@@ -884,7 +885,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: context.themeSoftSurface,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -892,9 +893,9 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.picture_as_pdf,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
@@ -902,7 +903,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                     'Catalog PDF (optional)',
                                     style: AppTypography.bodySmall().copyWith(
                                       fontSize: 14,
-                                      color: AppColors.lightPrimary,
+                                      color: context.themePrimary,
                                     ),
                                   ),
                                 ),
@@ -928,7 +929,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                     overflow: TextOverflow.ellipsis,
                                     style: AppTypography.bodyMedium().copyWith(
                                       fontSize: 13,
-                                      color: Colors.grey[700],
+                                      color: context.themeTextSecondary,
                                     ),
                                   ),
                                 ),
@@ -964,13 +965,13 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const SizedBox(
+                                    SizedBox(
                                       width: 16,
                                       height: 16,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          AppColors.lightPrimary,
+                                          context.themePrimary,
                                         ),
                                       ),
                                     ),
@@ -979,7 +980,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                       'Uploading PDF...',
                                       style: AppTypography.bodySmall().copyWith(
                                         fontSize: 13,
-                                        color: AppColors.lightPrimary,
+                                        color: context.themePrimary,
                                       ),
                                     ),
                                   ],
@@ -1001,8 +1002,8 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppColors.lightPrimary,
+                            borderSide: BorderSide(
+                              color: context.themePrimary,
                               width: 2,
                             ),
                           ),
@@ -1046,7 +1047,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: _ProductsManagementState._mainCategories
+                        initialValue: _ProductsManagementState._mainCategories
                                 .contains(_selectedMainCategory)
                             ? _selectedMainCategory
                             : _ProductsManagementState._mainCategories.first,
@@ -1073,7 +1074,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: _selectedSubCategory.isEmpty
+                        initialValue: _selectedSubCategory.isEmpty
                             ? null
                             : _selectedSubCategory,
                         items: [
@@ -1146,14 +1147,14 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: context.themeSoftSurface,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.visibility,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -1169,8 +1170,8 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   _isActive = value;
                                 });
                               },
-                              activeTrackColor: AppColors.lightSecondary,
-                              activeColor: AppColors.white,
+                              activeTrackColor: context.themeSecondary,
+                              activeThumbColor: AppColors.white,
                             ),
                           ],
                         ),
@@ -1182,13 +1183,13 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const SizedBox(
+                              SizedBox(
                                 width: 16,
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.lightPrimary,
+                                    context.themePrimary,
                                   ),
                                 ),
                               ),
@@ -1197,7 +1198,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                 'Uploading image...',
                                 style: AppTypography.bodySmall().copyWith(
                                   fontSize: 14,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                               ),
                             ],
@@ -1212,7 +1213,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                               ? null
                               : _saveProduct,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.lightSecondary,
+                            backgroundColor: context.themeSecondary,
                             foregroundColor: AppColors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(

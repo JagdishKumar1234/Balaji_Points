@@ -110,7 +110,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         l10n.onboardingSkip,
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 15,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                       ),
                     ),
@@ -147,7 +147,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 child: Icon(
                                   s.icon,
                                   size: 72,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                               ),
                               const SizedBox(height: 36),
@@ -157,7 +157,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 style: AppTypography.buttonMedium().copyWith(
                                   fontSize: 24,
                                   height: 1.25,
-                                  color: AppColors.lightTextPrimary,
+                                  color: context.themeTextPrimary,
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -167,7 +167,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 style: AppTypography.bodyMedium().copyWith(
                                   fontSize: 16,
                                   height: 1.5,
-                                  color: AppColors.lightTextPrimary.withValues(
+                                  color: context.themeTextPrimary.withValues(
                                     alpha: 0.78,
                                   ),
                                 ),
@@ -190,8 +190,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(999),
                           color: i == _pageIndex
-                              ? AppColors.lightPrimary
-                              : AppColors.grey400.withValues(alpha: 0.5),
+                              ? context.themePrimary
+                              : context.themeTextMuted.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -205,7 +205,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: ElevatedButton(
                         onPressed: _next,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.lightPrimary,
+                          backgroundColor: context.themePrimary,
                           foregroundColor: AppColors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(

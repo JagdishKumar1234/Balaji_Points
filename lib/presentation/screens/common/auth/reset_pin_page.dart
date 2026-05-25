@@ -261,7 +261,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
@@ -312,7 +312,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
               elevation: 0.0,
               title: Text(l10n.resetPinTitle),
               leading: BackButton(
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
                 onPressed: () {
                   if (_hasPinData()) {
                     Navigator.of(context).maybePop();
@@ -351,7 +351,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                           textAlign: TextAlign.center,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 12.0,
-                            color: AppColors.lightTextPrimary.withOpacity(0.7),
+                            color: context.themeTextPrimary.withValues(alpha: 0.7),
                           ),
                         ),
 
@@ -369,17 +369,17 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    AppColors.white.withOpacity(0.9),
-                                    AppColors.white.withOpacity(0.7),
+                                    AppColors.white.withValues(alpha: 0.9),
+                                    AppColors.white.withValues(alpha: 0.7),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: AppColors.white.withOpacity(0.5),
+                                  color: AppColors.white.withValues(alpha: 0.5),
                                   width: 1.5,
                                 ),
                                 boxShadow: [BoxShadow(color: AppColors.black.withValues(alpha: 0.2), blurRadius: 12.0, offset: Offset(0, 6))].map((shadow) => shadow.copyWith(
-                                  color: AppColors.lightPrimary.withOpacity(0.1),
+                                  color: context.themePrimary.withValues(alpha: 0.1),
                                 )).toList(),
                               ),
                               child: Column(
@@ -398,33 +398,33 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                       counterText: "",
                                       filled: true,
                                       fillColor: _isLoggedIn
-                                          ? AppColors.lightPrimary.withOpacity(0.1)
-                                          : AppColors.lightPrimary.withOpacity(0.05),
+                                          ? context.themePrimary.withValues(alpha: 0.1)
+                                          : context.themePrimary.withValues(alpha: 0.05),
                                       border: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: AppColors.lightPrimary.withOpacity(0.3),
+                                          color: context.themePrimary.withValues(alpha: 0.3),
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: AppColors.lightPrimary.withOpacity(0.2),
+                                          color: context.themePrimary.withValues(alpha: 0.2),
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
-                                        borderSide: const BorderSide(
-                                          color: AppColors.lightPrimary,
+                                        borderSide: BorderSide(
+                                          color: context.themePrimary,
                                           width: 2,
                                         ),
                                       ),
                                       disabledBorder: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: AppColors.lightPrimary.withOpacity(0.3),
+                                          color: context.themePrimary.withValues(alpha: 0.3),
                                           width: 1.5,
                                         ),
                                       ),
@@ -477,7 +477,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           backgroundColor: _phoneChecked &&
                                                   _phoneExists
                                               ? AppColors.success
-                                              : AppColors.lightPrimary,
+                                              : context.themePrimary,
                                           foregroundColor: AppColors.white,
                                           padding: EdgeInsets.symmetric(horizontal: 16)
                                               .copyWith(
@@ -498,7 +498,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         padding: EdgeInsets.symmetric(horizontal: 16),
                                         height: 40,
                                         decoration: BoxDecoration(
-                                          color: AppColors.success.withOpacity(0.1),
+                                          color: AppColors.success.withValues(alpha: 0.1),
                                           borderRadius: AppRadius.forInput,
                                           border: Border.all(
                                             color: AppColors.success,
@@ -542,31 +542,31 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                           .copyWith(
                                             fontSize: 20.0,
                                             letterSpacing: 8,
-                                            color: AppColors.lightPrimary,
+                                            color: context.themePrimary,
                                           ),
                                       decoration: InputDecoration(
                                         labelText: l10n.currentPinLabel,
                                         counterText: "",
                                         filled: true,
-                                        fillColor: AppColors.lightPrimary.withOpacity(0.05),
+                                        fillColor: context.themePrimary.withValues(alpha: 0.05),
                                         border: OutlineInputBorder(
                                           borderRadius: AppRadius.forCard,
                                           borderSide: BorderSide(
-                                            color: AppColors.lightPrimary.withOpacity(0.3),
+                                            color: context.themePrimary.withValues(alpha: 0.3),
                                             width: 1.5,
                                           ),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: AppRadius.forCard,
                                           borderSide: BorderSide(
-                                            color: AppColors.lightPrimary.withOpacity(0.2),
+                                            color: context.themePrimary.withValues(alpha: 0.2),
                                             width: 1.5,
                                           ),
                                         ),
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: AppRadius.forCard,
-                                          borderSide: const BorderSide(
-                                            color: AppColors.lightPrimary,
+                                          borderSide: BorderSide(
+                                            color: context.themePrimary,
                                             width: 2,
                                           ),
                                         ),
@@ -589,10 +589,10 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     Container(
                                       padding: EdgeInsets.all(AppSpacing.lg),
                                       decoration: BoxDecoration(
-                                        color: AppColors.lightPrimary.withOpacity(0.05),
+                                        color: context.themePrimary.withValues(alpha: 0.05),
                                         borderRadius: AppRadius.forInput,
                                         border: Border.all(
-                                          color: AppColors.lightPrimary.withOpacity(0.2),
+                                          color: context.themePrimary.withValues(alpha: 0.2),
                                           width: 1,
                                         ),
                                       ),
@@ -601,10 +601,10 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         children: [
                                           Row(
                                             children: [
-                                              const Icon(
+                                              Icon(
                                                 Icons.help_outline,
                                                 size: 20,
-                                                color: AppColors.lightPrimary,
+                                                color: context.themePrimary,
                                               ),
                                               SizedBox(width: 8.0),
                                               Text(
@@ -612,7 +612,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                 style: AppTypography.labelLarge()
                                                     .copyWith(
                                                       fontSize: 14.0,
-                                                      color: AppColors.lightPrimary,
+                                                      color: context.themePrimary,
                                                     ),
                                               ),
                                             ],
@@ -623,8 +623,8 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             style: AppTypography.bodyMedium()
                                                 .copyWith(
                                                   fontSize: 12.0,
-                                                  color: AppColors.lightTextPrimary
-                                                      .withOpacity(0.7),
+                                                  color: context.themeTextPrimary
+                                                      .withValues(alpha: 0.7),
                                                 ),
                                           ),
                                           SizedBox(height: 12.0),
@@ -634,8 +634,8 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                               color: AppColors.white,
                                               borderRadius: AppRadius.sm8,
                                               border: Border.all(
-                                                color: AppColors.lightPrimary
-                                                    .withOpacity(0.2),
+                                                color: context.themePrimary
+                                                    .withValues(alpha: 0.2),
                                                 width: 1,
                                               ),
                                             ),
@@ -643,10 +643,10 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    const Icon(
+                                                    Icon(
                                                       Icons.support_agent,
                                                       size: 18,
-                                                      color: AppColors.lightSecondary,
+                                                      color: context.themeSecondary,
                                                     ),
                                                     SizedBox(width: 8.0),
                                                     Text(
@@ -654,7 +654,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                       style: AppTypography.labelLarge()
                                                           .copyWith(
                                                             fontSize: 12.0,
-                                                            color: AppColors.lightTextPrimary,
+                                                            color: context.themeTextPrimary,
                                                           ),
                                                     ),
                                                   ],
@@ -674,7 +674,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                     height: 40,
                                                     decoration: BoxDecoration(
                                                       color: AppColors.success
-                                                          .withOpacity(0.1),
+                                                          .withValues(alpha: 0.1),
                                                       borderRadius:
                                                           AppRadius.sm8,
                                                     ),
@@ -720,17 +720,17 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                         EdgeInsets.symmetric(horizontal: 12),
                                                     height: 40,
                                                     decoration: BoxDecoration(
-                                                      color: AppColors.lightPrimary
-                                                          .withOpacity(0.1),
+                                                      color: context.themePrimary
+                                                          .withValues(alpha: 0.1),
                                                       borderRadius:
                                                           AppRadius.sm8,
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        const Icon(
+                                                        Icon(
                                                           Icons.phone,
                                                           size: 16,
-                                                          color: AppColors.lightPrimary,
+                                                          color: context.themePrimary,
                                                         ),
                                                         SizedBox(width: 8.0),
                                                         Expanded(
@@ -740,14 +740,14 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                                                 .copyWith(
                                                                   fontSize: 12.0,
                                                                   color:
-                                                                      AppColors.lightPrimary,
+                                                                      context.themePrimary,
                                                                 ),
                                                           ),
                                                         ),
-                                                        const Icon(
+                                                        Icon(
                                                           Icons.call,
                                                           size: 16,
-                                                          color: AppColors.lightPrimary,
+                                                          color: context.themePrimary,
                                                         ),
                                                       ],
                                                     ),
@@ -773,31 +773,31 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         .copyWith(
                                           fontSize: 20.0,
                                           letterSpacing: 8,
-                                          color: AppColors.lightPrimary,
+                                          color: context.themePrimary,
                                         ),
                                     decoration: InputDecoration(
                                       labelText: l10n.newPinLabel,
                                       counterText: "",
                                       filled: true,
-                                      fillColor: AppColors.lightPrimary.withOpacity(0.05),
+                                      fillColor: context.themePrimary.withValues(alpha: 0.05),
                                       border: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: AppColors.lightPrimary.withOpacity(0.3),
+                                          color: context.themePrimary.withValues(alpha: 0.3),
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: AppColors.lightPrimary.withOpacity(0.2),
+                                          color: context.themePrimary.withValues(alpha: 0.2),
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
-                                        borderSide: const BorderSide(
-                                          color: AppColors.lightPrimary,
+                                        borderSide: BorderSide(
+                                          color: context.themePrimary,
                                           width: 2,
                                         ),
                                       ),
@@ -825,31 +825,31 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         .copyWith(
                                           fontSize: 20.0,
                                           letterSpacing: 8,
-                                          color: AppColors.lightPrimary,
+                                          color: context.themePrimary,
                                         ),
                                     decoration: InputDecoration(
                                       labelText: l10n.confirmPin,
                                       counterText: "",
                                       filled: true,
-                                      fillColor: AppColors.lightPrimary.withOpacity(0.05),
+                                      fillColor: context.themePrimary.withValues(alpha: 0.05),
                                       border: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: AppColors.lightPrimary.withOpacity(0.3),
+                                          color: context.themePrimary.withValues(alpha: 0.3),
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
                                         borderSide: BorderSide(
-                                          color: AppColors.lightPrimary.withOpacity(0.2),
+                                          color: context.themePrimary.withValues(alpha: 0.2),
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: AppRadius.forCard,
-                                        borderSide: const BorderSide(
-                                          color: AppColors.lightPrimary,
+                                        borderSide: BorderSide(
+                                          color: context.themePrimary,
                                           width: 2,
                                         ),
                                       ),
@@ -866,13 +866,13 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                         gradient: LinearGradient(
                                           colors: canSubmit
                                               ? [
-                                                  AppColors.lightSecondary,
-                                                  AppColors.lightSecondary
-                                                      .withOpacity(0.8),
+                                                  context.themeSecondary,
+                                                  context.themeSecondary
+                                                      .withValues(alpha: 0.8),
                                                 ]
                                               : [
-                                                  AppColors.grey500,
-                                                  AppColors.grey500
+                                                  context.themeTextSecondary,
+                                                  context.themeTextSecondary
                                                       .withValues(alpha: 0.8),
                                                 ],
                                           begin: Alignment.topLeft,
@@ -883,9 +883,9 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                             .map(
                                               (shadow) => shadow.copyWith(
                                                 color: (canSubmit
-                                                        ? AppColors.lightSecondary
-                                                        : AppColors.grey500)
-                                                    .withOpacity(0.4),
+                                                        ? context.themeSecondary
+                                                        : context.themeTextSecondary)
+                                                    .withValues(alpha: 0.4),
                                               ),
                                             )
                                             .toList(),
@@ -935,7 +935,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                       style: AppTypography.bodyMedium()
                                           .copyWith(
                                             fontSize: 12.0,
-                                            color: AppColors.lightTextPrimary.withOpacity(0.7),
+                                            color: context.themeTextPrimary.withValues(alpha: 0.7),
                                           ),
                                     ),
                                   ],
@@ -995,7 +995,7 @@ class CelebrationPainter extends CustomPainter {
       if (opacity <= 0) continue;
 
       final paint = Paint()
-        ..color = _getColorForType(element.type).withOpacity(0.4 * opacity)
+        ..color = _getColorForType(element.type).withValues(alpha: 0.4 * opacity)
         ..style = PaintingStyle.fill;
 
       final position = Offset(x * size.width, y * size.height);
@@ -1028,7 +1028,7 @@ class CelebrationPainter extends CustomPainter {
   Color _getColorForType(FloatingType type) {
     switch (type) {
       case FloatingType.coin:
-        return AppColors.amber;
+        return AppColors.warning;
       case FloatingType.star:
         return AppColors.lightSecondary;
       case FloatingType.sparkle:
@@ -1040,7 +1040,7 @@ class CelebrationPainter extends CustomPainter {
 
   void _drawCoin(Canvas canvas, Paint paint) {
     canvas.drawCircle(Offset.zero, 8, paint);
-    paint.color = AppColors.white.withOpacity(0.6);
+    paint.color = AppColors.white.withValues(alpha: 0.6);
     canvas.drawCircle(Offset(-3, -3), 2, paint);
   }
 
@@ -1087,7 +1087,7 @@ class CelebrationPainter extends CustomPainter {
     );
     canvas.drawPath(path, paint);
 
-    paint.color = AppColors.white.withOpacity(0.8);
+    paint.color = AppColors.white.withValues(alpha: 0.8);
     canvas.drawCircle(Offset(-4, 0), 2, paint);
     canvas.drawCircle(Offset(4, 0), 2, paint);
   }

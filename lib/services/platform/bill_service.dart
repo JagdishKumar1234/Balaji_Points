@@ -247,14 +247,14 @@ class BillService {
     String carpenterId,
     double amount,
   ) async {
-    print('═══════════════════════════════════════════════════════════');
-    print('🚀 APPROVE BILL START');
-    print('═══════════════════════════════════════════════════════════');
-    print('📋 Input params:');
-    print('   billId: "$billId"');
-    print('   carpenterId: "$carpenterId"');
-    print('   amount: $amount');
-    print('═══════════════════════════════════════════════════════════');
+    AppLogger.debug('═══════════════════════════════════════════════════════════');
+    AppLogger.debug('🚀 APPROVE BILL START');
+    AppLogger.debug('═══════════════════════════════════════════════════════════');
+    AppLogger.debug('📋 Input params:');
+    AppLogger.debug('   billId: "$billId"');
+    AppLogger.debug('   carpenterId: "$carpenterId"');
+    AppLogger.debug('   amount: $amount');
+    AppLogger.debug('═══════════════════════════════════════════════════════════');
 
     AppLogger.info('=== APPROVE BILL START ===');
     AppLogger.info(
@@ -263,71 +263,71 @@ class BillService {
 
     try {
       // Validate inputs
-      print('📝 Step 0: Validating inputs...');
+      AppLogger.debug('📝 Step 0: Validating inputs...');
       AppLogger.info('Step 0: Validating inputs...');
       if (billId.isEmpty) {
-        print('❌ ERROR: Bill ID is empty!');
+        AppLogger.debug('❌ ERROR: Bill ID is empty!');
         AppLogger.error('approveBill: ❌ Bill ID is empty', '');
         return false;
       }
-      print('   ✓ billId is valid: "$billId"');
+      AppLogger.debug('   ✓ billId is valid: "$billId"');
       AppLogger.info('  ✓ billId is valid: $billId');
 
       if (amount <= 0) {
-        print('❌ ERROR: Invalid amount: $amount');
+        AppLogger.debug('❌ ERROR: Invalid amount: $amount');
         AppLogger.error('approveBill: ❌ Invalid amount', amount);
         return false;
       }
-      print('   ✓ amount is valid: $amount');
+      AppLogger.debug('   ✓ amount is valid: $amount');
       AppLogger.info('  ✓ amount is valid: $amount');
 
       final pointsEarned = (amount / 1000).floor();
-      print('   ✓ pointsEarned calculated: $pointsEarned');
+      AppLogger.debug('   ✓ pointsEarned calculated: $pointsEarned');
       AppLogger.info('  ✓ pointsEarned calculated: $pointsEarned');
 
       // Verify bill exists
-      print('📄 Step 1: Fetching bill document...');
+      AppLogger.debug('📄 Step 1: Fetching bill document...');
       AppLogger.info('Step 1: Fetching bill document...');
       final billRef = _firestore.collection('bills').doc(billId);
-      print('   Bill ref path: bills/$billId');
+      AppLogger.debug('   Bill ref path: bills/$billId');
       AppLogger.info('  Bill ref path: bills/$billId');
 
       final billDoc = await billRef.get();
-      print('   Bill doc exists: ${billDoc.exists}');
+      AppLogger.debug('   Bill doc exists: ${billDoc.exists}');
       AppLogger.info('  Bill doc exists: ${billDoc.exists}');
 
       if (!billDoc.exists) {
-        print('❌ ERROR: Bill not found! billId: "$billId"');
+        AppLogger.debug('❌ ERROR: Bill not found! billId: "$billId"');
         AppLogger.error('approveBill: ❌ Bill not found', billId);
         return false;
       }
 
       // Check if bill is already approved or rejected
-      print('📊 Step 2: Checking bill status...');
+      AppLogger.debug('📊 Step 2: Checking bill status...');
       AppLogger.info('Step 2: Checking bill status...');
       final billData = billDoc.data();
-      print('   Bill data keys: ${billData?.keys.toList()}');
+      AppLogger.debug('   Bill data keys: ${billData?.keys.toList()}');
       AppLogger.info('  Bill data: $billData');
 
       if (billData != null) {
         final currentStatus = billData['status'] as String? ?? 'pending';
-        print('   Current status: "$currentStatus"');
+        AppLogger.debug('   Current status: "$currentStatus"');
         AppLogger.info('  Current status: $currentStatus');
 
         if (currentStatus == 'approved') {
-          print('❌ ERROR: Bill already approved!');
+          AppLogger.debug('❌ ERROR: Bill already approved!');
           AppLogger.error('approveBill: ❌ Bill already approved', billId);
           return false;
         }
         if (currentStatus == 'rejected') {
-          print('❌ ERROR: Bill already rejected!');
+          AppLogger.debug('❌ ERROR: Bill already rejected!');
           AppLogger.error('approveBill: ❌ Bill already rejected', billId);
           return false;
         }
-        print('   ✓ Bill status is pending, can proceed');
+        AppLogger.debug('   ✓ Bill status is pending, can proceed');
         AppLogger.info('  ✓ Bill status is pending, can proceed');
       } else {
-        print('   ⚠️ Bill data is null, assuming pending status');
+        AppLogger.debug('   ⚠️ Bill data is null, assuming pending status');
         AppLogger.info('  ⚠️ Bill data is null, assuming pending status');
       }
 
@@ -411,7 +411,7 @@ class BillService {
       AppLogger.info('  ✓ New tier: $newTier');
 
       // Points history entry
-      print('📝 Step 7: Creating points history entry...');
+      AppLogger.debug('📝 Step 7: Creating points history entry...');
       AppLogger.info('Step 7: Creating points history entry...');
       // Use Timestamp.now() instead of FieldValue.serverTimestamp() because
       // FieldValue.serverTimestamp() cannot be used inside arrays when using batch.set()
@@ -422,7 +422,7 @@ class BillService {
         'billId': billId,
         'amount': amount,
       };
-      print('   History entry: $newHistoryEntry');
+      AppLogger.debug('   History entry: $newHistoryEntry');
       AppLogger.info('  History entry: $newHistoryEntry');
 
       AppLogger.info('Step 8: Fetching user_points document...');
@@ -532,15 +532,15 @@ class BillService {
         AppLogger.info('    ✓ User points create added to batch');
       }
 
-      print('💾 Step 10: Committing batch...');
-      print('   Total batch operations: 3');
+      AppLogger.debug('💾 Step 10: Committing batch...');
+      AppLogger.debug('   Total batch operations: 3');
       AppLogger.info('Step 10: Committing batch...');
       AppLogger.info('  Total batch operations: 3');
       try {
-        print('   Attempting batch.commit()...');
+        AppLogger.debug('   Attempting batch.commit()...');
         await batch.commit();
-        print('✅✅✅ BATCH COMMITTED SUCCESSFULLY! ✅✅✅');
-        print(
+        AppLogger.debug('✅✅✅ BATCH COMMITTED SUCCESSFULLY! ✅✅✅');
+        AppLogger.debug(
           '✅ Bill approved: $billId (Points: $pointsEarned) for user $finalCarpenterId',
         );
         AppLogger.info('✅ Batch committed successfully!');
@@ -548,24 +548,24 @@ class BillService {
           '✅ Bill approved: $billId (Points: $pointsEarned) for user $finalCarpenterId',
         );
         AppLogger.info('=== APPROVE BILL SUCCESS ===');
-        print('═══════════════════════════════════════════════════════════');
-        print('✅ APPROVE BILL SUCCESS');
-        print('═══════════════════════════════════════════════════════════');
-        print('🔔 NOTIFICATION SECTION STARTING...');
-        print('   Carpenter ID: $finalCarpenterId');
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
+        AppLogger.debug('✅ APPROVE BILL SUCCESS');
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
+        AppLogger.debug('🔔 NOTIFICATION SECTION STARTING...');
+        AppLogger.debug('   Carpenter ID: $finalCarpenterId');
 
         // Send notification after successful approval
         try {
-          print('🔔 Step 1: Inside notification try block');
+          AppLogger.debug('🔔 Step 1: Inside notification try block');
           AppLogger.info('📤 Attempting to send bill approved notification...');
           AppLogger.info('   userId: $finalCarpenterId');
           AppLogger.info('   amount: $amount');
           AppLogger.info('   points: $pointsEarned');
           AppLogger.info('   billId: $billId');
-          print('🔔 Step 2: Creating NotificationService instance...');
+          AppLogger.debug('🔔 Step 2: Creating NotificationService instance...');
 
           final notificationService = NotificationService();
-          print('🔔 Step 3: Calling sendBillApprovedNotification...');
+          AppLogger.debug('🔔 Step 3: Calling sendBillApprovedNotification...');
           final notificationSent = await notificationService
               .sendBillApprovedNotification(
                 userId: finalCarpenterId,
@@ -573,16 +573,16 @@ class BillService {
                 points: pointsEarned,
                 billId: billId,
               );
-          print('🔔 Step 4: Notification call completed. Result: $notificationSent');
+          AppLogger.debug('🔔 Step 4: Notification call completed. Result: $notificationSent');
 
           if (notificationSent) {
             AppLogger.info('✅ Bill approved notification sent successfully');
-            print('✅ Notification queued in Firestore successfully');
+            AppLogger.debug('✅ Notification queued in Firestore successfully');
           } else {
             AppLogger.warning(
               '⚠️ Bill approved notification failed to send (check logs above)',
             );
-            print('❌ Notification failed - user not found or no FCM token');
+            AppLogger.debug('❌ Notification failed - user not found or no FCM token');
           }
 
           // Check for tier upgrade and send notification if tier changed
@@ -603,26 +603,26 @@ class BillService {
           );
         } catch (e, stackTrace) {
           // Don't fail the approval if notification fails
-          print('❌❌❌ EXCEPTION IN NOTIFICATION CODE ❌❌❌');
-          print('   Error: $e');
-          print('   StackTrace: $stackTrace');
+          AppLogger.debug('❌❌❌ EXCEPTION IN NOTIFICATION CODE ❌❌❌');
+          AppLogger.debug('   Error: $e');
+          AppLogger.debug('   StackTrace: $stackTrace');
           AppLogger.warning(
             'Failed to send notification after bill approval: $e',
           );
           AppLogger.error('Notification error stacktrace', stackTrace);
         }
-        print('🔔 NOTIFICATION SECTION COMPLETED');
+        AppLogger.debug('🔔 NOTIFICATION SECTION COMPLETED');
 
         return true;
       } on FirebaseException catch (fe) {
-        print('🔥🔥🔥 FIREBASE EXCEPTION DURING BATCH.COMMIT() 🔥🔥🔥');
-        print('   Code: ${fe.code}');
-        print('   Message: ${fe.message}');
-        print('   StackTrace: ${fe.stackTrace}');
-        print('   Bill ID: $billId');
-        print('   Carpenter ID: $finalCarpenterId');
-        print('   Amount: $amount');
-        print('   Points: $pointsEarned');
+        AppLogger.debug('🔥🔥🔥 FIREBASE EXCEPTION DURING BATCH.COMMIT() 🔥🔥🔥');
+        AppLogger.debug('   Code: ${fe.code}');
+        AppLogger.debug('   Message: ${fe.message}');
+        AppLogger.debug('   StackTrace: ${fe.stackTrace}');
+        AppLogger.debug('   Bill ID: $billId');
+        AppLogger.debug('   Carpenter ID: $finalCarpenterId');
+        AppLogger.debug('   Amount: $amount');
+        AppLogger.debug('   Points: $pointsEarned');
         AppLogger.error(
           '🔥 FirebaseException during batch.commit()',
           'Code: ${fe.code}, Message: ${fe.message}, StackTrace: ${fe.stackTrace}',
@@ -632,20 +632,20 @@ class BillService {
         AppLogger.error('  Amount: $amount');
         AppLogger.error('  Points: $pointsEarned');
         AppLogger.error('=== APPROVE BILL FAILED (FirebaseException) ===');
-        print('═══════════════════════════════════════════════════════════');
-        print('❌ APPROVE BILL FAILED (FirebaseException)');
-        print('═══════════════════════════════════════════════════════════');
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
+        AppLogger.debug('❌ APPROVE BILL FAILED (FirebaseException)');
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
         throw Exception('Firebase error: ${fe.code} - ${fe.message}');
       }
     } catch (e, st) {
-      print('❌❌❌ EXCEPTION IN APPROVE BILL ❌❌❌');
-      print('   Error: $e');
-      print('   Type: ${e.runtimeType}');
-      print('   StackTrace:');
-      print('$st');
-      print('   Bill ID: $billId');
-      print('   Carpenter ID: $carpenterId');
-      print('   Amount: $amount');
+      AppLogger.debug('❌❌❌ EXCEPTION IN APPROVE BILL ❌❌❌');
+      AppLogger.debug('   Error: $e');
+      AppLogger.debug('   Type: ${e.runtimeType}');
+      AppLogger.debug('   StackTrace:');
+      AppLogger.debug('$st');
+      AppLogger.debug('   Bill ID: $billId');
+      AppLogger.debug('   Carpenter ID: $carpenterId');
+      AppLogger.debug('   Amount: $amount');
       AppLogger.error('❌ Exception in approveBill', 'Error: $e');
       AppLogger.error('  Type: ${e.runtimeType}');
       AppLogger.error('  StackTrace:\n$st');
@@ -653,9 +653,9 @@ class BillService {
       AppLogger.error('  Carpenter ID: $carpenterId');
       AppLogger.error('  Amount: $amount');
       AppLogger.error('=== APPROVE BILL FAILED (Exception) ===');
-      print('═══════════════════════════════════════════════════════════');
-      print('❌ APPROVE BILL FAILED (Exception)');
-      print('═══════════════════════════════════════════════════════════');
+      AppLogger.debug('═══════════════════════════════════════════════════════════');
+      AppLogger.debug('❌ APPROVE BILL FAILED (Exception)');
+      AppLogger.debug('═══════════════════════════════════════════════════════════');
       return false;
     }
   }

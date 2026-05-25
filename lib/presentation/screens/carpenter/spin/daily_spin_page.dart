@@ -73,12 +73,12 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
+        title: Text(
           '🎉 Congratulations!',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppColors.lightSecondary,
+            color: context.themeSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -87,7 +87,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
           children: [
             Text(
               'You won',
-              style: TextStyle(fontSize: 18, color: AppColors.grey700),
+              style: TextStyle(fontSize: 18, color: context.themeTextSecondary),
             ),
             const SizedBox(height: 10),
             Text(
@@ -95,13 +95,13 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: AppColors.lightSecondary,
+                color: context.themeSecondary,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               'Points have been added to your account.',
-              style: TextStyle(fontSize: 14, color: AppColors.grey600),
+              style: TextStyle(fontSize: 14, color: context.themeTextSecondary),
               textAlign: TextAlign.center,
             ),
           ],
@@ -114,7 +114,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.lightSecondary,
+                backgroundColor: context.themeSecondary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
                   vertical: 12,
@@ -136,14 +136,14 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
     final spinState = ref.watch(dailySpinProvider);
     final theme = Theme.of(context);
     final light = theme.brightness == Brightness.light;
-    final carpenterBg = light ? AppColors.lightBackground : theme.scaffoldBackgroundColor;
+    final carpenterBg = light ? context.themeBackground : theme.scaffoldBackgroundColor;
     final appBarBg = light
-        ? AppColors.lightBackground
+        ? context.themeBackground
         : (theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor);
 
     return PopScope(
       canPop: !_isSpinning,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           // Check for dialogs first
           if (Navigator.of(context).canPop()) {
@@ -167,7 +167,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
         backgroundColor: carpenterBg,
         appBar: AppBar(
           backgroundColor: appBarBg,
-          foregroundColor: AppColors.lightTextPrimary,
+          foregroundColor: context.themeTextPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -189,14 +189,14 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.lightSecondary,
+                      color: context.themeSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     'Get your daily spin and win exciting points',
-                    style: TextStyle(fontSize: 16, color: AppColors.grey600),
+                    style: TextStyle(fontSize: 16, color: context.themeTextSecondary),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 60),
@@ -215,15 +215,15 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                             gradient: LinearGradient(
                               colors: [
                                 const Color(0xFFF06292),
-                                AppColors.pink,
-                                AppColors.lightSecondary,
+                                context.themeSecondary,
+                                context.themeSecondary,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.lightSecondary
+                                color: context.themeSecondary
                                     .withValues(alpha: 0.3),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
@@ -255,7 +255,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                                 child: Icon(
                                   Icons.radio_button_checked,
                                   size: 40,
-                                  color: AppColors.lightSecondary,
+                                  color: context.themeSecondary,
                                 ),
                               ),
                             ],
@@ -274,8 +274,8 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                           ? _spin
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.lightSecondary,
-                        disabledBackgroundColor: AppColors.grey300,
+                        backgroundColor: context.themeSecondary,
+                        disabledBackgroundColor: context.themeBorder,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 60,
                           vertical: 18,
@@ -345,7 +345,7 @@ class SpinWheelPainter extends CustomPainter {
 
     final colors = [
       const Color(0xFFE57373),
-      AppColors.orangeLight,
+      AppColors.warning,
       const Color(0xFFFFF176),
       const Color(0xFF81C784),
       const Color(0xFF64B5F6),

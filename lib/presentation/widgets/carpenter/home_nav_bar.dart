@@ -39,7 +39,8 @@ class HomeNavBar extends StatelessWidget {
     if (showBackButton) {
       leading = IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: onBackTap ??
+        onPressed:
+            onBackTap ??
             () {
               if (Navigator.of(context).canPop()) context.pop();
             },
@@ -49,12 +50,12 @@ class HomeNavBar extends StatelessWidget {
         onPressed: onProfileTap ?? () => context.push('/profile'),
         icon: CircleAvatar(
           radius: 18,
-          backgroundColor: AppColors.lightPrimary.withValues(alpha: 0.12),
+          backgroundColor: context.themePrimary.withValues(alpha: 0.12),
           backgroundImage: userImageUrl != null && userImageUrl!.isNotEmpty
               ? NetworkImage(userImageUrl!)
               : null,
           child: userImageUrl == null || userImageUrl!.isEmpty
-              ? const Icon(Icons.person, size: 20, color: AppColors.lightPrimary)
+              ? Icon(Icons.person, size: 20, color: context.themePrimary)
               : null,
         ),
       );
@@ -68,9 +69,9 @@ class HomeNavBar extends StatelessWidget {
             'assets/images/balaji_point_logo.png',
             width: 28,
             height: 28,
-            errorBuilder: (_, __, ___) => const Icon(
+            errorBuilder: (_, __, ___) => Icon(
               Icons.storefront_rounded,
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
               size: 24,
             ),
           ),
@@ -86,7 +87,7 @@ class HomeNavBar extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.buttonMedium().copyWith(
                     fontSize: 17,
-                    color: AppColors.lightTextPrimary,
+                    color: context.themeTextPrimary,
                   ),
                 ),
                 if (subtitle != null)
@@ -96,7 +97,7 @@ class HomeNavBar extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.bodyMedium().copyWith(
                       fontSize: 12,
-                      color: AppColors.lightTextPrimary.withValues(alpha: 0.65),
+                      color: context.themeTextPrimary.withValues(alpha: 0.65),
                     ),
                   ),
               ],

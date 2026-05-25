@@ -10,14 +10,14 @@ class HomeHeader extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.pinkAccent, Colors.pink.shade200],
+          colors: [context.themeSecondary, context.themeSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.pinkAccent.withOpacity(0.3),
+            color: context.themeSecondary.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -25,16 +25,16 @@ class HomeHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 30,
             backgroundColor: AppColors.white,
-            child: Icon(Icons.person, color: Colors.pinkAccent, size: 40),
+            child: Icon(Icons.person, color: context.themeSecondary, size: 40),
           ),
           const SizedBox(width: 20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 "Hello, Jagdish 👋",
                 style: TextStyle(
                   color: AppColors.white,
@@ -44,7 +44,7 @@ class HomeHeader extends StatelessWidget {
               ),
               Text(
                 "Your Points: 1,250",
-                style: TextStyle(color: AppColors.white70, fontSize: 16),
+                style: TextStyle(color: AppColors.white.withValues(alpha: 0.70), fontSize: 16),
               ),
             ],
           ),

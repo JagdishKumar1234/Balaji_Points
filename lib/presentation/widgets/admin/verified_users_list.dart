@@ -9,7 +9,7 @@ class VerifiedUsersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.woodenBackground,
+      backgroundColor: context.themeSoftSurface,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -26,7 +26,7 @@ class VerifiedUsersList extends StatelessWidget {
             return Center(
               child: Text(
                 'Error: ${snapshot.error}',
-                style: AppTypography.bodyMedium().copyWith(color: AppColors.red),
+                style: AppTypography.bodyMedium().copyWith(color: context.themeError),
               ),
             );
           }
@@ -39,14 +39,14 @@ class VerifiedUsersList extends StatelessWidget {
                   Icon(
                     Icons.people_outline,
                     size: 64,
-                    color: AppColors.lightPrimary.withOpacity(0.5),
+                    color: context.themePrimary.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No Verified Carpenters',
                     style: AppTypography.labelLarge().copyWith(
                       fontSize: 18,
-                      color: AppColors.lightPrimary.withOpacity(0.7),
+                      color: context.themePrimary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -78,7 +78,7 @@ class VerifiedUsersList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.black.withOpacity(0.05),
+                      color: AppColors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -95,7 +95,7 @@ class VerifiedUsersList extends StatelessWidget {
                     height: 50,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+                        colors: [context.themePrimary, context.themeSecondary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -118,7 +118,7 @@ class VerifiedUsersList extends StatelessWidget {
                         '$firstName $lastName',
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 16,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -127,14 +127,14 @@ class VerifiedUsersList extends StatelessWidget {
                           Icon(
                             Icons.phone,
                             size: 14,
-                            color: AppColors.lightPrimary.withOpacity(0.6),
+                            color: context.themePrimary.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             phone,
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: AppColors.lightPrimary.withOpacity(0.6),
+                              color: context.themePrimary.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -151,10 +151,10 @@ class VerifiedUsersList extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: _getTierColor(tier).withOpacity(0.1),
+                          color: _getTierColor(tier).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: _getTierColor(tier).withOpacity(0.3),
+                            color: _getTierColor(tier).withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -170,13 +170,13 @@ class VerifiedUsersList extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.stars, size: 14, color: Colors.amber),
+                          Icon(Icons.stars, size: 14, color: AppColors.warning),
                           const SizedBox(width: 4),
                           Text(
                             '$totalPoints',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 14,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                         ],
@@ -184,9 +184,9 @@ class VerifiedUsersList extends StatelessWidget {
                     ],
                   ),
                   children: [
-                    _buildDetailRow(Icons.location_city, 'City', city),
+                    _buildDetailRow(context, Icons.location_city, 'City', city),
                     const SizedBox(height: 8),
-                    _buildDetailRow(Icons.build, 'Skill', skill),
+                    _buildDetailRow(context, Icons.build, 'Skill', skill),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       onPressed: () {
@@ -209,7 +209,7 @@ class VerifiedUsersList extends StatelessWidget {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.lightPrimary,
+                        backgroundColor: context.themePrimary,
                         foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -230,16 +230,16 @@ class VerifiedUsersList extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  Widget _buildDetailRow(BuildContext context, IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.lightPrimary.withOpacity(0.6)),
+        Icon(icon, size: 16, color: context.themePrimary.withValues(alpha: 0.6)),
         const SizedBox(width: 8),
         Text(
           '$label: ',
           style: AppTypography.bodySmall().copyWith(
             fontSize: 13,
-            color: AppColors.lightPrimary.withOpacity(0.7),
+            color: context.themePrimary.withValues(alpha: 0.7),
           ),
         ),
         Expanded(
@@ -247,7 +247,7 @@ class VerifiedUsersList extends StatelessWidget {
             value,
             style: AppTypography.labelLarge().copyWith(
               fontSize: 13,
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
             ),
           ),
         ),
@@ -258,13 +258,13 @@ class VerifiedUsersList extends StatelessWidget {
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
       case 'bronze':
-        return Colors.brown;
+        return AppColors.lightSoftSurface;
       case 'silver':
-        return AppColors.grey500;
+        return AppColors.lightTextSecondary;
       case 'gold':
-        return Colors.amber;
+        return AppColors.warning;
       case 'platinum':
-        return AppColors.info;
+        return AppColors.lightPrimary;
       default:
         return AppColors.lightPrimary;
     }
@@ -287,9 +287,9 @@ class CarpenterDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightPrimary,
+      backgroundColor: context.themePrimary,
       appBar: AppBar(
-        backgroundColor: AppColors.lightPrimary,
+        backgroundColor: context.themePrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.white),
@@ -318,7 +318,7 @@ class CarpenterDetailPage extends StatelessWidget {
           final tier = data?['tier'] ?? 'Bronze';
 
           return Container(
-            color: AppColors.woodenBackground,
+            color: context.themeSoftSurface,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -328,14 +328,14 @@ class CarpenterDetailPage extends StatelessWidget {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+                        colors: [context.themePrimary, context.themeSecondary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.lightPrimary.withOpacity(0.3),
+                          color: context.themePrimary.withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -383,7 +383,7 @@ class CarpenterDetailPage extends StatelessWidget {
                             'Purchase Bills',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 18,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -398,7 +398,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                 child: Text(
                                   'No bills yet',
                                   style: AppTypography.bodyMedium().copyWith(
-                                    color: AppColors.lightPrimary.withOpacity(
+                                    color: context.themePrimary.withValues(alpha: 
                                       0.5,
                                     ),
                                   ),
@@ -435,7 +435,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                           style: AppTypography.labelLarge()
                                               .copyWith(
                                                 fontSize: 18,
-                                                color: AppColors.lightPrimary,
+                                                color: context.themePrimary,
                                               ),
                                         ),
                                         const SizedBox(height: 4),
@@ -444,8 +444,8 @@ class CarpenterDetailPage extends StatelessWidget {
                                           style: AppTypography.bodyMedium()
                                               .copyWith(
                                                 fontSize: 13,
-                                                color: AppColors.lightPrimary
-                                                    .withOpacity(0.7),
+                                                color: context.themePrimary
+                                                    .withValues(alpha: 0.7),
                                               ),
                                         ),
                                         if (createdAt != null)
@@ -454,8 +454,8 @@ class CarpenterDetailPage extends StatelessWidget {
                                             style: AppTypography.bodyMedium()
                                                 .copyWith(
                                                   fontSize: 12,
-                                                  color: AppColors.lightPrimary
-                                                      .withOpacity(0.5),
+                                                  color: context.themePrimary
+                                                      .withValues(alpha: 0.5),
                                                 ),
                                           ),
                                       ],
@@ -467,8 +467,8 @@ class CarpenterDetailPage extends StatelessWidget {
                                       ),
                                       decoration: BoxDecoration(
                                         color: status == 'approved'
-                                            ? AppColors.success.withOpacity(0.1)
-                                            : AppColors.orange.withOpacity(0.1),
+                                            ? AppColors.success.withValues(alpha: 0.1)
+                                            : AppColors.warning.withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
@@ -477,15 +477,15 @@ class CarpenterDetailPage extends StatelessWidget {
                                             .copyWith(
                                               fontSize: 11,
                                               color: status == 'approved'
-                                                  ? Colors.green.shade700
-                                                  : Colors.orange.shade700,
+                                                  ? AppColors.success
+                                                  : context.themeSecondary,
                                             ),
                                       ),
                                     ),
                                   ],
                                 ),
                               );
-                            }).toList(),
+                            }),
                         ],
                       );
                     },
@@ -516,7 +516,7 @@ class CarpenterDetailPage extends StatelessWidget {
           label,
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 12,
-            color: AppColors.white.withOpacity(0.9),
+            color: AppColors.white.withValues(alpha: 0.9),
           ),
         ),
       ],

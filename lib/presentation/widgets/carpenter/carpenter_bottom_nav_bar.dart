@@ -37,7 +37,7 @@ class CarpenterBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    const barColor = AppColors.lightPrimary;
+    final barColor = context.themePrimary;
 
     return Material(
       color: barColor,
@@ -152,15 +152,11 @@ class _CenterAddButton extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.lightSecondary,
+                color: context.themeSecondary,
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.white, width: 2),
               ),
-              child: const Icon(
-                Icons.add,
-                color: AppColors.white,
-                size: 22,
-              ),
+              child: const Icon(Icons.add, color: AppColors.white, size: 22),
             ),
             const SizedBox(height: 2),
             Text(

@@ -71,7 +71,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.errorDark,
+              backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
@@ -121,7 +121,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${docs.length} notification(s) deleted'),
-            backgroundColor: AppColors.lightPrimary,
+            backgroundColor: context.themePrimary,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -131,7 +131,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Delete failed: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -174,11 +174,11 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
   Color _getNotificationColor(String? type) {
     switch (type) {
       case 'newPendingBill':
-        return AppColors.info;
+        return context.themePrimary;
       case 'newUserRegistered':
         return AppColors.success;
       default:
-        return AppColors.lightPrimary;
+        return context.themePrimary;
     }
   }
 
@@ -222,9 +222,9 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           ),
           Container(
             height: 1,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: AppColors.primaryGradient,
+                colors: [context.themePrimary, context.themeSecondary],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -259,7 +259,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                         'No Notifications',
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 24,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -267,7 +267,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                         'You don\'t have any admin notifications yet',
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
-                          color: AppColors.grey600,
+                          color: context.themeTextSecondary,
                         ),
                       ),
                     ],
@@ -293,7 +293,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                   onRefresh: () async {
                     await Future.delayed(const Duration(milliseconds: 500));
                   },
-                  color: AppColors.lightPrimary,
+                  color: context.themePrimary,
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: sortedNotifications.length,
@@ -316,7 +316,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                         background: Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                            color: AppColors.errorDark,
+                            color: context.themeError,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           alignment: Alignment.centerRight,
@@ -348,7 +348,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                       onPressed: () =>
                                           Navigator.of(context).pop(true),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.errorDark,
+                                        backgroundColor: context.themeError,
                                         foregroundColor: AppColors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
@@ -434,7 +434,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                                 style: AppTypography.labelLarge()
                                                     .copyWith(
                                                   fontSize: 15,
-                                                  color: AppColors.lightPrimary,
+                                                  color: context.themePrimary,
                                                   letterSpacing: -0.2,
                                                 ),
                                               ),
@@ -444,7 +444,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                               _formatTimestamp(sentAt),
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: AppColors.grey600,
+                                                color: context.themeTextSecondary,
                                               ),
                                             ),
                                           ],
@@ -458,7 +458,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                             style: AppTypography.bodyMedium()
                                                 .copyWith(
                                               fontSize: 13,
-                                              color: AppColors.grey600,
+                                              color: context.themeTextSecondary,
                                             ),
                                           ),
                                         ],

@@ -166,7 +166,7 @@ class AppUpdateService {
     await showDialog<void>(
       context: context,
       barrierDismissible: !forceUpdate,
-      barrierColor: AppColors.black54,
+      barrierColor: AppColors.black.withValues(alpha: 0.54),
       builder: (dialogContext) {
         return AppUpdateDialog(
           forceUpdate: forceUpdate,

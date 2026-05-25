@@ -2,6 +2,7 @@
 // This page verifies Firestore data for user 9894223355
 
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -38,33 +39,33 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       final phone = widget.phoneNumber;
       final normalizedPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
 
-      print('🔍 [DIAGNOSTIC] Starting verification for phone: $phone');
-      print('🔍 [DIAGNOSTIC] Normalized phone: $normalizedPhone');
+      AppLogger.debug('🔍 [DIAGNOSTIC] Starting verification for phone: $phone');
+      AppLogger.debug('🔍 [DIAGNOSTIC] Normalized phone: $normalizedPhone');
 
       // 1. Check user document by document ID
-      print('🔍 [DIAGNOSTIC] Step 1: Checking user document by ID...');
+      AppLogger.debug('🔍 [DIAGNOSTIC] Step 1: Checking user document by ID...');
       final userDocById = await _firestore
           .collection('users')
           .doc(normalizedPhone)
           .get();
-      print('   User doc exists (by ID): ${userDocById.exists}');
-      print('   User doc ID: ${userDocById.id}');
+      AppLogger.debug('   User doc exists (by ID): ${userDocById.exists}');
+      AppLogger.debug('   User doc ID: ${userDocById.id}');
 
       Map<String, dynamic>? userDataById;
       if (userDocById.exists) {
         userDataById = userDocById.data();
-        print('   User data keys: ${userDataById?.keys.toList() ?? []}');
-        print('   User phone field: ${userDataById?['phone']}');
+        AppLogger.debug('   User data keys: ${userDataById?.keys.toList() ?? []}');
+        AppLogger.debug('   User phone field: ${userDataById?['phone']}');
       }
 
       // 2. Check user document by phone field query
-      print('🔍 [DIAGNOSTIC] Step 2: Checking user document by phone field...');
+      AppLogger.debug('🔍 [DIAGNOSTIC] Step 2: Checking user document by phone field...');
       final userQueryByPhone = await _firestore
           .collection('users')
           .where('phone', isEqualTo: normalizedPhone)
           .limit(1)
           .get();
-      print(
+      AppLogger.debug(
         '   User docs found (by phone field): ${userQueryByPhone.docs.length}',
       );
 
@@ -72,61 +73,61 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       if (userQueryByPhone.docs.isNotEmpty) {
         final doc = userQueryByPhone.docs.first;
         userDataByPhone = doc.data();
-        print('   User doc ID (from query): ${doc.id}');
-        print('   User phone field: ${userDataByPhone['phone']}');
+        AppLogger.debug('   User doc ID (from query): ${doc.id}');
+        AppLogger.debug('   User phone field: ${userDataByPhone['phone']}');
       }
 
       // 3. Check bills with carpenterPhone
-      print('🔍 [DIAGNOSTIC] Step 3: Checking bills with carpenterPhone...');
+      AppLogger.debug('🔍 [DIAGNOSTIC] Step 3: Checking bills with carpenterPhone...');
       final billsByPhone = await _firestore
           .collection('bills')
           .where('carpenterPhone', isEqualTo: phone)
           .get();
-      print(
+      AppLogger.debug(
         '   Bills found (carpenterPhone=$phone): ${billsByPhone.docs.length}',
       );
 
       // 4. Check bills with normalized carpenterPhone
-      print(
+      AppLogger.debug(
         '🔍 [DIAGNOSTIC] Step 4: Checking bills with normalized carpenterPhone...',
       );
       final billsByNormalizedPhone = await _firestore
           .collection('bills')
           .where('carpenterPhone', isEqualTo: normalizedPhone)
           .get();
-      print(
+      AppLogger.debug(
         '   Bills found (carpenterPhone=$normalizedPhone): ${billsByNormalizedPhone.docs.length}',
       );
 
       // 5. Check bills with carpenterId
-      print('🔍 [DIAGNOSTIC] Step 5: Checking bills with carpenterId...');
+      AppLogger.debug('🔍 [DIAGNOSTIC] Step 5: Checking bills with carpenterId...');
       final billsById = await _firestore
           .collection('bills')
           .where('carpenterId', isEqualTo: phone)
           .get();
-      print('   Bills found (carpenterId=$phone): ${billsById.docs.length}');
+      AppLogger.debug('   Bills found (carpenterId=$phone): ${billsById.docs.length}');
 
       // 6. Check bills with normalized carpenterId
-      print(
+      AppLogger.debug(
         '🔍 [DIAGNOSTIC] Step 6: Checking bills with normalized carpenterId...',
       );
       final billsByNormalizedId = await _firestore
           .collection('bills')
           .where('carpenterId', isEqualTo: normalizedPhone)
           .get();
-      print(
+      AppLogger.debug(
         '   Bills found (carpenterId=$normalizedPhone): ${billsByNormalizedId.docs.length}',
       );
 
       // 7. Get all pending bills and check for this user
-      print('🔍 [DIAGNOSTIC] Step 7: Checking all pending bills...');
+      AppLogger.debug('🔍 [DIAGNOSTIC] Step 7: Checking all pending bills...');
       final allPendingBills = await _firestore
           .collection('bills')
           .where('status', isEqualTo: 'pending')
           .orderBy('createdAt', descending: true)
           .limit(50)
           .get();
-      print('   Total pending bills: ${allPendingBills.docs.length}');
+      AppLogger.debug('   Total pending bills: ${allPendingBills.docs.length}');
 
       final matchingPendingBills = <Map<String, dynamic>>[];
       final today = DateTime.now();
@@ -165,7 +166,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         }
       }
 
-      print('   Matching pending bills: ${matchingPendingBills.length}');
+      AppLogger.debug('   Matching pending bills: ${matchingPendingBills.length}');
 
       // Compile diagnostic data
       _diagnosticData = {
@@ -207,10 +208,10 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         'totalPendingBills': allPendingBills.docs.length,
       };
 
-      print('✅ [DIAGNOSTIC] Verification complete');
+      AppLogger.debug('✅ [DIAGNOSTIC] Verification complete');
     } catch (e, st) {
-      print('❌ [DIAGNOSTIC] Error: $e');
-      print('   StackTrace: $st');
+      AppLogger.debug('❌ [DIAGNOSTIC] Error: $e');
+      AppLogger.debug('   StackTrace: $st');
       _error = e.toString();
     } finally {
       setState(() {
@@ -224,7 +225,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.white,
-        foregroundColor: AppColors.lightPrimary,
+        foregroundColor: context.themePrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -232,7 +233,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         ),
         title: Text(
           'Diagnostic: User ${widget.phoneNumber}',
-          style: TextStyle(fontSize: 18, color: AppColors.lightPrimary),
+          style: TextStyle(fontSize: 18, color: context.themePrimary),
         ),
         centerTitle: true,
         actions: [
@@ -250,11 +251,11 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error, color: AppColors.red, size: 64),
+                  Icon(Icons.error, color: context.themeError, size: 64),
                   const SizedBox(height: 16),
                   Text(
                     'Error: $_error',
-                    style: const TextStyle(color: AppColors.red),
+                    style: TextStyle(color: context.themeError),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -313,7 +314,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               title,
               style: AppTypography.labelLarge().copyWith(
                 fontSize: 18,
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -336,7 +337,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               '$label:',
               style: AppTypography.labelLarge().copyWith(
                 fontSize: 14,
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
           ),
@@ -345,7 +346,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               value?.toString() ?? 'null',
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 14,
-                color: AppColors.grey700,
+                color: context.themeTextSecondary,
               ),
             ),
           ),
@@ -440,18 +441,18 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       _buildInfoRow('Matching Bills Found', matchingBills.length.toString()),
       const Divider(height: 24),
       if (matchingBills.isEmpty)
-        const Padding(
+        Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
             '❌ No pending bills found for this user!',
-            style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
+            style: TextStyle(color: context.themeError, fontWeight: FontWeight.bold),
           ),
         )
       else
         ...matchingBills.map(
           (bill) => Card(
             margin: const EdgeInsets.only(bottom: 8),
-            color: AppColors.grey100,
+            color: context.themeSoftSurface,
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -485,7 +486,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
                       padding: EdgeInsets.only(top: 8),
                       child: Text(
                         '⚠️ This bill won\'t show in default admin view (not today)',
-                        style: TextStyle(color: AppColors.orange, fontSize: 12),
+                        style: TextStyle(color: AppColors.warning, fontSize: 12),
                       ),
                     ),
                 ],

@@ -34,6 +34,9 @@ class AppThemeData {
         outline: AppColors.lightBorder,
       ),
 
+      canvasColor: AppColors.lightBackground,
+      cardColor: AppColors.lightSurface,
+
       textTheme: AppTypography.textTheme(false),
 
       appBarTheme: AppBarTheme(
@@ -118,7 +121,9 @@ class AppThemeData {
           borderRadius: AppRadius.forInput,
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        labelStyle: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+        labelStyle: AppTypography.bodyMedium(
+          color: AppColors.lightTextSecondary,
+        ),
         hintStyle: AppTypography.bodyMedium(color: AppColors.lightTextMuted),
         errorStyle: AppTypography.bodySmall(color: AppColors.error),
       ),
@@ -126,7 +131,9 @@ class AppThemeData {
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.lightSoftSurface,
         selectedColor: AppColors.lightPrimary,
-        labelStyle: AppTypography.labelMedium(color: AppColors.lightTextPrimary),
+        labelStyle: AppTypography.labelMedium(
+          color: AppColors.lightTextPrimary,
+        ),
         shape: const StadiumBorder(),
         side: const BorderSide(color: AppColors.lightBorder),
       ),
@@ -167,7 +174,9 @@ class AppThemeData {
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
         titleTextStyle: AppTypography.h3(color: AppColors.lightTextPrimary),
-        contentTextStyle: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+        contentTextStyle: AppTypography.bodyMedium(
+          color: AppColors.lightTextSecondary,
+        ),
       ),
 
       bottomSheetTheme: const BottomSheetThemeData(
@@ -179,7 +188,9 @@ class AppThemeData {
 
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-          (s) => s.contains(WidgetState.selected) ? AppColors.lightPrimary : AppColors.grey400,
+          (s) => s.contains(WidgetState.selected)
+              ? AppColors.lightPrimary
+              : AppColors.lightTextMuted,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)
@@ -213,10 +224,13 @@ class AppThemeData {
         outline: AppColors.darkBorder,
       ),
 
+      canvasColor: AppColors.darkBackground,
+      cardColor: AppColors.darkSurface,
+
       textTheme: AppTypography.textTheme(true),
 
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.darkCard,
+        backgroundColor: AppColors.darkSurface,
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -228,7 +242,7 @@ class AppThemeData {
 
       cardTheme: CardThemeData(
         elevation: 0,
-        color: AppColors.darkCard,
+        color: AppColors.darkSurface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.forCard,
@@ -297,7 +311,9 @@ class AppThemeData {
           borderRadius: AppRadius.forInput,
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        labelStyle: AppTypography.bodyMedium(color: AppColors.darkTextSecondary),
+        labelStyle: AppTypography.bodyMedium(
+          color: AppColors.darkTextSecondary,
+        ),
         hintStyle: AppTypography.bodyMedium(color: AppColors.darkTextMuted),
         errorStyle: AppTypography.bodySmall(color: AppColors.error),
       ),
@@ -317,7 +333,7 @@ class AppThemeData {
       ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: AppColors.darkCard,
+        backgroundColor: AppColors.darkSurface,
         selectedItemColor: AppColors.darkPrimary,
         unselectedItemColor: AppColors.darkTextMuted,
         selectedLabelStyle: AppTypography.labelSmall(),
@@ -335,22 +351,26 @@ class AppThemeData {
 
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.darkSurface,
-        contentTextStyle: AppTypography.bodyMedium(color: AppColors.darkTextPrimary),
+        contentTextStyle: AppTypography.bodyMedium(
+          color: AppColors.darkTextPrimary,
+        ),
         shape: RoundedRectangleBorder(borderRadius: AppRadius.sm8),
         behavior: SnackBarBehavior.floating,
         elevation: 4,
       ),
 
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.darkCard,
+        backgroundColor: AppColors.darkSurface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
         titleTextStyle: AppTypography.h3(color: AppColors.darkTextPrimary),
-        contentTextStyle: AppTypography.bodyMedium(color: AppColors.darkTextSecondary),
+        contentTextStyle: AppTypography.bodyMedium(
+          color: AppColors.darkTextSecondary,
+        ),
       ),
 
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: AppColors.darkCard,
+        backgroundColor: AppColors.darkSurface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.topLarge),
         elevation: 0,
@@ -358,7 +378,9 @@ class AppThemeData {
 
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-          (s) => s.contains(WidgetState.selected) ? AppColors.darkPrimary : AppColors.grey600,
+          (s) => s.contains(WidgetState.selected)
+              ? AppColors.darkPrimary
+              : AppColors.darkTextMuted,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)

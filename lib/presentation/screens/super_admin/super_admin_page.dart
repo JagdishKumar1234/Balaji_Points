@@ -28,23 +28,34 @@ class _SuperAdminPageState extends State<SuperAdminPage>
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
-        title: Text('Logout', style: AppTypography.h5(color: AppColors.lightPrimary)),
-        content: Text('Sign out of super admin?',
-            style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary)),
+        title: Text(
+          'Logout',
+          style: AppTypography.h5(color: context.themePrimary),
+        ),
+        content: Text(
+          'Sign out of super admin?',
+          style: AppTypography.bodyMedium(color: context.themeTextSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel',
-                style: AppTypography.labelLarge(color: AppColors.lightTextSecondary)),
+            child: Text(
+              'Cancel',
+              style: AppTypography.labelLarge(
+                color: context.themeTextSecondary,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
             ),
-            child: Text('Logout',
-                style: AppTypography.labelLarge(color: AppColors.white)),
+            child: Text(
+              'Logout',
+              style: AppTypography.labelLarge(color: AppColors.white),
+            ),
           ),
         ],
       ),
@@ -63,17 +74,19 @@ class _SuperAdminPageState extends State<SuperAdminPage>
         if (!didPop) await handleDoubleTapExit();
       },
       child: Scaffold(
-        backgroundColor: AppColors.lightBackground,
+        backgroundColor: context.themeBackground,
         appBar: AppBar(
-          backgroundColor: AppColors.lightPrimary,
+          backgroundColor: context.themePrimary,
           foregroundColor: AppColors.white,
           elevation: 0,
           title: Row(
             children: [
               const Icon(Icons.admin_panel_settings, size: 22),
               const SizedBox(width: 10),
-              Text('Super Admin',
-                  style: AppTypography.h5(color: AppColors.white)),
+              Text(
+                'Super Admin',
+                style: AppTypography.h5(color: AppColors.white),
+              ),
             ],
           ),
           actions: [
@@ -87,10 +100,18 @@ class _SuperAdminPageState extends State<SuperAdminPage>
             preferredSize: const Size.fromHeight(48),
             child: Row(
               children: [
-                _TabBtn(label: 'Branches', index: 0, current: _tab,
-                    onTap: () => setState(() => _tab = 0)),
-                _TabBtn(label: 'Create Admin', index: 1, current: _tab,
-                    onTap: () => setState(() => _tab = 1)),
+                _TabBtn(
+                  label: 'Branches',
+                  index: 0,
+                  current: _tab,
+                  onTap: () => setState(() => _tab = 0),
+                ),
+                _TabBtn(
+                  label: 'Create Admin',
+                  index: 1,
+                  current: _tab,
+                  onTap: () => setState(() => _tab = 1),
+                ),
               ],
             ),
           ),
@@ -126,7 +147,9 @@ class _TabBtn extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: active ? AppColors.lightSecondary : AppColors.transparent,
+                color: active
+                    ? context.themeSecondary
+                    : AppColors.transparent,
                 width: 3,
               ),
             ),
@@ -134,7 +157,7 @@ class _TabBtn extends StatelessWidget {
           child: Text(
             label,
             style: AppTypography.labelLarge(
-              color: active ? AppColors.white : AppColors.white70,
+              color: active ? AppColors.white : AppColors.white.withValues(alpha: 0.70),
             ),
           ),
         ),
@@ -162,9 +185,13 @@ class _BranchesTab extends StatelessWidget {
             Expanded(
               child: docs.isEmpty
                   ? Center(
-                      child: Text('No branches yet.',
-                          style: AppTypography.bodyMedium(
-                              color: AppColors.lightTextSecondary)))
+                      child: Text(
+                        'No branches yet.',
+                        style: AppTypography.bodyMedium(
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                    )
                   : ListView.builder(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       itemCount: docs.length,
@@ -190,15 +217,18 @@ class _BranchesTab extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => _showCreateBranchDialog(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.lightPrimary,
+                    backgroundColor: context.themePrimary,
                     foregroundColor: AppColors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.forButton),
+                      borderRadius: AppRadius.forButton,
+                    ),
                   ),
                   icon: const Icon(Icons.add_business),
-                  label: Text('Add New Branch',
-                      style: AppTypography.labelLarge(color: AppColors.white)),
+                  label: Text(
+                    'Add New Branch',
+                    style: AppTypography.labelLarge(color: AppColors.white),
+                  ),
                 ),
               ),
             ),
@@ -244,10 +274,10 @@ class _BranchCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.lightPrimary.withValues(alpha: 0.1),
+                color: context.themePrimary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.store, color: AppColors.lightPrimary),
+              child: Icon(Icons.store, color: context.themePrimary),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -257,23 +287,30 @@ class _BranchCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(name,
-                            style: AppTypography.labelLarge(
-                                color: AppColors.lightPrimary)),
+                        child: Text(
+                          name,
+                          style: AppTypography.labelLarge(
+                            color: context.themePrimary,
+                          ),
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: isActive
                               ? AppColors.success.withValues(alpha: 0.12)
-                              : AppColors.error.withValues(alpha: 0.12),
+                              : context.themeError.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(99),
                         ),
                         child: Text(
                           isActive ? 'Active' : 'Inactive',
                           style: AppTypography.labelSmall(
-                            color: isActive ? AppColors.success : AppColors.error,
+                            color: isActive
+                                ? AppColors.success
+                                : context.themeError,
                           ),
                         ),
                       ),
@@ -281,28 +318,39 @@ class _BranchCard extends StatelessWidget {
                   ),
                   if (address.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(address,
-                        style: AppTypography.bodySmall(
-                            color: AppColors.lightTextSecondary)),
+                    Text(
+                      address,
+                      style: AppTypography.bodySmall(
+                        color: context.themeTextSecondary,
+                      ),
+                    ),
                   ],
                   if (phone.isNotEmpty) ...[
                     const SizedBox(height: 2),
-                    Text(phone,
-                        style: AppTypography.bodySmall(
-                            color: AppColors.lightTextSecondary)),
+                    Text(
+                      phone,
+                      style: AppTypography.bodySmall(
+                        color: context.themeTextSecondary,
+                      ),
+                    ),
                   ],
                   const SizedBox(height: 4),
-                  Text('ID: $branchId',
-                      style: AppTypography.caption(
-                          color: AppColors.lightTextMuted)),
+                  Text(
+                    'ID: $branchId',
+                    style: AppTypography.caption(
+                      color: context.themeTextMuted,
+                    ),
+                  ),
                 ],
               ),
             ),
             PopupMenuButton<String>(
               onSelected: (v) async {
                 if (v == 'toggle') {
-                  await BranchService()
-                      .updateBranch(branchId, isActive: !isActive);
+                  await BranchService().updateBranch(
+                    branchId,
+                    isActive: !isActive,
+                  );
                 }
               },
               itemBuilder: (_) => [
@@ -357,38 +405,47 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
     if (!mounted) return;
     setState(() => _saving = false);
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(id != null ? 'Branch created ($id)' : 'Failed to create branch'),
-      backgroundColor: id != null ? AppColors.success : AppColors.error,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          id != null ? 'Branch created ($id)' : 'Failed to create branch',
+        ),
+        backgroundColor: id != null ? AppColors.success : context.themeError,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
-      title: Text('New Branch',
-          style: AppTypography.h5(color: AppColors.lightPrimary)),
+      title: Text(
+        'New Branch',
+        style: AppTypography.h5(color: context.themePrimary),
+      ),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _field(_nameCtrl, 'Branch Full Name *',
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Required'
-                      : null),
+              _field(
+                _nameCtrl,
+                'Branch Full Name *',
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
               const SizedBox(height: AppSpacing.sm),
-              _field(_shortCtrl, 'Short Name *',
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Required'
-                      : null),
+              _field(
+                _shortCtrl,
+                'Short Name *',
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _field(_addrCtrl, 'Address'),
               const SizedBox(height: AppSpacing.sm),
-              _field(_phoneCtrl, 'Phone',
-                  keyboardType: TextInputType.phone),
+              _field(_phoneCtrl, 'Phone', keyboardType: TextInputType.phone),
             ],
           ),
         ),
@@ -396,25 +453,32 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.pop(context),
-          child: Text('Cancel',
-              style: AppTypography.labelLarge(
-                  color: AppColors.lightTextSecondary)),
+          child: Text(
+            'Cancel',
+            style: AppTypography.labelLarge(
+              color: context.themeTextSecondary,
+            ),
+          ),
         ),
         ElevatedButton(
           onPressed: _saving ? null : _save,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.lightPrimary,
-            shape: RoundedRectangleBorder(
-                borderRadius: AppRadius.forButton),
+            backgroundColor: context.themePrimary,
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
           ),
           child: _saving
               ? const SizedBox(
                   width: 18,
                   height: 18,
                   child: CircularProgressIndicator(
-                      color: AppColors.white, strokeWidth: 2))
-              : Text('Create',
-                  style: AppTypography.labelLarge(color: AppColors.white)),
+                    color: AppColors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  'Create',
+                  style: AppTypography.labelLarge(color: AppColors.white),
+                ),
         ),
       ],
     );
@@ -432,8 +496,9 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle:
-            AppTypography.bodySmall(color: AppColors.lightTextSecondary),
+        labelStyle: AppTypography.bodySmall(
+          color: context.themeTextSecondary,
+        ),
         border: OutlineInputBorder(borderRadius: AppRadius.forInput),
         isDense: true,
       ),
@@ -494,10 +559,12 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
   Future<void> _create() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedBranchId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Select a branch first.'),
-        backgroundColor: AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Select a branch first.'),
+          backgroundColor: context.themeError,
+        ),
+      );
       return;
     }
 
@@ -523,7 +590,8 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
           .where('phone', isEqualTo: phone)
           .limit(1)
           .get();
-      if (snap.docs.isEmpty) throw Exception('User doc not found after creation.');
+      if (snap.docs.isEmpty)
+        throw Exception('User doc not found after creation.');
 
       final userId = snap.docs.first.id;
       await BranchService().assignAdminToBranch(
@@ -532,12 +600,15 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
       );
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-            'Admin created for branch ${_selectedBranchId!}\nPhone: ${_phoneCtrl.text.trim()}  PIN: $pin'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 8),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Admin created for branch ${_selectedBranchId!}\nPhone: ${_phoneCtrl.text.trim()}  PIN: $pin',
+          ),
+          backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 8),
+        ),
+      );
       _formKey.currentState!.reset();
       _phoneCtrl.clear();
       _firstCtrl.clear();
@@ -547,10 +618,12 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
       setState(() => _selectedBranchId = null);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: AppColors.error,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: context.themeError,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -568,9 +641,12 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
           children: [
             _sectionLabel('Admin Details'),
             const SizedBox(height: AppSpacing.sm),
-            _field(_firstCtrl, 'First Name *',
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null),
+            _field(
+              _firstCtrl,
+              'First Name *',
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Required' : null,
+            ),
             const SizedBox(height: AppSpacing.sm),
             _field(_lastCtrl, 'Last Name'),
             const SizedBox(height: AppSpacing.sm),
@@ -594,26 +670,31 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
                 : Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                          color: AppColors.lightBorder, width: 1.5),
+                        color: context.themeBorder,
+                        width: 1.5,
+                      ),
                       borderRadius: AppRadius.forInput,
                     ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: _selectedBranchId,
                         isExpanded: true,
-                        hint: Text('Select branch',
-                            style: AppTypography.bodyMedium(
-                                color: AppColors.lightTextSecondary)),
+                        hint: Text(
+                          'Select branch',
+                          style: AppTypography.bodyMedium(
+                            color: context.themeTextSecondary,
+                          ),
+                        ),
                         items: _branches.map((b) {
                           return DropdownMenuItem<String>(
                             value: b['id'] as String,
-                            child: Text(b['name'] as String? ?? b['id'] as String),
+                            child: Text(
+                              b['name'] as String? ?? b['id'] as String,
+                            ),
                           );
                         }).toList(),
-                        onChanged: (v) =>
-                            setState(() => _selectedBranchId = v),
+                        onChanged: (v) => setState(() => _selectedBranchId = v),
                       ),
                     ),
                   ),
@@ -626,19 +707,18 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
               obscureText: _obscurePin,
               maxLength: 4,
               textAlign: TextAlign.center,
-              style: AppTypography.h4(color: AppColors.lightPrimary)
-                  .copyWith(letterSpacing: 10),
+              style: AppTypography.h4(
+                color: context.themePrimary,
+              ).copyWith(letterSpacing: 10),
               decoration: InputDecoration(
                 labelText: '4-digit PIN *',
                 counterText: '',
-                border: OutlineInputBorder(
-                    borderRadius: AppRadius.forInput),
+                border: OutlineInputBorder(borderRadius: AppRadius.forInput),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePin
-                      ? Icons.visibility_off
-                      : Icons.visibility),
-                  onPressed: () =>
-                      setState(() => _obscurePin = !_obscurePin),
+                  icon: Icon(
+                    _obscurePin ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () => setState(() => _obscurePin = !_obscurePin),
                 ),
               ),
               validator: (v) =>
@@ -651,13 +731,13 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
               obscureText: _obscurePin,
               maxLength: 4,
               textAlign: TextAlign.center,
-              style: AppTypography.h4(color: AppColors.lightPrimary)
-                  .copyWith(letterSpacing: 10),
+              style: AppTypography.h4(
+                color: context.themePrimary,
+              ).copyWith(letterSpacing: 10),
               decoration: InputDecoration(
                 labelText: 'Confirm PIN *',
                 counterText: '',
-                border: OutlineInputBorder(
-                    borderRadius: AppRadius.forInput),
+                border: OutlineInputBorder(borderRadius: AppRadius.forInput),
               ),
               validator: (v) {
                 if (v == null || v.length != 4) return 'Enter 4-digit PIN';
@@ -669,23 +749,27 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
             ElevatedButton.icon(
               onPressed: _saving ? null : _create,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.lightPrimary,
+                backgroundColor: context.themePrimary,
                 foregroundColor: AppColors.white,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.forButton),
+                  borderRadius: AppRadius.forButton,
+                ),
               ),
               icon: _saving
                   ? const SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
-                          color: AppColors.white, strokeWidth: 2))
+                        color: AppColors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : const Icon(Icons.person_add),
-              label: Text('Create Admin Account',
-                  style:
-                      AppTypography.labelLarge(color: AppColors.white)),
+              label: Text(
+                'Create Admin Account',
+                style: AppTypography.labelLarge(color: AppColors.white),
+              ),
             ),
             const SizedBox(height: AppSpacing.xl),
             Container(
@@ -694,12 +778,16 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
                 color: AppColors.warning.withValues(alpha: 0.1),
                 borderRadius: AppRadius.forCard,
                 border: Border.all(
-                    color: AppColors.warning.withValues(alpha: 0.4)),
+                  color: AppColors.warning.withValues(alpha: 0.4),
+                ),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline,
-                      color: AppColors.warning, size: 20),
+                  const Icon(
+                    Icons.info_outline,
+                    color: AppColors.warning,
+                    size: 20,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
@@ -707,7 +795,8 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
                       'share it securely with the admin. '
                       'They can change it after first login.',
                       style: AppTypography.bodySmall(
-                          color: AppColors.lightTextSecondary),
+                        color: context.themeTextSecondary,
+                      ),
                     ),
                   ),
                 ],
@@ -720,9 +809,9 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
   }
 
   Widget _sectionLabel(String text) => Text(
-        text,
-        style: AppTypography.labelLarge(color: AppColors.lightPrimary),
-      );
+    text,
+    style: AppTypography.labelLarge(color: context.themePrimary),
+  );
 
   Widget _field(
     TextEditingController ctrl,

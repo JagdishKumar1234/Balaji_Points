@@ -21,7 +21,7 @@ class HomeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -38,7 +38,7 @@ class HomeCard extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                color: AppColors.grey800,
+                color: context.themeTextPrimary,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
               ),

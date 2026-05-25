@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -38,7 +39,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        backgroundColor: AppColors.black87,
+        backgroundColor: AppColors.black.withValues(alpha: 0.87),
         child: Stack(
           children: [
             Center(
@@ -50,9 +51,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         errorBuilder: (_, __, ___) => Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.error,
-                              color: AppColors.red,
+                              color: context.themeError,
                               size: 60,
                             ),
                             Text(
@@ -65,10 +66,10 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.image_not_supported,
                             size: 60,
-                            color: AppColors.grey500,
+                            color: context.themeTextSecondary,
                           ),
                           Text(
                             l10n.noImageAvailable,
@@ -96,14 +97,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
   // ---------------- APPROVE HANDLER ----------------
   Future<void> _approveBill(Map<String, dynamic> bill) async {
-    print('🎯 UI: _approveBill called');
-    print('   Bill data: $bill');
+    AppLogger.debug('🎯 UI: _approveBill called');
+    AppLogger.debug('   Bill data: $bill');
 
     final billId = bill['billId'];
     final carpenterId = bill['carpenterId'];
     final amount = (bill['amount'] ?? 0).toDouble();
 
-    print(
+    AppLogger.debug(
       '   Extracted: billId="$billId", carpenterId="$carpenterId", amount=$amount',
     );
 
@@ -116,14 +117,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
           'Approve Bill',
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         ),
         content: Text(
           'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${(amount / 1000).floor()} points will be added to the carpenter.',
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         ),
         actions: [
@@ -132,14 +133,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
             child: Text(
               'Cancel',
               style: AppTypography.labelLarge().copyWith(
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.lightSecondary,
+              backgroundColor: context.themeSecondary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -154,16 +155,16 @@ class _PendingBillsListState extends State<PendingBillsList> {
     );
 
     if (confirm != true) {
-      print('❌ UI: User cancelled approval');
+      AppLogger.debug('❌ UI: User cancelled approval');
       return;
     }
 
-    print('✅ UI: User confirmed approval, calling approveBill...');
+    AppLogger.debug('✅ UI: User confirmed approval, calling approveBill...');
     _showLoadingDialog();
 
     try {
-      print('📞 UI: Calling _billService.approveBill()...');
-      print(
+      AppLogger.debug('📞 UI: Calling _billService.approveBill()...');
+      AppLogger.debug(
         '   Parameters: billId="$billId", carpenterId="$carpenterId", amount=$amount',
       );
 
@@ -173,18 +174,18 @@ class _PendingBillsListState extends State<PendingBillsList> {
         amount,
       );
 
-      print('📥 UI: approveBill returned: $success');
+      AppLogger.debug('📥 UI: approveBill returned: $success');
       Navigator.pop(context); // close loading
 
       if (!mounted) {
-        print('⚠️ UI: Widget not mounted, skipping snackbar');
+        AppLogger.debug('⚠️ UI: Widget not mounted, skipping snackbar');
         return;
       }
 
-      print('📢 UI: Showing snackbar (success: $success)');
+      AppLogger.debug('📢 UI: Showing snackbar (success: $success)');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: success ? AppColors.success : AppColors.red,
+          backgroundColor: success ? AppColors.success : context.themeError,
           content: Text(
             success
                 ? 'Bill approved and points added successfully'
@@ -195,15 +196,15 @@ class _PendingBillsListState extends State<PendingBillsList> {
         ),
       );
     } catch (e, st) {
-      print('❌ UI: Exception caught in _approveBill');
-      print('   Error: $e');
-      print('   StackTrace: $st');
+      AppLogger.debug('❌ UI: Exception caught in _approveBill');
+      AppLogger.debug('   Error: $e');
+      AppLogger.debug('   StackTrace: $st');
       Navigator.pop(context); // close loading
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.red,
+          backgroundColor: context.themeError,
           content: Text(
             'Error approving bill: ${e.toString()}',
             style: const TextStyle(color: AppColors.white),
@@ -224,14 +225,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
           'Reject Bill',
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
-            color: Colors.red.shade700,
+            color: context.themeError,
           ),
         ),
         content: Text(
           'Are you sure you want to reject this bill?',
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         ),
         actions: [
@@ -240,14 +241,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
             child: Text(
               'Cancel',
               style: AppTypography.labelLarge().copyWith(
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade700,
+              backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -274,7 +275,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: success ? AppColors.orange : AppColors.red,
+          backgroundColor: success ? AppColors.warning : context.themeError,
           content: Text(
             success ? 'Bill rejected successfully' : 'Failed to reject bill',
             style: const TextStyle(color: AppColors.white),
@@ -288,7 +289,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.red,
+          backgroundColor: context.themeError,
           content: Text(
             'Error rejecting bill: ${e.toString()}',
             style: const TextStyle(color: AppColors.white),
@@ -303,8 +304,8 @@ class _PendingBillsListState extends State<PendingBillsList> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(
-        child: const CircularProgressIndicator(color: AppColors.lightPrimary),
+      builder: (_) => Center(
+        child: CircularProgressIndicator(color: context.themePrimary),
       ),
     );
   }
@@ -342,7 +343,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
       _carpenterCache[carpenterId] = null;
       return null;
     } catch (e) {
-      print('Error fetching carpenter data: $e');
+      AppLogger.debug('Error fetching carpenter data: $e');
       _carpenterCache[carpenterId] = null;
       return null;
     }
@@ -358,11 +359,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.lightPrimary,
+            colorScheme: ColorScheme.light(
+              primary: context.themePrimary,
               onPrimary: AppColors.white,
               surface: AppColors.white,
-              onSurface: AppColors.lightPrimary,
+              onSurface: context.themePrimary,
             ),
           ),
           child: child!,
@@ -389,11 +390,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.lightPrimary,
+            colorScheme: ColorScheme.light(
+              primary: context.themePrimary,
               onPrimary: AppColors.white,
               surface: AppColors.white,
-              onSurface: AppColors.lightPrimary,
+              onSurface: context.themePrimary,
             ),
           ),
           child: child!,
@@ -514,13 +515,13 @@ class _PendingBillsListState extends State<PendingBillsList> {
                       decoration: InputDecoration(
                         hintText: 'Search carpenter...',
                         hintStyle: AppTypography.bodyMedium().copyWith(
-                          color: Colors.grey[500],
+                          color: context.themeTextSecondary,
                           fontSize: 13,
                         ),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey[600], size: 18),
+                        prefixIcon: Icon(Icons.search, color: context.themeTextSecondary, size: 18),
                         suffixIcon: _carpenterNameFilter.isNotEmpty
                             ? IconButton(
-                                icon: Icon(Icons.clear, size: 16, color: Colors.grey[600]),
+                                icon: Icon(Icons.clear, size: 16, color: context.themeTextSecondary),
                                 onPressed: () {
                                   _carpenterNameController.clear();
                                   setState(() => _carpenterNameFilter = '');
@@ -529,25 +530,25 @@ class _PendingBillsListState extends State<PendingBillsList> {
                               )
                             : null,
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: context.themeSoftSurface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide(
-                            color: AppColors.grey500.withValues(alpha: 0.2),
+                            color: context.themeTextSecondary.withValues(alpha: 0.2),
                             width: 1,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide(
-                            color: AppColors.grey500.withValues(alpha: 0.2),
+                            color: context.themeTextSecondary.withValues(alpha: 0.2),
                             width: 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide(
-                            color: AppColors.lightPrimary.withValues(alpha: 0.5),
+                            color: context.themePrimary.withValues(alpha: 0.5),
                             width: 1,
                           ),
                         ),
@@ -561,14 +562,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   Container(
                     decoration: BoxDecoration(
                       color: _showFilters
-                          ? AppColors.lightPrimary.withValues(alpha: 0.1)
-                          : AppColors.grey500.withValues(alpha: 0.1),
+                          ? context.themePrimary.withValues(alpha: 0.1)
+                          : context.themeTextSecondary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: IconButton(
                       icon: Icon(
                         _showFilters ? Icons.filter_list : Icons.filter_list_outlined,
-                        color: _showFilters ? AppColors.lightPrimary : Colors.grey[700],
+                        color: _showFilters ? context.themePrimary : context.themeTextSecondary,
                         size: 20,
                       ),
                       onPressed: () => setState(() => _showFilters = !_showFilters),
@@ -594,12 +595,12 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
+                            color: context.themeSoftSurface,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _startDate != null
-                                  ? AppColors.lightPrimary.withValues(alpha: 0.4)
-                                  : AppColors.grey500.withValues(alpha: 0.2),
+                                  ? context.themePrimary.withValues(alpha: 0.4)
+                                  : context.themeTextSecondary.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -609,7 +610,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                               Icon(
                                 Icons.calendar_today,
                                 size: 14,
-                                color: _startDate != null ? AppColors.lightPrimary : Colors.grey[600],
+                                color: _startDate != null ? context.themePrimary : context.themeTextSecondary,
                               ),
                               const SizedBox(width: 6),
                               Expanded(
@@ -619,14 +620,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                       : 'From',
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
-                                    color: _startDate != null ? AppColors.lightPrimary : Colors.grey[600],
+                                    color: _startDate != null ? context.themePrimary : context.themeTextSecondary,
                                   ),
                                 ),
                               ),
                               if (_startDate != null)
                                 InkWell(
                                   onTap: () => setState(() => _startDate = null),
-                                  child: Icon(Icons.close, size: 14, color: Colors.grey[600]),
+                                  child: Icon(Icons.close, size: 14, color: context.themeTextSecondary),
                                 ),
                             ],
                           ),
@@ -640,12 +641,12 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
+                            color: context.themeSoftSurface,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _endDate != null
-                                  ? AppColors.lightPrimary.withValues(alpha: 0.4)
-                                  : AppColors.grey500.withValues(alpha: 0.2),
+                                  ? context.themePrimary.withValues(alpha: 0.4)
+                                  : context.themeTextSecondary.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -655,7 +656,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                               Icon(
                                 Icons.event,
                                 size: 14,
-                                color: _endDate != null ? AppColors.lightPrimary : Colors.grey[600],
+                                color: _endDate != null ? context.themePrimary : context.themeTextSecondary,
                               ),
                               const SizedBox(width: 6),
                               Expanded(
@@ -665,14 +666,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                       : 'To',
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
-                                    color: _endDate != null ? AppColors.lightPrimary : Colors.grey[600],
+                                    color: _endDate != null ? context.themePrimary : context.themeTextSecondary,
                                   ),
                                 ),
                               ),
                               if (_endDate != null)
                                 InkWell(
                                   onTap: () => setState(() => _endDate = null),
-                                  child: Icon(Icons.close, size: 14, color: Colors.grey[600]),
+                                  child: Icon(Icons.close, size: 14, color: context.themeTextSecondary),
                                 ),
                             ],
                           ),
@@ -681,7 +682,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     ),
                     if (_hasActiveFilters())
                       IconButton(
-                        icon: Icon(Icons.clear_all, size: 18, color: AppColors.lightPrimary),
+                        icon: Icon(Icons.clear_all, size: 18, color: context.themePrimary),
                         onPressed: _clearFilters,
                         padding: const EdgeInsets.all(4),
                         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
@@ -708,9 +709,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   }
 
                   if (!snap.hasData) {
-                    return const Center(
-                      child: const CircularProgressIndicator(
-                        color: AppColors.lightPrimary,
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: context.themePrimary,
                       ),
                     );
                   }
@@ -728,7 +729,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           Icon(
                             Icons.filter_alt_off,
                             size: 64,
-                            color: Colors.grey[400],
+                            color: context.themeTextMuted,
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -737,7 +738,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                 : l10n.noPendingBills,
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: context.themeTextSecondary,
                             ),
                           ),
                         ],
@@ -793,7 +794,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           return Card(
                             elevation: 4,
                             margin: const EdgeInsets.only(bottom: 12),
-                            shadowColor: AppColors.lightSecondary.withValues(alpha: 0.3),
+                            shadowColor: context.themeSecondary.withValues(alpha: 0.3),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -805,11 +806,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                   end: Alignment.bottomRight,
                                   colors: [
                                     AppColors.white,
-                                    AppColors.lightSecondary.withValues(alpha: 0.05),
+                                    context.themeSecondary.withValues(alpha: 0.05),
                                   ],
                                 ),
                                 border: Border.all(
-                                  color: AppColors.lightSecondary.withValues(alpha: 0.2),
+                                  color: context.themeSecondary.withValues(alpha: 0.2),
                                   width: 1.5,
                                 ),
                               ),
@@ -846,11 +847,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                           height: 50,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: AppColors.lightPrimary
-                                                .withOpacity(0.1),
+                                            color: context.themePrimary
+                                                .withValues(alpha: 0.1),
                                             border: Border.all(
-                                              color: AppColors.lightPrimary
-                                                  .withOpacity(0.3),
+                                              color: context.themePrimary
+                                                  .withValues(alpha: 0.3),
                                               width: 2,
                                             ),
                                           ),
@@ -864,14 +865,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                     errorBuilder:
                                                         (_, __, ___) => Icon(
                                                           Icons.person,
-                                                          color: AppColors.lightPrimary,
+                                                          color: context.themePrimary,
                                                           size: 28,
                                                         ),
                                                   ),
                                                 )
                                               : Icon(
                                                   Icons.person,
-                                                  color: AppColors.lightPrimary,
+                                                  color: context.themePrimary,
                                                   size: 28,
                                                 ),
                                         ),
@@ -888,7 +889,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                     .copyWith(
                                                       fontSize: 16,
                                                       color:
-                                                          AppColors.lightPrimary,
+                                                          context.themePrimary,
                                                     ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -898,7 +899,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   phone,
                                                   style: AppTypography.bodyMedium().copyWith(
                                                         fontSize: 12,
-                                                        color: Colors.grey[600],
+                                                        color: context.themeTextSecondary,
                                                       ),
                                                 ),
                                             ],
@@ -918,7 +919,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(8),
                                                     border: Border.all(
-                                                      color: AppColors.lightPrimary.withOpacity(0.3),
+                                                      color: context.themePrimary.withValues(alpha: 0.3),
                                                       width: 2,
                                                     ),
                                                   ),
@@ -932,11 +933,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                           width: 50,
                                                           height: 50,
                                                           errorBuilder: (_, __, ___) => Container(
-                                                            color: Colors.grey[300],
+                                                            color: context.themeBorder,
                                                             child: Icon(
                                                               Icons.broken_image,
                                                               size: 20,
-                                                              color: Colors.grey[600],
+                                                              color: context.themeTextSecondary,
                                                             ),
                                                           ),
                                                         ),
@@ -947,7 +948,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                               begin: Alignment.topCenter,
                                                               end: Alignment.bottomCenter,
                                                               colors: [
-                                                                AppColors.black.withOpacity(0.3),
+                                                                AppColors.black.withValues(alpha: 0.3),
                                                                 AppColors.transparent,
                                                               ],
                                                             ),
@@ -980,13 +981,13 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                         vertical: 6,
                                                       ),
                                                   decoration: BoxDecoration(
-                                                    color: AppColors.lightSecondary
-                                                        .withOpacity(0.2),
+                                                    color: context.themeSecondary
+                                                        .withValues(alpha: 0.2),
                                                     borderRadius:
                                                         BorderRadius.circular(8),
                                                     border: Border.all(
-                                                      color: AppColors.lightPrimary
-                                                          .withOpacity(0.3),
+                                                      color: context.themePrimary
+                                                          .withValues(alpha: 0.3),
                                                       width: 1.5,
                                                     ),
                                                   ),
@@ -997,14 +998,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                         Icons.monetization_on,
                                                         size: 18,
                                                         color:
-                                                            AppColors.lightSecondary,
+                                                            context.themeSecondary,
                                                       ),
                                                       const SizedBox(width: 4),
                                                       Text(
                                                         '${(amount / 1000).floor()} pts',
                                                         style: AppTypography.labelLarge().copyWith(
                                                               fontSize: 15,
-                                                              color: AppColors.lightSecondary,
+                                                              color: context.themeSecondary,
                                                             ),
                                                       ),
                                                     ],
@@ -1019,14 +1020,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                         vertical: 6,
                                                       ),
                                                   decoration: BoxDecoration(
-                                                    color: AppColors.success.withOpacity(
+                                                    color: AppColors.success.withValues(alpha: 
                                                       0.15,
                                                     ),
                                                     borderRadius:
                                                         BorderRadius.circular(8),
                                                     border: Border.all(
-                                                      color: AppColors.lightPrimary
-                                                          .withOpacity(0.3),
+                                                      color: context.themePrimary
+                                                          .withValues(alpha: 0.3),
                                                       width: 1.5,
                                                     ),
                                                   ),
@@ -1035,7 +1036,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                     style: AppTypography.labelLarge().copyWith(
                                                           fontSize: 13,
                                                           color:
-                                                              Colors.green.shade700,
+                                                              AppColors.success,
                                                         ),
                                                   ),
                                                 ),
@@ -1060,14 +1061,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                               Icon(
                                                 Icons.receipt_long,
                                                 size: 14,
-                                                color: Colors.blue[600],
+                                                color: context.themePrimary,
                                               ),
                                               const SizedBox(width: 6),
                                               Text(
                                                 'Bill Date: ',
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.grey[600],
+                                                  color: context.themeTextSecondary,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),
@@ -1077,7 +1078,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                 ).format(billDate.toDate()),
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.blue[700],
+                                                  color: context.themePrimary,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
@@ -1092,14 +1093,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                               Icon(
                                                 Icons.check_circle,
                                                 size: 14,
-                                                color: Colors.green[600],
+                                                color: AppColors.success,
                                               ),
                                               const SizedBox(width: 6),
                                               Text(
                                                 'Approved: ',
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.grey[600],
+                                                  color: context.themeTextSecondary,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),
@@ -1109,7 +1110,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                 ).format(approvedAt.toDate()),
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.green[700],
+                                                  color: AppColors.success,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
@@ -1124,14 +1125,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                               Icon(
                                                 Icons.schedule,
                                                 size: 14,
-                                                color: Colors.grey[600],
+                                                color: context.themeTextSecondary,
                                               ),
                                               const SizedBox(width: 6),
                                               Text(
                                                 'Submitted: ',
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.grey[600],
+                                                  color: context.themeTextSecondary,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),
@@ -1141,7 +1142,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                 ).format(createdAt.toDate()),
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.grey[500],
+                                                  color: context.themeTextSecondary,
                                                 ),
                                               ),
                                             ],
@@ -1166,7 +1167,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                             errorBuilder: (_, __, ___) =>
                                                 Container(
                                                   height: 170,
-                                                  color: Colors.grey[200],
+                                                  color: context.themeBorder,
                                                   child: Center(
                                                     child: Column(
                                                       mainAxisSize:
@@ -1175,7 +1176,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                         Icon(
                                                           Icons.error_outline,
                                                           color:
-                                                              Colors.grey[400],
+                                                              context.themeTextMuted,
                                                           size: 40,
                                                         ),
                                                         const SizedBox(
@@ -1208,22 +1209,22 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                             onPressed: () =>
                                                 _rejectBill(billId),
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red[50],
+                                              backgroundColor: context.themeError,
                                               elevation: 0,
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                     vertical: 10,
                                                   ),
                                             ),
-                                            icon: const Icon(
+                                            icon: Icon(
                                               Icons.close,
-                                              color: AppColors.red,
+                                              color: context.themeError,
                                               size: 18,
                                             ),
                                             label: Text(
                                               l10n.reject,
-                                              style: const TextStyle(
-                                                color: AppColors.red,
+                                              style: TextStyle(
+                                                color: context.themeError,
                                                 fontSize: 14,
                                               ),
                                             ),
@@ -1276,7 +1277,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   onPressed: () {
                     context.push('/admin/add-bill');
                   },
-                  backgroundColor: AppColors.lightPrimary,
+                  backgroundColor: context.themePrimary,
                   icon: const Icon(Icons.add, color: AppColors.white),
                   label: Text(
                     'Add Bill',

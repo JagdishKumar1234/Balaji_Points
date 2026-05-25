@@ -21,12 +21,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
   static const List<_SectionCard> _sections = [
     _SectionCard(id: 'pending', label: 'Pending Bills', icon: Icons.receipt_long, color: Color(0xFFE8F5E9)),   // green
     _SectionCard(id: 'history', label: 'Bill History', icon: Icons.history, color: Color(0xFFE3F2FD)),         // blue
-    _SectionCard(id: 'offers', label: 'Offers', icon: Icons.local_offer, color: AppColors.orangeBackground),            // orange
+    _SectionCard(id: 'offers', label: 'Offers', icon: Icons.local_offer, color: AppColors.lightSoftSurface),            // orange
     _SectionCard(id: 'users', label: 'Users', icon: Icons.people, color: Color(0xFFF3E5F5)),                  // purple
     _SectionCard(id: 'notifications', label: 'Notifications', icon: Icons.notifications, color: Color(0xFFFFEBEE)), // red/pink
     _SectionCard(id: 'products', label: 'Products', icon: Icons.inventory_2, color: Color(0xFFE0F7FA)),       // cyan
     _SectionCard(id: 'orders', label: 'Orders', icon: Icons.shopping_bag, color: Color(0xFFFFEBEE)),          // red/pink
-    _SectionCard(id: 'spin', label: 'Spin', icon: Icons.casino, color: AppColors.rank1Background),                    // amber
+    _SectionCard(id: 'spin', label: 'Spin', icon: Icons.casino, color: AppColors.warning),                    // amber
   ];
 
   int _refreshKey = 0;
@@ -49,7 +49,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           child: RefreshIndicator(
             onRefresh: _onRefresh,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               key: ValueKey<int>(_refreshKey),
               stream: FirebaseFirestore.instance
@@ -239,7 +239,7 @@ class _SectionTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 13,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                       ),
                     ],
@@ -314,21 +314,21 @@ class _SectionTile extends StatelessWidget {
   Color _darken(Color color, double amount) {
     assert(amount >= 0 && amount <= 1);
     return Color.fromARGB(
-      color.alpha,
-      (color.red * (1 - amount)).round().clamp(0, 255),
-      (color.green * (1 - amount)).round().clamp(0, 255),
-      (color.blue * (1 - amount)).round().clamp(0, 255),
+      (color.a * 255.0).round().clamp(0, 255),
+      (color.r * 255.0 * (1 - amount)).round().clamp(0, 255),
+      (color.g * 255.0 * (1 - amount)).round().clamp(0, 255),
+      (color.b * 255.0 * (1 - amount)).round().clamp(0, 255),
     );
   }
 
   Color _iconColorFor(Color bg) {
-    if (bg.value == const Color(0xFFE8F5E9).value) return const Color(0xFF2E7D32);
-    if (bg.value == const Color(0xFFE3F2FD).value) return const Color(0xFF1565C0);
-    if (bg.value == AppColors.orangeBackground.value) return const Color(0xFFE65100);
-    if (bg.value == const Color(0xFFF3E5F5).value) return const Color(0xFF7B1FA2);
-    if (bg.value == const Color(0xFFE0F7FA).value) return const Color(0xFF00838F);
-    if (bg.value == const Color(0xFFFFEBEE).value) return const Color(0xFFC62828);
-    if (bg.value == AppColors.rank1Background.value) return const Color(0xFFF9A825);
+    if (bg.toARGB32() == const Color(0xFFE8F5E9).toARGB32()) return const Color(0xFF2E7D32);
+    if (bg.toARGB32() == const Color(0xFFE3F2FD).toARGB32()) return const Color(0xFF1565C0);
+    if (bg.toARGB32() == AppColors.lightSoftSurface.toARGB32()) return const Color(0xFFE65100);
+    if (bg.toARGB32() == const Color(0xFFF3E5F5).toARGB32()) return const Color(0xFF7B1FA2);
+    if (bg.toARGB32() == const Color(0xFFE0F7FA).toARGB32()) return const Color(0xFF00838F);
+    if (bg.toARGB32() == const Color(0xFFFFEBEE).toARGB32()) return const Color(0xFFC62828);
+    if (bg.toARGB32() == AppColors.warning.toARGB32()) return const Color(0xFFF9A825);
     return AppColors.lightPrimary;
   }
 }
@@ -344,9 +344,9 @@ class _DashboardPatternPainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        AppColors.woodenBackground,
-        Color.lerp(AppColors.woodenBackground, AppColors.woodenBase, 0.12)!,
-        Color.lerp(AppColors.woodenBackground, AppColors.woodenBase, 0.06)!,
+        AppColors.lightSoftSurface,
+        Color.lerp(AppColors.lightSoftSurface, AppColors.lightSoftSurface, 0.12)!,
+        Color.lerp(AppColors.lightSoftSurface, AppColors.lightSoftSurface, 0.06)!,
       ],
       stops: const [0.0, 0.5, 1.0],
     );
@@ -355,7 +355,7 @@ class _DashboardPatternPainter extends CustomPainter {
     // Horizontal wood-grain lines (stylish, subtle)
     const grainSpacing = 28.0;
     final grainPaint = Paint()
-      ..color = AppColors.woodenDark.withValues(alpha: 0.06)
+      ..color = AppColors.lightSecondary.withValues(alpha: 0.06)
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
     for (double y = 0; y < size.height + grainSpacing; y += grainSpacing) {
@@ -365,7 +365,7 @@ class _DashboardPatternPainter extends CustomPainter {
     // Diagonal weave (left-going) – warm tint
     const diagonalSpacing = 32.0;
     final diagPaint = Paint()
-      ..color = AppColors.woodenDark.withValues(alpha: 0.055)
+      ..color = AppColors.lightSecondary.withValues(alpha: 0.055)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     for (double d = -size.height; d < size.width + size.height; d += diagonalSpacing) {
@@ -378,7 +378,7 @@ class _DashboardPatternPainter extends CustomPainter {
 
     // Diagonal weave (right-going) – crosshatch
     final diag2Paint = Paint()
-      ..color = AppColors.woodenDark.withValues(alpha: 0.035)
+      ..color = AppColors.lightSecondary.withValues(alpha: 0.035)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     for (double d = -size.height; d < size.width + size.height; d += diagonalSpacing) {
@@ -392,7 +392,7 @@ class _DashboardPatternPainter extends CustomPainter {
     // Subtle dot grid for texture
     const dotSpacing = 20.0;
     final dotPaint = Paint()
-      ..color = AppColors.woodenDark.withValues(alpha: 0.08)
+      ..color = AppColors.lightSecondary.withValues(alpha: 0.08)
       ..style = PaintingStyle.fill;
     for (double x = 0; x < size.width + dotSpacing; x += dotSpacing) {
       for (double y = 0; y < size.height + dotSpacing; y += dotSpacing) {

@@ -29,7 +29,7 @@ class BackButtonHandler {
             child: Text(
               l10n.cancel,
               style: AppTypography.bodyMedium().copyWith(
-                color: AppColors.grey600,
+                color: context.themeTextSecondary,
                 fontSize: 16,
               ),
             ),
@@ -37,7 +37,7 @@ class BackButtonHandler {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.red,
+              backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -80,7 +80,7 @@ class BackButtonHandler {
             child: Text(
               l10n.cancel,
               style: AppTypography.bodyMedium().copyWith(
-                color: AppColors.grey600,
+                color: context.themeTextSecondary,
                 fontSize: 16,
               ),
             ),
@@ -88,7 +88,7 @@ class BackButtonHandler {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.warning,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -118,7 +118,7 @@ class BackButtonHandler {
           style: AppTypography.bodyMedium().copyWith(color: AppColors.white),
         ),
         duration: const Duration(seconds: 2),
-        backgroundColor: AppColors.grey800,
+        backgroundColor: context.themeTextPrimary,
       ),
     );
   }

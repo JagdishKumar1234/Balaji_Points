@@ -71,7 +71,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             child: Text(
               l10n.cancel,
               style: AppTypography.bodySmall().copyWith(
-                color: AppColors.grey600,
+                color: context.themeTextSecondary,
                 fontSize: 16,
               ),
             ),
@@ -79,7 +79,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -114,7 +114,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${l10n.logoutFailed}: ${e.toString()}'),
-              backgroundColor: AppColors.red,
+              backgroundColor: context.themeError,
             ),
           );
         }
@@ -139,7 +139,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.errorDark,
+              backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -192,7 +192,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${docs.length} notification(s) deleted'),
-          backgroundColor: AppColors.lightPrimary,
+          backgroundColor: context.themePrimary,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -202,7 +202,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Delete failed: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -229,7 +229,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         backgroundColor: AppColors.white,
         appBar: AppBar(
           backgroundColor: AppColors.white,
-          foregroundColor: AppColors.lightPrimary,
+          foregroundColor: context.themePrimary,
           elevation: 0,
           scrolledUnderElevation: 0,
           titleSpacing: _showDashboard ? 0 : null,
@@ -257,14 +257,14 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: AppColors.lightPrimary.withValues(
+                              color: context.themePrimary.withValues(
                                 alpha: 0.15,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.forest,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                               size: 22,
                             ),
                           ),
@@ -280,7 +280,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                             'Balaji Points - Admin Panel',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 17,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                               letterSpacing: 0.3,
                             ),
                             maxLines: 1,
@@ -291,7 +291,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                             AppConstants.shopNameShort,
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 11,
-                              color: AppColors.lightPrimary.withValues(
+                              color: context.themePrimary.withValues(
                                 alpha: 0.65,
                               ),
                             ),
@@ -309,7 +309,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                   _sectionTitle(_selectedSection!),
                   style: AppTypography.labelLarge().copyWith(
                     fontSize: 18,
-                    color: AppColors.lightPrimary,
+                    color: context.themePrimary,
                   ),
                 ),
           centerTitle: !_showDashboard,
@@ -335,7 +335,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           ),
         ),
         body: Container(
-          color: AppColors.woodenBackground,
+          color: context.themeSoftSurface,
           child: _showDashboard
               ? AdminDashboard(onOpenSection: _openSection)
               : _buildSectionContent(_selectedSection!),
@@ -387,7 +387,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             'Users - ...',
             style: AppTypography.labelLarge().copyWith(
               fontSize: 18,
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
             ),
           );
         }
@@ -396,7 +396,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           'Users - $count',
           style: AppTypography.labelLarge().copyWith(
             fontSize: 18,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         );
       },

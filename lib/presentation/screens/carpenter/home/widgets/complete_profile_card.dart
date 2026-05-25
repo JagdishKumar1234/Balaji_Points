@@ -18,7 +18,7 @@ class CompleteProfileCard extends StatelessWidget {
       decoration: BoxDecoration(
         // Thin gradient border to match home header & bottom bar
         gradient: LinearGradient(
-          colors: AppColors.primaryGradient,
+          colors: [context.themePrimary, context.themeSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -30,7 +30,7 @@ class CompleteProfileCard extends StatelessWidget {
           gradient: LinearGradient(
             colors: <Color>[
               const Color(0xFFFFA726),
-              AppColors.orangeDark,
+              context.themeSecondary,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

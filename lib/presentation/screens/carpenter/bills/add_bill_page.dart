@@ -80,12 +80,12 @@ class _AddBillPageState extends State<AddBillPage> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.orangeBackground,
+                color: context.themeSoftSurface,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.person_add_alt_1,
-                color: AppColors.orangeDark,
+                color: context.themeSecondary,
                 size: 24,
               ),
             ),
@@ -101,7 +101,7 @@ class _AddBillPageState extends State<AddBillPage> {
         content: Text(
           l10n?.completeProfileMessage ??
               'Please complete your profile (first name, last name, and profile picture) to add bills and earn points.',
-          style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+          style: AppTypography.bodyMedium(color: context.themeTextSecondary),
         ),
         actions: [
           ElevatedButton(
@@ -110,7 +110,7 @@ class _AddBillPageState extends State<AddBillPage> {
               context.go('/');
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.grey600,
+              backgroundColor: context.themeTextSecondary,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -127,7 +127,7 @@ class _AddBillPageState extends State<AddBillPage> {
               context.push('/edit-profile');
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.warning,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -161,11 +161,11 @@ class _AddBillPageState extends State<AddBillPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.lightPrimary,
+            colorScheme: ColorScheme.light(
+              primary: context.themePrimary,
               onPrimary: AppColors.white,
               surface: AppColors.white,
-              onSurface: AppColors.lightTextPrimary,
+              onSurface: context.themeTextPrimary,
             ),
           ),
           child: child!,
@@ -189,10 +189,12 @@ class _AddBillPageState extends State<AddBillPage> {
     } catch (e) {
       AppLogger.error('Error picking image', e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: AppColors.error,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: context.themeError,
+          ),
+        );
       }
     }
   }
@@ -209,10 +211,12 @@ class _AddBillPageState extends State<AddBillPage> {
     } catch (e) {
       AppLogger.error('Error taking photo', e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: AppColors.error,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: context.themeError,
+          ),
+        );
       }
     }
   }
@@ -229,17 +233,23 @@ class _AddBillPageState extends State<AddBillPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library, color: AppColors.lightPrimary),
+              leading: Icon(Icons.photo_library, color: context.themePrimary),
               title: Text(l10n?.selectImage ?? 'Choose from Gallery'),
-              onTap: () { Navigator.pop(context); _pickImage(); },
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage();
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: AppColors.lightPrimary),
+              leading: Icon(Icons.camera_alt, color: context.themePrimary),
               title: Text(l10n?.selectImage ?? 'Take Photo'),
-              onTap: () { Navigator.pop(context); _takePhoto(); },
+              onTap: () {
+                Navigator.pop(context);
+                _takePhoto();
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.cancel, color: AppColors.error),
+              leading: Icon(Icons.cancel, color: context.themeError),
               title: Text(l10n?.cancel ?? 'Cancel'),
               onTap: () => Navigator.pop(context),
             ),
@@ -256,10 +266,14 @@ class _AddBillPageState extends State<AddBillPage> {
     final l10n = AppLocalizations.of(context);
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n?.enterValidAmount ?? 'Please enter a valid amount'),
-        backgroundColor: AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n?.enterValidAmount ?? 'Please enter a valid amount',
+          ),
+          backgroundColor: context.themeError,
+        ),
+      );
       return;
     }
 
@@ -269,10 +283,14 @@ class _AddBillPageState extends State<AddBillPage> {
       final phoneNumber = await _sessionService.getPhoneNumber();
       if (phoneNumber == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(l10n?.sessionExpired ?? 'Please login to submit bills'),
-            backgroundColor: AppColors.error,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                l10n?.sessionExpired ?? 'Please login to submit bills',
+              ),
+              backgroundColor: context.themeError,
+            ),
+          );
         }
         return;
       }
@@ -298,33 +316,41 @@ class _AddBillPageState extends State<AddBillPage> {
       if (mounted) {
         setState(() => _isSubmitting = false);
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              l10n?.billSubmitted ?? 'Bill submitted successfully! Admin will review it.',
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                l10n?.billSubmitted ??
+                    'Bill submitted successfully! Admin will review it.',
+              ),
+              backgroundColor: AppColors.success,
+              duration: const Duration(seconds: 3),
             ),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 3),
-          ));
+          );
           Future.delayed(const Duration(seconds: 1), () {
             if (mounted) context.pop();
           });
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              l10n?.billSubmitError ?? 'Failed to submit bill. Please try again.',
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                l10n?.billSubmitError ??
+                    'Failed to submit bill. Please try again.',
+              ),
+              backgroundColor: context.themeError,
             ),
-            backgroundColor: AppColors.error,
-          ));
+          );
         }
       }
     } catch (e) {
       AppLogger.error('Error submitting bill', e);
       if (mounted) {
         setState(() => _isSubmitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: AppColors.error,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: context.themeError,
+          ),
+        );
       }
     }
   }
@@ -337,35 +363,40 @@ class _AddBillPageState extends State<AddBillPage> {
       filled: true,
       fillColor: AppColors.white,
       hintText: hint,
-      hintStyle: AppTypography.bodyMedium(color: AppColors.grey400),
+      hintStyle: AppTypography.bodyMedium(color: context.themeTextMuted),
       prefixIcon: Container(
         margin: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.lightPrimary.withValues(alpha: 0.1),
+          color: context.themePrimary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: AppColors.lightPrimary),
+        child: Icon(icon, color: context.themePrimary),
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: AppColors.lightPrimary.withValues(alpha: 0.3)),
+        borderSide: BorderSide(
+          color: context.themePrimary.withValues(alpha: 0.3),
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: AppColors.lightPrimary.withValues(alpha: 0.3)),
+        borderSide: BorderSide(
+          color: context.themePrimary.withValues(alpha: 0.3),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.lightPrimary, width: 2),
+        borderSide: BorderSide(color: context.themePrimary, width: 2),
       ),
     );
   }
 
   Widget _sectionLabel(String label) => Text(
-        label,
-        style: AppTypography.labelLarge(color: AppColors.lightPrimary)
-            .copyWith(fontWeight: FontWeight.w600),
-      );
+    label,
+    style: AppTypography.labelLarge(
+      color: context.themePrimary,
+    ).copyWith(fontWeight: FontWeight.w600),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -387,7 +418,8 @@ class _AddBillPageState extends State<AddBillPage> {
           if (_hasFormData()) {
             final shouldDiscard = await BackButtonHandler.showDiscardDialog(
               context,
-              customMessage: l10n?.discardBillMessage ??
+              customMessage:
+                  l10n?.discardBillMessage ??
                   'You have unsaved bill data. Do you want to discard it?',
             );
             if (shouldDiscard == true && mounted) {
@@ -413,7 +445,9 @@ class _AddBillPageState extends State<AddBillPage> {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
-                  24, 24, 24,
+                  24,
+                  24,
+                  24,
                   MediaQuery.of(context).padding.bottom + 160,
                 ),
                 child: Form(
@@ -434,14 +468,19 @@ class _AddBillPageState extends State<AddBillPage> {
                             color: AppColors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.lightPrimary.withValues(alpha: 0.3),
+                              color: context.themePrimary.withValues(
+                                alpha: 0.3,
+                              ),
                               width: 2,
                             ),
                           ),
                           child: _selectedImage != null
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(14),
-                                  child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                                  child: Image.file(
+                                    _selectedImage!,
+                                    fit: BoxFit.cover,
+                                  ),
                                 )
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -449,13 +488,16 @@ class _AddBillPageState extends State<AddBillPage> {
                                     Icon(
                                       Icons.add_photo_alternate,
                                       size: 64,
-                                      color: AppColors.lightPrimary.withValues(alpha: 0.5),
+                                      color: context.themePrimary.withValues(
+                                        alpha: 0.5,
+                                      ),
                                     ),
                                     const SizedBox(height: 12),
                                     Text(
-                                      l10n?.tapToAddBillImage ?? 'Tap to add bill image',
+                                      l10n?.tapToAddBillImage ??
+                                          'Tap to add bill image',
                                       style: AppTypography.bodyMedium(
-                                        color: AppColors.lightTextSecondary,
+                                        color: context.themeTextSecondary,
                                       ),
                                     ),
                                   ],
@@ -471,18 +513,22 @@ class _AddBillPageState extends State<AddBillPage> {
                       TextFormField(
                         controller: _amountController,
                         keyboardType: TextInputType.number,
-                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        style: AppTypography.bodyMedium(
+                          color: context.themeTextPrimary,
+                        ),
                         decoration: _fieldDecoration(
                           hint: l10n?.enterBillAmount ?? 'Enter bill amount',
                           icon: Icons.currency_rupee,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return l10n?.enterBillAmount ?? 'Please enter bill amount';
+                            return l10n?.enterBillAmount ??
+                                'Please enter bill amount';
                           }
                           final amt = double.tryParse(value.trim());
                           if (amt == null || amt <= 0) {
-                            return l10n?.enterValidAmount ?? 'Please enter a valid amount';
+                            return l10n?.enterValidAmount ??
+                                'Please enter a valid amount';
                           }
                           return null;
                         },
@@ -491,38 +537,52 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 32),
 
                       // Bill Date
-                      _sectionLabel(l10n?.billDateOptional ?? 'Bill Date (Optional)'),
+                      _sectionLabel(
+                        l10n?.billDateOptional ?? 'Bill Date (Optional)',
+                      ),
                       const SizedBox(height: 12),
                       GestureDetector(
                         onTap: _selectDate,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 18,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.lightPrimary.withValues(alpha: 0.3),
+                              color: context.themePrimary.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.calendar_today, color: AppColors.lightPrimary, size: 24),
+                              Icon(
+                                Icons.calendar_today,
+                                color: context.themePrimary,
+                                size: 24,
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   _billDate != null
                                       ? '${_billDate!.day}/${_billDate!.month}/${_billDate!.year}'
-                                      : (l10n?.selectBillDateOptional ?? 'Select bill date (optional)'),
+                                      : (l10n?.selectBillDateOptional ??
+                                            'Select bill date (optional)'),
                                   style: AppTypography.bodyMedium(
                                     color: _billDate != null
-                                        ? AppColors.lightTextPrimary
-                                        : AppColors.grey400,
+                                        ? context.themeTextPrimary
+                                        : context.themeTextMuted,
                                   ),
                                 ),
                               ),
                               Icon(
                                 Icons.arrow_forward_ios,
-                                color: AppColors.lightPrimary.withValues(alpha: 0.5),
+                                color: context.themePrimary.withValues(
+                                  alpha: 0.5,
+                                ),
                                 size: 16,
                               ),
                             ],
@@ -534,14 +594,18 @@ class _AddBillPageState extends State<AddBillPage> {
 
                       // Store Name
                       _sectionLabel(
-                        l10n?.storeVendorNameOptional ?? 'Store/Vendor Name (Optional)',
+                        l10n?.storeVendorNameOptional ??
+                            'Store/Vendor Name (Optional)',
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _storeNameController,
-                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        style: AppTypography.bodyMedium(
+                          color: context.themeTextPrimary,
+                        ),
                         decoration: _fieldDecoration(
-                          hint: l10n?.enterStoreOrVendorNameOptional ??
+                          hint:
+                              l10n?.enterStoreOrVendorNameOptional ??
                               'Enter store or vendor name (optional)',
                           icon: Icons.store,
                         ),
@@ -551,14 +615,18 @@ class _AddBillPageState extends State<AddBillPage> {
 
                       // Bill Number
                       _sectionLabel(
-                        l10n?.billInvoiceNumberOptional ?? 'Bill/Invoice Number (Optional)',
+                        l10n?.billInvoiceNumberOptional ??
+                            'Bill/Invoice Number (Optional)',
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _billNumberController,
-                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        style: AppTypography.bodyMedium(
+                          color: context.themeTextPrimary,
+                        ),
                         decoration: _fieldDecoration(
-                          hint: l10n?.enterBillOrInvoiceNumberOptional ??
+                          hint:
+                              l10n?.enterBillOrInvoiceNumberOptional ??
                               'Enter bill or invoice number (optional)',
                           icon: Icons.receipt,
                         ),
@@ -572,9 +640,13 @@ class _AddBillPageState extends State<AddBillPage> {
                       TextFormField(
                         controller: _notesController,
                         maxLines: 3,
-                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        style: AppTypography.bodyMedium(
+                          color: context.themeTextPrimary,
+                        ),
                         decoration: _fieldDecoration(
-                          hint: l10n?.addAnyAdditionalNotes ?? 'Add any additional notes...',
+                          hint:
+                              l10n?.addAnyAdditionalNotes ??
+                              'Add any additional notes...',
                           icon: Icons.note,
                         ),
                       ),
@@ -588,7 +660,9 @@ class _AddBillPageState extends State<AddBillPage> {
 
             // Fixed Submit Button
             Container(
-              margin: EdgeInsets.only(bottom: CarpenterShellLayout.scrollEndMargin),
+              margin: EdgeInsets.only(
+                bottom: CarpenterShellLayout.scrollEndMargin,
+              ),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: AppColors.white,
@@ -610,7 +684,7 @@ class _AddBillPageState extends State<AddBillPage> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.lightSecondary.withValues(alpha: 0.3),
+                          color: context.themeSecondary.withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 6),
                         ),
@@ -619,7 +693,7 @@ class _AddBillPageState extends State<AddBillPage> {
                     child: ElevatedButton(
                       onPressed: _isSubmitting ? null : _submitBill,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.lightSecondary,
+                        backgroundColor: context.themeSecondary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         minimumSize: const Size(double.infinity, 56),
                         shape: RoundedRectangleBorder(
@@ -633,12 +707,16 @@ class _AddBillPageState extends State<AddBillPage> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.white,
+                                ),
                               ),
                             )
                           : Text(
                               l10n?.submitBill ?? 'Submit Bill',
-                              style: AppTypography.buttonLarge(color: AppColors.white),
+                              style: AppTypography.buttonLarge(
+                                color: AppColors.white,
+                              ),
                             ),
                     ),
                   ),

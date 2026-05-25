@@ -28,9 +28,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     if (!mounted) return;
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Please log in to add items to cart.'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
       return;
@@ -56,7 +56,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text('Added to cart'),
       ),
     );
@@ -92,7 +92,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Unable to open share app.'),
         ),
       );
@@ -113,7 +113,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: appBarFill,
-        foregroundColor: AppColors.lightTextPrimary,
+        foregroundColor: context.themeTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -184,7 +184,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   textAlign: TextAlign.center,
                   style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
-                    color: AppColors.error,
+                    color: context.themeError,
                   ),
                 ),
               ),
@@ -194,8 +194,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           if (snapshot.connectionState == ConnectionState.waiting ||
               !snapshot.hasData ||
               !snapshot.data!.exists) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.lightPrimary),
+            return Center(
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -254,7 +254,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               gradient: LinearGradient(
                                 colors: [
                                   const Color(0xFF2196F3),
-                                  AppColors.purple,
+                                  context.themePrimary,
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -328,7 +328,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         name.isNotEmpty ? name : 'Product',
                         style: AppTypography.buttonMedium().copyWith(
                           fontSize: 22,
-                          color: AppColors.lightTextPrimary,
+                          color: context.themeTextPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -338,7 +338,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             : mainCategory,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 14,
-                          color: AppColors.grey600,
+                          color: context.themeTextSecondary,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -347,7 +347,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           '₹${price.toStringAsFixed(0)}',
                           style: AppTypography.buttonMedium().copyWith(
                             fontSize: 24,
-                            color: AppColors.lightPrimary,
+                            color: context.themePrimary,
                           ),
                         ),
                       const SizedBox(height: 16),
@@ -384,7 +384,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           'Description',
                           style: AppTypography.labelLarge().copyWith(
                             fontSize: 15,
-                            color: AppColors.lightTextPrimary,
+                            color: context.themeTextPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -392,7 +392,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           description,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 14,
-                            color: AppColors.grey700,
+                            color: context.themeTextSecondary,
                           ),
                         ),
                       ],
@@ -407,7 +407,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             )) {
                               if (!mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text('Unable to open catalog PDF.'),
                                 ),
                               );
@@ -416,8 +416,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           icon: const Icon(Icons.picture_as_pdf),
                           label: const Text('View catalog PDF'),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.lightPrimary,
-                            side: const BorderSide(color: AppColors.lightPrimary),
+                            foregroundColor: context.themePrimary,
+                            side: BorderSide(color: context.themePrimary),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -448,8 +448,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _shareProduct(data),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.lightPrimary,
-                          side: const BorderSide(color: AppColors.lightPrimary),
+                          foregroundColor: context.themePrimary,
+                          side: BorderSide(color: context.themePrimary),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -464,7 +464,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: ElevatedButton.icon(
                         onPressed: () => _addToCart(data),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.lightSecondary,
+                          backgroundColor: context.themeSecondary,
                           foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -503,20 +503,20 @@ class _DetailChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.grey100,
+        color: context.themeSoftSurface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.grey300!),
+        border: Border.all(color: context.themeBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppColors.grey700),
+          Icon(icon, size: 14, color: context.themeTextSecondary),
           const SizedBox(width: 4),
           Text(
             '$label:',
             style: AppTypography.labelLarge().copyWith(
               fontSize: 12,
-              color: AppColors.grey800,
+              color: context.themeTextPrimary,
             ),
           ),
           const SizedBox(width: 4),
@@ -524,7 +524,7 @@ class _DetailChip extends StatelessWidget {
             value,
             style: AppTypography.bodyMedium().copyWith(
               fontSize: 12,
-              color: AppColors.grey800,
+              color: context.themeTextPrimary,
             ),
           ),
         ],
@@ -563,7 +563,7 @@ class _DetailCartIconButton extends StatelessWidget {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
               decoration: BoxDecoration(
-                color: AppColors.error,
+                color: context.themeError,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: AppColors.white,

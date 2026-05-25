@@ -50,7 +50,7 @@ class AppUpdateDialog extends StatelessWidget {
             borderRadius: BorderRadius.circular(24.0),
             boxShadow: [
               BoxShadow(
-                color: AppColors.lightPrimary.withValues(alpha: 0.22),
+                color: context.themePrimary.withValues(alpha: 0.22),
                 blurRadius: 32,
                 offset: const Offset(0, 12),
               ),
@@ -92,7 +92,7 @@ class AppUpdateDialog extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: AppTypography.buttonMedium().copyWith(
                             fontSize: 22,
-                            color: AppColors.lightTextPrimary,
+                            color: context.themeTextPrimary,
                             letterSpacing: -0.3,
                           ),
                         ),
@@ -107,7 +107,7 @@ class AppUpdateDialog extends StatelessWidget {
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 15,
                             height: 1.45,
-                            color: AppColors.lightTextMuted,
+                            color: context.themeTextMuted,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xl2),
@@ -130,7 +130,7 @@ class AppUpdateDialog extends StatelessWidget {
                           TextButton(
                             onPressed: onLater,
                             style: TextButton.styleFrom(
-                              foregroundColor: AppColors.lightTextMuted,
+                              foregroundColor: context.themeTextMuted,
                               padding: const EdgeInsets.symmetric(
                                 vertical: AppSpacing.md,
                                 horizontal: AppSpacing.xl2,
@@ -171,9 +171,9 @@ class _Header extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: AppColors.primaryGradient,
+                colors: [context.themePrimary, context.themeSecondary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -192,7 +192,7 @@ class _Header extends StatelessWidget {
             left: -24,
             child: _DecorCircle(
               size: 72,
-              color: AppColors.lightSecondary.withValues(alpha: 0.18),
+              color: context.themeSecondary.withValues(alpha: 0.18),
             ),
           ),
           Center(
@@ -225,11 +225,11 @@ class _Header extends StatelessWidget {
                   vertical: AppSpacing.xs,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.lightSecondary,
+                  color: context.themeSecondary,
                   borderRadius: BorderRadius.circular(999.0),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.lightSecondary.withValues(alpha: 0.35),
+                      color: context.themeSecondary.withValues(alpha: 0.35),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -276,10 +276,10 @@ class _LogoBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: AppColors.lightBorder),
+        border: Border.all(color: context.themeBorder),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightTextMuted.withValues(alpha: 0.12),
+            color: context.themeTextMuted.withValues(alpha: 0.12),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -290,7 +290,7 @@ class _LogoBadge extends StatelessWidget {
         AppConstants.logoPath,
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) =>
-            Icon(Icons.stars_rounded, color: AppColors.lightPrimary, size: 40),
+            Icon(Icons.stars_rounded, color: context.themePrimary, size: 40),
       ),
     );
   }
@@ -315,9 +315,9 @@ class _VersionRow extends StatelessWidget {
         vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: AppColors.lightBackground,
+        color: context.themeBackground,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: AppColors.lightBorder),
+        border: Border.all(color: context.themeBorder),
       ),
       child: Row(
         children: [
@@ -335,7 +335,7 @@ class _VersionRow extends StatelessWidget {
             child: Icon(
               Icons.arrow_forward_rounded,
               size: 20,
-              color: AppColors.lightPrimary.withValues(alpha: 0.7),
+              color: context.themePrimary.withValues(alpha: 0.7),
             ),
           ),
           Expanded(
@@ -370,7 +370,7 @@ class _VersionChip extends StatelessWidget {
           label,
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 11,
-            color: AppColors.lightTextMuted,
+            color: context.themeTextMuted,
             letterSpacing: 0.4,
           ),
         ),
@@ -382,18 +382,18 @@ class _VersionChip extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: emphasized
-                ? AppColors.lightPrimary.withValues(alpha: 0.1)
-                : AppColors.grey100,
+                ? context.themePrimary.withValues(alpha: 0.1)
+                : context.themeSoftSurface,
             borderRadius: BorderRadius.circular(12.0),
             border: emphasized
-                ? Border.all(color: AppColors.lightPrimary.withValues(alpha: 0.25))
+                ? Border.all(color: context.themePrimary.withValues(alpha: 0.25))
                 : null,
           ),
           child: Text(
             'v$version',
             style: AppTypography.buttonMedium().copyWith(
               fontSize: 14,
-              color: emphasized ? AppColors.lightPrimary : AppColors.lightTextPrimary,
+              color: emphasized ? context.themePrimary : context.themeTextPrimary,
             ),
           ),
         ),
@@ -414,14 +414,14 @@ class _RequiredBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFE3F2FD),
         borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: AppColors.lightPrimary.withValues(alpha: 0.12)),
+        border: Border.all(color: context.themePrimary.withValues(alpha: 0.12)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_outline_rounded,
             size: 20,
-            color: AppColors.lightPrimary.withValues(alpha: 0.85),
+            color: context.themePrimary.withValues(alpha: 0.85),
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
@@ -430,7 +430,7 @@ class _RequiredBanner extends StatelessWidget {
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 13,
                 height: 1.35,
-                color: AppColors.lightTextPrimary.withValues(alpha: 0.85),
+                color: context.themeTextPrimary.withValues(alpha: 0.85),
               ),
             ),
           ),
@@ -453,15 +453,15 @@ class _PrimaryButton extends StatelessWidget {
       height: 52,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: AppColors.primaryGradient,
+          gradient: LinearGradient(
+            colors: [context.themePrimary, context.themeSecondary],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(
-              color: AppColors.lightPrimary.withValues(alpha: 0.35),
+              color: context.themePrimary.withValues(alpha: 0.35),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

@@ -49,11 +49,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       } else if (state is AuthUserNotFound) {
         context.push('/pin-setup?phone=${state.phoneNumber}');
       } else if (state is AuthError) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${l10n.error}: ${state.message}'),
-          backgroundColor: AppColors.error,
-          duration: const Duration(seconds: 3),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l10n.error}: ${state.message}'),
+            backgroundColor: context.themeError,
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
     });
 
@@ -61,7 +63,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
@@ -77,7 +79,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           fit: StackFit.expand,
           children: [
             // ── Background ──
-            Image.asset('assets/images/background_image.png', fit: BoxFit.cover),
+            Image.asset(
+              'assets/images/background_image.png',
+              fit: BoxFit.cover,
+            ),
 
             // ── Content ──
             SafeArea(
@@ -117,7 +122,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         Text(
                           'Balaji Points',
                           style: AppTypography.displaySmall(
-                            color: AppColors.lightPrimary,
+                            color: context.themePrimary,
                           ),
                         ).enterHero(delay: AppAnimations.stagger(2)),
 
@@ -126,7 +131,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         Text(
                           l10n.enterPhoneNumber,
                           style: AppTypography.bodyLarge(
-                            color: AppColors.lightTextSecondary,
+                            color: context.themeTextSecondary,
                           ),
                         ).fadeIn(delay: AppAnimations.stagger(3)),
 
@@ -142,42 +147,53 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 controller: _phoneController,
                                 maxLength: 10,
                                 keyboardType: TextInputType.phone,
-                                style: AppTypography.h5(color: AppColors.lightTextPrimary),
+                                style: AppTypography.h5(
+                                  color: context.themeTextPrimary,
+                                ),
                                 decoration: InputDecoration(
                                   labelText: l10n.mobileNumber,
                                   labelStyle: AppTypography.bodyMedium(
-                                    color: AppColors.lightTextSecondary,
+                                    color: context.themeTextSecondary,
                                   ),
                                   prefixText: '+91 ',
-                                  prefixStyle: AppTypography.h5(color: AppColors.lightPrimary),
+                                  prefixStyle: AppTypography.h5(
+                                    color: context.themePrimary,
+                                  ),
                                   counterText: '',
                                   filled: true,
-                                  fillColor: AppColors.lightPrimary.withValues(alpha: 0.05),
+                                  fillColor: context.themePrimary.withValues(
+                                    alpha: 0.05,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: AppRadius.forInput,
                                     borderSide: BorderSide(
-                                      color: AppColors.lightPrimary.withValues(alpha: 0.3),
+                                      color: context.themePrimary.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       width: 1.5,
                                     ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: AppRadius.forInput,
                                     borderSide: BorderSide(
-                                      color: AppColors.lightPrimary.withValues(alpha: 0.2),
+                                      color: context.themePrimary.withValues(
+                                        alpha: 0.2,
+                                      ),
                                       width: 1.5,
                                     ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: AppRadius.forInput,
-                                    borderSide: const BorderSide(
-                                      color: AppColors.lightPrimary,
+                                    borderSide: BorderSide(
+                                      color: context.themePrimary,
                                       width: 2,
                                     ),
                                   ),
                                 ),
                                 validator: (value) {
                                   final v = value?.trim() ?? '';
-                                  if (v.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(v)) {
+                                  if (v.length != 10 ||
+                                      !RegExp(r'^[0-9]+$').hasMatch(v)) {
                                     return l10n.enterValidTenDigit;
                                   }
                                   return null;
@@ -188,7 +204,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                               // Continue button
                               _GradientButton(
-                                onPressed: isChecking ? null : _checkUserAndNavigate,
+                                onPressed: isChecking
+                                    ? null
+                                    : _checkUserAndNavigate,
                                 isLoading: isChecking,
                                 label: l10n.continueWithPin,
                               ),
@@ -201,17 +219,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         // ── Footer ──
                         Text(
                           '${l10n.poweredBy} ${l10n.companyName}',
-                          style: AppTypography.labelMedium(
-                            color: AppColors.lightPrimary,
-                          ).copyWith(
-                            fontWeight: FontWeight.w700,
-                            shadows: [
-                              Shadow(
-                                color: AppColors.white.withValues(alpha: 0.8),
-                                blurRadius: 10,
+                          style:
+                              AppTypography.labelMedium(
+                                color: context.themePrimary,
+                              ).copyWith(
+                                fontWeight: FontWeight.w700,
+                                shadows: [
+                                  Shadow(
+                                    color: AppColors.white.withValues(
+                                      alpha: 0.8,
+                                    ),
+                                    blurRadius: 10,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
                         ).fadeIn(delay: AppAnimations.stagger(5)),
 
                         const SizedBox(height: AppSpacing.xl3),
@@ -240,19 +261,31 @@ class _LanguagePicker extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.9),
         borderRadius: AppRadius.sm8,
-        border: Border.all(color: AppColors.lightPrimary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: context.themePrimary.withValues(alpha: 0.3),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Locale>(
           value: ref.watch(localeProvider),
-          style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+          style: AppTypography.bodyMedium(color: context.themeTextPrimary),
           onChanged: (locale) {
-            if (locale != null) ref.read(localeProvider.notifier).setLocale(locale);
+            if (locale != null)
+              ref.read(localeProvider.notifier).setLocale(locale);
           },
           items: [
-            DropdownMenuItem(value: const Locale('en'), child: Text(l10n.languageEnglish)),
-            DropdownMenuItem(value: const Locale('hi'), child: Text(l10n.languageHindi)),
-            DropdownMenuItem(value: const Locale('ta'), child: Text(l10n.languageTamil)),
+            DropdownMenuItem(
+              value: const Locale('en'),
+              child: Text(l10n.languageEnglish),
+            ),
+            DropdownMenuItem(
+              value: const Locale('hi'),
+              child: Text(l10n.languageHindi),
+            ),
+            DropdownMenuItem(
+              value: const Locale('ta'),
+              child: Text(l10n.languageTamil),
+            ),
           ],
         ),
       ),
@@ -290,7 +323,7 @@ class _GlassCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.lightPrimary.withValues(alpha: 0.10),
+                color: context.themePrimary.withValues(alpha: 0.10),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -323,8 +356,8 @@ class _GradientButton extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.lightSecondary,
-            AppColors.lightSecondary.withValues(alpha: 0.82),
+            context.themeSecondary,
+            context.themeSecondary.withValues(alpha: 0.82),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -332,7 +365,7 @@ class _GradientButton extends StatelessWidget {
         borderRadius: AppRadius.forButton,
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightSecondary.withValues(alpha: 0.35),
+            color: context.themeSecondary.withValues(alpha: 0.35),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),

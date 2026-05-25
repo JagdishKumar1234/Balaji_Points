@@ -139,18 +139,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         title: Text(l10n.logout, style: AppTypography.h4()),
         content: Text(
           l10n.logoutConfirmation,
-          style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+          style: AppTypography.bodyMedium(color: context.themeTextSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(l10n.no,
-                style: AppTypography.labelLarge(color: AppColors.grey600)),
+                style: AppTypography.labelLarge(color: context.themeTextSecondary)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -172,7 +172,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('${l10n.logoutFailed}: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ));
         }
       }
@@ -191,7 +191,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Could not make call: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ));
       }
     }
@@ -223,9 +223,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               children: [
                 Container(
                   padding: const EdgeInsets.all(24),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+                      colors: [context.themePrimary, context.themeSecondary],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -378,7 +378,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               children: [
                 Text(label,
                     style: AppTypography.labelSmall(
-                        color: AppColors.grey600)),
+                        color: context.themeTextSecondary)),
                 const SizedBox(height: 6),
                 Text(value,
                     style: AppTypography.labelLarge()
@@ -460,7 +460,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             child: Row(
               children: [
-                Icon(icon, color: AppColors.lightPrimary, size: 24),
+                Icon(icon, color: context.themePrimary, size: 24),
                 const SizedBox(width: 16),
                 Text(
                   title,
@@ -468,7 +468,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       .copyWith(fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
-                const Icon(Icons.chevron_right, color: AppColors.grey400),
+                Icon(Icons.chevron_right, color: context.themeTextMuted),
               ],
             ),
           ),
@@ -498,7 +498,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
         child: Row(
           children: [
-            const Icon(Icons.language, color: AppColors.lightPrimary, size: 24),
+            Icon(Icons.language, color: context.themePrimary, size: 24),
             const SizedBox(width: 16),
             Text(
               isHindi ? 'भाषा' : 'Language',
@@ -510,16 +510,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               padding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.lightPrimary.withValues(alpha: 0.1),
+                color: context.themePrimary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<Locale>(
                   value: locale,
                   isDense: true,
-                  icon: const Icon(Icons.arrow_drop_down,
-                      color: AppColors.lightPrimary, size: 20),
-                  style: AppTypography.labelMedium(color: AppColors.lightPrimary),
+                  icon: Icon(Icons.arrow_drop_down,
+                      color: context.themePrimary, size: 20),
+                  style: AppTypography.labelMedium(color: context.themePrimary),
                   dropdownColor: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   onChanged: (Locale? newLocale) {
@@ -569,7 +569,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   : themeMode == ThemeMode.light
                       ? Icons.light_mode
                       : Icons.brightness_auto,
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
               size: 24,
             ),
             const SizedBox(width: 16),
@@ -580,7 +580,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             const Spacer(),
             SegmentedButton<ThemeMode>(
               style: SegmentedButton.styleFrom(
-                selectedBackgroundColor: AppColors.lightPrimary,
+                selectedBackgroundColor: context.themePrimary,
                 selectedForegroundColor: AppColors.white,
                 side: BorderSide(color: theme.colorScheme.outline),
                 padding: EdgeInsets.zero,
@@ -629,12 +629,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             child: Container(
               color: theme.colorScheme.surface,
               child: _isLoading
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(
-                          color: AppColors.lightPrimary))
+                          color: context.themePrimary))
                   : RefreshIndicator(
                       onRefresh: _handleRefresh,
-                      color: AppColors.lightPrimary,
+                      color: context.themePrimary,
                       backgroundColor: theme.colorScheme.surface,
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
@@ -672,7 +672,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: AppColors.lightPrimary,
+                                        color: context.themePrimary,
                                         width: 3,
                                       ),
                                     ),
@@ -696,7 +696,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                                   return child;
                                                 }
                                                 return Container(
-                                                  color: AppColors.lightSecondary
+                                                  color: context.themeSecondary
                                                       .withValues(alpha: 0.3),
                                                   child: Center(
                                                     child: CircularProgressIndicator(
@@ -722,14 +722,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                                   (context, error, _) =>
                                                       Container(
                                                 color:
-                                                    AppColors.lightSecondary,
+                                                    context.themeSecondary,
                                                 child: const Icon(Icons.person,
                                                     color: AppColors.white,
                                                     size: 40),
                                               ),
                                             )
                                           : Container(
-                                              color: AppColors.lightSecondary,
+                                              color: context.themeSecondary,
                                               child: const Icon(Icons.person,
                                                   color: AppColors.white,
                                                   size: 40),
@@ -747,7 +747,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     Text(
                                       '#BP${_userData!['userDisplayId']}',
                                       style: AppTypography.labelMedium(
-                                        color: AppColors.lightPrimary
+                                        color: context.themePrimary
                                             .withValues(alpha: 0.7),
                                       ).copyWith(letterSpacing: 0.5),
                                       textAlign: TextAlign.center,
@@ -759,14 +759,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        const Icon(Icons.phone,
+                                        Icon(Icons.phone,
                                             size: 16,
-                                            color: AppColors.grey600),
+                                            color: context.themeTextSecondary),
                                         const SizedBox(width: 6),
                                         Text(
                                           _userData!['phone'] as String,
                                           style: AppTypography.bodySmall(
-                                              color: AppColors.grey600),
+                                              color: context.themeTextSecondary),
                                         ),
                                       ],
                                     ),
@@ -784,7 +784,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       Text(
                                         l10n.points(_points()),
                                         style: AppTypography.labelLarge(
-                                          color: AppColors.lightPrimary,
+                                          color: context.themePrimary,
                                         ).copyWith(fontWeight: FontWeight.w600),
                                       ),
                                       const SizedBox(width: 12),
@@ -792,7 +792,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 12, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: AppColors.lightSecondary
+                                          color: context.themeSecondary
                                               .withValues(alpha: 0.2),
                                           borderRadius:
                                               BorderRadius.circular(12),
@@ -800,7 +800,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         child: Text(
                                           _tier(),
                                           style: AppTypography.labelSmall(
-                                            color: AppColors.lightSecondary,
+                                            color: context.themeSecondary,
                                           ).copyWith(fontWeight: FontWeight.w600),
                                         ),
                                       ),
@@ -886,7 +886,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: AppColors.error
+                                          color: context.themeError
                                               .withValues(alpha: 0.2),
                                           blurRadius: 10,
                                           offset: const Offset(0, 4),
@@ -898,7 +898,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           _handleLogout(context),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            AppColors.errorDark,
+                                            context.themeError,
                                         foregroundColor: AppColors.white,
                                         padding:
                                             const EdgeInsets.symmetric(
@@ -930,15 +930,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                   TextButton.icon(
                                     onPressed: () =>
                                         context.push('/about-us'),
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.info_outline_rounded,
                                       size: 20,
-                                      color: AppColors.lightSecondary,
+                                      color: context.themeSecondary,
                                     ),
                                     label: Text(
                                       l10n.profileAboutLink,
                                       style: AppTypography.labelLarge(
-                                          color: AppColors.lightSecondary)
+                                          color: context.themeSecondary)
                                           .copyWith(fontWeight: FontWeight.w600),
                                     ),
                                   ),
@@ -950,7 +950,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       child: Text(
                                         _appVersion,
                                         style: AppTypography.caption(
-                                          color: AppColors.lightTextSecondary,
+                                          color: context.themeTextSecondary,
                                         ),
                                       ),
                                     ),

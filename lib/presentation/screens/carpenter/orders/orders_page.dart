@@ -43,7 +43,7 @@ class _OrdersPageState extends State<OrdersPage> {
         : AppColors.black.withValues(alpha: 0.08);
     return AppBar(
       backgroundColor: theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
-      foregroundColor: AppColors.lightTextPrimary,
+      foregroundColor: context.themeTextPrimary,
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -66,8 +66,8 @@ class _OrdersPageState extends State<OrdersPage> {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: _buildAppBar(context),
-        body: const Center(
-          child: CircularProgressIndicator(color: AppColors.lightPrimary),
+        body: Center(
+          child: CircularProgressIndicator(color: context.themePrimary),
         ),
       );
     }
@@ -79,7 +79,7 @@ class _OrdersPageState extends State<OrdersPage> {
         body: Center(
           child: Text(
             'Please log in to view orders.',
-            style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+            style: AppTypography.bodyMedium(color: context.themeTextSecondary),
           ),
         ),
       );
@@ -102,15 +102,15 @@ class _OrdersPageState extends State<OrdersPage> {
                 child: Text(
                   'Error loading orders:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium(color: AppColors.error),
+                  style: AppTypography.bodyMedium(color: context.themeError),
                 ),
               ),
             );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.lightPrimary),
+            return Center(
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -120,14 +120,14 @@ class _OrdersPageState extends State<OrdersPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.receipt_long_outlined, size: 80, color: AppColors.grey300),
+                  Icon(Icons.receipt_long_outlined, size: 80, color: context.themeBorder),
                   const SizedBox(height: 16),
                   Text('No orders yet', style: AppTypography.h4()),
                   const SizedBox(height: 8),
                   Text(
                     'Place an order from your cart to see it here.',
                     textAlign: TextAlign.center,
-                    style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+                    style: AppTypography.bodyMedium(color: context.themeTextSecondary),
                   ),
                 ],
               ),
@@ -204,7 +204,7 @@ class _OrderCard extends StatelessWidget {
                 offset: const Offset(0, 6),
               ),
             ],
-            border: Border.all(color: AppColors.grey200, width: 0.8),
+            border: Border.all(color: context.themeBorder, width: 0.8),
           ),
           child: Row(
             children: [
@@ -212,10 +212,10 @@ class _OrderCard extends StatelessWidget {
               Container(
                 width: 6,
                 height: 82,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.horizontal(left: Radius.circular(18)),
                   gradient: LinearGradient(
-                    colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+                    colors: [context.themePrimary, context.themeSecondary],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -232,10 +232,10 @@ class _OrderCard extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.receipt_long,
                                   size: 16,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                                 const SizedBox(width: 6),
                                 Expanded(
@@ -244,7 +244,7 @@ class _OrderCard extends StatelessWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppTypography.labelLarge(
-                                      color: AppColors.lightTextPrimary,
+                                      color: context.themeTextPrimary,
                                     ).copyWith(fontWeight: FontWeight.w600),
                                   ),
                                 ),
@@ -254,14 +254,14 @@ class _OrderCard extends StatelessWidget {
                             Text(
                               dateStr,
                               style: AppTypography.bodySmall(
-                                color: AppColors.lightTextSecondary,
+                                color: context.themeTextSecondary,
                               ),
                             ),
                             const SizedBox(height: 6),
                             Text(
                               '₹${total.toStringAsFixed(0)}',
                               style: AppTypography.labelLarge(
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                               ).copyWith(fontWeight: FontWeight.w700),
                             ),
                           ],
@@ -278,7 +278,7 @@ class _OrderCard extends StatelessWidget {
                             icon: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                             label: const Text('Details', style: TextStyle(fontSize: 11)),
                             style: TextButton.styleFrom(
-                              foregroundColor: AppColors.lightPrimary,
+                              foregroundColor: context.themePrimary,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
                                 vertical: 4,
@@ -315,16 +315,16 @@ class _StatusChip extends StatelessWidget {
       case 'completed': return AppColors.success.withValues(alpha: 0.15);
       case 'processing': return AppColors.warning.withValues(alpha: 0.15);
       case 'cancelled': return AppColors.error.withValues(alpha: 0.15);
-      default: return AppColors.grey400.withValues(alpha: 0.15);
+      default: return AppColors.lightTextMuted.withValues(alpha: 0.15);
     }
   }
 
   static Color _fg(String s) {
     switch (s) {
-      case 'completed': return AppColors.successDark;
+      case 'completed': return AppColors.success;
       case 'processing': return const Color(0xFF92400E);
       case 'cancelled': return const Color(0xFF991B1B);
-      default: return AppColors.grey700;
+      default: return AppColors.lightTextSecondary;
     }
   }
 

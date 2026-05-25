@@ -123,7 +123,7 @@ class _SplashPageState extends State<SplashPage> {
                   Text(
                     l10n?.appName ?? 'Balaji Points',
                     style: AppTypography.displaySmall(
-                      color: AppColors.lightPrimary,
+                      color: context.themePrimary,
                     ).copyWith(letterSpacing: 1.2),
                   ).enterHero(delay: AppAnimations.stagger(1)),
 
@@ -133,7 +133,7 @@ class _SplashPageState extends State<SplashPage> {
                   Text(
                     l10n?.rewardsLoyaltyProgram ?? 'Rewards & Loyalty Program',
                     style: AppTypography.bodyLarge(
-                      color: AppColors.lightTextSecondary,
+                      color: context.themeTextSecondary,
                     ),
                   ).fadeIn(
                     delay: AppAnimations.stagger(2),
@@ -148,7 +148,7 @@ class _SplashPageState extends State<SplashPage> {
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: AppColors.lightPrimary.withValues(alpha: 0.7),
+                      color: context.themePrimary.withValues(alpha: 0.7),
                     ),
                   ).fadeIn(delay: AppAnimations.stagger(3)),
 
@@ -160,7 +160,7 @@ class _SplashPageState extends State<SplashPage> {
                     '${l10n?.companyName ?? 'Shri Balaji Plywood & Hardware'}',
                     textAlign: TextAlign.center,
                     style: AppTypography.labelMedium(
-                      color: AppColors.lightPrimary,
+                      color: context.themePrimary,
                     ).copyWith(height: 1.5),
                   ).fadeIn(delay: AppAnimations.stagger(4)),
 
@@ -190,9 +190,9 @@ class _Logo extends StatelessWidget {
         errorBuilder: (_, __, ___) => Container(
           width: 100,
           height: 100,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: AppColors.primaryGradient,
+              colors: [context.themePrimary, context.themeSecondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

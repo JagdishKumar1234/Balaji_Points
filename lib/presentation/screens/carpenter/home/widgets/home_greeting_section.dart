@@ -42,8 +42,8 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.lightPrimary.withValues(alpha: 0.07),
-              AppColors.lightSecondary.withValues(alpha: 0.08),
+              context.themePrimary.withValues(alpha: 0.07),
+              context.themeSecondary.withValues(alpha: 0.08),
             ],
           ),
         ),
@@ -55,7 +55,7 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
                 TextSpan(
                   style: AppTypography.bodyMedium().copyWith(
                     fontSize: 12.0,
-                    color: AppColors.lightTextPrimary.withValues(alpha: 0.72),
+                    color: context.themeTextPrimary.withValues(alpha: 0.72),
                     height: 1.0,
                   ),
                   children: [
@@ -64,7 +64,7 @@ class _HomeGreetingSectionState extends State<HomeGreetingSection> {
                       text: widget.userName,
                       style: AppTypography.buttonMedium().copyWith(
                         fontSize: 12.0,
-                        color: AppColors.lightTextPrimary,
+                        color: context.themeTextPrimary,
                         height: 1.0,
                       ),
                     ),
@@ -121,8 +121,8 @@ class _SunMoonBadge extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: isDayTime
-                  ? [const Color(0xFFFFD54F), AppColors.amber]
-                  : [AppColors.info, const Color(0xFF8E24AA)],
+                  ? [const Color(0xFFFFD54F), AppColors.warning]
+                  : [context.themePrimary, const Color(0xFF8E24AA)],
             ),
           ),
           child: Icon(

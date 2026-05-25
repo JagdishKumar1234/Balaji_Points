@@ -96,7 +96,7 @@ class _HomePageState extends ConsumerState<HomePage>
     _HomeProductCategory(
       title: 'Kitchen',
       icon: Icons.kitchen_rounded,
-      background: AppColors.orangeBackground,
+      background: AppColors.lightSoftSurface,
       imageAsset: 'assets/images/furniture/brown_kitchen_cabinet.jpeg',
     ),
     _HomeProductCategory(
@@ -208,7 +208,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final mq = MediaQuery.of(context);
-    final canvas = isDark ? theme.colorScheme.surface : AppColors.carpenterAppBackground;
+    final canvas = isDark ? theme.colorScheme.surface : context.themeBackground;
     final bottomPadding = CarpenterShellLayout.bottomPaddingForScrollView(mq);
 
     final top3 = homeState.topCarpenters.take(3).toList();
@@ -230,7 +230,7 @@ class _HomePageState extends ConsumerState<HomePage>
         children: [
           RefreshIndicator(
             onRefresh: () => ref.read(homeProvider.notifier).refresh(),
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
             backgroundColor: canvas,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -262,7 +262,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     child: Text(
                       AppLocalizations.of(context)!.latestOffers,
                       style: AppTypography.h5(
-                        color: isDark ? theme.colorScheme.onSurface : AppColors.lightTextPrimary,
+                        color: isDark ? theme.colorScheme.onSurface : context.themeTextPrimary,
                       ),
                     ),
                   ).fadeIn(delay: AppAnimations.stagger(1)),
@@ -306,12 +306,12 @@ class _HomePageState extends ConsumerState<HomePage>
                   numberOfParticles: 20,
                   gravity: 0.3,
                   shouldLoop: false,
-                  colors: const [
-                    AppColors.amber,
-                    AppColors.orange,
-                    AppColors.error,
-                    AppColors.lightSecondary,
-                    AppColors.lightPrimary,
+                  colors: [
+                    AppColors.warning,
+                    AppColors.warning,
+                    context.themeError,
+                    context.themeSecondary,
+                    context.themePrimary,
                   ],
                 ),
               ),
@@ -332,14 +332,14 @@ class _HomePageState extends ConsumerState<HomePage>
     bool isDark,
     MediaQueryData mq,
   ) {
-    final fg = isDark ? AppColors.white : AppColors.lightTextPrimary;
+    final fg = isDark ? AppColors.white : context.themeTextPrimary;
     final fgMuted = fg.withValues(alpha: 0.70);
     final l10n = AppLocalizations.of(context)!;
 
     return CarpenterTopNavBar(
       topInset: CarpenterShellLayout.topInset(mq),
       title: 'Balaji Points',
-      backgroundColor: isDark ? const Color(0xFF0F1115) : AppColors.carpenterAppBackground,
+      backgroundColor: isDark ? const Color(0xFF0F1115) : context.themeBackground,
       foregroundColor: fg,
       leading: Builder(
         builder: (ctx) => IconButton(
@@ -391,8 +391,8 @@ class _HomePageState extends ConsumerState<HomePage>
                   right: -4,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: AppColors.error,
+                    decoration: BoxDecoration(
+                      color: context.themeError,
                       shape: BoxShape.circle,
                     ),
                     child: Text(
@@ -417,7 +417,7 @@ class _HomePageState extends ConsumerState<HomePage>
       margin: AppSpacing.screenHorizontal,
       height: 140,
       decoration: BoxDecoration(
-        color: AppColors.grey100,
+        color: context.themeSoftSurface,
         borderRadius: AppRadius.forCard,
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
@@ -443,10 +443,10 @@ class _HomePageState extends ConsumerState<HomePage>
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: AppRadius.forCard,
-          border: Border.all(color: AppColors.grey200),
+          border: Border.all(color: context.themeBorder),
           boxShadow: [
             BoxShadow(
-              color: AppColors.lightPrimary.withValues(alpha: 0.06),
+              color: context.themePrimary.withValues(alpha: 0.06),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -464,14 +464,14 @@ class _HomePageState extends ConsumerState<HomePage>
                   height: 44,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.grey200),
+                    border: Border.all(color: context.themeBorder),
                   ),
                   child: CircleAvatar(
                     radius: 17,
-                    backgroundColor: AppColors.grey100,
+                    backgroundColor: context.themeSoftSurface,
                     backgroundImage: hasValidImage ? NetworkImage(profileImage) : null,
                     child: !hasValidImage
-                        ? Icon(Icons.person, size: 22, color: AppColors.lightTextSecondary)
+                        ? Icon(Icons.person, size: 22, color: context.themeTextSecondary)
                         : null,
                   ),
                 ),
@@ -479,12 +479,12 @@ class _HomePageState extends ConsumerState<HomePage>
                 Expanded(
                   child: Text.rich(
                     TextSpan(
-                      style: AppTypography.bodySmall(color: AppColors.lightTextSecondary),
+                      style: AppTypography.bodySmall(color: context.themeTextSecondary),
                       children: [
                         TextSpan(text: '$greeting,\n'),
                         TextSpan(
                           text: homeState.displayName,
-                          style: AppTypography.bodyLarge(color: AppColors.lightTextPrimary)
+                          style: AppTypography.bodyLarge(color: context.themeTextPrimary)
                               .copyWith(fontWeight: FontWeight.w700, height: 1.15),
                         ),
                       ],
@@ -514,12 +514,12 @@ class _HomePageState extends ConsumerState<HomePage>
                     children: [
                       Text(
                         l10n.totalPointsLabel,
-                        style: AppTypography.labelSmall(color: AppColors.lightTextSecondary),
+                        style: AppTypography.labelSmall(color: context.themeTextSecondary),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         nf.format(homeState.points),
-                        style: AppTypography.pointsHero(color: AppColors.lightTextPrimary),
+                        style: AppTypography.pointsHero(color: context.themeTextPrimary),
                       ),
                     ],
                   ),
@@ -529,12 +529,12 @@ class _HomePageState extends ConsumerState<HomePage>
             const SizedBox(height: AppSpacing.xs),
             Row(
               children: [
-                Icon(Icons.star_rounded, color: AppColors.amber.withValues(alpha: 0.88), size: 18),
+                Icon(Icons.star_rounded, color: AppColors.warning.withValues(alpha: 0.88), size: 18),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     '${homeState.tier} ${l10n.homeTierSuffix}',
-                    style: AppTypography.bodySmall(color: AppColors.lightTextSecondary),
+                    style: AppTypography.bodySmall(color: context.themeTextSecondary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -542,7 +542,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 Icon(
                   Icons.account_balance_wallet_outlined,
                   size: 16,
-                  color: AppColors.lightTextSecondary.withValues(alpha: 0.55),
+                  color: context.themeTextSecondary.withValues(alpha: 0.55),
                 ),
               ],
             ),
@@ -555,8 +555,8 @@ class _HomePageState extends ConsumerState<HomePage>
     return Container(
       margin: AppSpacing.screenHorizontal,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.darkPrimary, AppColors.darkSecondary],
+        gradient: LinearGradient(
+          colors: [context.themePrimary, context.themeSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -564,7 +564,7 @@ class _HomePageState extends ConsumerState<HomePage>
         border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.darkPrimary.withValues(alpha: 0.22),
+            color: context.themePrimary.withValues(alpha: 0.22),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -648,7 +648,7 @@ class _HomePageState extends ConsumerState<HomePage>
             const SizedBox(height: AppSpacing.xs),
             Row(
               children: [
-                const Icon(Icons.star_rounded, color: AppColors.amber, size: 18),
+                const Icon(Icons.star_rounded, color: AppColors.warning, size: 18),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
@@ -677,14 +677,14 @@ class _HomePageState extends ConsumerState<HomePage>
 
   Widget _buildProductsSection(BuildContext context, bool isDark, ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    final titleColor = isDark ? AppColors.white : AppColors.lightTextPrimary;
-    final subtitleColor = isDark ? AppColors.white.withValues(alpha: 0.72) : AppColors.lightTextSecondary;
+    final titleColor = isDark ? AppColors.white : context.themeTextPrimary;
+    final subtitleColor = isDark ? AppColors.white.withValues(alpha: 0.72) : context.themeTextSecondary;
     final surfaceColor = theme.colorScheme.surface;
     final heroDecodeW = MediaQuery.sizeOf(context).width * 0.92;
-    final dotActive = isDark ? AppColors.white.withValues(alpha: 0.95) : AppColors.lightPrimary;
+    final dotActive = isDark ? AppColors.white.withValues(alpha: 0.95) : context.themePrimary;
     final dotInactive = isDark
         ? AppColors.white.withValues(alpha: 0.45)
-        : AppColors.lightTextSecondary.withValues(alpha: 0.35);
+        : context.themeTextSecondary.withValues(alpha: 0.35);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -702,7 +702,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [AppColors.tierGold, Color(0xFF8B5E3C)],
+                        colors: [AppColors.warning, Color(0xFF8B5E3C)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -730,7 +730,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 onPressed: () => context.push('/products'),
                 child: Text(
                   l10n.viewAll,
-                  style: AppTypography.bodySmall(color: AppColors.lightPrimary),
+                  style: AppTypography.bodySmall(color: context.themePrimary),
                 ),
               ),
             ],
@@ -875,10 +875,10 @@ class _HomePageState extends ConsumerState<HomePage>
     List<CarpenterRank> top3,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    final titleColor = isDark ? theme.colorScheme.onSurface : AppColors.lightTextPrimary;
+    final titleColor = isDark ? theme.colorScheme.onSurface : context.themeTextPrimary;
     final subtitleColor = isDark
         ? theme.colorScheme.onSurface.withValues(alpha: 0.65)
-        : AppColors.lightTextSecondary;
+        : context.themeTextSecondary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -925,7 +925,7 @@ class _HomePageState extends ConsumerState<HomePage>
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: AppRadius.forCard,
-                border: isDark ? null : Border.all(color: AppColors.grey200),
+                border: isDark ? null : Border.all(color: context.themeBorder),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.black.withValues(alpha: 0.05),
@@ -982,7 +982,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppColors.lightSecondary.withValues(alpha: 0.2),
+                  color: context.themeSecondary.withValues(alpha: 0.2),
                   width: 2,
                 ),
                 boxShadow: [
@@ -998,13 +998,13 @@ class _HomePageState extends ConsumerState<HomePage>
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.lightSecondary.withValues(alpha: 0.1),
+                      color: context.themeSecondary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.emoji_events_outlined,
                       size: 28,
-                      color: AppColors.lightSecondary.withValues(alpha: 0.6),
+                      color: context.themeSecondary.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.cardPadding),
@@ -1015,13 +1015,13 @@ class _HomePageState extends ConsumerState<HomePage>
                       children: [
                         Text(
                           AppLocalizations.of(context)!.todaysWinnerLabel,
-                          style: AppTypography.bodyMedium(color: AppColors.lightSecondary)
+                          style: AppTypography.bodyMedium(color: context.themeSecondary)
                               .copyWith(fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           AppLocalizations.of(context)!.noWinnerYetToday,
-                          style: AppTypography.bodySmall(color: AppColors.grey600),
+                          style: AppTypography.bodySmall(color: context.themeTextSecondary),
                         ),
                       ],
                     ),
@@ -1042,14 +1042,14 @@ class _HomePageState extends ConsumerState<HomePage>
             padding: const EdgeInsets.all(AppSpacing.cardPadding),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [AppColors.tierGold, Color(0xFF8B5E3C)],
+                colors: [AppColors.warning, Color(0xFF8B5E3C)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.tierGold.withValues(alpha: 0.3),
+                  color: AppColors.warning.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -1121,10 +1121,10 @@ class _HomePageState extends ConsumerState<HomePage>
             decoration: BoxDecoration(
               color: AppColors.white,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.amber, width: 3),
+              border: Border.all(color: AppColors.warning, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.amber.withValues(alpha: 0.4),
+                  color: AppColors.warning.withValues(alpha: 0.4),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -1143,10 +1143,10 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
                 Text(
                   AppLocalizations.of(context)!.rankShort,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.grey500,
+                    color: context.themeTextSecondary,
                   ),
                 ),
               ],
@@ -1172,7 +1172,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 const SizedBox(height: AppSpacing.sm),
                 Row(
                   children: [
-                    const Icon(Icons.stars, color: AppColors.amber, size: 18),
+                    const Icon(Icons.stars, color: AppColors.warning, size: 18),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       '${homeState.points} Points',
@@ -1190,7 +1190,7 @@ class _HomePageState extends ConsumerState<HomePage>
               color: AppColors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.emoji_events, color: AppColors.amber, size: 28),
+            child: const Icon(Icons.emoji_events, color: AppColors.warning, size: 28),
           ),
         ],
       ),
@@ -1205,10 +1205,10 @@ class _HomePageState extends ConsumerState<HomePage>
     final mq = MediaQuery.of(context);
     final topInset = mq.padding.top;
     final drawerFooterBottom = CarpenterShellLayout.chromeHeight(mq) + AppSpacing.sm;
-    final titleColor = isDark ? AppColors.white : AppColors.lightTextPrimary;
+    final titleColor = isDark ? AppColors.white : context.themeTextPrimary;
     final subtitleColor = isDark
         ? AppColors.white.withValues(alpha: 0.80)
-        : AppColors.lightTextPrimary.withValues(alpha: 0.70);
+        : context.themeTextPrimary.withValues(alpha: 0.70);
 
     final phone = homeState.userData?['phone'] as String? ?? '';
     final profileImage = homeState.profileImage;
@@ -1218,11 +1218,11 @@ class _HomePageState extends ConsumerState<HomePage>
 
     final drawerBase = theme.colorScheme.surface;
     final drawerTintSoft = isDark
-        ? AppColors.darkPrimary.withValues(alpha: 0.10)
-        : AppColors.lightSecondary.withValues(alpha: 0.06);
+        ? context.themePrimary.withValues(alpha: 0.10)
+        : context.themeSecondary.withValues(alpha: 0.06);
     final drawerTintAccent = isDark
         ? const Color(0xFF2563EB).withValues(alpha: 0.16)
-        : AppColors.amber.withValues(alpha: 0.30);
+        : AppColors.warning.withValues(alpha: 0.30);
 
     return Drawer(
       elevation: 8,
@@ -1250,10 +1250,10 @@ class _HomePageState extends ConsumerState<HomePage>
                     colors: [
                       isDark
                           ? const Color(0xFF2563EB).withValues(alpha: 0.6)
-                          : AppColors.lightSecondary.withValues(alpha: 0.15),
+                          : context.themeSecondary.withValues(alpha: 0.15),
                       isDark
                           ? const Color(0xFF7C3AED).withValues(alpha: 0.7)
-                          : AppColors.amber.withValues(alpha: 0.9),
+                          : AppColors.warning.withValues(alpha: 0.9),
                     ],
                   ),
                   boxShadow: [
@@ -1285,14 +1285,14 @@ class _HomePageState extends ConsumerState<HomePage>
                             ? Image.network(
                                 profileImage,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const ColoredBox(
+                                errorBuilder: (_, __, ___) => ColoredBox(
                                   color: AppColors.white,
-                                  child: Icon(Icons.person, color: AppColors.lightPrimary),
+                                  child: Icon(Icons.person, color: context.themePrimary),
                                 ),
                               )
-                            : const ColoredBox(
+                            : ColoredBox(
                                 color: AppColors.white,
-                                child: Icon(Icons.person, color: AppColors.lightPrimary),
+                                child: Icon(Icons.person, color: context.themePrimary),
                               ),
                       ),
                     ),
@@ -1410,7 +1410,7 @@ class _HomePageState extends ConsumerState<HomePage>
                         child: Text(
                           _appVersion,
                           style: AppTypography.labelSmall(
-                            color: AppColors.lightTextSecondary.withValues(alpha: 0.5),
+                            color: context.themeTextSecondary.withValues(alpha: 0.5),
                           ),
                         ),
                       ),
@@ -1418,7 +1418,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     ],
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.error,
+                        backgroundColor: context.themeError,
                         foregroundColor: AppColors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -1466,21 +1466,21 @@ class _HomePageState extends ConsumerState<HomePage>
                 height: 52,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.error.withValues(alpha: 0.08),
+                  color: context.themeError.withValues(alpha: 0.08),
                 ),
-                child: const Icon(Icons.logout_rounded, color: AppColors.error, size: 26),
+                child: Icon(Icons.logout_rounded, color: context.themeError, size: 26),
               ),
               const SizedBox(height: 20),
               Text(
                 l10n.logout,
-                style: AppTypography.h4(color: AppColors.lightTextPrimary),
+                style: AppTypography.h4(color: context.themeTextPrimary),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.logoutConfirmation,
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMedium(
-                    color: AppColors.lightTextPrimary.withValues(alpha: 0.75)),
+                    color: context.themeTextPrimary.withValues(alpha: 0.75)),
               ),
               const SizedBox(height: AppSpacing.sectionGap),
               Row(
@@ -1489,13 +1489,13 @@ class _HomePageState extends ConsumerState<HomePage>
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(ctx).pop(false),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.grey500.withValues(alpha: 0.8)),
+                        side: BorderSide(color: context.themeTextSecondary.withValues(alpha: 0.8)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: Text(
                         l10n.no,
-                        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+                        style: AppTypography.bodyMedium(color: context.themeTextPrimary),
                       ),
                     ),
                   ),
@@ -1504,7 +1504,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     child: ElevatedButton(
                       onPressed: () => Navigator.of(ctx).pop(true),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.error,
+                        backgroundColor: context.themeError,
                         foregroundColor: AppColors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -1534,7 +1534,7 @@ class _HomePageState extends ConsumerState<HomePage>
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('${l10n.logoutFailed}: $e'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ));
         }
       }
@@ -1573,11 +1573,11 @@ class _SunMoonBadge extends StatelessWidget {
           scale: pressed ? 0.9 : 1.0,
           child: Container(
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Color(0xFFE8F0FE),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.lightTextSecondary, size: 20),
+            child: Icon(icon, color: context.themeTextSecondary, size: 20),
           ),
         ),
       );
@@ -1702,7 +1702,7 @@ class _ProductCategoryCard extends StatelessWidget {
                 child: Image.asset(
                   category.imageAsset,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Icon(category.icon, color: AppColors.lightPrimary),
+                  errorBuilder: (_, __, ___) => Icon(category.icon, color: context.themePrimary),
                 ),
               ),
             ),
@@ -1759,7 +1759,7 @@ class _DrawerNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.lightSecondary),
+      leading: Icon(icon, color: context.themeSecondary),
       title: Text(label, style: AppTypography.bodyMedium(color: titleColor)),
       subtitle: subtitle != null
           ? Text(

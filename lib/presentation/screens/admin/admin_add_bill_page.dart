@@ -78,11 +78,11 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.lightPrimary,
+            colorScheme: ColorScheme.light(
+              primary: context.themePrimary,
               onPrimary: AppColors.white,
               surface: AppColors.white,
-              onSurface: AppColors.lightPrimary,
+              onSurface: context.themePrimary,
             ),
           ),
           child: child!,
@@ -117,7 +117,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ),
         );
       }
@@ -145,7 +145,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ),
         );
       }
@@ -164,9 +164,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.photo_library,
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
               title: Text(l10n?.selectImage ?? 'Choose from Gallery'),
               onTap: () {
@@ -175,7 +175,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: AppColors.lightPrimary),
+              leading: Icon(Icons.camera_alt, color: context.themePrimary),
               title: Text(l10n?.selectImage ?? 'Take Photo'),
               onTap: () {
                 Navigator.pop(context);
@@ -183,7 +183,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.cancel, color: AppColors.error),
+              leading: Icon(Icons.cancel, color: context.themeError),
               title: Text(l10n?.cancel ?? 'Cancel'),
               onTap: () => Navigator.pop(context),
             ),
@@ -206,7 +206,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Please select a carpenter'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
       return;
@@ -220,7 +220,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           content: Text(
             l10n?.enterValidAmount ?? 'Please enter a valid amount',
           ),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
       return;
@@ -240,7 +240,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               content: Text(
                 l10n?.sessionExpired ?? 'Please login to submit bills',
               ),
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
             ),
           );
         }
@@ -315,7 +315,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 l10n?.billSubmitError ??
                     'Failed to submit bill. Please try again.',
               ),
-              backgroundColor: AppColors.error,
+              backgroundColor: context.themeError,
             ),
           );
         }
@@ -329,7 +329,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorOccurred ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ),
         );
       }
@@ -370,10 +370,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           final points = _calculatePoints(amount);
 
           return Scaffold(
-            backgroundColor: AppColors.woodenBackground,
+            backgroundColor: context.themeSoftSurface,
             appBar: AppBar(
               backgroundColor: AppColors.white,
-              foregroundColor: AppColors.lightPrimary,
+              foregroundColor: context.themePrimary,
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -382,7 +382,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               title: Text(
                 'Add Bill for Carpenter',
                 style: AppTypography.labelLarge().copyWith(
-                  color: AppColors.lightPrimary,
+                  color: context.themePrimary,
                   fontSize: 18,
                 ),
               ),
@@ -406,7 +406,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             'Carpenter *',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -426,7 +426,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             l10n?.billAmount ?? 'Bill Amount (₹) *',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -436,7 +436,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             keyboardType: TextInputType.number,
                             onChanged: (_) => setState(() {}),
                             style: AppTypography.bodyMedium().copyWith(
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                               fontSize: 18,
                             ),
                             decoration: InputDecoration(
@@ -445,40 +445,40 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                               hintText:
                                   l10n?.enterBillAmount ?? 'Enter bill amount',
                               hintStyle: AppTypography.bodyMedium().copyWith(
-                                color: AppColors.grey400,
+                                color: context.themeTextMuted,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: AppColors.lightPrimary.withOpacity(0.1),
+                                  color: context.themePrimary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.currency_rupee,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                               ),
                               suffixText: amount > 0 ? '$points pts' : null,
                               suffixStyle: AppTypography.labelLarge().copyWith(
-                                color: AppColors.lightSecondary,
+                                color: context.themeSecondary,
                                 fontSize: 14,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: AppColors.lightPrimary,
+                                borderSide: BorderSide(
+                                  color: context.themePrimary,
                                   width: 2,
                                 ),
                               ),
@@ -504,7 +504,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             l10n?.billDate ?? 'Bill Date *',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -520,14 +520,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 color: AppColors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
                                     Icons.calendar_today,
-                                    color: AppColors.lightPrimary,
+                                    color: context.themePrimary,
                                     size: 24,
                                   ),
                                   const SizedBox(width: 12),
@@ -536,14 +536,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                       DateFormat('dd MMM yyyy').format(_billDate),
                                       style: AppTypography.bodyMedium()
                                           .copyWith(
-                                            color: AppColors.lightPrimary,
+                                            color: context.themePrimary,
                                             fontSize: 16,
                                           ),
                                     ),
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,
-                                    color: AppColors.lightPrimary.withOpacity(0.5),
+                                    color: context.themePrimary.withValues(alpha: 0.5),
                                     size: 16,
                                   ),
                                 ],
@@ -558,7 +558,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             l10n?.billImage ?? 'Bill Image (Optional)',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -571,7 +571,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 color: AppColors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                   width: 2,
                                   style: BorderStyle.solid,
                                 ),
@@ -591,8 +591,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                         Icon(
                                           Icons.add_photo_alternate,
                                           size: 64,
-                                          color: AppColors.lightPrimary
-                                              .withOpacity(0.5),
+                                          color: context.themePrimary
+                                              .withValues(alpha: 0.5),
                                         ),
                                         const SizedBox(height: 12),
                                         Text(
@@ -600,8 +600,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                               'Tap to add bill image',
                                           style: AppTypography.bodyMedium()
                                               .copyWith(
-                                                color: AppColors.lightPrimary
-                                                    .withOpacity(0.6),
+                                                color: context.themePrimary
+                                                    .withValues(alpha: 0.6),
                                                 fontSize: 14,
                                               ),
                                         ),
@@ -618,7 +618,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 'Store/Vendor Name (Optional)',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -626,7 +626,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           TextFormField(
                             controller: _storeNameController,
                             style: AppTypography.bodyMedium().copyWith(
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                               fontSize: 16,
                             ),
                             decoration: InputDecoration(
@@ -636,35 +636,35 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                   l10n?.enterStoreOrVendorNameOptional ??
                                   'Enter store or vendor name (optional)',
                               hintStyle: AppTypography.bodyMedium().copyWith(
-                                color: AppColors.grey400,
+                                color: context.themeTextMuted,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: AppColors.lightPrimary.withOpacity(0.1),
+                                  color: context.themePrimary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.store,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: AppColors.lightPrimary,
+                                borderSide: BorderSide(
+                                  color: context.themePrimary,
                                   width: 2,
                                 ),
                               ),
@@ -679,7 +679,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 'Bill/Invoice Number (Optional)',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -687,7 +687,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           TextFormField(
                             controller: _billNumberController,
                             style: AppTypography.bodyMedium().copyWith(
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                               fontSize: 16,
                             ),
                             decoration: InputDecoration(
@@ -697,35 +697,35 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                   l10n?.enterBillOrInvoiceNumberOptional ??
                                   'Enter bill or invoice number (optional)',
                               hintStyle: AppTypography.bodyMedium().copyWith(
-                                color: AppColors.grey400,
+                                color: context.themeTextMuted,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: AppColors.lightPrimary.withOpacity(0.1),
+                                  color: context.themePrimary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.receipt,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: AppColors.lightPrimary,
+                                borderSide: BorderSide(
+                                  color: context.themePrimary,
                                   width: 2,
                                 ),
                               ),
@@ -739,7 +739,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             l10n?.notesOptional ?? 'Notes (Optional)',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 16,
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -748,7 +748,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             controller: _notesController,
                             maxLines: 3,
                             style: AppTypography.bodyMedium().copyWith(
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                               fontSize: 16,
                             ),
                             decoration: InputDecoration(
@@ -758,35 +758,35 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                   l10n?.addAnyAdditionalNotes ??
                                   'Add any additional notes...',
                               hintStyle: AppTypography.bodyMedium().copyWith(
-                                color: AppColors.grey400,
+                                color: context.themeTextMuted,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: AppColors.lightPrimary.withOpacity(0.1),
+                                  color: context.themePrimary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.note,
-                                  color: AppColors.lightPrimary,
+                                  color: context.themePrimary,
                                 ),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withOpacity(0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: AppColors.lightPrimary,
+                                borderSide: BorderSide(
+                                  color: context.themePrimary,
                                   width: 2,
                                 ),
                               ),
@@ -807,7 +807,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                     color: AppColors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.black.withOpacity(0.1),
+                        color: AppColors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, -2),
                       ),
@@ -819,7 +819,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                       child: ElevatedButton(
                         onPressed: _isSubmitting ? null : _submitBill,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.lightPrimary,
+                          backgroundColor: context.themePrimary,
                           foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(

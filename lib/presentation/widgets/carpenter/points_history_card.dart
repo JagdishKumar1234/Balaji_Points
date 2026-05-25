@@ -114,7 +114,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightPrimary.withOpacity(0.1),
+            color: context.themePrimary.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -130,12 +130,12 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.lightSecondary.withOpacity(0.1),
+                    color: context.themeSecondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.history_rounded,
-                    color: AppColors.lightSecondary,
+                    color: context.themeSecondary,
                     size: 24,
                   ),
                 ),
@@ -148,7 +148,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                         'Points History',
                         style: AppTypography.buttonMedium().copyWith(
                           fontSize: 18,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -156,7 +156,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                         '${_history.length} transactions',
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 13,
-                          color: AppColors.grey600,
+                          color: context.themeTextSecondary,
                         ),
                       ),
                     ],
@@ -173,7 +173,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                       _isExpanded
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
-                      color: AppColors.lightPrimary,
+                      color: context.themePrimary,
                     ),
                   ),
               ],
@@ -181,7 +181,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
           ),
 
           // Divider
-          Divider(height: 1, color: AppColors.grey200),
+          Divider(height: 1, color: context.themeBorder),
 
           // History List
           ListView.separated(
@@ -209,7 +209,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 icon: Icon(Icons.arrow_downward, size: 16),
                 label: Text('Show ${_history.length - 3} more'),
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.lightPrimary,
+                  foregroundColor: context.themePrimary,
                 ),
               ),
             ),
@@ -226,10 +226,10 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.woodenBackground.withOpacity(0.3),
+        color: context.themeSoftSurface.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.lightPrimary.withOpacity(0.1),
+          color: context.themePrimary.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -241,13 +241,13 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
             height: 40,
             decoration: BoxDecoration(
               color: points > 0
-                  ? AppColors.success.withOpacity(0.1)
-                  : AppColors.red.withOpacity(0.1),
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : context.themeError.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               points > 0 ? Icons.add_circle : Icons.remove_circle,
-              color: points > 0 ? AppColors.success : AppColors.error,
+              color: points > 0 ? AppColors.success : context.themeError,
               size: 20,
             ),
           ),
@@ -262,7 +262,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                   reason,
                   style: AppTypography.labelLarge().copyWith(
                     fontSize: 14,
-                    color: AppColors.lightTextPrimary,
+                    color: context.themeTextPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -270,7 +270,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                   _formatDate(date),
                   style: AppTypography.bodyMedium().copyWith(
                     fontSize: 12,
-                    color: AppColors.grey600,
+                    color: context.themeTextSecondary,
                   ),
                 ),
               ],
@@ -282,8 +282,8 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: points > 0
-                  ? AppColors.success.withOpacity(0.1)
-                  : AppColors.red.withOpacity(0.1),
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : context.themeError.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -292,14 +292,14 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 Icon(
                   Icons.monetization_on,
                   size: 14,
-                  color: points > 0 ? AppColors.success : AppColors.error,
+                  color: points > 0 ? AppColors.success : context.themeError,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '${points > 0 ? '+' : ''}$points',
                   style: AppTypography.buttonMedium().copyWith(
                     fontSize: 14,
-                    color: points > 0 ? AppColors.success : AppColors.error,
+                    color: points > 0 ? AppColors.success : context.themeError,
                   ),
                 ),
               ],
@@ -319,14 +319,14 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightPrimary.withOpacity(0.1),
+            color: context.themePrimary.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Center(
-        child: CircularProgressIndicator(color: AppColors.lightPrimary),
+        child: CircularProgressIndicator(color: context.themePrimary),
       ),
     );
   }
@@ -340,7 +340,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightPrimary.withOpacity(0.1),
+            color: context.themePrimary.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -348,13 +348,13 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       ),
       child: Column(
         children: [
-          Icon(Icons.history_rounded, size: 60, color: AppColors.grey300),
+          Icon(Icons.history_rounded, size: 60, color: context.themeBorder),
           const SizedBox(height: 16),
           Text(
             'No Points History',
             style: AppTypography.buttonMedium().copyWith(
               fontSize: 16,
-              color: AppColors.grey600,
+              color: context.themeTextSecondary,
             ),
           ),
           const SizedBox(height: 8),
@@ -362,7 +362,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
             'Your points transactions will appear here',
             style: AppTypography.bodyMedium().copyWith(
               fontSize: 13,
-              color: AppColors.grey500,
+              color: context.themeTextSecondary,
             ),
             textAlign: TextAlign.center,
           ),

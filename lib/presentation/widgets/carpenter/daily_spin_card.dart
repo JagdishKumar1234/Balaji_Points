@@ -21,14 +21,14 @@ class DailySpinCard extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.amber.shade400, Colors.orange.shade500],
+          colors: [context.themeSecondary, context.themeSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.orange.withOpacity(0.3),
+            color: AppColors.warning.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -40,7 +40,7 @@ class DailySpinCard extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.3),
+              color: AppColors.white.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -70,7 +70,7 @@ class DailySpinCard extends ConsumerWidget {
                       ? 'Tap to spin and win points!'
                       : 'Already spun today. Come back tomorrow!',
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                     fontSize: 14,
                   ),
                 ),

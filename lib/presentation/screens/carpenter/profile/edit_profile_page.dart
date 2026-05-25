@@ -84,7 +84,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to pick image: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ));
       }
     }
@@ -133,9 +133,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       if (!hasImage) {
         setState(() => _isSaving = false);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Please add a profile photo'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ));
         }
         return;
@@ -213,7 +213,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Profile updated successfully'),
           backgroundColor: AppColors.success,
           duration: Duration(seconds: 2),
@@ -243,7 +243,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to update profile: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
           duration: const Duration(seconds: 5),
         ));
       }
@@ -270,7 +270,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             return;
           }
           if (widget.isFirstTime) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Please complete your profile'),
               backgroundColor: AppColors.warning,
             ));
@@ -301,9 +301,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               child: Container(
                 color: theme.colorScheme.surface,
                 child: _isLoading
-                    ? const Center(
+                    ? Center(
                         child: CircularProgressIndicator(
-                            color: AppColors.lightPrimary))
+                            color: context.themePrimary))
                     : SingleChildScrollView(
                         padding: const EdgeInsets.all(24),
                         child: Form(
@@ -324,7 +324,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                         shape: BoxShape.circle,
                                         color: AppColors.white,
                                         border: Border.all(
-                                          color: AppColors.lightPrimary,
+                                          color: context.themePrimary,
                                           width: 3,
                                         ),
                                         boxShadow: [
@@ -384,11 +384,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                                                   .lightSecondary,
                                                             ),
                                                   )
-                                                : const Icon(
+                                                : Icon(
                                                     Icons.person,
                                                     size: 60,
                                                     color:
-                                                        AppColors.lightSecondary,
+                                                        context.themeSecondary,
                                                   ),
                                       ),
                                     ),
@@ -399,7 +399,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                         width: 36,
                                         height: 36,
                                         decoration: BoxDecoration(
-                                          color: AppColors.lightSecondary,
+                                          color: context.themeSecondary,
                                           shape: BoxShape.circle,
                                           border: Border.all(
                                             color: AppColors.white,
@@ -418,7 +418,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               Text(
                                 'Tap to change photo',
                                 style: AppTypography.bodySmall(
-                                    color: AppColors.lightTextSecondary),
+                                    color: context.themeTextSecondary),
                               ),
 
                               const SizedBox(height: 40),
@@ -466,20 +466,20 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const SizedBox(
+                                      SizedBox(
                                         width: 16,
                                         height: 16,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                  AppColors.lightPrimary),
+                                                  context.themePrimary),
                                         ),
                                       ),
                                       const SizedBox(width: 12),
                                       Text('Uploading image...',
                                           style: AppTypography.bodySmall(
-                                              color: AppColors.lightPrimary)),
+                                              color: context.themePrimary)),
                                     ],
                                   ),
                                 ),
@@ -491,7 +491,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.lightSecondary
+                                      color: context.themeSecondary
                                           .withValues(alpha: 0.3),
                                       blurRadius: 15,
                                       offset: const Offset(0, 6),
@@ -503,7 +503,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                       ? null
                                       : _saveProfile,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.lightSecondary,
+                                    backgroundColor: context.themeSecondary,
                                     foregroundColor: AppColors.white,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 18),
@@ -539,7 +539,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                   'You need to complete your profile to continue',
                                   textAlign: TextAlign.center,
                                   style: AppTypography.bodySmall(
-                                      color: AppColors.lightTextSecondary),
+                                      color: context.themeTextSecondary),
                                 ),
                               ],
 
@@ -576,13 +576,13 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       ),
       child: TextFormField(
         controller: controller,
-        style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary),
+        style: AppTypography.bodyMedium(color: context.themeTextPrimary),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: AppTypography.labelMedium(color: AppColors.lightPrimary),
+          labelStyle: AppTypography.labelMedium(color: context.themePrimary),
           hintText: hint,
-          hintStyle: AppTypography.bodyMedium(color: AppColors.grey400),
-          prefixIcon: Icon(Icons.person_outline, color: AppColors.lightPrimary),
+          hintStyle: AppTypography.bodyMedium(color: context.themeTextMuted),
+          prefixIcon: Icon(Icons.person_outline, color: context.themePrimary),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,

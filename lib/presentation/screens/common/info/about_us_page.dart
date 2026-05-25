@@ -61,20 +61,20 @@ class AboutUsPage extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          AppColors.lightPrimary.withValues(alpha: 0.12),
-                          AppColors.lightSecondary.withValues(alpha: 0.08),
+                          context.themePrimary.withValues(alpha: 0.12),
+                          context.themeSecondary.withValues(alpha: 0.08),
                         ],
                       ),
                       borderRadius: AppRadius.forCard,
                       border: Border.all(
-                        color: AppColors.lightPrimary.withValues(alpha: 0.2),
+                        color: context.themePrimary.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.volunteer_activism_rounded,
-                          color: AppColors.lightPrimary,
+                          color: context.themePrimary,
                           size: 40,
                         ),
                         const SizedBox(width: 16),
@@ -132,7 +132,7 @@ class AboutUsPage extends StatelessWidget {
                     style: AppTypography.labelLarge().copyWith(
                       fontSize: 16,
                       height: 1.5,
-                      color: AppColors.lightPrimary,
+                      color: context.themePrimary,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -189,9 +189,9 @@ class _AboutDeveloperCredits extends StatelessWidget {
     final linkStyle = AppTypography.labelLarge().copyWith(
       fontSize: 14,
       height: 1.4,
-      color: AppColors.lightPrimary,
+      color: context.themePrimary,
       decoration: TextDecoration.underline,
-      decorationColor: AppColors.lightPrimary.withValues(alpha: 0.5),
+      decorationColor: context.themePrimary.withValues(alpha: 0.5),
     );
     final captionStyle = AppTypography.bodyMedium().copyWith(
       fontSize: 13,
@@ -230,7 +230,7 @@ class _AboutDeveloperCredits extends StatelessWidget {
                 Icon(
                   Icons.email_outlined,
                   size: 20,
-                  color: AppColors.lightPrimary,
+                  color: context.themePrimary,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -263,7 +263,7 @@ class _AboutDeveloperCredits extends StatelessWidget {
                 Icon(
                   Icons.phone_outlined,
                   size: 20,
-                  color: AppColors.lightPrimary,
+                  color: context.themePrimary,
                 ),
                 const SizedBox(width: 10),
                 Expanded(

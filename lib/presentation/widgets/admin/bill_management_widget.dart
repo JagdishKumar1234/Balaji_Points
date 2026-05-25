@@ -20,7 +20,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.woodenBackground,
+      backgroundColor: context.themeSoftSurface,
       body: Column(
         children: [
           // Filter Buttons
@@ -57,7 +57,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                     child: Text(
                       'Error: ${snapshot.error}',
                       style: AppTypography.bodyMedium().copyWith(
-                        color: AppColors.red,
+                        color: context.themeError,
                       ),
                     ),
                   );
@@ -71,14 +71,14 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                         Icon(
                           Icons.receipt_long_outlined,
                           size: 64,
-                          color: AppColors.lightPrimary.withOpacity(0.5),
+                          color: context.themePrimary.withValues(alpha: 0.5),
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'No Bills Found',
                           style: AppTypography.labelLarge().copyWith(
                             fontSize: 18,
-                            color: AppColors.lightPrimary.withOpacity(0.7),
+                            color: context.themePrimary.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -120,7 +120,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.black.withOpacity(0.05),
+                            color: AppColors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
@@ -136,12 +136,12 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: AppColors.lightPrimary.withOpacity(0.1),
+                            color: context.themePrimary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
                             Icons.receipt,
-                            color: AppColors.lightPrimary,
+                            color: context.themePrimary,
                             size: 24,
                           ),
                         ),
@@ -152,7 +152,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                               userName,
                               style: AppTypography.labelLarge().copyWith(
                                 fontSize: 16,
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -162,7 +162,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                   '$pointsFromAmount pts',
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 18,
-                                    color: AppColors.lightPrimary,
+                                    color: context.themePrimary,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -170,7 +170,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                   rupeeText,
                                   style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 14,
-                                    color: AppColors.lightPrimary.withOpacity(
+                                    color: context.themePrimary.withValues(alpha: 
                                       0.6,
                                     ),
                                   ),
@@ -185,7 +185,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                             'Points: $points',
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: AppColors.lightPrimary.withOpacity(0.6),
+                              color: context.themePrimary.withValues(alpha: 0.6),
                             ),
                           ),
                         ),
@@ -195,10 +195,10 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(status).withOpacity(0.1),
+                            color: _getStatusColor(status).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: _getStatusColor(status).withOpacity(0.3),
+                              color: _getStatusColor(status).withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -260,12 +260,12 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
                                     height: 200,
-                                    color: Colors.grey[200],
+                                    color: context.themeBorder,
                                     child: Center(
                                       child: Icon(
                                         Icons.broken_image,
                                         size: 48,
-                                        color: Colors.grey[400],
+                                        color: context.themeTextMuted,
                                       ),
                                     ),
                                   );
@@ -282,7 +282,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                     onPressed: () => _rejectBill(billId),
                                     style: OutlinedButton.styleFrom(
                                       side: BorderSide(
-                                        color: Colors.red.shade300,
+                                        color: context.themeError,
                                       ),
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 12,
@@ -296,7 +296,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                       style: AppTypography.labelLarge()
                                           .copyWith(
                                             fontSize: 14,
-                                            color: Colors.red.shade700,
+                                            color: context.themeError,
                                           ),
                                     ),
                                   ),
@@ -312,7 +312,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                       points,
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.lightSecondary,
+                                      backgroundColor: context.themeSecondary,
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 12,
                                       ),
@@ -357,13 +357,13 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.lightPrimary
-              : AppColors.lightPrimary.withOpacity(0.1),
+              ? context.themePrimary
+              : context.themePrimary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? AppColors.lightPrimary
-                : AppColors.lightPrimary.withOpacity(0.3),
+                ? context.themePrimary
+                : context.themePrimary.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -372,7 +372,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             label,
             style: AppTypography.labelLarge().copyWith(
               fontSize: 13,
-              color: isSelected ? AppColors.white : AppColors.lightPrimary,
+              color: isSelected ? AppColors.white : context.themePrimary,
             ),
           ),
         ),
@@ -383,13 +383,13 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.lightPrimary.withOpacity(0.6)),
+        Icon(icon, size: 16, color: context.themePrimary.withValues(alpha: 0.6)),
         const SizedBox(width: 8),
         Text(
           '$label: ',
           style: AppTypography.bodySmall().copyWith(
             fontSize: 13,
-            color: AppColors.lightPrimary.withOpacity(0.7),
+            color: context.themePrimary.withValues(alpha: 0.7),
           ),
         ),
         Expanded(
@@ -397,7 +397,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             value,
             style: AppTypography.labelLarge().copyWith(
               fontSize: 13,
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
             ),
           ),
         ),
@@ -410,10 +410,10 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
       case 'approved':
         return AppColors.success;
       case 'rejected':
-        return AppColors.red;
+        return context.themeError;
       case 'pending':
       default:
-        return AppColors.orange;
+        return AppColors.warning;
     }
   }
 
@@ -435,14 +435,14 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
           'Approve Bill',
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         ),
         content: Text(
           'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n$points points will be added to the user.',
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         ),
         actions: [
@@ -451,14 +451,14 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             child: Text(
               'Cancel',
               style: AppTypography.labelLarge().copyWith(
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.lightSecondary,
+              backgroundColor: context.themeSecondary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -473,22 +473,22 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
     );
 
     if (confirm != true) {
-      print('❌ UI (BillManagement): User cancelled approval');
+      AppLogger.debug('❌ UI (BillManagement): User cancelled approval');
       return;
     }
 
-    print('✅ UI (BillManagement): User confirmed approval');
-    print('   Parameters: billId="$billId", userId="$userId", amount=$amount');
+    AppLogger.debug('✅ UI (BillManagement): User confirmed approval');
+    AppLogger.debug('   Parameters: billId="$billId", userId="$userId", amount=$amount');
 
     try {
-      print('📞 UI (BillManagement): Calling _billService.approveBill()...');
+      AppLogger.debug('📞 UI (BillManagement): Calling _billService.approveBill()...');
       final success = await _billService.approveBill(billId, userId, amount);
-      print('📥 UI (BillManagement): approveBill returned: $success');
+      AppLogger.debug('📥 UI (BillManagement): approveBill returned: $success');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: success ? AppColors.success : AppColors.red,
+            backgroundColor: success ? AppColors.success : context.themeError,
             content: Text(
               success
                   ? 'Bill approved and points added successfully'
@@ -500,15 +500,15 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         );
       }
     } catch (e, st) {
-      print('❌ UI (BillManagement): Exception caught');
-      print('   Error: $e');
-      print('   StackTrace: $st');
+      AppLogger.debug('❌ UI (BillManagement): Exception caught');
+      AppLogger.debug('   Error: $e');
+      AppLogger.debug('   StackTrace: $st');
       AppLogger.error('Error approving bill', e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppColors.red,
+            backgroundColor: context.themeError,
           ),
         );
       }
@@ -524,14 +524,14 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
           'Reject Bill',
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
-            color: Colors.red.shade700,
+            color: context.themeError,
           ),
         ),
         content: Text(
           'Are you sure you want to reject this bill?',
           style: AppTypography.bodyMedium().copyWith(
             fontSize: 16,
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
           ),
         ),
         actions: [
@@ -540,14 +540,14 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             child: Text(
               'Cancel',
               style: AppTypography.labelLarge().copyWith(
-                color: AppColors.lightPrimary,
+                color: context.themePrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade700,
+              backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -567,9 +567,9 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
       await _billService.rejectBill(billId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Bill rejected'),
-            backgroundColor: AppColors.orange,
+            backgroundColor: AppColors.warning,
           ),
         );
       }
@@ -579,7 +579,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppColors.red,
+            backgroundColor: context.themeError,
           ),
         );
       }

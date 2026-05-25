@@ -59,14 +59,14 @@ class _UserProfileCardState extends State<UserProfileCard>
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.lightPrimary, AppColors.lightSecondary],
+          colors: [context.themePrimary, context.themeSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightPrimary.withOpacity(0.3),
+            color: context.themePrimary.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -83,7 +83,7 @@ class _UserProfileCardState extends State<UserProfileCard>
               border: Border.all(color: AppColors.white, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.black.withOpacity(0.1),
+                  color: AppColors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -96,7 +96,7 @@ class _UserProfileCardState extends State<UserProfileCard>
                   ? NetworkImage(widget.userImageUrl!)
                   : null,
               child: !_isValidImageUrl(widget.userImageUrl)
-                  ? Icon(Icons.person, size: 28, color: AppColors.lightSecondary)
+                  ? Icon(Icons.person, size: 28, color: context.themeSecondary)
                   : null,
             ),
           ),
@@ -120,12 +120,12 @@ class _UserProfileCardState extends State<UserProfileCard>
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.star, color: Colors.amber.shade300, size: 14),
+                    Icon(Icons.star, color: AppColors.warning, size: 14),
                     const SizedBox(width: 4),
                     Text(
                       '${widget.tier} Tier',
                       style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w500).copyWith(
-                        color: AppColors.white.withOpacity(0.9),
+                        color: AppColors.white.withValues(alpha: 0.9),
                         fontSize: 12,
                       ),
                     ),
@@ -139,10 +139,10 @@ class _UserProfileCardState extends State<UserProfileCard>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: AppColors.white.withOpacity(0.3),
+                color: AppColors.white.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -157,7 +157,7 @@ class _UserProfileCardState extends State<UserProfileCard>
                       angle: _coinAnimation.value,
                       child: Icon(
                         Icons.monetization_on,
-                        color: Colors.amber.shade300,
+                        color: AppColors.warning,
                         size: 20,
                       ),
                     );

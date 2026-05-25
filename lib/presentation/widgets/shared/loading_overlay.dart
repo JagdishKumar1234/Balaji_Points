@@ -15,7 +15,7 @@ class LoadingOverlay extends ConsumerWidget {
       ignoring: false,
       child: Stack(
         children: [
-          ModalBarrier(color: AppColors.black.withOpacity(0.25)),
+          ModalBarrier(color: AppColors.black.withValues(alpha: 0.25)),
           Center(
             child: Container(
               padding: const EdgeInsets.all(20),
@@ -24,7 +24,7 @@ class LoadingOverlay extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.black.withOpacity(0.1),
+                    color: AppColors.black.withValues(alpha: 0.1),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -33,12 +33,12 @@ class LoadingOverlay extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 40,
                     height: 40,
                     child: CircularProgressIndicator(
                       strokeWidth: 4,
-                      color: AppColors.lightSecondary,
+                      color: context.themeSecondary,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -47,7 +47,7 @@ class LoadingOverlay extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.lightTextPrimary,
+                      color: context.themeTextPrimary,
                     ),
                   ),
                 ],

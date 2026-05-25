@@ -67,7 +67,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
         borderRadius: AppRadius.forCard,
         boxShadow: [
           BoxShadow(
-            color: AppColors.purple.withValues(alpha: 0.3),
+            color: context.themePrimary.withValues(alpha: 0.3),
             blurRadius: 10.0,
             offset: Offset(0, 4.0),
           ),
@@ -171,13 +171,13 @@ class _OffersCarouselState extends State<OffersCarousel> {
                                     fit: BoxFit.contain,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(
-                                        color: AppColors.grey200,
+                                        color: context.themeBorder,
                                         height: 220.0,
                                         child: Center(
                                           child: Icon(
                                             Icons.broken_image,
                                             size: 40.0,
-                                            color: AppColors.grey500,
+                                            color: context.themeTextSecondary,
                                           ),
                                         ),
                                       );
@@ -225,7 +225,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
       width: isActive ? 24.0 : AppSpacing.sm,
       height: AppSpacing.sm,
       decoration: BoxDecoration(
-        color: isActive ? AppColors.lightSecondary : AppColors.grey300,
+        color: isActive ? context.themeSecondary : context.themeBorder,
         borderRadius: BorderRadius.circular(4),
       ),
     );

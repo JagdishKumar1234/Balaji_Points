@@ -21,7 +21,7 @@ class WoodenTexture extends StatelessWidget {
         // Wooden texture background
         CustomPaint(
           painter: _WoodenTexturePainter(
-            baseColor: baseColor ?? AppColors.woodenBase,
+            baseColor: baseColor ?? AppColors.lightSoftSurface,
             opacity: opacity,
           ),
           child: Container(),
@@ -47,8 +47,8 @@ class _WoodenTexturePainter extends CustomPainter {
       end: Alignment.bottomRight,
       colors: [
         baseColor,
-        baseColor.withOpacity(0.95),
-        Color.lerp(baseColor, Colors.brown.shade700, 0.1)!,
+        baseColor.withValues(alpha: 0.95),
+        Color.lerp(baseColor, AppColors.lightSecondary, 0.1)!,
       ],
     );
 
@@ -76,7 +76,7 @@ class _WoodenTexturePainter extends CustomPainter {
         final grainPaint = Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = grainWidth
-          ..color = baseColor.withOpacity(grainOpacity * 0.6);
+          ..color = baseColor.withValues(alpha: grainOpacity * 0.6);
 
         final path = Path();
         final startX = variation - grainSpacing;
@@ -96,7 +96,7 @@ class _WoodenTexturePainter extends CustomPainter {
           final highlightPaint = Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 0.5
-            ..color = AppColors.white.withOpacity(grainOpacity * 0.3);
+            ..color = AppColors.white.withValues(alpha: grainOpacity * 0.3);
 
           final highlightPath = Path();
           highlightPath.moveTo(variation, y - 1);
@@ -112,7 +112,7 @@ class _WoodenTexturePainter extends CustomPainter {
           final shadowPaint = Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1.2
-            ..color = Colors.brown.shade800.withOpacity(grainOpacity * 0.4);
+            ..color = AppColors.lightSecondary.withValues(alpha: grainOpacity * 0.4);
 
           final shadowPath = Path();
           shadowPath.moveTo(variation + 2, y + 1);
@@ -133,25 +133,25 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Knot shadow
       final shadowPaint = Paint()
-        ..color = Colors.brown.shade900.withOpacity(opacity * 0.5)
+        ..color = AppColors.lightSecondary.withValues(alpha: opacity * 0.5)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(Offset(knotX + 1, knotY + 1), knotRadius, shadowPaint);
 
       // Knot base
       final knotPaint = Paint()
-        ..color = baseColor.withOpacity(opacity * 0.8)
+        ..color = baseColor.withValues(alpha: opacity * 0.8)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(Offset(knotX, knotY), knotRadius, knotPaint);
 
       // Knot center (darker)
       final centerPaint = Paint()
-        ..color = Colors.brown.shade800.withOpacity(opacity * 1.2)
+        ..color = AppColors.lightSecondary.withValues(alpha: opacity * 1.2)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(Offset(knotX, knotY), knotRadius * 0.4, centerPaint);
 
       // Knot highlight (lighter edge)
       final highlightPaint = Paint()
-        ..color = AppColors.white.withOpacity(opacity * 0.2)
+        ..color = AppColors.white.withValues(alpha: opacity * 0.2)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1;
       canvas.drawCircle(Offset(knotX, knotY), knotRadius * 0.7, highlightPaint);
@@ -164,7 +164,7 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Shadow line
       final shadowLinePaint = Paint()
-        ..color = Colors.brown.shade900.withOpacity(opacity * 0.3)
+        ..color = AppColors.lightSecondary.withValues(alpha: opacity * 0.3)
         ..strokeWidth = 1.5
         ..style = PaintingStyle.stroke;
       canvas.drawLine(
@@ -175,14 +175,14 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Main division line
       final linePaint = Paint()
-        ..color = baseColor.withOpacity(opacity * 0.5)
+        ..color = baseColor.withValues(alpha: opacity * 0.5)
         ..strokeWidth = 0.8
         ..style = PaintingStyle.stroke;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), linePaint);
 
       // Highlight line (top edge)
       final highlightLinePaint = Paint()
-        ..color = AppColors.white.withOpacity(opacity * 0.2)
+        ..color = AppColors.white.withValues(alpha: opacity * 0.2)
         ..strokeWidth = 0.5
         ..style = PaintingStyle.stroke;
       canvas.drawLine(
@@ -197,10 +197,10 @@ class _WoodenTexturePainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        AppColors.white.withOpacity(opacity * 0.15),
+        AppColors.white.withValues(alpha: opacity * 0.15),
         AppColors.transparent,
         AppColors.transparent,
-        Colors.brown.shade900.withOpacity(opacity * 0.1),
+        AppColors.lightSecondary.withValues(alpha: opacity * 0.1),
       ],
       stops: const [0.0, 0.3, 0.7, 1.0],
     );
@@ -251,7 +251,7 @@ class WoodenContainer extends StatelessWidget {
             Positioned.fill(
               child: CustomPaint(
                 painter: _WoodenTexturePainter(
-                  baseColor: baseColor ?? AppColors.woodenBase,
+                  baseColor: baseColor ?? AppColors.lightSoftSurface,
                   opacity: opacity,
                 ),
               ),

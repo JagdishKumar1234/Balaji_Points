@@ -74,7 +74,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
               final bills = carpenterBills[carpenterId] ?? [];
               final totalPoints = bills.fold<int>(
                 0,
-                (sum, bill) => sum + (bill['points'] as int? ?? 0),
+                (acc, bill) => acc + (bill['points'] as int? ?? 0),
               );
 
               eligibleCarpenters.add({
@@ -114,25 +114,25 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       future: _getTodaysEligibleCarpenters(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingCard();
+          return _buildLoadingCard(context);
         }
 
         if (snapshot.hasError) {
-          return _buildErrorCard(snapshot.error.toString());
+          return _buildErrorCard(context, snapshot.error.toString());
         }
 
         final carpenters = snapshot.data ?? [];
 
         if (carpenters.isEmpty) {
-          return _buildEmptyCard();
+          return _buildEmptyCard(context);
         }
 
-        return _buildEligibleCarpentersList(carpenters);
+        return _buildEligibleCarpentersList(context, carpenters);
       },
     );
   }
 
-  Widget _buildLoadingCard() {
+  Widget _buildLoadingCard(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(24),
@@ -151,14 +151,14 @@ class TodaysEligibleCarpenters extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.lightSecondary),
+            valueColor: AlwaysStoppedAnimation<Color>(context.themeSecondary),
           ),
           const SizedBox(height: 16),
           Text(
             'Loading eligible carpenters...',
             style: AppTypography.bodyMedium().copyWith(
               fontSize: 14,
-              color: Colors.grey.shade600,
+              color: context.themeTextSecondary,
             ),
           ),
         ],
@@ -166,25 +166,25 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorCard(String error) {
+  Widget _buildErrorCard(BuildContext context, String error) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
+        color: context.themeError,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.red.shade200),
+        border: Border.all(color: context.themeError),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.error_outline, color: Colors.red.shade600, size: 48),
+          Icon(Icons.error_outline, color: context.themeError, size: 48),
           const SizedBox(height: 12),
           Text(
             'Error loading data',
             style: AppTypography.labelLarge().copyWith(
               fontSize: 16,
-              color: Colors.red.shade800,
+              color: context.themeError,
             ),
           ),
           const SizedBox(height: 8),
@@ -192,7 +192,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             error,
             style: AppTypography.bodyMedium().copyWith(
               fontSize: 12,
-              color: Colors.red.shade600,
+              color: context.themeError,
             ),
             textAlign: TextAlign.center,
           ),
@@ -201,7 +201,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyCard() {
+  Widget _buildEmptyCard(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(32),
@@ -222,14 +222,14 @@ class TodaysEligibleCarpenters extends StatelessWidget {
           Icon(
             Icons.receipt_long_outlined,
             size: 64,
-            color: Colors.grey.shade400,
+            color: context.themeTextMuted,
           ),
           const SizedBox(height: 16),
           Text(
             'No Eligible Carpenters Today',
             style: AppTypography.labelLarge().copyWith(
               fontSize: 18,
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -238,7 +238,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             'No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!',
             style: AppTypography.bodyMedium().copyWith(
               fontSize: 14,
-              color: Colors.grey.shade600,
+              color: context.themeTextSecondary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -247,7 +247,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     );
   }
 
-  Widget _buildEligibleCarpentersList(List<Map<String, dynamic>> carpenters) {
+  Widget _buildEligibleCarpentersList(BuildContext context, List<Map<String, dynamic>> carpenters) {
     final todayStr = DateFormat('MMMM d, y').format(DateTime.now());
 
     return Container(
@@ -272,8 +272,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.lightSecondary,
-                  AppColors.lightSecondary.withValues(alpha: 0.8),
+                  context.themeSecondary,
+                  context.themeSecondary.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: const BorderRadius.only(
@@ -331,7 +331,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final carpenter = carpenters[index];
-              return _buildCarpenterCard(carpenter, index + 1);
+              return _buildCarpenterCard(context, carpenter, index + 1);
             },
           ),
         ],
@@ -339,7 +339,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     );
   }
 
-  Widget _buildCarpenterCard(Map<String, dynamic> carpenter, int rank) {
+  Widget _buildCarpenterCard(BuildContext context, Map<String, dynamic> carpenter, int rank) {
     final name = carpenter['name'] as String;
     final phone = carpenter['phone'] as String? ?? 'N/A';
     final billsCount = carpenter['billsCount'] as int;
@@ -349,10 +349,10 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: context.themeSoftSurface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.lightSecondary.withValues(alpha: 0.2),
+          color: context.themeSecondary.withValues(alpha: 0.2),
           width: 1.5,
         ),
       ),
@@ -363,7 +363,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.lightSecondary.withValues(alpha: 0.15),
+              color: context.themeSecondary.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -371,7 +371,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                 '$rank',
                 style: AppTypography.labelLarge().copyWith(
                   fontSize: 18,
-                  color: AppColors.lightSecondary,
+                  color: context.themeSecondary,
                 ),
               ),
             ),
@@ -385,7 +385,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: AppColors.lightSecondary.withValues(alpha: 0.3),
+                color: context.themeSecondary.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -396,21 +396,21 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: AppColors.lightSecondary.withValues(alpha: 0.1),
+                          color: context.themeSecondary.withValues(alpha: 0.1),
                           child: Icon(
                             Icons.person,
                             size: 28,
-                            color: AppColors.lightSecondary,
+                            color: context.themeSecondary,
                           ),
                         );
                       },
                     )
                   : Container(
-                      color: AppColors.lightSecondary.withValues(alpha: 0.1),
+                      color: context.themeSecondary.withValues(alpha: 0.1),
                       child: Icon(
                         Icons.person,
                         size: 28,
-                        color: AppColors.lightSecondary,
+                        color: context.themeSecondary,
                       ),
                     ),
             ),
@@ -426,7 +426,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   name,
                   style: AppTypography.labelLarge().copyWith(
                     fontSize: 16,
-                    color: AppColors.lightPrimary,
+                    color: context.themePrimary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -434,13 +434,13 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.phone, size: 14, color: Colors.grey.shade600),
+                    Icon(Icons.phone, size: 14, color: context.themeTextSecondary),
                     const SizedBox(width: 4),
                     Text(
                       phone,
                       style: AppTypography.bodyMedium().copyWith(
                         fontSize: 13,
-                        color: Colors.grey.shade600,
+                        color: context.themeTextSecondary,
                       ),
                     ),
                   ],
@@ -459,20 +459,20 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: AppColors.success,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.shade200),
+                  border: Border.all(color: AppColors.success),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.receipt, size: 14, color: Colors.green.shade700),
+                    Icon(Icons.receipt, size: 14, color: AppColors.success),
                     const SizedBox(width: 4),
                     Text(
                       '$billsCount',
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 13,
-                        color: Colors.green.shade800,
+                        color: AppColors.success,
                       ),
                     ),
                   ],
@@ -485,9 +485,9 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  color: AppColors.warning,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.shade200),
+                  border: Border.all(color: AppColors.warning),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -495,14 +495,14 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     Icon(
                       Icons.monetization_on,
                       size: 14,
-                      color: Colors.amber.shade700,
+                      color: AppColors.warning,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '+$totalPoints',
                       style: AppTypography.labelLarge().copyWith(
                         fontSize: 13,
-                        color: Colors.amber.shade900,
+                        color: context.themeSecondary,
                       ),
                     ),
                   ],

@@ -25,7 +25,7 @@ class ProductListPage extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: appBarFill,
-        foregroundColor: AppColors.lightTextPrimary,
+        foregroundColor: context.themeTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -83,7 +83,7 @@ class ProductListPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
-                    color: AppColors.error,
+                    color: context.themeError,
                   ),
                 ),
               ),
@@ -91,8 +91,8 @@ class ProductListPage extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.lightPrimary),
+            return Center(
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -106,14 +106,14 @@ class ProductListPage extends StatelessWidget {
                   Icon(
                     Icons.inventory_2_outlined,
                     size: 80,
-                    color: AppColors.grey300,
+                    color: context.themeBorder,
                   ),
                   const SizedBox(height: 20),
                   Text(
                     'No Product Added',
                     style: AppTypography.buttonMedium().copyWith(
                       fontSize: 20,
-                      color: AppColors.lightTextPrimary,
+                      color: context.themeTextPrimary,
                     ),
                   ),
                 ],
@@ -196,7 +196,7 @@ class ProductListPage extends StatelessWidget {
                   hasCategories ? selectedCategory : 'Products',
                   style: AppTypography.labelLarge().copyWith(
                     fontSize: 16.0,
-                    color: isDark ? AppColors.white : AppColors.lightTextPrimary,
+                    color: isDark ? AppColors.white : context.themeTextPrimary,
                   ),
                 ),
               ),
@@ -284,10 +284,10 @@ class _ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final Color titleColor = isDark ? AppColors.white : AppColors.lightTextPrimary;
+    final Color titleColor = isDark ? AppColors.white : context.themeTextPrimary;
     final Color subtitleColor = isDark
         ? AppColors.white.withValues(alpha: 0.80)
-        : AppColors.lightTextPrimary.withValues(alpha: 0.70);
+        : context.themeTextPrimary.withValues(alpha: 0.70);
 
     final cartService = CartService();
     final sessionService = SessionService();
@@ -296,9 +296,9 @@ class _ProductCard extends StatelessWidget {
       final userId = await sessionService.getUserId();
       if (userId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Please log in to add items to cart.'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.themeError,
           ),
         );
         return;
@@ -316,7 +316,7 @@ class _ProductCard extends StatelessWidget {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Added to cart')));
+      ).showSnackBar(SnackBar(content: Text('Added to cart')));
     }
 
     void openDetails() {
@@ -359,7 +359,7 @@ class _ProductCard extends StatelessWidget {
                                 gradient: LinearGradient(
                                   colors: [
                                     const Color(0xFF2196F3),
-                                    AppColors.purple,
+                                    context.themePrimary,
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -452,7 +452,7 @@ class _ProductCard extends StatelessWidget {
               child: Text(
                 price > 0 ? '₹${price.toStringAsFixed(0)}' : '',
                 style: AppTypography.buttonMedium().copyWith(
-                  color: AppColors.lightPrimary,
+                  color: context.themePrimary,
                   fontSize: 14.0,
                 ),
               ),
@@ -493,20 +493,20 @@ class _SmallChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.grey100,
+        color: context.themeSoftSurface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.grey300!),
+        border: Border.all(color: context.themeBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 10, color: AppColors.grey700),
+          Icon(icon, size: 10, color: context.themeTextSecondary),
           const SizedBox(width: 2),
           Text(
             label,
             style: AppTypography.bodyMedium().copyWith(
               fontSize: 9,
-              color: AppColors.grey800,
+              color: context.themeTextPrimary,
             ),
           ),
         ],
@@ -539,7 +539,7 @@ class _CartIconButton extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
               decoration: BoxDecoration(
-                color: AppColors.error,
+                color: context.themeError,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.white, width: 1),
               ),

@@ -44,7 +44,7 @@ class TopCarpentersList extends StatelessWidget {
               Text(
                 '🏆 Top Carpenters',
                 style: TextStyle(
-                  color: AppColors.lightSecondary,
+                  color: context.themeSecondary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -56,28 +56,28 @@ class TopCarpentersList extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         // Carpenters list with cards
-        ...carpenters.map((carpenter) => _buildLeaderboardCard(carpenter)),
+        ...carpenters.map((carpenter) => _buildLeaderboardCard(context, carpenter)),
       ],
     );
   }
 
-  Widget _buildLeaderboardCard(CarpenterRank carpenter) {
+  Widget _buildLeaderboardCard(BuildContext context, CarpenterRank carpenter) {
     // Determine rank badge color based on position
     Color rankBgColor;
     Color rankTextColor;
 
     if (carpenter.rank == 1) {
-      rankBgColor = Colors.amber.shade100;
-      rankTextColor = Colors.amber.shade700;
+      rankBgColor = AppColors.warning;
+      rankTextColor = AppColors.warning;
     } else if (carpenter.rank == 2) {
-      rankBgColor = Colors.grey.shade200;
-      rankTextColor = Colors.grey.shade700;
+      rankBgColor = context.themeBorder;
+      rankTextColor = context.themeTextSecondary;
     } else if (carpenter.rank == 3) {
-      rankBgColor = Colors.brown.shade100;
-      rankTextColor = Colors.brown.shade700;
+      rankBgColor = context.themeSecondary;
+      rankTextColor = context.themeSecondary;
     } else {
-      rankBgColor = AppColors.lightSecondary.withValues(alpha: 0.1);
-      rankTextColor = AppColors.lightSecondary;
+      rankBgColor = context.themeSecondary.withValues(alpha: 0.1);
+      rankTextColor = context.themeSecondary;
     }
 
     return Container(
@@ -87,7 +87,7 @@ class TopCarpentersList extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.lightSecondary.withValues(alpha: 0.2),
+          color: context.themeSecondary.withValues(alpha: 0.2),
           width: 1.5,
         ),
         boxShadow: [
@@ -129,7 +129,7 @@ class TopCarpentersList extends StatelessWidget {
               shape: BoxShape.circle,
               color: rankBgColor,
               border: Border.all(
-                color: AppColors.lightSecondary.withValues(alpha: 0.3),
+                color: context.themeSecondary.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -152,7 +152,7 @@ class TopCarpentersList extends StatelessWidget {
               carpenter.name,
               style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
                 fontSize: 16,
-                color: AppColors.lightTextPrimary,
+                color: context.themeTextPrimary,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -164,16 +164,16 @@ class TopCarpentersList extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.amber.shade50,
+              color: AppColors.warning,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.amber.shade200, width: 1),
+              border: Border.all(color: AppColors.warning, width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   Icons.monetization_on,
-                  color: Colors.amber.shade700,
+                  color: AppColors.warning,
                   size: 20,
                 ),
                 const SizedBox(width: 4),
@@ -181,7 +181,7 @@ class TopCarpentersList extends StatelessWidget {
                   _formatPoints(carpenter.points),
                   style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
                     fontSize: 16,
-                    color: Colors.amber.shade900,
+                    color: context.themeSecondary,
                   ),
                 ),
               ],

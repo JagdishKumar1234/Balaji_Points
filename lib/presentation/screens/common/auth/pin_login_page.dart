@@ -73,7 +73,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
       } else if (state is AuthError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(state.message),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
         ));
       }
@@ -90,7 +90,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
           backgroundColor: AppColors.transparent,
           elevation: 0,
           leading: BackButton(
-            color: AppColors.lightPrimary,
+            color: context.themePrimary,
             onPressed: () => context.pop(),
           ),
         ),
@@ -129,14 +129,14 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                     // ── App name ──
                     Text(
                       l10n.appName,
-                      style: AppTypography.h2(color: AppColors.lightPrimary),
+                      style: AppTypography.h2(color: context.themePrimary),
                     ).enterHero(delay: AppAnimations.stagger(1)),
 
                     const SizedBox(height: AppSpacing.xs),
 
                     Text(
                       l10n.enter4DigitPin,
-                      style: AppTypography.h5(color: AppColors.lightPrimary),
+                      style: AppTypography.h5(color: context.themePrimary),
                     ).fadeIn(delay: AppAnimations.stagger(2)),
 
                     const SizedBox(height: AppSpacing.xs),
@@ -144,7 +144,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                     Text(
                       '+91 ${widget.phoneNumber}',
                       style: AppTypography.bodyMedium(
-                        color: AppColors.lightTextSecondary,
+                        color: context.themeTextSecondary,
                       ),
                     ).fadeIn(delay: AppAnimations.stagger(3)),
 
@@ -163,41 +163,41 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                             maxLength: 4,
                             textAlign: TextAlign.center,
                             style: AppTypography.h2(
-                              color: AppColors.lightPrimary,
+                              color: context.themePrimary,
                             ).copyWith(letterSpacing: 14),
                             decoration: InputDecoration(
                               labelText: l10n.fourDigitPin,
                               labelStyle: AppTypography.bodyMedium(
-                                color: AppColors.lightTextSecondary,
+                                color: context.themeTextSecondary,
                               ),
                               counterText: '',
                               filled: true,
-                              fillColor: AppColors.lightPrimary.withValues(alpha: 0.05),
+                              fillColor: context.themePrimary.withValues(alpha: 0.05),
                               border: OutlineInputBorder(
                                 borderRadius: AppRadius.forInput,
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withValues(alpha: 0.3),
+                                  color: context.themePrimary.withValues(alpha: 0.3),
                                   width: 1.5,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: AppRadius.forInput,
                                 borderSide: BorderSide(
-                                  color: AppColors.lightPrimary.withValues(alpha: 0.2),
+                                  color: context.themePrimary.withValues(alpha: 0.2),
                                   width: 1.5,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: AppRadius.forInput,
-                                borderSide: const BorderSide(
-                                  color: AppColors.lightPrimary,
+                                borderSide: BorderSide(
+                                  color: context.themePrimary,
                                   width: 2,
                                 ),
                               ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscure ? Icons.visibility_off : Icons.visibility,
-                                  color: AppColors.lightTextSecondary,
+                                  color: context.themeTextSecondary,
                                 ),
                                 onPressed: () => setState(() => _obscure = !_obscure),
                               ),
@@ -214,7 +214,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                             children: [
                               Checkbox(
                                 value: _rememberMe,
-                                activeColor: AppColors.lightSecondary,
+                                activeColor: context.themeSecondary,
                                 onChanged: (v) => setState(() => _rememberMe = v ?? true),
                               ),
                               Expanded(
@@ -223,7 +223,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                                   child: Text(
                                     l10n.rememberMe,
                                     style: AppTypography.bodyMedium(
-                                      color: AppColors.lightTextSecondary,
+                                      color: context.themeTextSecondary,
                                     ),
                                   ),
                                 ),
@@ -248,7 +248,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                             child: Text(
                               l10n.forgotPin,
                               style: AppTypography.labelLarge(
-                                color: AppColors.lightSecondary,
+                                color: context.themeSecondary,
                               ),
                             ),
                           ),
@@ -259,7 +259,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                             child: Text(
                               l10n.newUserSetPin,
                               style: AppTypography.bodySmall(
-                                color: AppColors.lightTextSecondary,
+                                color: context.themeTextSecondary,
                               ),
                             ),
                           ),
@@ -307,7 +307,7 @@ class _GlassCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.lightPrimary.withValues(alpha: 0.10),
+                color: context.themePrimary.withValues(alpha: 0.10),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -340,8 +340,8 @@ class _GradientButton extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.lightSecondary,
-            AppColors.lightSecondary.withValues(alpha: 0.82),
+            context.themeSecondary,
+            context.themeSecondary.withValues(alpha: 0.82),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -349,7 +349,7 @@ class _GradientButton extends StatelessWidget {
         borderRadius: AppRadius.forButton,
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightSecondary.withValues(alpha: 0.35),
+            color: context.themeSecondary.withValues(alpha: 0.35),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -392,30 +392,30 @@ class _BiometricOptInDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
       title: Row(
         children: [
-          const Icon(Icons.fingerprint, color: AppColors.lightSecondary, size: 28),
+          Icon(Icons.fingerprint, color: context.themeSecondary, size: 28),
           const SizedBox(width: AppSpacing.sm),
           Text(
             'Enable Biometrics',
-            style: AppTypography.h5(color: AppColors.lightPrimary),
+            style: AppTypography.h5(color: context.themePrimary),
           ),
         ],
       ),
       content: Text(
         'Use fingerprint or face unlock to sign in faster next time.',
-        style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+        style: AppTypography.bodyMedium(color: context.themeTextSecondary),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
           child: Text(
             'Not Now',
-            style: AppTypography.labelLarge(color: AppColors.lightTextSecondary),
+            style: AppTypography.labelLarge(color: context.themeTextSecondary),
           ),
         ),
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(true),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.lightSecondary,
+            backgroundColor: context.themeSecondary,
             foregroundColor: AppColors.white,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
           ),

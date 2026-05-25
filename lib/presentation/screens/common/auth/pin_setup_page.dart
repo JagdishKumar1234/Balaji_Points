@@ -46,7 +46,8 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
       setState(() {
         _branches = branches;
         // Auto-select if only one branch
-        if (branches.length == 1) _selectedBranchId = branches.first['id'] as String;
+        if (branches.length == 1)
+          _selectedBranchId = branches.first['id'] as String;
         _loadingBranches = false;
       });
     }
@@ -68,27 +69,33 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
     final confirm = _confirmPinController.text.trim();
 
     if (pin != confirm) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.pinsDoNotMatch),
-        backgroundColor: AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.pinsDoNotMatch),
+          backgroundColor: context.themeError,
+        ),
+      );
       return;
     }
 
     if (_selectedBranchId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Please select a branch to continue.'),
-        backgroundColor: AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select a branch to continue.'),
+          backgroundColor: context.themeError,
+        ),
+      );
       return;
     }
 
-    ref.read(authProvider.notifier).setupPin(
-      phoneNumber: _phoneController.text.trim(),
-      pin: pin,
-      firstName: '',
-      branchId: _selectedBranchId,
-    );
+    ref
+        .read(authProvider.notifier)
+        .setupPin(
+          phoneNumber: _phoneController.text.trim(),
+          pin: pin,
+          firstName: '',
+          branchId: _selectedBranchId,
+        );
   }
 
   @override
@@ -99,41 +106,51 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
 
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is PinSetupSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l10n.pinCreatedSuccess),
-          backgroundColor: AppColors.success,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.pinCreatedSuccess),
+            backgroundColor: AppColors.success,
+          ),
+        );
         context.go('/');
       } else if (state is PinSetupError) {
         ScaffoldMessenger.of(context).clearSnackBars();
         String msg = state.message;
-        if (msg.contains('already exists') || msg.contains('User already exists')) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(l10n.accountExistsUseReset),
-            backgroundColor: AppColors.warning,
-            duration: const Duration(seconds: 6),
-            behavior: SnackBarBehavior.floating,
-            action: SnackBarAction(
-              label: l10n.resetPin,
-              textColor: AppColors.white,
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                context.push('/reset-pin', extra: _phoneController.text.trim());
-              },
+        if (msg.contains('already exists') ||
+            msg.contains('User already exists')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.accountExistsUseReset),
+              backgroundColor: AppColors.warning,
+              duration: const Duration(seconds: 6),
+              behavior: SnackBarBehavior.floating,
+              action: SnackBarAction(
+                label: l10n.resetPin,
+                textColor: AppColors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  context.push(
+                    '/reset-pin',
+                    extra: _phoneController.text.trim(),
+                  );
+                },
+              ),
             ),
-          ));
+          );
         } else {
           if (msg.contains('permission-denied')) {
             msg = 'Permission denied. Please check Firebase configuration.';
           } else if (msg.contains('network')) {
             msg = l10n.networkError;
           }
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(msg),
-            backgroundColor: AppColors.error,
-            duration: const Duration(seconds: 5),
-            behavior: SnackBarBehavior.floating,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(msg),
+              backgroundColor: context.themeError,
+              duration: const Duration(seconds: 5),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       }
     });
@@ -147,7 +164,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
         backgroundColor: AppColors.transparent,
         elevation: 0,
         leading: BackButton(
-          color: AppColors.lightPrimary,
+          color: context.themePrimary,
           onPressed: () => context.pop(),
         ),
       ),
@@ -179,13 +196,13 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                   const SizedBox(height: AppSpacing.md),
                   Text(
                     l10n.createPinTitle,
-                    style: AppTypography.h3(color: AppColors.lightPrimary),
+                    style: AppTypography.h3(color: context.themePrimary),
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     l10n.createPinSubtitle,
                     style: AppTypography.bodyMedium(
-                      color: AppColors.lightPrimary.withValues(alpha: 0.7),
+                      color: context.themePrimary.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -201,14 +218,17 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
                           maxLength: 10,
-                          style: AppTypography.labelLarge(color: AppColors.lightPrimary),
+                          style: AppTypography.labelLarge(
+                            color: context.themePrimary,
+                          ),
                           decoration: _inputDecoration(
                             label: l10n.mobileNumber,
                             prefix: '+91 ',
                           ),
                           validator: (v) {
                             final s = v?.trim() ?? '';
-                            if (s.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(s)) {
+                            if (s.length != 10 ||
+                                !RegExp(r'^[0-9]+$').hasMatch(s)) {
                               return l10n.enterValidTenDigit;
                             }
                             return null;
@@ -222,7 +242,8 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                           branches: _branches,
                           selected: _selectedBranchId,
                           loading: _loadingBranches,
-                          onChanged: (id) => setState(() => _selectedBranchId = id),
+                          onChanged: (id) =>
+                              setState(() => _selectedBranchId = id),
                         ),
 
                         const SizedBox(height: AppSpacing.md),
@@ -234,9 +255,12 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                           obscureText: true,
                           maxLength: 4,
                           textAlign: TextAlign.center,
-                          style: AppTypography.h2(color: AppColors.lightPrimary)
-                              .copyWith(letterSpacing: 12),
-                          decoration: _inputDecoration(label: l10n.fourDigitPin),
+                          style: AppTypography.h2(
+                            color: context.themePrimary,
+                          ).copyWith(letterSpacing: 12),
+                          decoration: _inputDecoration(
+                            label: l10n.fourDigitPin,
+                          ),
                           validator: (v) => (v == null || v.length != 4)
                               ? l10n.enter4Digits
                               : null,
@@ -251,12 +275,15 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                           obscureText: true,
                           maxLength: 4,
                           textAlign: TextAlign.center,
-                          style: AppTypography.h2(color: AppColors.lightPrimary)
-                              .copyWith(letterSpacing: 12),
+                          style: AppTypography.h2(
+                            color: context.themePrimary,
+                          ).copyWith(letterSpacing: 12),
                           decoration: _inputDecoration(label: l10n.confirmPin),
                           validator: (v) {
-                            if (v == null || v.length != 4) return l10n.enter4Digits;
-                            if (v != _pinController.text.trim()) return l10n.pinsDoNotMatch;
+                            if (v == null || v.length != 4)
+                              return l10n.enter4Digits;
+                            if (v != _pinController.text.trim())
+                              return l10n.pinsDoNotMatch;
                             return null;
                           },
                         ),
@@ -289,33 +316,33 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
       prefixText: prefix,
       counterText: '',
       filled: true,
-      fillColor: AppColors.lightPrimary.withValues(alpha: 0.05),
-      labelStyle: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+      fillColor: context.themePrimary.withValues(alpha: 0.05),
+      labelStyle: AppTypography.bodyMedium(color: context.themeTextSecondary),
       border: OutlineInputBorder(
         borderRadius: AppRadius.forInput,
         borderSide: BorderSide(
-          color: AppColors.lightPrimary.withValues(alpha: 0.3),
+          color: context.themePrimary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.forInput,
         borderSide: BorderSide(
-          color: AppColors.lightPrimary.withValues(alpha: 0.2),
+          color: context.themePrimary.withValues(alpha: 0.2),
           width: 1.5,
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.forInput,
-        borderSide: const BorderSide(color: AppColors.lightPrimary, width: 2),
+        borderSide: BorderSide(color: context.themePrimary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: AppRadius.forInput,
-        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        borderSide: BorderSide(color: context.themeError, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: AppRadius.forInput,
-        borderSide: const BorderSide(color: AppColors.error, width: 2),
+        borderSide: BorderSide(color: context.themeError, width: 2),
       ),
     );
   }
@@ -343,21 +370,21 @@ class _BranchPicker extends StatelessWidget {
       children: [
         Text(
           'Branch *',
-          style: AppTypography.bodyMedium(color: AppColors.lightTextSecondary),
+          style: AppTypography.bodyMedium(color: context.themeTextSecondary),
         ),
         const SizedBox(height: AppSpacing.xs),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.lightPrimary.withValues(alpha: 0.05),
+            color: context.themePrimary.withValues(alpha: 0.05),
             borderRadius: AppRadius.forInput,
             border: Border.all(
-              color: AppColors.lightPrimary.withValues(alpha: 0.2),
+              color: context.themePrimary.withValues(alpha: 0.2),
               width: 1.5,
             ),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: loading
-              ? const SizedBox(
+              ? SizedBox(
                   height: 48,
                   child: Center(
                     child: SizedBox(
@@ -365,7 +392,7 @@ class _BranchPicker extends StatelessWidget {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.lightPrimary,
+                        color: context.themePrimary,
                       ),
                     ),
                   ),
@@ -377,12 +404,16 @@ class _BranchPicker extends StatelessWidget {
                     hint: Text(
                       'Select your branch',
                       style: AppTypography.bodyMedium(
-                        color: AppColors.lightTextSecondary,
+                        color: context.themeTextSecondary,
                       ),
                     ),
-                    icon: const Icon(Icons.arrow_drop_down,
-                        color: AppColors.lightPrimary),
-                    style: AppTypography.bodyMedium(color: AppColors.lightPrimary),
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: context.themePrimary,
+                    ),
+                    style: AppTypography.bodyMedium(
+                      color: context.themePrimary,
+                    ),
                     onChanged: onChanged,
                     items: branches.map((b) {
                       return DropdownMenuItem<String>(
@@ -428,7 +459,7 @@ class _GlassCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.lightPrimary.withValues(alpha: 0.10),
+                color: context.themePrimary.withValues(alpha: 0.10),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -461,8 +492,8 @@ class _GradientButton extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.lightSecondary,
-            AppColors.lightSecondary.withValues(alpha: 0.82),
+            context.themeSecondary,
+            context.themeSecondary.withValues(alpha: 0.82),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -470,7 +501,7 @@ class _GradientButton extends StatelessWidget {
         borderRadius: AppRadius.forButton,
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightSecondary.withValues(alpha: 0.35),
+            color: context.themeSecondary.withValues(alpha: 0.35),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -493,10 +524,11 @@ class _GradientButton extends StatelessWidget {
                   strokeWidth: 2.5,
                 ),
               )
-            : Text(label,
-                style: AppTypography.buttonLarge(color: AppColors.white)),
+            : Text(
+                label,
+                style: AppTypography.buttonLarge(color: AppColors.white),
+              ),
       ),
     );
   }
 }
-

@@ -63,7 +63,7 @@ class _CartPageState extends State<CartPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Your cart is empty.')));
+        ).showSnackBar(SnackBar(content: Text('Your cart is empty.')));
         return;
       }
 
@@ -103,20 +103,20 @@ class _CartPageState extends State<CartPage> {
       if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to open WhatsApp.')),
+          SnackBar(content: Text('Unable to open WhatsApp.')),
         );
       }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Order placed successfully.')),
+        SnackBar(content: Text('Order placed successfully.')),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to place order: $e'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.themeError,
         ),
       );
     }
@@ -137,7 +137,7 @@ class _CartPageState extends State<CartPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: appBarFill,
-          foregroundColor: AppColors.lightTextPrimary,
+          foregroundColor: context.themeTextPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -150,8 +150,8 @@ class _CartPageState extends State<CartPage> {
             child: Container(height: 1, color: borderColor),
           ),
         ),
-        body: const Center(
-          child: CircularProgressIndicator(color: AppColors.lightPrimary),
+        body: Center(
+          child: CircularProgressIndicator(color: context.themePrimary),
         ),
       );
     }
@@ -161,7 +161,7 @@ class _CartPageState extends State<CartPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: appBarFill,
-          foregroundColor: AppColors.lightTextPrimary,
+          foregroundColor: context.themeTextPrimary,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -182,7 +182,7 @@ class _CartPageState extends State<CartPage> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: appBarFill,
-        foregroundColor: AppColors.lightTextPrimary,
+        foregroundColor: context.themeTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -207,7 +207,7 @@ class _CartPageState extends State<CartPage> {
                   textAlign: TextAlign.center,
                   style: AppTypography.bodyMedium().copyWith(
                     fontSize: 14,
-                    color: AppColors.error,
+                    color: context.themeError,
                   ),
                 ),
               ),
@@ -215,8 +215,8 @@ class _CartPageState extends State<CartPage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.lightPrimary),
+            return Center(
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -230,14 +230,14 @@ class _CartPageState extends State<CartPage> {
                   Icon(
                     Icons.shopping_cart_outlined,
                     size: 80,
-                    color: AppColors.grey300,
+                    color: context.themeBorder,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Your cart is empty',
                     style: AppTypography.buttonMedium().copyWith(
                       fontSize: 20,
-                      color: AppColors.lightTextPrimary,
+                      color: context.themeTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -245,7 +245,7 @@ class _CartPageState extends State<CartPage> {
                     'Browse products and add items to your cart.',
                     style: AppTypography.bodyMedium().copyWith(
                       fontSize: 14,
-                      color: AppColors.grey600,
+                      color: context.themeTextSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -305,12 +305,12 @@ class _CartPageState extends State<CartPage> {
                                           fit: BoxFit.cover,
                                         )
                                       : Container(
-                                          color: AppColors.lightPrimary.withValues(
+                                          color: context.themePrimary.withValues(
                                             alpha: 0.1,
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             Icons.layers_rounded,
-                                            color: AppColors.lightPrimary,
+                                            color: context.themePrimary,
                                           ),
                                         ),
                                 ),
@@ -327,7 +327,7 @@ class _CartPageState extends State<CartPage> {
                                       style: AppTypography.labelLarge()
                                           .copyWith(
                                             fontSize: 16,
-                                            color: AppColors.lightTextPrimary,
+                                            color: context.themeTextPrimary,
                                           ),
                                     ),
                                     const SizedBox(height: 4),
@@ -338,7 +338,7 @@ class _CartPageState extends State<CartPage> {
                                       style: AppTypography.bodyMedium()
                                           .copyWith(
                                             fontSize: 12,
-                                            color: AppColors.grey600,
+                                            color: context.themeTextSecondary,
                                           ),
                                     ),
                                     const SizedBox(height: 6),
@@ -346,7 +346,7 @@ class _CartPageState extends State<CartPage> {
                                       '₹${price.toStringAsFixed(0)}',
                                       style: AppTypography.buttonMedium().copyWith(
                                         fontSize: 14,
-                                        color: AppColors.lightPrimary,
+                                        color: context.themePrimary,
                                       ),
                                     ),
                                   ],
@@ -358,7 +358,7 @@ class _CartPageState extends State<CartPage> {
                                     children: [
                                       IconButton(
                                         icon: const Icon(Icons.remove_circle),
-                                        color: AppColors.lightPrimary,
+                                        color: context.themePrimary,
                                         onPressed: () {
                                           final newQty = qty - 1;
                                           _cartService.updateQuantity(
@@ -375,7 +375,7 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                       IconButton(
                                         icon: const Icon(Icons.add_circle),
-                                        color: AppColors.lightPrimary,
+                                        color: context.themePrimary,
                                         onPressed: () {
                                           final newQty = qty + 1;
                                           _cartService.updateQuantity(
@@ -392,7 +392,7 @@ class _CartPageState extends State<CartPage> {
                                     style: AppTypography.labelLarge()
                                         .copyWith(
                                           fontSize: 12,
-                                          color: AppColors.lightTextPrimary,
+                                          color: context.themeTextPrimary,
                                         ),
                                   ),
                                   TextButton.icon(
@@ -412,7 +412,7 @@ class _CartPageState extends State<CartPage> {
                                       style: AppTypography.bodyMedium(),
                                     ),
                                     style: TextButton.styleFrom(
-                                      foregroundColor: Colors.redAccent,
+                                      foregroundColor: context.themeError,
                                       padding: const EdgeInsets.only(top: 4),
                                       minimumSize: Size.zero,
                                       tapTargetSize:
@@ -474,7 +474,7 @@ class _CartPageState extends State<CartPage> {
                               'Total',
                               style: AppTypography.bodyMedium().copyWith(
                                 fontSize: 13,
-                                color: AppColors.grey600,
+                                color: context.themeTextSecondary,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -482,7 +482,7 @@ class _CartPageState extends State<CartPage> {
                               '₹${total.toStringAsFixed(0)}',
                               style: AppTypography.buttonMedium().copyWith(
                                 fontSize: 18,
-                                color: AppColors.lightPrimary,
+                                color: context.themePrimary,
                               ),
                             ),
                           ],
@@ -493,7 +493,7 @@ class _CartPageState extends State<CartPage> {
                         child: ElevatedButton.icon(
                           onPressed: () => _placeOrder(docs),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.lightSecondary,
+                            backgroundColor: context.themeSecondary,
                             foregroundColor: AppColors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

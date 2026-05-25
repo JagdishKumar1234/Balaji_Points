@@ -59,12 +59,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     final shellTheme = isDark
         ? theme
         : theme.copyWith(
-            scaffoldBackgroundColor: AppColors.carpenterAppBackground,
+            scaffoldBackgroundColor: context.themeBackground,
             colorScheme: theme.colorScheme.copyWith(
-              surface: AppColors.carpenterAppBackground,
+              surface: context.themeBackground,
             ),
             appBarTheme: theme.appBarTheme.copyWith(
-              backgroundColor: AppColors.carpenterAppBackground,
+              backgroundColor: context.themeBackground,
               surfaceTintColor: AppColors.transparent,
             ),
           );

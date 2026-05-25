@@ -25,7 +25,7 @@ class WalletPage extends ConsumerWidget {
     final mq = MediaQuery.of(context);
     final bottomPadding = CarpenterShellLayout.bottomPaddingForScrollView(mq);
     final l10n = AppLocalizations.of(context)!;
-    final canvas = isDark ? theme.colorScheme.surface : AppColors.carpenterAppBackground;
+    final canvas = isDark ? theme.colorScheme.surface : context.themeBackground;
 
     final ids = walletState.carpenterIds;
     final idsReady = walletState.idsLoaded && ids.isNotEmpty;
@@ -42,7 +42,7 @@ class WalletPage extends ConsumerWidget {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => ref.read(walletProvider.notifier).refresh(),
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
               backgroundColor: canvas,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -71,9 +71,9 @@ class WalletPage extends ConsumerWidget {
                           child: _StatCard(
                             icon: Icons.pending_actions,
                             label: l10n.pending,
-                            color: AppColors.orange,
+                            color: AppColors.warning,
                             child: walletState.loading || !idsReady
-                                ? _statLoading()
+                                ? _statLoading(context)
                                 : _PendingCount(ids: ids),
                           ).fadeIn(delay: AppAnimations.stagger(2)),
                         ),
@@ -84,7 +84,7 @@ class WalletPage extends ConsumerWidget {
                             label: l10n.approved,
                             color: AppColors.success,
                             child: walletState.loading || !idsReady
-                                ? _statLoading()
+                                ? _statLoading(context)
                                 : _ApprovedCount(ids: ids),
                           ).fadeIn(delay: AppAnimations.stagger(2)),
                         ),
@@ -122,10 +122,10 @@ class WalletPage extends ConsumerWidget {
     );
   }
 
-  Widget _statLoading() {
+  Widget _statLoading(BuildContext context) {
     return Text(
       '...',
-      style: AppTypography.h4(color: AppColors.lightTextPrimary),
+      style: AppTypography.h4(color: context.themeTextPrimary),
     );
   }
 }
@@ -140,7 +140,7 @@ class _ShimmerPointsCard extends StatelessWidget {
     return Container(
       height: 100,
       decoration: BoxDecoration(
-        color: AppColors.grey100,
+        color: context.themeSoftSurface,
         borderRadius: BorderRadius.circular(22),
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
@@ -164,7 +164,7 @@ class _WalletIntroBanner extends StatelessWidget {
         color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.8) : AppColors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.lightPrimary.withValues(alpha: isDark ? 0.3 : 0.12),
+          color: context.themePrimary.withValues(alpha: isDark ? 0.3 : 0.12),
         ),
       ),
       child: Row(
@@ -173,13 +173,13 @@ class _WalletIntroBanner extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: AppColors.lightPrimary.withValues(alpha: 0.12),
+              color: context.themePrimary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.account_balance_wallet_outlined,
               size: 18,
-              color: AppColors.lightPrimary,
+              color: context.themePrimary,
             ),
           ),
           const SizedBox(width: 10),
@@ -187,7 +187,7 @@ class _WalletIntroBanner extends StatelessWidget {
             child: Text(
               'Track your points and bill rewards in one place',
               style: AppTypography.bodySmall(
-                color: AppColors.lightTextPrimary.withValues(alpha: 0.75),
+                color: context.themeTextPrimary.withValues(alpha: 0.75),
               ).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
@@ -216,9 +216,9 @@ class _PointsCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.lightPrimary,
-            AppColors.lightPrimary.withValues(alpha: 0.85),
-            AppColors.lightPrimary.withValues(alpha: 0.70),
+            context.themePrimary,
+            context.themePrimary.withValues(alpha: 0.85),
+            context.themePrimary.withValues(alpha: 0.70),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -226,7 +226,7 @@ class _PointsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightPrimary.withValues(alpha: 0.35),
+            color: context.themePrimary.withValues(alpha: 0.35),
             blurRadius: 20,
             spreadRadius: 2,
             offset: const Offset(0, 8),
@@ -299,7 +299,7 @@ class _StatCard extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: AppColors.lightPrimary.withValues(alpha: isDark ? 0.14 : 0.08),
+          color: context.themePrimary.withValues(alpha: isDark ? 0.14 : 0.08),
         ),
         boxShadow: [
           BoxShadow(
@@ -331,7 +331,7 @@ class _StatCard extends StatelessWidget {
           Text(
             label,
             style: AppTypography.labelSmall(
-              color: AppColors.lightTextPrimary.withValues(alpha: 0.7),
+              color: context.themeTextPrimary.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -360,7 +360,7 @@ class _PendingCount extends StatelessWidget {
         final count = snap.hasData ? snap.data!.docs.length : 0;
         return Text(
           '$count',
-          style: AppTypography.h4(color: AppColors.lightTextPrimary),
+          style: AppTypography.h4(color: context.themeTextPrimary),
         );
       },
     );
@@ -383,7 +383,7 @@ class _ApprovedCount extends StatelessWidget {
         final count = snap.hasData ? snap.data!.docs.length : 0;
         return Text(
           '$count',
-          style: AppTypography.h4(color: AppColors.lightTextPrimary),
+          style: AppTypography.h4(color: context.themeTextPrimary),
         );
       },
     );
@@ -402,15 +402,15 @@ class _AddBillButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.lightSecondary, Color(0xFF7C3AED), Color(0xFF2563EB)],
+        gradient: LinearGradient(
+          colors: [context.themeSecondary, Color(0xFF7C3AED), Color(0xFF2563EB)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightSecondary.withValues(alpha: 0.28),
+            color: context.themeSecondary.withValues(alpha: 0.28),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -470,10 +470,10 @@ class _SectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.lightPrimary.withValues(alpha: 0.1),
+            color: context.themePrimary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: AppColors.lightPrimary, size: 18),
+          child: Icon(icon, color: context.themePrimary, size: 18),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -482,12 +482,12 @@ class _SectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTypography.h5(color: AppColors.lightTextPrimary),
+                style: AppTypography.h5(color: context.themeTextPrimary),
               ),
               Text(
                 subtitle,
                 style: AppTypography.labelSmall(
-                  color: AppColors.lightTextPrimary.withValues(alpha: 0.6),
+                  color: context.themeTextPrimary.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -563,18 +563,18 @@ class _BillsList extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+          Icon(Icons.error_outline, size: 48, color: context.themeError),
           const SizedBox(height: 12),
           Text(
             'Error loading bills',
-            style: AppTypography.bodyLarge(color: AppColors.error)
+            style: AppTypography.bodyLarge(color: context.themeError)
                 .copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
             error,
             style: AppTypography.labelSmall(
-                color: AppColors.lightTextPrimary.withValues(alpha: 0.5)),
+                color: context.themeTextPrimary.withValues(alpha: 0.5)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -595,20 +595,20 @@ class _BillsList extends StatelessWidget {
           Icon(
             Icons.receipt_long_outlined,
             size: 48,
-            color: AppColors.lightTextPrimary.withValues(alpha: 0.3),
+            color: context.themeTextPrimary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           Text(
             l10n.noBillsYet,
             style: AppTypography.bodyLarge(
-                color: AppColors.lightTextPrimary.withValues(alpha: 0.6))
+                color: context.themeTextPrimary.withValues(alpha: 0.6))
                 .copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.submitFirstBill,
             style: AppTypography.bodySmall(
-                color: AppColors.lightTextPrimary.withValues(alpha: 0.5)),
+                color: context.themeTextPrimary.withValues(alpha: 0.5)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -642,7 +642,7 @@ class _BillCard extends StatelessWidget {
         color: cardBg,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: AppColors.lightPrimary.withValues(alpha: isDark ? 0.14 : 0.09),
+          color: context.themePrimary.withValues(alpha: isDark ? 0.14 : 0.09),
         ),
         boxShadow: [
           BoxShadow(
@@ -671,7 +671,7 @@ class _BillCard extends StatelessWidget {
               children: [
                 Text(
                   storeName.isNotEmpty ? storeName : l10n.billLabel,
-                  style: AppTypography.bodyMedium(color: AppColors.lightTextPrimary)
+                  style: AppTypography.bodyMedium(color: context.themeTextPrimary)
                       .copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
@@ -679,7 +679,7 @@ class _BillCard extends StatelessWidget {
                   children: [
                     Text(
                       '₹${(amount as num).toStringAsFixed(0)}',
-                      style: AppTypography.bodySmall(color: AppColors.lightPrimary)
+                      style: AppTypography.bodySmall(color: context.themePrimary)
                           .copyWith(fontWeight: FontWeight.w600),
                     ),
                     if ((pointsEarned as num) > 0) ...[
@@ -687,7 +687,7 @@ class _BillCard extends StatelessWidget {
                       Text(
                         '• $pointsEarned pts',
                         style: AppTypography.labelSmall(
-                          color: AppColors.lightTextPrimary.withValues(alpha: 0.6),
+                          color: context.themeTextPrimary.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -698,7 +698,7 @@ class _BillCard extends StatelessWidget {
                   Text(
                     _formatDate(createdAt.toDate(), l10n),
                     style: AppTypography.labelSmall(
-                      color: AppColors.lightTextPrimary.withValues(alpha: 0.5),
+                      color: context.themeTextPrimary.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -726,9 +726,9 @@ class _BillCard extends StatelessWidget {
   static Color _statusColor(String status) {
     switch (status.toLowerCase()) {
       case 'approved': return AppColors.success;
-      case 'pending':  return AppColors.orange;
+      case 'pending':  return AppColors.warning;
       case 'rejected': return AppColors.error;
-      default:         return AppColors.grey500;
+      default:         return AppColors.lightTextSecondary;
     }
   }
 

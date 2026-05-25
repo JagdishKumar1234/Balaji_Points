@@ -295,7 +295,7 @@ class ProductService {
 
       // Best-effort: also delete catalog pdf if we can load it
       final snap = await _firestore.collection('products').doc(productId).get();
-      final data = snap.data() as Map<String, dynamic>?;
+      final data = snap.data();
       final catalogPdfUrl = data?['catalogPdfUrl'] as String?;
       await _deleteCatalogPdfIfExists(catalogPdfUrl);
 
