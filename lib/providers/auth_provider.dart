@@ -8,10 +8,16 @@ import 'package:balaji_points/core/logger.dart';
 
 // ─── Service providers ────────────────────────────────────────────────────────
 
-final pinAuthServiceProvider = Provider<PinAuthService>((_) => PinAuthService());
-final sessionServiceProvider = Provider<SessionService>((_) => SessionService());
+final pinAuthServiceProvider = Provider<PinAuthService>(
+  (_) => PinAuthService(),
+);
+final sessionServiceProvider = Provider<SessionService>(
+  (_) => SessionService(),
+);
 final fcmServiceProvider = Provider<FCMService>((_) => FCMService());
-final userMigrationServiceProvider = Provider<UserMigrationService>((_) => UserMigrationService());
+final userMigrationServiceProvider = Provider<UserMigrationService>(
+  (_) => UserMigrationService(),
+);
 
 // ─── Auth state ───────────────────────────────────────────────────────────────
 
@@ -125,7 +131,9 @@ class AuthNotifier extends Notifier<AuthState> {
     state = const AuthCheckingUser();
     try {
       final exists = await _pin.userExists(phoneNumber);
-      state = exists ? AuthUserExists(phoneNumber) : AuthUserNotFound(phoneNumber);
+      state = exists
+          ? AuthUserExists(phoneNumber)
+          : AuthUserNotFound(phoneNumber);
     } catch (e) {
       AppLogger.error('Error checking user existence', e);
       state = AuthError('Error checking user: $e');
@@ -147,9 +155,19 @@ class AuthNotifier extends Notifier<AuthState> {
         return;
       }
 
-      final legacyDocId = userData['docId'] as String? ?? userData['id'] as String? ?? phoneNumber;
-      final postLogin = await _migration.completePostPinLogin(phone: phoneNumber, legacyDocId: legacyDocId);
-      final userId = postLogin?.firebaseUid ?? postLogin?.sessionUserId ?? userData['id'] as String? ?? phoneNumber;
+      final legacyDocId =
+          userData['docId'] as String? ??
+          userData['id'] as String? ??
+          phoneNumber;
+      final postLogin = await _migration.completePostPinLogin(
+        phone: phoneNumber,
+        legacyDocId: legacyDocId,
+      );
+      final userId =
+          postLogin?.firebaseUid ??
+          postLogin?.sessionUserId ??
+          userData['id'] as String? ??
+          phoneNumber;
 
       if (rememberMe) {
         await _session.saveSession(
@@ -159,12 +177,16 @@ class AuthNotifier extends Notifier<AuthState> {
           firstName: userData['firstName'] as String?,
           lastName: userData['lastName'] as String?,
           branchId: userData['branchId'] as String?,
+          pinHash: userData['pinHash'] as String?,
         );
       }
 
       if (postLogin != null) {
         try {
-          await _fcm.refreshTokenAfterLogin(uid: postLogin.firebaseUid, phone: postLogin.phone);
+          await _fcm.refreshTokenAfterLogin(
+            uid: postLogin.firebaseUid,
+            phone: postLogin.phone,
+          );
         } catch (e) {
           AppLogger.warning('FCM refresh after login failed: $e');
         }
@@ -175,7 +197,10 @@ class AuthNotifier extends Notifier<AuthState> {
         id: userId,
         email: userData['email'] as String? ?? '',
         phoneNumber: phoneNumber,
-        displayName: _displayName(userData['firstName'] as String?, userData['lastName'] as String?),
+        displayName: _displayName(
+          userData['firstName'] as String?,
+          userData['lastName'] as String?,
+        ),
         photoUrl: userData['profileImage'] as String?,
         role: role,
         isEmailVerified: true,
@@ -221,9 +246,19 @@ class AuthNotifier extends Notifier<AuthState> {
         return;
       }
 
-      final legacyDocId = userData['docId'] as String? ?? userData['id'] as String? ?? phoneNumber;
-      final postLogin = await _migration.completePostPinLogin(phone: phoneNumber, legacyDocId: legacyDocId);
-      final userId = postLogin?.firebaseUid ?? postLogin?.sessionUserId ?? userData['id'] as String? ?? phoneNumber;
+      final legacyDocId =
+          userData['docId'] as String? ??
+          userData['id'] as String? ??
+          phoneNumber;
+      final postLogin = await _migration.completePostPinLogin(
+        phone: phoneNumber,
+        legacyDocId: legacyDocId,
+      );
+      final userId =
+          postLogin?.firebaseUid ??
+          postLogin?.sessionUserId ??
+          userData['id'] as String? ??
+          phoneNumber;
 
       await _session.saveSession(
         phoneNumber: phoneNumber,
@@ -232,11 +267,15 @@ class AuthNotifier extends Notifier<AuthState> {
         firstName: userData['firstName'] as String?,
         lastName: userData['lastName'] as String?,
         branchId: userData['branchId'] as String? ?? branchId,
+        pinHash: userData['pinHash'] as String?,
       );
 
       if (postLogin != null) {
         try {
-          await _fcm.refreshTokenAfterLogin(uid: postLogin.firebaseUid, phone: postLogin.phone);
+          await _fcm.refreshTokenAfterLogin(
+            uid: postLogin.firebaseUid,
+            phone: postLogin.phone,
+          );
         } catch (e) {
           AppLogger.warning('FCM refresh after setup failed: $e');
         }
@@ -274,8 +313,22 @@ class AuthNotifier extends Notifier<AuthState> {
         state = const ResetPinError('Invalid current PIN');
         return;
       }
-      final success = await _pin.setPinForPhone(phone: phoneNumber, pin: newPin);
+      final success = await _pin.setPinForPhone(
+        phone: phoneNumber,
+        pin: newPin,
+      );
       if (success) {
+        final storedPhone = await _session.getPhoneNumber();
+        if (storedPhone != null && storedPhone.trim() == phoneNumber.trim()) {
+          final updatedUserData = await _pin.verifyPin(
+            phone: phoneNumber,
+            pin: newPin,
+          );
+          final newHash = updatedUserData?['pinHash'] as String?;
+          if (newHash != null && newHash.isNotEmpty) {
+            await _session.setPinHash(newHash);
+          }
+        }
         state = const ResetPinSuccess();
         await Future.delayed(const Duration(milliseconds: 100));
         state = const AuthInitial();

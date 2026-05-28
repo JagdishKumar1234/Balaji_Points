@@ -9,12 +9,8 @@ class SessionService {
   SessionService._internal();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-    iOptions: IOSOptions(
-      accessibility: KeychainAccessibility.first_unlock,
-    ),
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
 
   // Storage keys
@@ -28,6 +24,7 @@ class SessionService {
   static const String _keyBiometricEnabled = 'biometric_enabled';
   static const String _keyHasAskedBiometric = 'has_asked_biometric';
   static const String _keyBranchId = 'branch_id';
+  static const String _keyPinHash = 'pin_hash';
 
   /// Save user session after successful login
   Future<void> saveSession({
@@ -38,6 +35,7 @@ class SessionService {
     String? lastName,
     String? profileImage,
     String? branchId,
+    String? pinHash,
   }) async {
     await _storage.write(key: _keyIsLoggedIn, value: 'true');
     await _storage.write(key: _keyPhoneNumber, value: phoneNumber);
@@ -55,6 +53,9 @@ class SessionService {
     }
     if (branchId != null) {
       await _storage.write(key: _keyBranchId, value: branchId);
+    }
+    if (pinHash != null) {
+      await _storage.write(key: _keyPinHash, value: pinHash);
     }
   }
 
@@ -109,9 +110,19 @@ class SessionService {
     return await _storage.read(key: _keyBranchId);
   }
 
+  /// Get stored PIN hash for the remembered session
+  Future<String?> getPinHash() async {
+    return await _storage.read(key: _keyPinHash);
+  }
+
   /// Update branch ID in session (called after branch migration)
   Future<void> setBranchId(String branchId) async {
     await _storage.write(key: _keyBranchId, value: branchId);
+  }
+
+  /// Update stored PIN hash after a PIN reset
+  Future<void> setPinHash(String pinHash) async {
+    await _storage.write(key: _keyPinHash, value: pinHash);
   }
 
   /// Get all session data
@@ -124,6 +135,7 @@ class SessionService {
       'lastName': await getLastName(),
       'profileImage': await getProfileImage(),
       'branchId': await getBranchId(),
+      'pinHash': await getPinHash(),
     };
   }
 
@@ -137,7 +149,10 @@ class SessionService {
 
   /// Persist biometric opt-in / opt-out choice.
   Future<void> setBiometricEnabled({required bool enabled}) async {
-    await _storage.write(key: _keyBiometricEnabled, value: enabled ? 'true' : 'false');
+    await _storage.write(
+      key: _keyBiometricEnabled,
+      value: enabled ? 'true' : 'false',
+    );
   }
 
   /// Whether the app has already asked the user about biometric login once.

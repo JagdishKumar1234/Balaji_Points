@@ -288,12 +288,6 @@ class _HomePageState extends ConsumerState<HomePage>
 
                   const SizedBox(height: AppSpacing.md),
 
-                  // Quick Actions
-                  const RepaintBoundary(child: HomeQuickActions())
-                      .enterCard(delay: AppAnimations.stagger(1)),
-
-                  const SizedBox(height: AppSpacing.md),
-
                   // Offers
                   if (homeState.offersLoading ||
                       homeState.offers.isNotEmpty) ...[

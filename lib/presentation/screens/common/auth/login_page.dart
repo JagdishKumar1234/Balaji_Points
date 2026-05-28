@@ -15,6 +15,9 @@ import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
+import 'package:balaji_points/services/auth/biometric_service.dart';
+import 'package:balaji_points/services/auth/session_service.dart';
+import 'package:balaji_points/services/notifications/fcm_service.dart';
 import '../../../../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -27,6 +30,16 @@ class LoginPage extends ConsumerStatefulWidget {
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final SessionService _sessionService = SessionService();
+  bool _canUseDeviceAuth = false;
+  bool _isDeviceAuthLoading = false;
+  String? _rememberedPhone;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStoredSession();
+  }
 
   @override
   void dispose() {
@@ -39,6 +52,106 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
     ref.read(authProvider.notifier).checkUserExists(phone);
+  }
+
+  Future<void> _loadStoredSession() async {
+    final isLoggedIn = await _sessionService.isLoggedIn();
+    if (!isLoggedIn) return;
+
+    final savedPhone = await _sessionService.getPhoneNumber();
+    final biometricEnabled = await _sessionService.isBiometricEnabled();
+    final deviceAvailable =
+        biometricEnabled && await BiometricService().isAvailable();
+
+    if (!mounted) return;
+    setState(() {
+      _rememberedPhone = savedPhone;
+      _canUseDeviceAuth =
+          deviceAvailable && savedPhone != null && savedPhone.isNotEmpty;
+    });
+  }
+
+  Future<void> _authenticateWithDevice() async {
+    setState(() => _isDeviceAuthLoading = true);
+    final authenticated = await BiometricService().authenticate(
+      localizedReason: 'Verify your identity to open Balaji Points',
+    );
+
+    if (!mounted) return;
+    setState(() => _isDeviceAuthLoading = false);
+
+    final messenger = ScaffoldMessenger.of(context);
+    final errorColor = context.themeError;
+
+    if (!authenticated) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: const Text('Authentication failed. Please try again.'),
+          backgroundColor: errorColor,
+        ),
+      );
+      return;
+    }
+
+    final isLoggedIn = await _sessionService.isLoggedIn();
+    if (!isLoggedIn) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: const Text(
+            'No stored session found. Please login with PIN.',
+          ),
+          backgroundColor: errorColor,
+        ),
+      );
+      return;
+    }
+
+    final role = await _sessionService.getUserRole();
+    FCMService().processPendingNavigation();
+    if (!mounted) return;
+
+    if (role?.trim().toLowerCase() == 'admin') {
+      context.go('/admin');
+    } else {
+      context.go('/');
+    }
+  }
+
+  Widget _buildDeviceAuthCard(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.xl3),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(color: context.themePrimary.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Use device authentication',
+            style: AppTypography.bodyLarge(
+              color: context.themePrimary,
+            ).copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            _rememberedPhone != null
+                ? '+91 $_rememberedPhone'
+                : 'Use your saved session',
+            style: AppTypography.bodyMedium(color: context.themeTextSecondary),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppButton.secondary(
+            label: 'Login with device authentication',
+            icon: Icons.fingerprint,
+            onPressed: _isDeviceAuthLoading ? null : _authenticateWithDevice,
+            isLoading: _isDeviceAuthLoading,
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -135,6 +248,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ).fadeIn(delay: AppAnimations.stagger(3)),
 
                         const SizedBox(height: AppSpacing.xl3),
+                        if (_canUseDeviceAuth) ...[
+                          _buildDeviceAuthCard(context),
+                        ],
 
                         // ── Glass card ──
                         _GlassCard(
@@ -209,17 +325,16 @@ class _LanguagePicker extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.9),
         borderRadius: AppRadius.sm8,
-        border: Border.all(
-          color: context.themePrimary.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: context.themePrimary.withValues(alpha: 0.3)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Locale>(
           value: ref.watch(localeProvider),
           style: AppTypography.bodyMedium(color: context.themeTextPrimary),
           onChanged: (locale) {
-            if (locale != null)
+            if (locale != null) {
               ref.read(localeProvider.notifier).setLocale(locale);
+            }
           },
           items: [
             DropdownMenuItem(
@@ -283,4 +398,3 @@ class _GlassCard extends StatelessWidget {
     );
   }
 }
-

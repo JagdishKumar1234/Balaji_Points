@@ -13,8 +13,6 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
-import 'package:balaji_points/services/auth/biometric_service.dart';
-import 'package:balaji_points/services/auth/session_service.dart';
 import '../../../../providers/auth_provider.dart';
 
 class PINLoginPage extends ConsumerStatefulWidget {
@@ -39,27 +37,16 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
 
   void _login() {
     if (!_formKey.currentState!.validate()) return;
-    ref.read(authProvider.notifier).loginWithPin(
-      phoneNumber: widget.phoneNumber,
-      pin: _pinController.text.trim(),
-      rememberMe: _rememberMe,
-    );
+    ref
+        .read(authProvider.notifier)
+        .loginWithPin(
+          phoneNumber: widget.phoneNumber,
+          pin: _pinController.text.trim(),
+          rememberMe: _rememberMe,
+        );
   }
 
   Future<void> _onAuthenticated(AuthAuthenticated state) async {
-    final session = SessionService();
-    final bio = BiometricService();
-    final asked = await session.hasAskedBiometric();
-    if (!asked && await bio.isAvailable()) {
-      if (!mounted) return;
-      final enable = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const _BiometricOptInDialog(),
-      );
-      await session.setBiometricEnabled(enabled: enable ?? false);
-      await session.markAskedBiometric();
-    }
     if (!mounted) return;
     context.go(state.role.trim().toLowerCase() == 'admin' ? '/admin' : '/');
   }
@@ -74,11 +61,13 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
       if (state is AuthAuthenticated) {
         _onAuthenticated(state);
       } else if (state is AuthError) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(state.message),
-          backgroundColor: context.themeError,
-          duration: const Duration(seconds: 3),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.message),
+            backgroundColor: context.themeError,
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
     });
 
@@ -101,7 +90,10 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
           fit: StackFit.expand,
           children: [
             // ── Background ──
-            Image.asset('assets/images/background_image.png', fit: BoxFit.cover),
+            Image.asset(
+              'assets/images/background_image.png',
+              fit: BoxFit.cover,
+            ),
 
             // ── Scrollable content ──
             SingleChildScrollView(
@@ -167,10 +159,13 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                             letterSpacing: 14,
                             suffix: IconButton(
                               icon: Icon(
-                                _obscure ? Icons.visibility_off : Icons.visibility,
+                                _obscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: context.themeTextSecondary,
                               ),
-                              onPressed: () => setState(() => _obscure = !_obscure),
+                              onPressed: () =>
+                                  setState(() => _obscure = !_obscure),
                             ),
                             validator: (v) => (v == null || v.length != 4)
                                 ? l10n.enter4Digits
@@ -185,11 +180,14 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                               Checkbox(
                                 value: _rememberMe,
                                 activeColor: context.themeSecondary,
-                                onChanged: (v) => setState(() => _rememberMe = v ?? true),
+                                onChanged: (v) =>
+                                    setState(() => _rememberMe = v ?? true),
                               ),
                               Expanded(
                                 child: GestureDetector(
-                                  onTap: () => setState(() => _rememberMe = !_rememberMe),
+                                  onTap: () => setState(
+                                    () => _rememberMe = !_rememberMe,
+                                  ),
                                   child: Text(
                                     l10n.rememberMe,
                                     style: AppTypography.bodyMedium(
@@ -202,7 +200,6 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                           ),
 
                           const SizedBox(height: AppSpacing.lg),
-
                           // Login button
                           AppButton.secondary(
                             label: l10n.login,
@@ -215,13 +212,17 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                           // Forgot PIN
                           AppButton.outline(
                             label: l10n.forgotPin,
-                            onPressed: () => context.push('/pin-reset?phone=${widget.phoneNumber}'),
+                            onPressed: () => context.push(
+                              '/pin-reset?phone=${widget.phoneNumber}',
+                            ),
                           ),
 
                           // New user
                           AppButton.outline(
                             label: l10n.newUserSetPin,
-                            onPressed: () => context.push('/pin-setup?phone=${widget.phoneNumber}'),
+                            onPressed: () => context.push(
+                              '/pin-setup?phone=${widget.phoneNumber}',
+                            ),
                           ),
                         ],
                       ),
@@ -276,45 +277,6 @@ class _GlassCard extends StatelessWidget {
           child: child,
         ),
       ),
-    );
-  }
-}
-
-// ── Biometric opt-in dialog ──────────────────────────────────────────────────
-
-class _BiometricOptInDialog extends StatelessWidget {
-  const _BiometricOptInDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
-      title: Row(
-        children: [
-          Icon(Icons.fingerprint, color: context.themeSecondary, size: 28),
-          const SizedBox(width: AppSpacing.sm),
-          Text(
-            'Enable Biometrics',
-            style: AppTypography.h5(color: context.themePrimary),
-          ),
-        ],
-      ),
-      content: Text(
-        'Use fingerprint or face unlock to sign in faster next time.',
-        style: AppTypography.bodyMedium(color: context.themeTextSecondary),
-      ),
-      actions: [
-        AppButton.outline(
-          label: 'Not Now',
-          fullWidth: false,
-          onPressed: () => Navigator.of(context).pop(false),
-        ),
-        AppButton.secondary(
-          label: 'Enable',
-          fullWidth: false,
-          onPressed: () => Navigator.of(context).pop(true),
-        ),
-      ],
     );
   }
 }

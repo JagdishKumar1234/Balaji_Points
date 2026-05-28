@@ -50,8 +50,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
       setState(() {
         _branches = branches;
         // Auto-select if only one branch
-        if (branches.length == 1)
+        if (branches.length == 1) {
           _selectedBranchId = branches.first['id'] as String;
+        }
         _loadingBranches = false;
       });
     }
@@ -198,10 +199,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  AppText.h3(
-                    l10n.createPinTitle,
-                    color: context.themePrimary,
-                  ),
+                  AppText.h3(l10n.createPinTitle, color: context.themePrimary),
                   const SizedBox(height: AppSpacing.xs),
                   AppText.body(
                     l10n.createPinSubtitle,
@@ -258,10 +256,12 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                           controller: _confirmPinController,
                           label: l10n.confirmPin,
                           validator: (v) {
-                            if (v == null || v.length != 4)
+                            if (v == null || v.length != 4) {
                               return l10n.enter4Digits;
-                            if (v != _pinController.text.trim())
+                            }
+                            if (v != _pinController.text.trim()) {
                               return l10n.pinsDoNotMatch;
+                            }
                             return null;
                           },
                         ),
@@ -287,7 +287,6 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
       ),
     );
   }
-
 }
 
 // ── Branch picker ─────────────────────────────────────────────────────────────
@@ -328,9 +327,7 @@ class _BranchPicker extends StatelessWidget {
           child: loading
               ? SizedBox(
                   height: 48,
-                  child: Center(
-                    child: AppLoader(size: 20, strokeWidth: 2),
-                  ),
+                  child: Center(child: AppLoader(size: 20, strokeWidth: 2)),
                 )
               : DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
@@ -406,4 +403,3 @@ class _GlassCard extends StatelessWidget {
     );
   }
 }
-
