@@ -1,11 +1,13 @@
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/services/platform/cart_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 
@@ -150,9 +152,7 @@ class _CartPageState extends State<CartPage> {
             child: Container(height: 1, color: borderColor),
           ),
         ),
-        body: Center(
-          child: CircularProgressIndicator(color: context.themePrimary),
-        ),
+        body: const Center(child: AppLoader()),
       );
     }
 
@@ -174,7 +174,7 @@ class _CartPageState extends State<CartPage> {
             child: Container(height: 1, color: borderColor),
           ),
         ),
-        body: const Center(child: Text('Please log in to use cart.')),
+        body: const Center(child: AppText.body('Please log in to use cart.')),
       );
     }
 
@@ -202,22 +202,17 @@ class _CartPageState extends State<CartPage> {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(
+                child: AppText.body(
                   'Error loading cart:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium().copyWith(
-                    fontSize: 14,
-                    color: context.themeError,
-                  ),
+                  color: context.themeError,
                 ),
               ),
             );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
-            );
+            return const Center(child: AppLoader());
           }
 
           final docs = snapshot.data?.docs ?? [];
@@ -233,20 +228,10 @@ class _CartPageState extends State<CartPage> {
                     color: context.themeBorder,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Your cart is empty',
-                    style: AppTypography.buttonMedium().copyWith(
-                      fontSize: 20,
-                      color: context.themeTextPrimary,
-                    ),
-                  ),
+                  const AppText.h4('Your cart is empty'),
                   const SizedBox(height: 8),
-                  Text(
+                  const AppText.body(
                     'Browse products and add items to your cart.',
-                    style: AppTypography.bodyMedium().copyWith(
-                      fontSize: 14,
-                      color: context.themeTextSecondary,
-                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -320,34 +305,20 @@ class _CartPageState extends State<CartPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    AppText.label(
                                       name,
                                       maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppTypography.labelLarge()
-                                          .copyWith(
-                                            fontSize: 16,
-                                            color: context.themeTextPrimary,
-                                          ),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text(
+                                    AppText.bodySmall(
                                       subCategory.isNotEmpty
                                           ? '$mainCategory • $subCategory'
                                           : mainCategory,
-                                      style: AppTypography.bodyMedium()
-                                          .copyWith(
-                                            fontSize: 12,
-                                            color: context.themeTextSecondary,
-                                          ),
                                     ),
                                     const SizedBox(height: 6),
-                                    Text(
+                                    AppText.label(
                                       '₹${price.toStringAsFixed(0)}',
-                                      style: AppTypography.buttonMedium().copyWith(
-                                        fontSize: 14,
-                                        color: context.themePrimary,
-                                      ),
+                                      color: context.themePrimary,
                                     ),
                                   ],
                                 ),
@@ -368,11 +339,7 @@ class _CartPageState extends State<CartPage> {
                                           );
                                         },
                                       ),
-                                      Text(
-                                        '$qty',
-                                        style: AppTypography.buttonMedium()
-                                            .copyWith(fontSize: 14),
-                                      ),
+                                      AppText.label('$qty'),
                                       IconButton(
                                         icon: const Icon(Icons.add_circle),
                                         color: context.themePrimary,
@@ -387,14 +354,7 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                     ],
                                   ),
-                                  Text(
-                                    '₹${lineTotal.toStringAsFixed(0)}',
-                                    style: AppTypography.labelLarge()
-                                        .copyWith(
-                                          fontSize: 12,
-                                          color: context.themeTextPrimary,
-                                        ),
-                                  ),
+                                  AppText.labelSmall('₹${lineTotal.toStringAsFixed(0)}'),
                                   TextButton.icon(
                                     onPressed: () {
                                       _cartService.updateQuantity(
@@ -407,10 +367,7 @@ class _CartPageState extends State<CartPage> {
                                       Icons.delete_outline,
                                       size: 18,
                                     ),
-                                    label: Text(
-                                      'Remove',
-                                      style: AppTypography.bodyMedium(),
-                                    ),
+                                    label: const Text('Remove'),
                                     style: TextButton.styleFrom(
                                       foregroundColor: context.themeError,
                                       padding: const EdgeInsets.only(top: 4),
@@ -470,42 +427,21 @@ class _CartPageState extends State<CartPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Total',
-                              style: AppTypography.bodyMedium().copyWith(
-                                fontSize: 13,
-                                color: context.themeTextSecondary,
-                              ),
-                            ),
+                            const AppText.muted('Total'),
                             const SizedBox(height: 2),
-                            Text(
+                            AppText.h4(
                               '₹${total.toStringAsFixed(0)}',
-                              style: AppTypography.buttonMedium().copyWith(
-                                fontSize: 18,
-                                color: context.themePrimary,
-                              ),
+                              color: context.themePrimary,
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 44,
-                        child: ElevatedButton.icon(
-                          onPressed: () => _placeOrder(docs),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: context.themeSecondary,
-                            foregroundColor: AppColors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                          ),
-                          icon: const Icon(Icons.shopping_bag),
-                          label: Text(
-                            'Place Order (WhatsApp)',
-                            style: AppTypography.buttonMedium(),
-                          ),
-                        ),
+                      AppButton.secondary(
+                        label: 'Place Order (WhatsApp)',
+                        onPressed: () => _placeOrder(docs),
+                        icon: Icons.shopping_bag,
+                        fullWidth: false,
+                        verticalPadding: 12,
                       ),
                     ],
                   ),

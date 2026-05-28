@@ -12,6 +12,9 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import '../../../../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -119,20 +122,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         const SizedBox(height: AppSpacing.md),
 
                         // ── Title ──
-                        Text(
+                        AppText.h2(
                           'Balaji Points',
-                          style: AppTypography.displaySmall(
-                            color: context.themePrimary,
-                          ),
+                          color: context.themePrimary,
                         ).enterHero(delay: AppAnimations.stagger(2)),
 
                         const SizedBox(height: AppSpacing.xl2),
 
-                        Text(
+                        AppText.bodyLarge(
                           l10n.enterPhoneNumber,
-                          style: AppTypography.bodyLarge(
-                            color: context.themeTextSecondary,
-                          ),
+                          color: context.themeTextSecondary,
                         ).fadeIn(delay: AppAnimations.stagger(3)),
 
                         const SizedBox(height: AppSpacing.xl3),
@@ -143,53 +142,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               // Phone field
-                              TextFormField(
+                              AppTextField.phone(
                                 controller: _phoneController,
-                                maxLength: 10,
-                                keyboardType: TextInputType.phone,
-                                style: AppTypography.h5(
-                                  color: context.themeTextPrimary,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: l10n.mobileNumber,
-                                  labelStyle: AppTypography.bodyMedium(
-                                    color: context.themeTextSecondary,
-                                  ),
-                                  prefixText: '+91 ',
-                                  prefixStyle: AppTypography.h5(
-                                    color: context.themePrimary,
-                                  ),
-                                  counterText: '',
-                                  filled: true,
-                                  fillColor: context.themePrimary.withValues(
-                                    alpha: 0.05,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: AppRadius.forInput,
-                                    borderSide: BorderSide(
-                                      color: context.themePrimary.withValues(
-                                        alpha: 0.3,
-                                      ),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: AppRadius.forInput,
-                                    borderSide: BorderSide(
-                                      color: context.themePrimary.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: AppRadius.forInput,
-                                    borderSide: BorderSide(
-                                      color: context.themePrimary,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
+                                label: l10n.mobileNumber,
                                 validator: (value) {
                                   final v = value?.trim() ?? '';
                                   if (v.length != 10 ||
@@ -203,12 +158,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               const SizedBox(height: AppSpacing.xl),
 
                               // Continue button
-                              _GradientButton(
+                              AppButton.secondary(
+                                label: l10n.continueWithPin,
                                 onPressed: isChecking
                                     ? null
                                     : _checkUserAndNavigate,
                                 isLoading: isChecking,
-                                label: l10n.continueWithPin,
                               ),
                             ],
                           ),
@@ -217,22 +172,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         const SizedBox(height: AppSpacing.xl),
 
                         // ── Footer ──
-                        Text(
+                        AppText.label(
                           '${l10n.poweredBy} ${l10n.companyName}',
-                          style:
-                              AppTypography.labelMedium(
-                                color: context.themePrimary,
-                              ).copyWith(
-                                fontWeight: FontWeight.w700,
-                                shadows: [
-                                  Shadow(
-                                    color: AppColors.white.withValues(
-                                      alpha: 0.8,
-                                    ),
-                                    blurRadius: 10,
-                                  ),
-                                ],
-                              ),
+                          color: context.themePrimary,
+                          shadows: [
+                            Shadow(
+                              color: AppColors.white.withValues(alpha: 0.8),
+                              blurRadius: 10,
+                            ),
+                          ],
                         ).fadeIn(delay: AppAnimations.stagger(5)),
 
                         const SizedBox(height: AppSpacing.xl3),
@@ -336,63 +284,3 @@ class _GlassCard extends StatelessWidget {
   }
 }
 
-// ── Gradient button ───────────────────────────────────────────────────────────
-
-class _GradientButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final bool isLoading;
-  final String label;
-
-  const _GradientButton({
-    required this.onPressed,
-    required this.isLoading,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: AppSpacing.buttonHeight,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.themeSecondary,
-            context.themeSecondary.withValues(alpha: 0.82),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: AppRadius.forButton,
-        boxShadow: [
-          BoxShadow(
-            color: context.themeSecondary.withValues(alpha: 0.35),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.transparent,
-          shadowColor: AppColors.transparent,
-          minimumSize: const Size(double.infinity, AppSpacing.buttonHeight),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
-        ),
-        child: isLoading
-            ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  color: AppColors.white,
-                  strokeWidth: 2.5,
-                ),
-              )
-            : Text(
-                label,
-                style: AppTypography.buttonLarge(color: AppColors.white),
-              ),
-      ),
-    );
-  }
-}

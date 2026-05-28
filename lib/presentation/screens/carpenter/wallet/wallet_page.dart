@@ -7,12 +7,13 @@ import 'package:intl/intl.dart';
 
 import 'package:balaji_points/core/design/app_animations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 
 class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
@@ -158,15 +159,10 @@ class _WalletIntroBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.8) : AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: context.themePrimary.withValues(alpha: isDark ? 0.3 : 0.12),
-        ),
-      ),
+      borderRadius: 14,
+      color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.8) : AppColors.white,
       child: Row(
         children: [
           Container(
@@ -293,23 +289,10 @@ class _StatCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? theme.colorScheme.surface : AppColors.white;
 
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: context.themePrimary.withValues(alpha: isDark ? 0.14 : 0.08),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.08),
-            blurRadius: 14,
-            spreadRadius: 1,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+      borderRadius: 18,
+      color: bg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -509,7 +492,7 @@ class _BillsLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.all(32),
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(child: AppLoader()),
     );
   }
 }
@@ -555,12 +538,8 @@ class _BillsList extends StatelessWidget {
   }
 
   Widget _errorCard(BuildContext context, String error) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: AppRadius.forCard,
-      ),
       child: Column(
         children: [
           Icon(Icons.error_outline, size: 48, color: context.themeError),
@@ -584,12 +563,8 @@ class _BillsList extends StatelessWidget {
 
   Widget _emptyCard(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: AppRadius.forCard,
-      ),
       child: Column(
         children: [
           Icon(
@@ -636,23 +611,10 @@ class _BillCard extends StatelessWidget {
     final statusColor = _statusColor(status);
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: context.themePrimary.withValues(alpha: isDark ? 0.14 : 0.09),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            spreadRadius: 0.5,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+      borderRadius: 18,
+      color: cardBg,
       child: Row(
         children: [
           Container(

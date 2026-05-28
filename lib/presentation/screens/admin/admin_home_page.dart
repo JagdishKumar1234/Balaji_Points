@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
@@ -57,38 +59,19 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          l10n.logout,
-          style: AppTypography.labelLarge().copyWith(fontSize: 22),
-        ),
-        content: Text(
-          l10n.logoutConfirmation,
-          style: AppTypography.bodyMedium().copyWith(fontSize: 16),
-        ),
+        title: AppText.h3(l10n.logout),
+        content: AppText.body(l10n.logoutConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(
-              l10n.cancel,
-              style: AppTypography.bodySmall().copyWith(
-                color: context.themeTextSecondary,
-                fontSize: 16,
-              ),
-            ),
+            child: AppText.body(l10n.cancel, color: context.themeTextSecondary),
           ),
-          ElevatedButton(
+          AppButton(
+            label: l10n.logout,
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.themeError,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(
-              l10n.logout,
-              style: AppTypography.labelLarge().copyWith(fontSize: 16),
-            ),
+            variant: AppButtonVariant.danger,
+            fullWidth: false,
+            verticalPadding: 12,
           ),
         ],
       ),
@@ -127,8 +110,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete All Notifications'),
-        content: const Text(
+        title: const AppText.h4('Delete All Notifications'),
+        content: const AppText.body(
           'Are you sure you want to delete all admin notifications?',
         ),
         actions: [
@@ -136,16 +119,12 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Delete',
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.themeError,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text('Delete'),
+            variant: AppButtonVariant.danger,
+            fullWidth: false,
+            verticalPadding: 10,
           ),
         ],
       ),
@@ -157,7 +136,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const Center(child: AppLoader()),
     );
 
     try {
@@ -276,27 +255,16 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          AppText.label(
                             'Balaji Points - Admin Panel',
-                            style: AppTypography.labelLarge().copyWith(
-                              fontSize: 17,
-                              color: context.themePrimary,
-                              letterSpacing: 0.3,
-                            ),
+                            color: context.themePrimary,
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 2),
-                          Text(
+                          AppText.muted(
                             AppConstants.shopNameShort,
-                            style: AppTypography.bodyMedium().copyWith(
-                              fontSize: 11,
-                              color: context.themePrimary.withValues(
-                                alpha: 0.65,
-                              ),
-                            ),
+                            color: context.themePrimary.withValues(alpha: 0.65),
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -305,12 +273,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                 )
               : _selectedSection == 'users'
               ? _usersCountTitle()
-              : Text(
+              : AppText.label(
                   _sectionTitle(_selectedSection!),
-                  style: AppTypography.labelLarge().copyWith(
-                    fontSize: 18,
-                    color: context.themePrimary,
-                  ),
+                  color: context.themePrimary,
                 ),
           centerTitle: !_showDashboard,
           actions: [
@@ -383,22 +348,10 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         }).length;
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text(
-            'Users - ...',
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 18,
-              color: context.themePrimary,
-            ),
-          );
+          return AppText.label('Users - ...', color: context.themePrimary);
         }
 
-        return Text(
-          'Users - $count',
-          style: AppTypography.labelLarge().copyWith(
-            fontSize: 18,
-            color: context.themePrimary,
-          ),
-        );
+        return AppText.label('Users - $count', color: context.themePrimary);
       },
     );
   }

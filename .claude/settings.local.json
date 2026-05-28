@@ -26,7 +26,21 @@
       "Bash(git -C /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points status --short)",
       "Bash(git -C /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points add lib/features/auth/presentation/pages/pin_setup_page.dart lib/presentation/screens/dashboard/dashboard_page.dart lib/presentation/screens/home/home_page.dart lib/presentation/screens/wallet/wallet_page.dart lib/presentation/providers/home_provider.dart lib/presentation/providers/wallet_provider.dart)",
       "Bash(git -C /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points commit -m ' *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(xargs -0 perl -0777 -i -pe 's/onPopInvoked: \\\\\\(didPop\\\\\\)/onPopInvokedWithResult: \\(didPop, result\\)/g')",
+      "Bash(awk -F: '{print $1}')",
+      "Bash(grep -v \"Analyzing\\\\|^$\\\\|issues found\\\\|ran in\")",
+      "Bash(xargs perl /tmp/fix_colors.pl)",
+      "Bash(xargs perl /tmp/fix_colors2.pl)",
+      "Bash(perl -0777 -i -pe 's/colors: AppColors\\\\.lightPrimary,/colors: [AppColors.lightPrimary, AppColors.lightSecondary],/g' /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/screens/carpenter/home/widgets/complete_profile_card.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/screens/admin/admin_notifications_page.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/screens/common/splash/splash_page.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/shared/app_update_dialog.dart)",
+      "Bash(perl /tmp/revert_context.pl /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/shared/wooden_texture.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/carpenter/daily_spin_wheel.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/carpenter/daily_spin_scanner.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/carpenter/top_carpenters_display.dart)",
+      "Bash(xargs python3 /tmp/fix_const_nested.py)",
+      "Bash(xargs perl -i -pe 's/SnakBar_REPLACED_SnackBar/SnackBar/g')",
+      "Bash(perl /tmp/revert_context.pl /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/shared/wooden_texture.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/carpenter/daily_spin_wheel.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/carpenter/daily_spin_scanner.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/widgets/carpenter/top_carpenters_display.dart /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/lib/presentation/screens/common/auth/reset_pin_page.dart)",
+      "Bash(firebase deploy *)",
+      "Bash(perl -0777 -i -pe ' *)",
+      "Bash(python3 - lib/presentation/widgets/carpenter/daily_spin_scanner.dart lib/presentation/widgets/carpenter/daily_spin_wheel.dart)",
+      "Bash(xxd)"
     ]
   }
 }

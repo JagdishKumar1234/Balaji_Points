@@ -9,6 +9,10 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import '../../../../providers/auth_provider.dart';
 
@@ -194,16 +198,14 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  Text(
+                  AppText.h3(
                     l10n.createPinTitle,
-                    style: AppTypography.h3(color: context.themePrimary),
+                    color: context.themePrimary,
                   ),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(
+                  AppText.body(
                     l10n.createPinSubtitle,
-                    style: AppTypography.bodyMedium(
-                      color: context.themePrimary.withValues(alpha: 0.7),
-                    ),
+                    color: context.themePrimary.withValues(alpha: 0.7),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.xl2),
@@ -214,17 +216,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Phone
-                        TextFormField(
+                        AppTextField.phone(
                           controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          maxLength: 10,
-                          style: AppTypography.labelLarge(
-                            color: context.themePrimary,
-                          ),
-                          decoration: _inputDecoration(
-                            label: l10n.mobileNumber,
-                            prefix: '+91 ',
-                          ),
+                          label: l10n.mobileNumber,
                           validator: (v) {
                             final s = v?.trim() ?? '';
                             if (s.length != 10 ||
@@ -249,18 +243,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                         const SizedBox(height: AppSpacing.md),
 
                         // PIN
-                        TextFormField(
+                        AppTextField.pin(
                           controller: _pinController,
-                          keyboardType: TextInputType.number,
-                          obscureText: true,
-                          maxLength: 4,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.h2(
-                            color: context.themePrimary,
-                          ).copyWith(letterSpacing: 12),
-                          decoration: _inputDecoration(
-                            label: l10n.fourDigitPin,
-                          ),
+                          label: l10n.fourDigitPin,
                           validator: (v) => (v == null || v.length != 4)
                               ? l10n.enter4Digits
                               : null,
@@ -269,16 +254,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                         const SizedBox(height: AppSpacing.md),
 
                         // Confirm PIN
-                        TextFormField(
+                        AppTextField.pin(
                           controller: _confirmPinController,
-                          keyboardType: TextInputType.number,
-                          obscureText: true,
-                          maxLength: 4,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.h2(
-                            color: context.themePrimary,
-                          ).copyWith(letterSpacing: 12),
-                          decoration: _inputDecoration(label: l10n.confirmPin),
+                          label: l10n.confirmPin,
                           validator: (v) {
                             if (v == null || v.length != 4)
                               return l10n.enter4Digits;
@@ -291,7 +269,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                         const SizedBox(height: AppSpacing.xl),
 
                         // Save button
-                        _GradientButton(
+                        AppButton.secondary(
                           label: l10n.savePin,
                           isLoading: isSaving,
                           onPressed: isSaving ? null : _savePin,
@@ -310,42 +288,6 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
     );
   }
 
-  InputDecoration _inputDecoration({required String label, String? prefix}) {
-    return InputDecoration(
-      labelText: label,
-      prefixText: prefix,
-      counterText: '',
-      filled: true,
-      fillColor: context.themePrimary.withValues(alpha: 0.05),
-      labelStyle: AppTypography.bodyMedium(color: context.themeTextSecondary),
-      border: OutlineInputBorder(
-        borderRadius: AppRadius.forInput,
-        borderSide: BorderSide(
-          color: context.themePrimary.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: AppRadius.forInput,
-        borderSide: BorderSide(
-          color: context.themePrimary.withValues(alpha: 0.2),
-          width: 1.5,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: AppRadius.forInput,
-        borderSide: BorderSide(color: context.themePrimary, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: AppRadius.forInput,
-        borderSide: BorderSide(color: context.themeError, width: 1.5),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: AppRadius.forInput,
-        borderSide: BorderSide(color: context.themeError, width: 2),
-      ),
-    );
-  }
 }
 
 // ── Branch picker ─────────────────────────────────────────────────────────────
@@ -387,14 +329,7 @@ class _BranchPicker extends StatelessWidget {
               ? SizedBox(
                   height: 48,
                   child: Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: context.themePrimary,
-                      ),
-                    ),
+                    child: AppLoader(size: 20, strokeWidth: 2),
                   ),
                 )
               : DropdownButtonHideUnderline(
@@ -472,63 +407,3 @@ class _GlassCard extends StatelessWidget {
   }
 }
 
-// ── Gradient button ───────────────────────────────────────────────────────────
-
-class _GradientButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final bool isLoading;
-  final String label;
-
-  const _GradientButton({
-    required this.onPressed,
-    required this.isLoading,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: AppSpacing.buttonHeight,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.themeSecondary,
-            context.themeSecondary.withValues(alpha: 0.82),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: AppRadius.forButton,
-        boxShadow: [
-          BoxShadow(
-            color: context.themeSecondary.withValues(alpha: 0.35),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.transparent,
-          shadowColor: AppColors.transparent,
-          minimumSize: const Size(double.infinity, AppSpacing.buttonHeight),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
-        ),
-        child: isLoading
-            ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  color: AppColors.white,
-                  strokeWidth: 2.5,
-                ),
-              )
-            : Text(
-                label,
-                style: AppTypography.buttonLarge(color: AppColors.white),
-              ),
-      ),
-    );
-  }
-}

@@ -102,6 +102,8 @@ flutter:
     - assets/images/furniture/luxurious_lifestyle.jpeg
     - assets/images/furniture/furniture_10.jpeg
     - assets/images/furniture/home_office.jpeg
+    - assets/images/furniture/banner_light_color.png
+    - assets/images/furniture/banner_dark_color.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

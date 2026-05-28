@@ -4,7 +4,8 @@ import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Simple flat top bar with status-bar (top) safe area.
+/// Modern flat top nav bar — no bottom border.
+/// Layout: [Hamburger] [Logo square + App name + Branch subtitle] → [Actions]
 class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final String title;
@@ -60,7 +61,6 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
   Widget build(BuildContext context) {
     final bg = backgroundColor ?? context.themeBackground;
     final fg = foregroundColor ?? context.themeTextPrimary;
-    final fgMuted = fg.withValues(alpha: 0.72);
     final isDark = context.isDarkMode;
 
     final overlayStyle = SystemUiOverlayStyle(
@@ -73,6 +73,7 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
       value: overlayStyle,
       child: Material(
         color: bg,
+        elevation: 0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -80,62 +81,71 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
             SizedBox(
               height: CarpenterShellLayout.navBarHeight,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    leading ?? const SizedBox(width: 40),
+                    // Hamburger or custom leading
+                    leading ?? const SizedBox(width: 48),
+
+                    // Center: logo + title/subtitle OR custom center widget
                     Expanded(
-                      child: center ??
-                          (subtitle != null
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTypography.buttonMedium().copyWith(
-                                    fontSize: 17,
-                                    color: fg,
-                                  ),
-                                ),
-                                Text(
-                                  subtitle!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTypography.bodyMedium().copyWith(
-                                    fontSize: 12,
-                                    color: fgMuted,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTypography.buttonMedium().copyWith(
-                                  fontSize: 18,
-                                  color: fg,
-                                ),
-                              ),
-                            )),
+                      child: center ?? _DefaultCenter(
+                        title: title,
+                        subtitle: subtitle,
+                        fg: fg,
+                      ),
                     ),
+
+                    // Actions (cart icon etc.)
                     if (actions != null && actions!.isNotEmpty)
                       Row(mainAxisSize: MainAxisSize.min, children: actions!)
                     else
-                      const SizedBox(width: 40),
+                      const SizedBox(width: 48),
                   ],
                 ),
               ),
             ),
-            Divider(height: 1, thickness: 1, color: fg.withValues(alpha: 0.08)),
+            // No divider — clean modern look
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DefaultCenter extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final Color fg;
+
+  const _DefaultCenter({
+    required this.title,
+    required this.subtitle,
+    required this.fg,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fgMuted = fg.withValues(alpha: 0.55);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.h5(color: fg),
+        ),
+        if (subtitle != null)
+          Text(
+            subtitle!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.caption(color: fgMuted),
+          ),
+      ],
     );
   }
 }

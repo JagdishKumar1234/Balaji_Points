@@ -124,7 +124,7 @@ class TopCarpentersDisplay extends StatelessWidget {
             style: TextStyle(
               fontSize: rank == 1 ? 14 : 12,
               fontWeight: FontWeight.bold,
-              color: isCurrentUser ? context.themePrimary : AppColors.black.withValues(alpha: 0.87),
+              color: isCurrentUser ? context.themePrimary : context.themeTextPrimary,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

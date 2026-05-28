@@ -70,8 +70,21 @@ class BranchService {
           .get();
       return snap.docs.map((d) => {'id': d.id, ...d.data()}).toList();
     } catch (e) {
-      AppLogger.error('BranchService.listActiveBranches', e);
-      return [];
+      // Index may still be building — fall back to full fetch + in-memory filter
+      AppLogger.error('BranchService.listActiveBranches (indexed)', e);
+      try {
+        final snap = await _branches.get();
+        final results = snap.docs
+            .where((d) => d.data()['isActive'] == true)
+            .map((d) => {'id': d.id, ...d.data()})
+            .toList();
+        results.sort((a, b) =>
+            (a['name'] as String).compareTo(b['name'] as String));
+        return results;
+      } catch (e2) {
+        AppLogger.error('BranchService.listActiveBranches (fallback)', e2);
+        return [];
+      }
     }
   }
 

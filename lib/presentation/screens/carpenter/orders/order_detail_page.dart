@@ -9,6 +9,10 @@ import 'package:printing/printing.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final String orderId;
@@ -33,7 +37,7 @@ class OrderDetailPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Order Details', style: AppTypography.h5()),
+        title: const AppText.h4('Order Details'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -50,10 +54,10 @@ class OrderDetailPage extends StatelessWidget {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(
+                child: AppText.body(
                   'Error loading order:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium(color: context.themeError),
+                  color: context.themeError,
                 ),
               ),
             );
@@ -62,9 +66,7 @@ class OrderDetailPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting ||
               !snapshot.hasData ||
               !snapshot.data!.exists) {
-            return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
-            );
+            return const Center(child: AppLoader());
           }
 
           final data = snapshot.data!.data() ?? {};
@@ -99,16 +101,11 @@ class OrderDetailPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Order $orderNo',
-                              style: AppTypography.h4(),
-                            ),
+                            AppText.h4('Order $orderNo'),
                             const SizedBox(height: 4),
-                            Text(
+                            AppText.bodySmall(
                               dateStr,
-                              style: AppTypography.bodySmall(
-                                color: context.themeTextSecondary,
-                              ),
+                              color: context.themeTextSecondary,
                             ),
                           ],
                         ),
@@ -120,64 +117,49 @@ class OrderDetailPage extends StatelessWidget {
 
                   // Shop block
                   if (shopName.isNotEmpty || shopAddress.isNotEmpty) ...[
-                    Text(
-                      shopName.isNotEmpty ? shopName : 'Shop details',
-                      style: AppTypography.h5(),
-                    ),
+                    AppText.h4(shopName.isNotEmpty ? shopName : 'Shop details'),
                     if (shopAddress.isNotEmpty)
-                      Text(shopAddress,
-                          style: AppTypography.bodySmall(
-                              color: context.themeTextSecondary)),
+                      AppText.bodySmall(shopAddress,
+                          color: context.themeTextSecondary),
                     if (shopGstNo.isNotEmpty)
-                      Text('GST: $shopGstNo',
-                          style: AppTypography.bodySmall(
-                              color: context.themeTextSecondary)),
+                      AppText.bodySmall('GST: $shopGstNo',
+                          color: context.themeTextSecondary),
                     if (shopPhone.isNotEmpty)
-                      Text('Phone: $shopPhone',
-                          style: AppTypography.bodySmall(
-                              color: context.themeTextSecondary)),
+                      AppText.bodySmall('Phone: $shopPhone',
+                          color: context.themeTextSecondary),
                     if (shopEmail.isNotEmpty)
-                      Text(shopEmail,
-                          style: AppTypography.bodySmall(
-                              color: context.themeTextSecondary)),
+                      AppText.bodySmall(shopEmail,
+                          color: context.themeTextSecondary),
                     const SizedBox(height: 16),
                   ],
 
                   // Carpenter block
                   if (carpenterName.isNotEmpty || carpenterPhone.isNotEmpty) ...[
-                    Text('Carpenter', style: AppTypography.labelLarge().copyWith(fontWeight: FontWeight.w600)),
+                    const AppText.label('Carpenter'),
                     if (carpenterName.isNotEmpty)
-                      Text(carpenterName,
-                          style: AppTypography.bodySmall(
-                              color: context.themeTextSecondary)),
+                      AppText.bodySmall(carpenterName,
+                          color: context.themeTextSecondary),
                     if (carpenterPhone.isNotEmpty)
-                      Text(carpenterPhone,
-                          style: AppTypography.bodySmall(
-                              color: context.themeTextSecondary)),
+                      AppText.bodySmall(carpenterPhone,
+                          color: context.themeTextSecondary),
                     const SizedBox(height: 16),
                   ],
 
                   // Shipping address
                   if (address.isNotEmpty) ...[
-                    Text('Shipping address',
-                        style: AppTypography.labelLarge()
-                            .copyWith(fontWeight: FontWeight.w600)),
-                    Text(address,
-                        style: AppTypography.bodySmall(
-                            color: context.themeTextSecondary)),
+                    const AppText.label('Shipping address'),
+                    AppText.bodySmall(address,
+                        color: context.themeTextSecondary),
                     const SizedBox(height: 16),
                   ],
 
                   // Items table
-                  Text('Items',
-                      style: AppTypography.labelLarge()
-                          .copyWith(fontWeight: FontWeight.w600)),
+                  const AppText.label('Items'),
                   const SizedBox(height: 8),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: context.themeBorder),
-                    ),
+                  AppCard(
+                    padding: EdgeInsets.zero,
+                    borderRadius: 12,
+                    showShadow: false,
                     child: Column(
                       children: [
                         // Header row
@@ -191,32 +173,24 @@ class OrderDetailPage extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              Expanded(
+                              const Expanded(
                                 flex: 4,
-                                child: Text('Item',
-                                    style: AppTypography.labelSmall()
-                                        .copyWith(fontWeight: FontWeight.w600)),
+                                child: AppText.labelSmall('Item'),
                               ),
-                              Expanded(
+                              const Expanded(
                                 flex: 2,
-                                child: Text('Qty',
-                                    textAlign: TextAlign.right,
-                                    style: AppTypography.labelSmall()
-                                        .copyWith(fontWeight: FontWeight.w600)),
+                                child: AppText.labelSmall('Qty',
+                                    textAlign: TextAlign.right),
                               ),
-                              Expanded(
+                              const Expanded(
                                 flex: 2,
-                                child: Text('Price',
-                                    textAlign: TextAlign.right,
-                                    style: AppTypography.labelSmall()
-                                        .copyWith(fontWeight: FontWeight.w600)),
+                                child: AppText.labelSmall('Price',
+                                    textAlign: TextAlign.right),
                               ),
-                              Expanded(
+                              const Expanded(
                                 flex: 2,
-                                child: Text('Total',
-                                    textAlign: TextAlign.right,
-                                    style: AppTypography.labelSmall()
-                                        .copyWith(fontWeight: FontWeight.w600)),
+                                child: AppText.labelSmall('Total',
+                                    textAlign: TextAlign.right),
                               ),
                             ],
                           ),
@@ -230,27 +204,24 @@ class OrderDetailPage extends StatelessWidget {
                               children: [
                                 Expanded(
                                   flex: 4,
-                                  child: Text(
+                                  child: AppText.bodySmall(
                                     (item['name'] ?? '') as String,
-                                    style: AppTypography.bodySmall(),
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
-                                  child: Text(
+                                  child: AppText.bodySmall(
                                     '${item['quantity'] ?? 0}',
                                     textAlign: TextAlign.right,
-                                    style: AppTypography.bodySmall(
-                                        color: context.themeTextSecondary),
+                                    color: context.themeTextSecondary,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
-                                  child: Text(
+                                  child: AppText.bodySmall(
                                     '₹${(item['price'] ?? 0).toStringAsFixed(0)}',
                                     textAlign: TextAlign.right,
-                                    style: AppTypography.bodySmall(
-                                        color: context.themeTextSecondary),
+                                    color: context.themeTextSecondary,
                                   ),
                                 ),
                                 Expanded(
@@ -261,11 +232,9 @@ class OrderDetailPage extends StatelessWidget {
                                     final numLine =
                                         (item['lineTotal'] as num?) ??
                                             (numPrice * numQty);
-                                    return Text(
+                                    return AppText.bodySmall(
                                       '₹${numLine.toStringAsFixed(0)}',
                                       textAlign: TextAlign.right,
-                                      style: AppTypography.bodySmall()
-                                          .copyWith(fontWeight: FontWeight.w600),
                                     );
                                   }),
                                 ),
@@ -281,35 +250,20 @@ class OrderDetailPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total',
-                          style: AppTypography.labelLarge()
-                              .copyWith(fontWeight: FontWeight.w600)),
-                      Text(
+                      const AppText.label('Total'),
+                      AppText.h4(
                         '₹${total.toStringAsFixed(0)}',
-                        style: AppTypography.h4(color: context.themePrimary),
+                        color: context.themePrimary,
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () async => _generateAndSharePdf(data),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.themeSecondary,
-                        foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      icon: const Icon(Icons.picture_as_pdf),
-                      label: Text(
-                        'Download / Share PDF',
-                        style: AppTypography.buttonMedium(color: AppColors.white),
-                      ),
-                    ),
+                  AppButton.secondary(
+                    label: 'Download / Share PDF',
+                    icon: Icons.picture_as_pdf,
+                    onPressed: () async => _generateAndSharePdf(data),
+                    verticalPadding: 12,
                   ),
                 ],
               ),

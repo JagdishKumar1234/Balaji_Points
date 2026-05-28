@@ -1,11 +1,14 @@
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/services/platform/cart_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 
@@ -179,13 +182,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(
+                child: AppText.body(
                   'Error loading product:\n${snapshot.error}',
+                  color: context.themeError,
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium().copyWith(
-                    fontSize: 14,
-                    color: context.themeError,
-                  ),
                 ),
               ),
             );
@@ -194,9 +194,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           if (snapshot.connectionState == ConnectionState.waiting ||
               !snapshot.hasData ||
               !snapshot.data!.exists) {
-            return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
-            );
+            return const Center(child: AppLoader());
           }
 
           final data = snapshot.data!.data() ?? {};
@@ -324,31 +322,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AppText.button(
                         name.isNotEmpty ? name : 'Product',
-                        style: AppTypography.buttonMedium().copyWith(
-                          fontSize: 22,
-                          color: context.themeTextPrimary,
-                        ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      AppText.muted(
                         subCategory.isNotEmpty
                             ? '$mainCategory • $subCategory'
                             : mainCategory,
-                        style: AppTypography.bodyMedium().copyWith(
-                          fontSize: 14,
-                          color: context.themeTextSecondary,
-                        ),
                       ),
                       const SizedBox(height: 12),
                       if (price > 0)
-                        Text(
+                        AppText.button(
                           '₹${price.toStringAsFixed(0)}',
-                          style: AppTypography.buttonMedium().copyWith(
-                            fontSize: 24,
-                            color: context.themePrimary,
-                          ),
+                          color: context.themePrimary,
                         ),
                       const SizedBox(height: 16),
                       if (size.isNotEmpty ||
@@ -380,25 +367,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ),
                       if (description.isNotEmpty) ...[
                         const SizedBox(height: 16),
-                        Text(
-                          'Description',
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 15,
-                            color: context.themeTextPrimary,
-                          ),
-                        ),
+                        const AppText.label('Description'),
                         const SizedBox(height: 4),
-                        Text(
-                          description,
-                          style: AppTypography.bodyMedium().copyWith(
-                            fontSize: 14,
-                            color: context.themeTextSecondary,
-                          ),
-                        ),
+                        AppText.muted(description),
                       ],
                       if (catalogPdfUrl.isNotEmpty) ...[
                         const SizedBox(height: 16),
-                        OutlinedButton.icon(
+                        AppButton.outline(
+                          label: 'View catalog PDF',
+                          icon: Icons.picture_as_pdf,
+                          verticalPadding: 12,
                           onPressed: () async {
                             final uri = Uri.parse(catalogPdfUrl);
                             if (!await launchUrl(
@@ -407,22 +385,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             )) {
                               if (!mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   content: Text('Unable to open catalog PDF.'),
                                 ),
                               );
                             }
                           },
-                          icon: const Icon(Icons.picture_as_pdf),
-                          label: const Text('View catalog PDF'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: context.themePrimary,
-                            side: BorderSide(color: context.themePrimary),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
                         ),
                       ],
                     ],
@@ -445,34 +413,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton.icon(
+                      child: AppButton.outline(
+                        label: 'Share',
+                        icon: Icons.ios_share,
+                        verticalPadding: 12,
                         onPressed: () => _shareProduct(data),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: context.themePrimary,
-                          side: BorderSide(color: context.themePrimary),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        icon: const Icon(Icons.ios_share),
-                        label: const Text('Share'),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton.icon(
+                      child: AppButton.secondary(
+                        label: 'Add to cart',
+                        icon: Icons.add_shopping_cart,
+                        verticalPadding: 12,
                         onPressed: () => _addToCart(data),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.themeSecondary,
-                          foregroundColor: AppColors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        icon: const Icon(Icons.add_shopping_cart),
-                        label: const Text('Add to cart'),
                       ),
                     ),
                   ],
@@ -500,33 +454,19 @@ class _DetailChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: context.themeSoftSurface,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: context.themeBorder),
-      ),
+      borderRadius: 999,
+      color: context.themeSoftSurface,
+      showShadow: false,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14, color: context.themeTextSecondary),
           const SizedBox(width: 4),
-          Text(
-            '$label:',
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 12,
-              color: context.themeTextPrimary,
-            ),
-          ),
+          AppText.label('$label:', color: context.themeTextPrimary),
           const SizedBox(width: 4),
-          Text(
-            value,
-            style: AppTypography.bodyMedium().copyWith(
-              fontSize: 12,
-              color: context.themeTextPrimary,
-            ),
-          ),
+          AppText.body(value, color: context.themeTextPrimary),
         ],
       ),
     );

@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -66,9 +69,7 @@ class _OrdersPageState extends State<OrdersPage> {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: _buildAppBar(context),
-        body: Center(
-          child: CircularProgressIndicator(color: context.themePrimary),
-        ),
+        body: const Center(child: AppLoader()),
       );
     }
 
@@ -76,11 +77,8 @@ class _OrdersPageState extends State<OrdersPage> {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: _buildAppBar(context),
-        body: Center(
-          child: Text(
-            'Please log in to view orders.',
-            style: AppTypography.bodyMedium(color: context.themeTextSecondary),
-          ),
+        body: const Center(
+          child: AppText.body('Please log in to view orders.'),
         ),
       );
     }
@@ -99,19 +97,17 @@ class _OrdersPageState extends State<OrdersPage> {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(
+                child: AppText.body(
                   'Error loading orders:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium(color: context.themeError),
+                  color: context.themeError,
                 ),
               ),
             );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
-            );
+            return const Center(child: AppLoader());
           }
 
           final docs = snapshot.data?.docs ?? [];
@@ -122,12 +118,11 @@ class _OrdersPageState extends State<OrdersPage> {
                 children: [
                   Icon(Icons.receipt_long_outlined, size: 80, color: context.themeBorder),
                   const SizedBox(height: 16),
-                  Text('No orders yet', style: AppTypography.h4()),
+                  const AppText.h4('No orders yet'),
                   const SizedBox(height: 8),
-                  Text(
+                  const AppText.body(
                     'Place an order from your cart to see it here.',
                     textAlign: TextAlign.center,
-                    style: AppTypography.bodyMedium(color: context.themeTextSecondary),
                   ),
                 ],
               ),
@@ -186,27 +181,12 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      color: AppColors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 6),
-              ),
-            ],
-            border: Border.all(color: context.themeBorder, width: 0.8),
-          ),
-          child: Row(
+    return AppCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
+      borderRadius: 18,
+      onTap: onTap,
+      child: Row(
             children: [
               // Gradient left stripe
               Container(
@@ -239,30 +219,19 @@ class _OrderCard extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 6),
                                 Expanded(
-                                  child: Text(
+                                  child: AppText.label(
                                     'Order $orderId',
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.labelLarge(
-                                      color: context.themeTextPrimary,
-                                    ).copyWith(fontWeight: FontWeight.w600),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 2),
-                            Text(
-                              dateStr,
-                              style: AppTypography.bodySmall(
-                                color: context.themeTextSecondary,
-                              ),
-                            ),
+                            AppText.bodySmall(dateStr),
                             const SizedBox(height: 6),
-                            Text(
+                            AppText.label(
                               '₹${total.toStringAsFixed(0)}',
-                              style: AppTypography.labelLarge(
-                                color: context.themePrimary,
-                              ).copyWith(fontWeight: FontWeight.w700),
+                              color: context.themePrimary,
                             ),
                           ],
                         ),
@@ -294,8 +263,6 @@ class _OrderCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
       ),
     );
   }

@@ -275,11 +275,21 @@ class AuthNotifier extends Notifier<AuthState> {
         return;
       }
       final success = await _pin.setPinForPhone(phone: phoneNumber, pin: newPin);
-      state = success ? const ResetPinSuccess() : const ResetPinError('Failed to reset PIN');
+      if (success) {
+        state = const ResetPinSuccess();
+        await Future.delayed(const Duration(milliseconds: 100));
+        state = const AuthInitial();
+      } else {
+        state = const ResetPinError('Failed to reset PIN');
+      }
     } catch (e) {
       AppLogger.error('PIN reset failed', e);
       state = ResetPinError('PIN reset failed: $e');
     }
+  }
+
+  void resetToInitial() {
+    state = const AuthInitial();
   }
 
   // ── Logout ──────────────────────────────────────────────────────────────────

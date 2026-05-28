@@ -1,7 +1,7 @@
 import 'package:balaji_points/core/design/app_radius.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -70,24 +70,14 @@ class CompleteProfileCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
+                        AppText.label(
                           l10n.completeProfile,
-                          style: AppTypography.buttonMedium().copyWith(
-                            fontSize: 16.0,
-                            color: AppColors.white,
-                          ),
+                          color: AppColors.white,
                         ),
                         const SizedBox(height: 4.0),
-                        Text(
+                        AppText.body(
                           l10n.completeProfileDetails,
-                          style: AppTypography.bodyMedium()
-                              .copyWith(
-                                fontSize: 14.0,
-                                color: AppColors.white.withValues(
-                                  alpha: 0.95,
-                                ),
-                                height: 1.4,
-                              ),
+                          color: AppColors.white.withValues(alpha: 0.95),
                         ),
                       ],
                     ),

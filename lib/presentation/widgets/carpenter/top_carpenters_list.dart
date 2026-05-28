@@ -68,12 +68,12 @@ class TopCarpentersList extends StatelessWidget {
 
     if (carpenter.rank == 1) {
       rankBgColor = AppColors.warning;
-      rankTextColor = AppColors.warning;
+      rankTextColor = AppColors.white;
     } else if (carpenter.rank == 2) {
       rankBgColor = context.themeBorder;
       rankTextColor = context.themeTextSecondary;
     } else if (carpenter.rank == 3) {
-      rankBgColor = context.themeSecondary;
+      rankBgColor = context.themeSecondary.withValues(alpha: 0.15);
       rankTextColor = context.themeSecondary;
     } else {
       rankBgColor = context.themeSecondary.withValues(alpha: 0.1);
@@ -84,7 +84,7 @@ class TopCarpentersList extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.themeSurface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: context.themeSecondary.withValues(alpha: 0.2),
@@ -164,9 +164,9 @@ class TopCarpentersList extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.warning,
+              color: AppColors.warning.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.warning, width: 1),
+              border: Border.all(color: AppColors.warning.withValues(alpha: 0.4), width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -181,7 +181,7 @@ class TopCarpentersList extends StatelessWidget {
                   _formatPoints(carpenter.points),
                   style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
                     fontSize: 16,
-                    color: context.themeSecondary,
+                    color: context.themeTextPrimary,
                   ),
                 ),
               ],

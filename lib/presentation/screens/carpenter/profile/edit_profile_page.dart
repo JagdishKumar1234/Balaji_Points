@@ -6,10 +6,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/platform/storage_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
@@ -301,9 +304,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               child: Container(
                 color: theme.colorScheme.surface,
                 child: _isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                            color: context.themePrimary))
+                    ? const Center(child: AppLoader())
                     : SingleChildScrollView(
                         padding: const EdgeInsets.all(24),
                         child: Form(
@@ -322,7 +323,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                       height: 120,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: AppColors.white,
+                                        color: context.themeSurface,
                                         border: Border.all(
                                           color: context.themePrimary,
                                           width: 3,
@@ -351,8 +352,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                                         return child;
                                                       }
                                                       return Container(
-                                                        color: AppColors
-                                                            .lightSecondary
+                                                        color: context
+                                                            .themeSecondary
                                                             .withValues(
                                                                 alpha: 0.2),
                                                         child: Center(
@@ -366,10 +367,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                                                         .expectedTotalBytes!
                                                                 : null,
                                                             valueColor:
-                                                                const AlwaysStoppedAnimation<
+                                                                AlwaysStoppedAnimation<
                                                                     Color>(
-                                                                  AppColors
-                                                                      .lightPrimary,
+                                                                  context
+                                                                      .themePrimary,
                                                                 ),
                                                           ),
                                                         ),
@@ -377,11 +378,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                                     },
                                                     errorBuilder:
                                                         (context, _, __) =>
-                                                            const Icon(
+                                                            Icon(
                                                               Icons.person,
                                                               size: 60,
-                                                              color: AppColors
-                                                                  .lightSecondary,
+                                                              color: context
+                                                                  .themeSecondary,
                                                             ),
                                                   )
                                                 : Icon(
@@ -415,19 +416,19 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               ),
 
                               const SizedBox(height: 12),
-                              Text(
+                              AppText.bodySmall(
                                 'Tap to change photo',
-                                style: AppTypography.bodySmall(
-                                    color: context.themeTextSecondary),
+                                color: context.themeTextSecondary,
                               ),
 
                               const SizedBox(height: 40),
 
                               // First name
-                              _buildTextField(
+                              AppTextField(
                                 controller: _firstNameController,
                                 label: 'First Name *',
                                 hint: 'Enter your first name',
+                                prefixIcon: Icons.person_outline,
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
                                     return 'Please enter your first name';
@@ -442,10 +443,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               const SizedBox(height: 20),
 
                               // Last name
-                              _buildTextField(
+                              AppTextField(
                                 controller: _lastNameController,
                                 label: 'Last Name *',
                                 hint: 'Enter your last name',
+                                prefixIcon: Icons.person_outline,
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
                                     return 'Please enter your last name';
@@ -466,80 +468,34 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  context.themePrimary),
-                                        ),
-                                      ),
+                                      const AppLoader(size: 16, strokeWidth: 2),
                                       const SizedBox(width: 12),
-                                      Text('Uploading image...',
-                                          style: AppTypography.bodySmall(
-                                              color: context.themePrimary)),
+                                      AppText.bodySmall(
+                                        'Uploading image...',
+                                        color: context.themePrimary,
+                                      ),
                                     ],
                                   ),
                                 ),
 
                               // Save button
-                              Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: context.themeSecondary
-                                          .withValues(alpha: 0.3),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: (_isSaving || _isUploadingImage)
-                                      ? null
-                                      : _saveProfile,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: context.themeSecondary,
-                                    foregroundColor: AppColors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 18),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: _isSaving
-                                      ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    AppColors.white),
-                                          ),
-                                        )
-                                      : Text(
-                                          widget.isFirstTime
-                                              ? 'Complete Profile'
-                                              : 'Save Changes',
-                                          style: AppTypography.buttonLarge(
-                                              color: AppColors.white),
-                                        ),
-                                ),
+                              AppButton.secondary(
+                                label: widget.isFirstTime
+                                    ? 'Complete Profile'
+                                    : 'Save Changes',
+                                onPressed: (_isSaving || _isUploadingImage)
+                                    ? null
+                                    : _saveProfile,
+                                isLoading: _isSaving,
+                                verticalPadding: 18,
                               ),
 
                               if (widget.isFirstTime) ...[
                                 const SizedBox(height: 16),
-                                Text(
+                                AppText.bodySmall(
                                   'You need to complete your profile to continue',
+                                  color: context.themeTextSecondary,
                                   textAlign: TextAlign.center,
-                                  style: AppTypography.bodySmall(
-                                      color: context.themeTextSecondary),
                                 ),
                               ],
 
@@ -552,47 +508,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required String? Function(String?) validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        style: AppTypography.bodyMedium(color: context.themeTextPrimary),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: AppTypography.labelMedium(color: context.themePrimary),
-          hintText: hint,
-          hintStyle: AppTypography.bodyMedium(color: context.themeTextMuted),
-          prefixIcon: Icon(Icons.person_outline, color: context.themePrimary),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: AppColors.white,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-        ),
-        validator: validator,
       ),
     );
   }

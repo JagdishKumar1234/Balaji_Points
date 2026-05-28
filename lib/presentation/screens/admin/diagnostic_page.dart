@@ -4,7 +4,10 @@
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -231,9 +234,9 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: AppText.h4(
           'Diagnostic: User ${widget.phoneNumber}',
-          style: TextStyle(fontSize: 18, color: context.themePrimary),
+          color: context.themePrimary,
         ),
         centerTitle: true,
         actions: [
@@ -245,7 +248,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: AppLoader())
           : _error != null
           ? Center(
               child: Column(
@@ -253,15 +256,16 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
                 children: [
                   Icon(Icons.error, color: context.themeError, size: 64),
                   const SizedBox(height: 16),
-                  Text(
+                  AppText.body(
                     'Error: $_error',
-                    style: TextStyle(color: context.themeError),
+                    color: context.themeError,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  AppButton.outline(
+                    label: 'Retry',
                     onPressed: _runDiagnostics,
-                    child: const Text('Retry'),
+                    fullWidth: false,
                   ),
                 ],
               ),
@@ -303,24 +307,14 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
   }
 
   Widget _buildSection(String title, List<Widget> children) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AppTypography.labelLarge().copyWith(
-                fontSize: 18,
-                color: context.themePrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...children,
-          ],
-        ),
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppText.h4(title, color: context.themePrimary),
+          const SizedBox(height: 12),
+          ...children,
+        ],
       ),
     );
   }
@@ -333,21 +327,12 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         children: [
           SizedBox(
             width: 180,
-            child: Text(
-              '$label:',
-              style: AppTypography.labelLarge().copyWith(
-                fontSize: 14,
-                color: context.themePrimary,
-              ),
-            ),
+            child: AppText.label('$label:', color: context.themePrimary),
           ),
           Expanded(
-            child: Text(
+            child: AppText.body(
               value?.toString() ?? 'null',
-              style: AppTypography.bodyMedium().copyWith(
-                fontSize: 14,
-                color: context.themeTextSecondary,
-              ),
+              color: context.themeTextSecondary,
             ),
           ),
         ],
@@ -442,55 +427,54 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       const Divider(height: 24),
       if (matchingBills.isEmpty)
         Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
+          padding: const EdgeInsets.all(8.0),
+          child: AppText.body(
             '❌ No pending bills found for this user!',
-            style: TextStyle(color: context.themeError, fontWeight: FontWeight.bold),
+            color: context.themeError,
           ),
         )
       else
         ...matchingBills.map(
-          (bill) => Card(
+          (bill) => AppCard(
             margin: const EdgeInsets.only(bottom: 8),
             color: context.themeSoftSurface,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildInfoRow('Bill ID', bill['billId']),
-                  _buildInfoRow('Carpenter ID', bill['carpenterId']),
-                  _buildInfoRow('Carpenter Phone', bill['carpenterPhone']),
-                  _buildInfoRow('Amount', '₹${bill['amount']}'),
-                  _buildInfoRow('Status', bill['status']),
-                  _buildInfoRow(
-                    'Bill Date',
-                    bill['billDate'] != null
-                        ? DateFormat('dd MMM yyyy').format(bill['billDate'])
-                        : 'N/A',
-                  ),
-                  _buildInfoRow(
-                    'Is Today',
-                    bill['isToday'] == true ? '✅ YES' : '❌ NO',
-                  ),
-                  _buildInfoRow(
-                    'Created At',
-                    bill['createdAt'] != null
-                        ? DateFormat(
-                            'dd MMM yyyy HH:mm',
-                          ).format(bill['createdAt'])
-                        : 'N/A',
-                  ),
-                  if (bill['isToday'] != true)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        '⚠️ This bill won\'t show in default admin view (not today)',
-                        style: TextStyle(color: AppColors.warning, fontSize: 12),
-                      ),
+            padding: const EdgeInsets.all(12),
+            showShadow: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoRow('Bill ID', bill['billId']),
+                _buildInfoRow('Carpenter ID', bill['carpenterId']),
+                _buildInfoRow('Carpenter Phone', bill['carpenterPhone']),
+                _buildInfoRow('Amount', '₹${bill['amount']}'),
+                _buildInfoRow('Status', bill['status']),
+                _buildInfoRow(
+                  'Bill Date',
+                  bill['billDate'] != null
+                      ? DateFormat('dd MMM yyyy').format(bill['billDate'])
+                      : 'N/A',
+                ),
+                _buildInfoRow(
+                  'Is Today',
+                  bill['isToday'] == true ? '✅ YES' : '❌ NO',
+                ),
+                _buildInfoRow(
+                  'Created At',
+                  bill['createdAt'] != null
+                      ? DateFormat(
+                          'dd MMM yyyy HH:mm',
+                        ).format(bill['createdAt'])
+                      : 'N/A',
+                ),
+                if (bill['isToday'] != true)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: AppText.bodySmall(
+                      '⚠️ This bill won\'t show in default admin view (not today)',
+                      color: AppColors.warning,
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         ),

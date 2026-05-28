@@ -1,5 +1,8 @@
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -78,22 +81,17 @@ class ProductListPage extends StatelessWidget {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(
+                child: AppText.body(
                   'Error loading products:\n${snapshot.error}',
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium().copyWith(
-                    fontSize: 14,
-                    color: context.themeError,
-                  ),
+                  color: context.themeError,
                 ),
               ),
             );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
-            );
+            return const Center(child: AppLoader());
           }
 
           final docs = snapshot.data?.docs ?? [];
@@ -109,13 +107,7 @@ class ProductListPage extends StatelessWidget {
                     color: context.themeBorder,
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    'No Product Added',
-                    style: AppTypography.buttonMedium().copyWith(
-                      fontSize: 20,
-                      color: context.themeTextPrimary,
-                    ),
-                  ),
+                  AppText.h3('No Product Added'),
                 ],
               ),
             );
@@ -192,12 +184,9 @@ class ProductListPage extends StatelessWidget {
               const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
+                child: AppText.label(
                   hasCategories ? selectedCategory : 'Products',
-                  style: AppTypography.labelLarge().copyWith(
-                    fontSize: 16.0,
-                    color: isDark ? AppColors.white : context.themeTextPrimary,
-                  ),
+                  color: isDark ? AppColors.white : context.themeTextPrimary,
                 ),
               ),
               const SizedBox(height: 8),
@@ -323,21 +312,12 @@ class _ProductCard extends StatelessWidget {
       context.push('/product-detail/$productId');
     }
 
-    return GestureDetector(
+    return AppCard(
+      padding: EdgeInsets.zero,
+      borderRadius: 18,
+      showBorder: false,
       onTap: openDetails,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
@@ -421,40 +401,31 @@ class _ProductCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,
               ).copyWith(top: 8),
-              child: Text(
+              child: AppText.label(
                 name,
+                color: titleColor,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTypography.labelLarge().copyWith(
-                  color: titleColor,
-                  fontSize: 14.0,
-                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,
               ).copyWith(top: 2),
-              child: Text(
+              child: AppText.bodySmall(
                 subtitle,
+                color: subtitleColor,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTypography.bodyMedium().copyWith(
-                  color: subtitleColor,
-                  fontSize: 12.0,
-                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,
               ).copyWith(top: 4),
-              child: Text(
+              child: AppText.label(
                 price > 0 ? '₹${price.toStringAsFixed(0)}' : '',
-                style: AppTypography.buttonMedium().copyWith(
-                  color: context.themePrimary,
-                  fontSize: 14.0,
-                ),
+                color: context.themePrimary,
               ),
             ),
             if (size.isNotEmpty || thickness.isNotEmpty || quality.isNotEmpty)
@@ -477,7 +448,6 @@ class _ProductCard extends StatelessWidget {
               ),
           ],
         ),
-      ),
     );
   }
 }
