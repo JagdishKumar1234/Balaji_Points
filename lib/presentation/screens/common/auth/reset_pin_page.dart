@@ -202,14 +202,6 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
     final isSaving = ref.watch(authProvider) is ResetPinLoading || _isForgotSaving;
     final canSubmit = _phoneChecked && _phoneExists;
 
-    final titleShadow = [
-      Shadow(
-        color: AppColors.black.withValues(alpha: 0.5),
-        blurRadius: 10,
-        offset: const Offset(0, 1),
-      ),
-    ];
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
@@ -235,18 +227,17 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: AppColors.transparent,
-          foregroundColor: AppColors.white,
+          foregroundColor: context.themePrimary,
           elevation: 0,
           title: Text(
             l10n.resetPinTitle,
             style: TextStyle(
-              color: AppColors.white,
+              color: context.themePrimary,
               fontWeight: FontWeight.bold,
-              shadows: titleShadow,
             ),
           ),
           leading: BackButton(
-            color: AppColors.white,
+            color: context.themePrimary,
             onPressed: () {
               if (_hasPinData()) {
                 Navigator.of(context).maybePop();
@@ -267,12 +258,6 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
               ),
             ),
 
-            // Dark scrim in dark mode
-            if (isDark)
-              Positioned.fill(
-                child: Container(color: AppColors.black.withValues(alpha: 0.5)),
-              ),
-
             // Content
             SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(
@@ -291,8 +276,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                     AppText.bodySmall(
                       l10n.resetPinSubtitle,
                       textAlign: TextAlign.center,
-                      color: AppColors.white,
-                      shadows: titleShadow,
+                      color: context.themePrimary,
                     ),
 
                     const SizedBox(height: 24),

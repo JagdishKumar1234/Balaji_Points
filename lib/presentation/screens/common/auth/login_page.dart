@@ -12,6 +12,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
+import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
@@ -117,14 +118,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
-  Widget _buildDeviceAuthCard(BuildContext context) {
+  Widget _buildDeviceAuthCard(BuildContext context, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.xl3),
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.9),
+        color: isDark
+            ? AppColors.darkSurface.withValues(alpha: 0.88)
+            : AppColors.white.withValues(alpha: 0.90),
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: context.themePrimary.withValues(alpha: 0.18)),
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkBorder.withValues(alpha: 0.5)
+              : context.themePrimary.withValues(alpha: 0.18),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -158,6 +165,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is AuthUserExists) {
@@ -177,6 +185,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     final isChecking = ref.watch(authProvider) is AuthCheckingUser;
 
+    // In dark mode the bg image is still shown but with a dark scrim for
+    // contrast — matching the banner_dark_color hero card approach.
+    final bgImage = 'assets/images/background_image.png';
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -194,11 +206,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // ── Background ──
-            Image.asset(
-              'assets/images/background_image.png',
-              fit: BoxFit.cover,
-            ),
+            // ── Background image ──
+            Image.asset(bgImage, fit: BoxFit.cover),
 
             // ── Content ──
             SafeArea(
@@ -213,11 +222,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       children: [
                         const SizedBox(height: AppSpacing.lg),
 
-                        // ── Language switcher ──
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: _LanguagePicker(),
-                        ).fadeIn(delay: AppAnimations.stagger(0)),
+                        // ── Top row: Language + Theme toggle ──
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _ThemeToggleButton(isDark: isDark)
+                                .fadeIn(delay: AppAnimations.stagger(0)),
+                            _LanguagePicker()
+                                .fadeIn(delay: AppAnimations.stagger(0)),
+                          ],
+                        ),
 
                         const SizedBox(height: AppSpacing.xl),
 
@@ -248,16 +262,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ).fadeIn(delay: AppAnimations.stagger(3)),
 
                         const SizedBox(height: AppSpacing.xl3),
-                        if (_canUseDeviceAuth) ...[
-                          _buildDeviceAuthCard(context),
-                        ],
+
+                        if (_canUseDeviceAuth)
+                          _buildDeviceAuthCard(context, isDark),
 
                         // ── Glass card ──
                         _GlassCard(
+                          isDark: isDark,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              // Phone field
                               AppTextField.phone(
                                 controller: _phoneController,
                                 label: l10n.mobileNumber,
@@ -273,7 +287,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                               const SizedBox(height: AppSpacing.xl),
 
-                              // Continue button
                               AppButton.secondary(
                                 label: l10n.continueWithPin,
                                 onPressed: isChecking
@@ -313,24 +326,75 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 }
 
+// ── Theme toggle button ───────────────────────────────────────────────────────
+
+class _ThemeToggleButton extends ConsumerWidget {
+  final bool isDark;
+  const _ThemeToggleButton({required this.isDark});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 40,
+      width: 40,
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.darkSurface.withValues(alpha: 0.85)
+            : AppColors.white.withValues(alpha: 0.90),
+        borderRadius: AppRadius.sm8,
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkBorder.withValues(alpha: 0.5)
+              : context.themePrimary.withValues(alpha: 0.30),
+        ),
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+        onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+        icon: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          transitionBuilder: (child, anim) =>
+              RotationTransition(turns: anim, child: child),
+          child: Icon(
+            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+            key: ValueKey(isDark),
+            size: 20,
+            color: isDark ? AppColors.warning : context.themePrimary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // ── Language picker ──────────────────────────────────────────────────────────
 
 class _LanguagePicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       height: 40,
       decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.9),
+        color: isDark
+            ? AppColors.darkSurface.withValues(alpha: 0.85)
+            : AppColors.white.withValues(alpha: 0.90),
         borderRadius: AppRadius.sm8,
-        border: Border.all(color: context.themePrimary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkBorder.withValues(alpha: 0.5)
+              : context.themePrimary.withValues(alpha: 0.30),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Locale>(
           value: ref.watch(localeProvider),
           style: AppTypography.bodyMedium(color: context.themeTextPrimary),
+          dropdownColor: isDark ? AppColors.darkSurface : AppColors.white,
+          iconEnabledColor: isDark ? AppColors.white : context.themePrimary,
           onChanged: (locale) {
             if (locale != null) {
               ref.read(localeProvider.notifier).setLocale(locale);
@@ -360,33 +424,43 @@ class _LanguagePicker extends ConsumerWidget {
 
 class _GlassCard extends StatelessWidget {
   final Widget child;
-  const _GlassCard({required this.child});
+  final bool isDark;
+  const _GlassCard({required this.child, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: AppRadius.forCard,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.xl3),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.white.withValues(alpha: 0.92),
-                AppColors.white.withValues(alpha: 0.72),
-              ],
+              colors: isDark
+                  ? [
+                      AppColors.darkSurface.withValues(alpha: 0.82),
+                      AppColors.darkBackground.withValues(alpha: 0.72),
+                    ]
+                  : [
+                      AppColors.white.withValues(alpha: 0.92),
+                      AppColors.white.withValues(alpha: 0.72),
+                    ],
             ),
             borderRadius: AppRadius.forCard,
             border: Border.all(
-              color: AppColors.white.withValues(alpha: 0.5),
+              color: isDark
+                  ? AppColors.darkBorder.withValues(alpha: 0.55)
+                  : AppColors.white.withValues(alpha: 0.50),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: context.themePrimary.withValues(alpha: 0.10),
+                color: isDark
+                    ? AppColors.black.withValues(alpha: 0.40)
+                    : context.themePrimary.withValues(alpha: 0.10),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),

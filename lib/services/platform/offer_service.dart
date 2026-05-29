@@ -242,7 +242,6 @@ class OfferService {
       final query = await _firestore
           .collection('offers')
           .where('isActive', isEqualTo: true)
-          .orderBy('createdAt', descending: true)
           .get();
 
       // Filter out expired offers
@@ -267,10 +266,18 @@ class OfferService {
     try {
       final query = await _firestore
           .collection('offers')
-          .orderBy('createdAt', descending: true)
           .get();
 
-      return query.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
+      final docs = query.docs.toList()
+        ..sort((a, b) {
+          final at = a.data()['createdAt'];
+          final bt = b.data()['createdAt'];
+          if (at == null && bt == null) return 0;
+          if (at == null) return 1;
+          if (bt == null) return -1;
+          return (bt as dynamic).compareTo(at as dynamic);
+        });
+      return docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
     } catch (e) {
       AppLogger.error('Error getting all offers', e);
       return [];

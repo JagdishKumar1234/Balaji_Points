@@ -41,60 +41,20 @@ class ShimmerCard extends StatelessWidget {
   }
 }
 
-/// Shimmer loading for offers carousel
+/// Shimmer loading for offers carousel — fits exactly inside SizedBox(height:220)
 class ShimmerOfferCard extends StatelessWidget {
   const ShimmerOfferCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: context.themeBorder,
-        highlightColor: context.themeSoftSurface,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Banner placeholder
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Title placeholder
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                height: 20,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Description placeholder
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                height: 16,
-                width: 200,
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
+    return Shimmer.fromColors(
+      baseColor: context.themeBorder,
+      highlightColor: context.themeSoftSurface,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: context.themeSurface,
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
     );

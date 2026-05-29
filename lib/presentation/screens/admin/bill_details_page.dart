@@ -359,7 +359,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: AppColors.white,
+          backgroundColor: context.themeBackground,
           foregroundColor: context.themePrimary,
           elevation: 0,
           leading: IconButton(
@@ -382,7 +382,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: AppColors.white,
+          backgroundColor: context.themeBackground,
           foregroundColor: context.themePrimary,
           elevation: 0,
           leading: IconButton(
@@ -433,7 +433,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: context.themeBackground,
         foregroundColor: context.themePrimary,
         elevation: 0,
         leading: IconButton(
@@ -517,7 +517,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              AppColors.white,
+                              context.themeSurface,
                               context.themePrimary.withValues(alpha: 0.03),
                             ],
                           ),
@@ -645,7 +645,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              AppColors.white,
+                              context.themeSurface,
                               context.themeSecondary.withValues(alpha: 0.05),
                             ],
                           ),
@@ -756,7 +756,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              AppColors.white,
+                              context.themeSurface,
                               context.themePrimary.withValues(alpha: 0.03),
                             ],
                           ),
@@ -826,7 +826,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                AppColors.white,
+                                context.themeSurface,
                                 context.themePrimary.withValues(alpha: 0.02),
                               ],
                             ),
@@ -924,7 +924,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           // Action Buttons (for pending and approved bills)
           if (status == 'pending')
             Container(
-              color: AppColors.white,
+              color: context.themeBackground,
               padding: const EdgeInsets.all(16),
               child: SafeArea(
                 top: false,
@@ -995,7 +995,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.white,
+                    context.themeBackground,
                     AppColors.warning.withValues(alpha: 0.05),
                   ],
                 ),
@@ -1101,7 +1101,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.white,
+                    context.themeBackground,
                     AppColors.success.withValues(alpha: 0.05),
                   ],
                 ),

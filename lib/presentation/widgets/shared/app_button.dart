@@ -62,12 +62,14 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = _backgroundColor(context);
-    final fg = _foregroundColor(context);
-    final border = _borderSide(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final disabled = isLoading || onPressed == null;
 
-    Widget child = isLoading
+    final bg    = _backgroundColor(context, isDark, disabled);
+    final fg    = _foregroundColor(context, isDark, disabled);
+    final border = _borderSide(context, isDark, disabled);
+
+    final Widget child = isLoading
         ? AppLoader(size: 20, strokeWidth: 2, color: fg)
         : Row(
             mainAxisSize: MainAxisSize.min,
@@ -83,11 +85,13 @@ class AppButton extends StatelessWidget {
             ],
           );
 
-    final button = ElevatedButton(
+    return ElevatedButton(
       onPressed: disabled ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: disabled && !isLoading ? bg.withValues(alpha: 0.6) : bg,
+        backgroundColor: bg,
         foregroundColor: fg,
+        disabledBackgroundColor: bg,
+        disabledForegroundColor: fg,
         shadowColor: AppColors.transparent,
         elevation: 0,
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: verticalPadding),
@@ -103,36 +107,45 @@ class AppButton extends StatelessWidget {
       ),
       child: child,
     );
-
-    return button;
   }
 
-  Color _backgroundColor(BuildContext context) {
+  Color _backgroundColor(BuildContext context, bool isDark, bool disabled) {
+    final alpha = disabled ? 0.50 : 1.0;
     switch (variant) {
       case AppButtonVariant.primary:
-        return context.themePrimary;
+        return context.themePrimary.withValues(alpha: alpha);
       case AppButtonVariant.secondary:
-        return context.themeSecondary;
-      case AppButtonVariant.outline:
-        return AppColors.transparent;
+        return context.themeSecondary.withValues(alpha: alpha);
       case AppButtonVariant.danger:
-        return context.themeError;
+        return context.themeError.withValues(alpha: alpha);
+      case AppButtonVariant.outline:
+        // Transparent bg; dim with a faint surface tint when disabled.
+        return disabled
+            ? (isDark
+                ? AppColors.darkBorder.withValues(alpha: 0.15)
+                : context.themePrimary.withValues(alpha: 0.06))
+            : AppColors.transparent;
     }
   }
 
-  Color _foregroundColor(BuildContext context) {
+  Color _foregroundColor(BuildContext context, bool isDark, bool disabled) {
+    final mutedAlpha = disabled ? 0.45 : 1.0;
     switch (variant) {
       case AppButtonVariant.outline:
-        return context.themePrimary;
+        return context.themePrimary.withValues(alpha: mutedAlpha);
       default:
-        return AppColors.white;
+        // White text on filled buttons; dim when disabled.
+        return AppColors.white.withValues(alpha: disabled ? 0.65 : 1.0);
     }
   }
 
-  BorderSide _borderSide(BuildContext context) {
+  BorderSide _borderSide(BuildContext context, bool isDark, bool disabled) {
     switch (variant) {
       case AppButtonVariant.outline:
-        return BorderSide(color: context.themePrimary, width: 1.5);
+        return BorderSide(
+          color: context.themePrimary.withValues(alpha: disabled ? 0.30 : 1.0),
+          width: 1.5,
+        );
       default:
         return BorderSide.none;
     }

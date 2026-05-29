@@ -106,7 +106,13 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
                 ),
               ),
             ),
-            // No divider — clean modern look
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: isDark
+                  ? AppColors.white.withValues(alpha: 0.08)
+                  : AppColors.black.withValues(alpha: 0.08),
+            ),
           ],
         ),
       ),

@@ -74,7 +74,7 @@ class VerifiedUsersList extends StatelessWidget {
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: context.themeSurface,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -264,7 +264,7 @@ class VerifiedUsersList extends StatelessWidget {
       case 'gold':
         return AppColors.warning;
       case 'platinum':
-        return AppColors.lightPrimary;
+        return const Color(0xFF7C3AED);
       default:
         return AppColors.lightPrimary;
     }
@@ -391,7 +391,7 @@ class CarpenterDetailPage extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: context.themeSurface,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -419,7 +419,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                 margin: const EdgeInsets.only(bottom: 8),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: AppColors.white,
+                                  color: context.themeSurface,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(

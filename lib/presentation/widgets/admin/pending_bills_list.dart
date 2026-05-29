@@ -359,11 +359,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
               primary: context.themePrimary,
               onPrimary: AppColors.white,
-              surface: AppColors.white,
-              onSurface: context.themePrimary,
+              surface: context.themeSurface,
+              onSurface: context.themeTextPrimary,
             ),
           ),
           child: child!,
@@ -390,11 +390,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
               primary: context.themePrimary,
               onPrimary: AppColors.white,
-              surface: AppColors.white,
-              onSurface: context.themePrimary,
+              surface: context.themeSurface,
+              onSurface: context.themeTextPrimary,
             ),
           ),
           child: child!,
@@ -493,7 +493,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.themeBackground,
             boxShadow: [
               BoxShadow(
                 color: AppColors.black.withValues(alpha: 0.05),
@@ -805,7 +805,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    AppColors.white,
+                                    context.themeSurface,
                                     context.themeSecondary.withValues(alpha: 0.05),
                                   ],
                                 ),

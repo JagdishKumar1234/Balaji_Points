@@ -26,7 +26,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
           // Filter Buttons
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppColors.white,
+            color: context.themeBackground,
             child: Row(
               children: [
                 Expanded(child: _buildFilterButton('All', 'all')),
@@ -116,7 +116,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
-                        color: AppColors.white,
+                        color: context.themeSurface,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(

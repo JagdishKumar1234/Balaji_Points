@@ -35,27 +35,6 @@ class TopCarpentersList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '🏆 Top Carpenters',
-                style: TextStyle(
-                  color: context.themeSecondary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (showViewAll)
-                TextButton(onPressed: () {}, child: const Text('View All')),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        // Carpenters list with cards
         ...carpenters.map((carpenter) => _buildLeaderboardCard(context, carpenter)),
       ],
     );

@@ -193,13 +193,14 @@ class _CenterAddButton extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Raised circle — floats slightly above bar
             Transform.translate(
-              offset: const Offset(0, -6),
+              offset: const Offset(0, -3),
               child: Container(
-                width: 50,
-                height: 50,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
                   color: context.themePrimary,
                   shape: BoxShape.circle,
@@ -214,17 +215,14 @@ class _CenterAddButton extends StatelessWidget {
                 child: const Icon(Icons.add_rounded, color: AppColors.white, size: 28),
               ),
             ),
-            // Label sits below (negative offset compensated by reducing top gap)
-            Transform.translate(
-              offset: const Offset(0, -4),
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.caption(
-                  color: context.themePrimary,
-                ).copyWith(fontWeight: FontWeight.w700),
-              ),
+            // Label
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.caption(
+                color: context.themePrimary,
+              ).copyWith(fontWeight: FontWeight.w700),
             ),
           ],
         ),

@@ -3,14 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 
+// Accent palette — icon color + light/dark card background tints
+// Each entry: [iconColor, lightBg, darkBg]
+const List<List<Color>> _kAccents = [
+  [Color(0xFF2E7D32), Color(0xFFE8F5E9), Color(0xFF1B3A1F)], // green  — pending
+  [Color(0xFF1565C0), Color(0xFFE3F2FD), Color(0xFF0D2A4A)], // blue   — history
+  [Color(0xFFE65100), Color(0xFFFFF3E0), Color(0xFF3B1A00)], // orange — offers
+  [Color(0xFF7B1FA2), Color(0xFFF3E5F5), Color(0xFF2D0B40)], // purple — users
+  [Color(0xFFC62828), Color(0xFFFFEBEE), Color(0xFF3D0A0A)], // red    — notif/orders
+  [Color(0xFF00838F), Color(0xFFE0F7FA), Color(0xFF003338)], // cyan   — products
+  [Color(0xFFF9A825), Color(0xFFFFF8E1), Color(0xFF3A2A00)], // amber  — spin
+];
 
-/// Admin dashboard: 7 manage cards with counts (bills, orders) and pattern background.
+/// Admin dashboard: 8 section cards with live Firestore counts.
 class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({
-    super.key,
-    required this.onOpenSection,
-  });
-
+  const AdminDashboard({super.key, required this.onOpenSection});
   final void Function(String section) onOpenSection;
 
   @override
@@ -19,14 +26,14 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   static const List<_SectionCard> _sections = [
-    _SectionCard(id: 'pending', label: 'Pending Bills', icon: Icons.receipt_long, color: Color(0xFFE8F5E9)),   // green
-    _SectionCard(id: 'history', label: 'Bill History', icon: Icons.history, color: Color(0xFFE3F2FD)),         // blue
-    _SectionCard(id: 'offers', label: 'Offers', icon: Icons.local_offer, color: AppColors.lightSoftSurface),            // orange
-    _SectionCard(id: 'users', label: 'Users', icon: Icons.people, color: Color(0xFFF3E5F5)),                  // purple
-    _SectionCard(id: 'notifications', label: 'Notifications', icon: Icons.notifications, color: Color(0xFFFFEBEE)), // red/pink
-    _SectionCard(id: 'products', label: 'Products', icon: Icons.inventory_2, color: Color(0xFFE0F7FA)),       // cyan
-    _SectionCard(id: 'orders', label: 'Orders', icon: Icons.shopping_bag, color: Color(0xFFFFEBEE)),          // red/pink
-    _SectionCard(id: 'spin', label: 'Spin', icon: Icons.casino, color: AppColors.warning),                    // amber
+    _SectionCard(id: 'pending',       label: 'Pending Bills',  icon: Icons.receipt_long,  accentIndex: 0),
+    _SectionCard(id: 'history',       label: 'Bill History',   icon: Icons.history,        accentIndex: 1),
+    _SectionCard(id: 'offers',        label: 'Offers',         icon: Icons.local_offer,    accentIndex: 2),
+    _SectionCard(id: 'users',         label: 'Users',          icon: Icons.people,         accentIndex: 3),
+    _SectionCard(id: 'notifications', label: 'Notifications',  icon: Icons.notifications,  accentIndex: 4),
+    _SectionCard(id: 'products',      label: 'Products',       icon: Icons.inventory_2,    accentIndex: 5),
+    _SectionCard(id: 'orders',        label: 'Orders',         icon: Icons.shopping_bag,   accentIndex: 4),
+    _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 6),
   ];
 
   int _refreshKey = 0;
@@ -38,12 +45,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Stack(
       children: [
         Positioned.fill(
-          child: CustomPaint(
-            painter: _DashboardPatternPainter(),
-          ),
+          child: CustomPaint(painter: _DashboardPatternPainter(isDark: isDark)),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
@@ -73,59 +80,53 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           .snapshots(),
                       builder: (context, usersSnap) {
                         final usersDocs = usersSnap.data?.docs ?? const [];
-                        // Total users = all docs in `users`
                         final totalUsersCount = usersDocs.length;
-                        // Carpenters = matches the same rule used in UsersList:
-                        // exclude role == 'admin', include role == 'carpenter' or missing/empty role.
                         final carpentersCount = usersDocs.where((doc) {
-                          final data = doc.data();
-                          final role = data['role'] as String?;
+                          final role = doc.data()['role'] as String?;
                           if (role == 'admin') return false;
                           return role == null || role.isEmpty || role == 'carpenter';
                         }).length;
 
-                    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      stream: FirebaseFirestore.instance
-                          .collection('notification_logs')
-                          .where('type',
-                              whereIn: const [
+                        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                          stream: FirebaseFirestore.instance
+                              .collection('notification_logs')
+                              .where('type', whereIn: const [
                                 'newPendingBill',
                                 'newUserRegistered',
                               ])
-                          .snapshots(),
-                      builder: (context, notifSnap) {
-                        final notificationCount =
-                            notifSnap.hasError ? 0 : notifSnap.data?.docs.length ?? 0;
+                              .snapshots(),
+                          builder: (context, notifSnap) {
+                            final notificationCount =
+                                notifSnap.hasError ? 0 : notifSnap.data?.docs.length ?? 0;
 
-                        return GridView.count(
-                          padding: EdgeInsets.zero,
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 1.0,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: _sections.map((s) {
-                            int? count;
-                            int? secondaryCount;
-                            if (s.id == 'pending') count = pendingBillsCount;
-                            if (s.id == 'orders') count = pendingOrdersCount;
-                            if (s.id == 'notifications') {
-                              count = notificationCount;
-                            }
-                            if (s.id == 'users') {
-                              count = totalUsersCount;
-                              secondaryCount = carpentersCount;
-                            }
-                            return _SectionTile(
-                              section: s,
-                              count: count,
-                              secondaryCount: secondaryCount,
-                              onTap: () => widget.onOpenSection(s.id),
+                            return GridView.count(
+                              padding: EdgeInsets.zero,
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                              childAspectRatio: 1.0,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: _sections.map((s) {
+                                int? count;
+                                int? secondaryCount;
+                                if (s.id == 'pending') count = pendingBillsCount;
+                                if (s.id == 'orders') count = pendingOrdersCount;
+                                if (s.id == 'notifications') count = notificationCount;
+                                if (s.id == 'users') {
+                                  count = totalUsersCount;
+                                  secondaryCount = carpentersCount;
+                                }
+                                return _SectionTile(
+                                  section: s,
+                                  count: count,
+                                  secondaryCount: secondaryCount,
+                                  isDark: isDark,
+                                  onTap: () => widget.onOpenSection(s.id),
+                                );
+                              }).toList(),
                             );
-                          }).toList(),
+                          },
                         );
-                      },
-                    );
                       },
                     );
                   },
@@ -144,33 +145,38 @@ class _SectionCard {
     required this.id,
     required this.label,
     required this.icon,
-    required this.color,
+    required this.accentIndex,
   });
   final String id;
   final String label;
   final IconData icon;
-  final Color color;
+  final int accentIndex;
 }
 
 class _SectionTile extends StatelessWidget {
   const _SectionTile({
     required this.section,
     required this.onTap,
+    required this.isDark,
     this.count,
     this.secondaryCount,
   });
   final _SectionCard section;
   final VoidCallback onTap;
+  final bool isDark;
   final int? count;
   final int? secondaryCount;
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = _iconColorFor(section.color);
+    final accent = _kAccents[section.accentIndex];
+    final iconColor = accent[0];
+    final cardBg  = isDark ? accent[2] : accent[1];
+
     return Material(
       borderRadius: BorderRadius.circular(20),
       elevation: 4,
-      shadowColor: iconColor.withValues(alpha: 0.35),
+      shadowColor: iconColor.withValues(alpha: 0.30),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
@@ -181,25 +187,19 @@ class _SectionTile extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                section.color,
-                _darken(section.color, 0.06),
+                cardBg,
+                Color.lerp(cardBg, iconColor, 0.08)!,
               ],
             ),
             border: Border.all(
-              color: iconColor.withValues(alpha: 0.4),
+              color: iconColor.withValues(alpha: isDark ? 0.35 : 0.30),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: iconColor.withValues(alpha: 0.2),
+                color: iconColor.withValues(alpha: isDark ? 0.15 : 0.18),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
-                spreadRadius: 0,
-              ),
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.06),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -215,21 +215,17 @@ class _SectionTile extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: iconColor.withValues(alpha: 0.18),
+                          color: iconColor.withValues(alpha: isDark ? 0.25 : 0.18),
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: iconColor.withValues(alpha: 0.2),
+                              color: iconColor.withValues(alpha: 0.20),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                        child: Icon(
-                          section.icon,
-                          size: 28,
-                          color: iconColor,
-                        ),
+                        child: Icon(section.icon, size: 28, color: iconColor),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -239,160 +235,103 @@ class _SectionTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 13,
-                          color: context.themePrimary,
+                          color: context.themeTextPrimary,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
+              // Badge
               if (section.id == 'users' && secondaryCount != null)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: iconColor,
-                      borderRadius: BorderRadius.circular(999),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.black.withValues(alpha: 0.2),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      '$secondaryCount',
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 12,
-                        color: AppColors.white,
-                      ),
-                    ),
-                  ),
-                )
+                _Badge(label: '$secondaryCount', iconColor: iconColor)
               else if (count != null && count! > 0)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: iconColor,
-                      borderRadius: BorderRadius.circular(999),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.black.withValues(alpha: 0.2),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      '$count',
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 12,
-                        color: AppColors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                _Badge(label: '$count', iconColor: iconColor),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Color _darken(Color color, double amount) {
-    assert(amount >= 0 && amount <= 1);
-    return Color.fromARGB(
-      (color.a * 255.0).round().clamp(0, 255),
-      (color.r * 255.0 * (1 - amount)).round().clamp(0, 255),
-      (color.g * 255.0 * (1 - amount)).round().clamp(0, 255),
-      (color.b * 255.0 * (1 - amount)).round().clamp(0, 255),
+class _Badge extends StatelessWidget {
+  const _Badge({required this.label, required this.iconColor});
+  final String label;
+  final Color iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 8,
+      right: 8,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: iconColor,
+          borderRadius: BorderRadius.circular(999),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.20),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          style: AppTypography.labelLarge().copyWith(
+            fontSize: 12,
+            color: AppColors.white,
+          ),
+        ),
+      ),
     );
-  }
-
-  Color _iconColorFor(Color bg) {
-    if (bg.toARGB32() == const Color(0xFFE8F5E9).toARGB32()) return const Color(0xFF2E7D32);
-    if (bg.toARGB32() == const Color(0xFFE3F2FD).toARGB32()) return const Color(0xFF1565C0);
-    if (bg.toARGB32() == AppColors.lightSoftSurface.toARGB32()) return const Color(0xFFE65100);
-    if (bg.toARGB32() == const Color(0xFFF3E5F5).toARGB32()) return const Color(0xFF7B1FA2);
-    if (bg.toARGB32() == const Color(0xFFE0F7FA).toARGB32()) return const Color(0xFF00838F);
-    if (bg.toARGB32() == const Color(0xFFFFEBEE).toARGB32()) return const Color(0xFFC62828);
-    if (bg.toARGB32() == AppColors.warning.toARGB32()) return const Color(0xFFF9A825);
-    return AppColors.lightPrimary;
   }
 }
 
-/// Stylish wooden-pattern background: base gradient, grain lines, and subtle weave.
+/// Background pattern — adapts to light/dark.
 class _DashboardPatternPainter extends CustomPainter {
+  final bool isDark;
+  const _DashboardPatternPainter({required this.isDark});
+
   @override
   void paint(Canvas canvas, Size size) {
+    final baseBg = isDark ? AppColors.darkBackground : AppColors.lightSoftSurface;
+    final lineColor = isDark
+        ? AppColors.darkBorder.withValues(alpha: 0.25)
+        : AppColors.lightSecondary.withValues(alpha: 0.06);
+    final dotColor = isDark
+        ? AppColors.darkBorder.withValues(alpha: 0.30)
+        : AppColors.lightSecondary.withValues(alpha: 0.08);
+
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    canvas.drawRect(rect, Paint()..color = baseBg);
 
-    // Base: soft vertical gradient (lighter top, slightly darker bottom – wood feel)
-    final baseGradient = LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: [
-        AppColors.lightSoftSurface,
-        Color.lerp(AppColors.lightSoftSurface, AppColors.lightSoftSurface, 0.12)!,
-        Color.lerp(AppColors.lightSoftSurface, AppColors.lightSoftSurface, 0.06)!,
-      ],
-      stops: const [0.0, 0.5, 1.0],
-    );
-    canvas.drawRect(rect, Paint()..shader = baseGradient.createShader(rect));
-
-    // Horizontal wood-grain lines (stylish, subtle)
+    // Horizontal grain lines
     const grainSpacing = 28.0;
     final grainPaint = Paint()
-      ..color = AppColors.lightSecondary.withValues(alpha: 0.06)
+      ..color = lineColor
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
     for (double y = 0; y < size.height + grainSpacing; y += grainSpacing) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), grainPaint);
     }
 
-    // Diagonal weave (left-going) – warm tint
+    // Diagonal weave
     const diagonalSpacing = 32.0;
     final diagPaint = Paint()
-      ..color = AppColors.lightSecondary.withValues(alpha: 0.055)
+      ..color = lineColor
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     for (double d = -size.height; d < size.width + size.height; d += diagonalSpacing) {
-      canvas.drawLine(
-        Offset(d, -1),
-        Offset(d + size.height + 1, size.height + 1),
-        diagPaint,
-      );
+      canvas.drawLine(Offset(d, -1), Offset(d + size.height + 1, size.height + 1), diagPaint);
     }
 
-    // Diagonal weave (right-going) – crosshatch
-    final diag2Paint = Paint()
-      ..color = AppColors.lightSecondary.withValues(alpha: 0.035)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    for (double d = -size.height; d < size.width + size.height; d += diagonalSpacing) {
-      canvas.drawLine(
-        Offset(d + size.height + 1, -1),
-        Offset(d, size.height + 1),
-        diag2Paint,
-      );
-    }
-
-    // Subtle dot grid for texture
+    // Dot grid
     const dotSpacing = 20.0;
     final dotPaint = Paint()
-      ..color = AppColors.lightSecondary.withValues(alpha: 0.08)
+      ..color = dotColor
       ..style = PaintingStyle.fill;
     for (double x = 0; x < size.width + dotSpacing; x += dotSpacing) {
       for (double y = 0; y < size.height + dotSpacing; y += dotSpacing) {
@@ -402,5 +341,5 @@ class _DashboardPatternPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(_DashboardPatternPainter old) => old.isDark != isDark;
 }

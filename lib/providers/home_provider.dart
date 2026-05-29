@@ -167,11 +167,21 @@ class HomeNotifier extends Notifier<HomeState> {
       final snap = await _firestore
           .collection('offers')
           .where('isActive', isEqualTo: true)
-          .orderBy('createdAt', descending: true)
           .limit(10)
           .get();
 
-      final offers = snap.docs.map((doc) {
+      // Sort newest-first in memory (avoids requiring a Firestore composite index)
+      final sorted = snap.docs.toList()
+        ..sort((a, b) {
+          final at = a.data()['createdAt'];
+          final bt = b.data()['createdAt'];
+          if (at == null && bt == null) return 0;
+          if (at == null) return 1;
+          if (bt == null) return -1;
+          return (bt as dynamic).compareTo(at as dynamic);
+        });
+
+      final offers = sorted.map((doc) {
         final d = doc.data();
         return OfferItem(
           title: d['title'] as String? ?? '',

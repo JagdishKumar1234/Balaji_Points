@@ -288,6 +288,12 @@ class _HomePageState extends ConsumerState<HomePage>
 
                   const SizedBox(height: AppSpacing.md),
 
+                  // Quick actions
+                  const RepaintBoundary(child: HomeQuickActions())
+                      .fadeIn(delay: AppAnimations.stagger(1)),
+
+                  const SizedBox(height: AppSpacing.md),
+
                   // Offers
                   if (homeState.offersLoading ||
                       homeState.offers.isNotEmpty) ...[
@@ -300,28 +306,47 @@ class _HomePageState extends ConsumerState<HomePage>
                     const SizedBox(height: AppSpacing.sm),
                     RepaintBoundary(
                       child: homeState.offersLoading
-                          ? const ShimmerOfferCard()
+                          ? const SizedBox(
+                              height: 220,
+                              child: ShimmerOfferCard(),
+                            )
                           : OffersCarousel(offers: homeState.offers),
                     ).fadeIn(delay: AppAnimations.stagger(2)),
                     const SizedBox(height: AppSpacing.md),
                   ],
 
-                  // Product categories
-                  const RepaintBoundary(child: HomeProductCategories())
+                  // Product categories + real product cards
+                  RepaintBoundary(child: HomeProductCategories())
                       .enterCard(delay: AppAnimations.stagger(3)),
 
                   const SizedBox(height: AppSpacing.md),
 
+                  // Today's Winner — standalone card
+                  RepaintBoundary(
+                    child: HomeTodaysWinnerCard(homeState: homeState),
+                  ).enterCard(delay: AppAnimations.stagger(4)),
+
+                  if (homeState.topCarpenters.isNotEmpty)
+                    const SizedBox(height: AppSpacing.md),
+
+                  // Your Position — standalone card
+                  RepaintBoundary(
+                    child: HomeYourPositionCard(homeState: homeState),
+                  ).enterCard(delay: AppAnimations.stagger(5)),
+
+                  if (homeState.userRank != null)
+                    const SizedBox(height: AppSpacing.md),
+
                   // Top Carpenters podium + top-10 list
                   RepaintBoundary(
                     child: HomeTopCarpenters(homeState: homeState),
-                  ).enterCard(delay: AppAnimations.stagger(4)),
+                  ).enterCard(delay: AppAnimations.stagger(6)),
 
                   const SizedBox(height: AppSpacing.md),
 
                   // Feature highlights
                   const RepaintBoundary(child: HomeFeatureHighlights())
-                      .enterCard(delay: AppAnimations.stagger(5)),
+                      .enterCard(delay: AppAnimations.stagger(7)),
 
                   const SizedBox(height: AppSpacing.sectionGap),
                 ],

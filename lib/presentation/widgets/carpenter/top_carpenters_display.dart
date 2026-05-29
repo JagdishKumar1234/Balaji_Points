@@ -37,16 +37,6 @@ class TopCarpentersDisplay extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '🏆 Top 3 Carpenters',
-          style: TextStyle(
-            color: context.themeSecondary,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 20),
-
         // Podium Display - Top 3
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

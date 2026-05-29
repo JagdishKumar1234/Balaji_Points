@@ -540,7 +540,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.themeBackground,
             boxShadow: [
               BoxShadow(
                 color: AppColors.black.withValues(alpha: 0.05),
@@ -981,7 +981,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                AppColors.white,
+                                context.themeSurface,
                                 status == 'approved'
                                     ? AppColors.success.withValues(alpha: 0.05)
                                     : context.themeError.withValues(alpha: 0.05),

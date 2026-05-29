@@ -200,6 +200,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                           ),
 
                           const SizedBox(height: AppSpacing.lg),
+
                           // Login button
                           AppButton.secondary(
                             label: l10n.login,
@@ -207,7 +208,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                             isLoading: isLoggingIn,
                           ),
 
-                          const SizedBox(height: AppSpacing.xs),
+                          const SizedBox(height: AppSpacing.md),
 
                           // Forgot PIN
                           AppButton.outline(
@@ -216,6 +217,8 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                               '/pin-reset?phone=${widget.phoneNumber}',
                             ),
                           ),
+
+                          const SizedBox(height: AppSpacing.sm),
 
                           // New user
                           AppButton.outline(
@@ -246,29 +249,39 @@ class _GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ClipRRect(
       borderRadius: AppRadius.forCard,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.xl3),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.white.withValues(alpha: 0.92),
-                AppColors.white.withValues(alpha: 0.72),
-              ],
+              colors: isDark
+                  ? [
+                      AppColors.darkSurface.withValues(alpha: 0.82),
+                      AppColors.darkBackground.withValues(alpha: 0.72),
+                    ]
+                  : [
+                      AppColors.white.withValues(alpha: 0.92),
+                      AppColors.white.withValues(alpha: 0.72),
+                    ],
             ),
             borderRadius: AppRadius.forCard,
             border: Border.all(
-              color: AppColors.white.withValues(alpha: 0.5),
+              color: isDark
+                  ? AppColors.darkBorder.withValues(alpha: 0.55)
+                  : AppColors.white.withValues(alpha: 0.50),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: context.themePrimary.withValues(alpha: 0.10),
+                color: isDark
+                    ? AppColors.black.withValues(alpha: 0.40)
+                    : context.themePrimary.withValues(alpha: 0.10),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),

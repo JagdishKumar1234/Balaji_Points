@@ -81,11 +81,11 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
               primary: context.themePrimary,
               onPrimary: AppColors.white,
-              surface: AppColors.white,
-              onSurface: context.themePrimary,
+              surface: context.themeSurface,
+              onSurface: context.themeTextPrimary,
             ),
           ),
           child: child!,
@@ -375,7 +375,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           return Scaffold(
             backgroundColor: context.themeSoftSurface,
             appBar: AppBar(
-              backgroundColor: AppColors.white,
+              backgroundColor: context.themeBackground,
               foregroundColor: context.themePrimary,
               elevation: 0,
               leading: IconButton(
@@ -474,7 +474,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 vertical: 18,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: context.themeSurface,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: context.themePrimary.withValues(alpha: 0.3),
@@ -518,7 +518,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             child: Container(
                               height: 200,
                               decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: context.themeSurface,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: context.themePrimary.withValues(alpha: 0.3),
@@ -617,7 +617,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: context.themeBackground,
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.black.withValues(alpha: 0.1),

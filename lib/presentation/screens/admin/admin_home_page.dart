@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
+import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import '../../widgets/admin/admin_dashboard.dart';
@@ -205,9 +206,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.white,
+        backgroundColor: context.themeBackground,
         appBar: AppBar(
-          backgroundColor: AppColors.white,
+          backgroundColor: context.themeBackground,
           foregroundColor: context.themePrimary,
           elevation: 0,
           scrolledUnderElevation: 0,
@@ -279,6 +280,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                 ),
           centerTitle: !_showDashboard,
           actions: [
+            // Theme toggle — same animated icon as carpenter home
+            _AdminThemeToggle(fgColor: context.themePrimary),
             if (!_showDashboard && _selectedSection == 'notifications')
               IconButton(
                 icon: const Icon(Icons.delete_outline, size: 24),
@@ -295,7 +298,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             preferredSize: const Size.fromHeight(1),
             child: Container(
               height: 1,
-              color: AppColors.black.withValues(alpha: 0.08),
+              color: context.themeBorder.withValues(alpha: 0.5),
             ),
           ),
         ),
@@ -377,5 +380,33 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       default:
         return const SizedBox.shrink();
     }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Theme toggle button — reusable for admin AppBar
+// ---------------------------------------------------------------------------
+
+class _AdminThemeToggle extends ConsumerWidget {
+  final Color fgColor;
+  const _AdminThemeToggle({required this.fgColor});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return IconButton(
+      tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+      onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+      icon: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        transitionBuilder: (child, anim) =>
+            RotationTransition(turns: anim, child: child),
+        child: Icon(
+          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+          key: ValueKey(isDark),
+          color: fgColor,
+        ),
+      ),
+    );
   }
 }

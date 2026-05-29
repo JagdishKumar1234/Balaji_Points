@@ -40,7 +40,7 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.inputFormatters,
-  })  : _variant = _Variant.normal;
+  }) : _variant = _Variant.normal;
 
   // ── Phone number field ───────────────────────────────────────────────────────
   const AppTextField.phone({
@@ -84,6 +84,27 @@ class AppTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPin = _variant == _Variant.pin;
     final isPhone = _variant == _Variant.phone;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Fill: surface in light, slightly elevated surface in dark so the field
+    // stands out from a dark card background.
+    final fillColor = enabled
+        ? (isDark
+            ? AppColors.darkBackground.withValues(alpha: 0.60)
+            : context.themeSurface)
+        : (isDark
+            ? AppColors.darkBackground.withValues(alpha: 0.30)
+            : context.themeSurface.withValues(alpha: 0.60));
+
+    // Label: use textSecondary when unfocused (visible on both light/dark),
+    // themePrimary when floating/focused.
+    final labelColor = context.themeTextSecondary;
+    final floatingLabelColor = context.themePrimary;
+
+    // Border colours
+    final borderColor = isDark
+        ? AppColors.darkBorder
+        : context.themeBorder;
 
     return TextFormField(
       controller: controller,
@@ -92,6 +113,7 @@ class AppTextField extends StatelessWidget {
       keyboardType: keyboardType,
       textAlign: textAlign,
       maxLength: maxLength,
+      cursorColor: context.themePrimary,
       inputFormatters: inputFormatters ??
           (isPin || isPhone
               ? [FilteringTextInputFormatter.digitsOnly]
@@ -105,14 +127,13 @@ class AppTextField extends StatelessWidget {
           : AppTypography.bodyLarge(color: context.themeTextPrimary),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: AppTypography.labelMedium(color: context.themePrimary),
+        labelStyle: AppTypography.labelMedium(color: labelColor),
+        floatingLabelStyle: AppTypography.labelMedium(color: floatingLabelColor),
         hintText: hint,
         hintStyle: AppTypography.bodyMedium(color: context.themeTextMuted),
         counterText: '',
         filled: true,
-        fillColor: enabled
-            ? context.themeSurface
-            : context.themeSurface.withValues(alpha: 0.6),
+        fillColor: fillColor,
         prefixIcon: isPhone
             ? Padding(
                 padding: const EdgeInsets.only(left: 16, right: 8),
@@ -131,13 +152,14 @@ class AppTextField extends StatelessWidget {
         contentPadding: isPin
             ? const EdgeInsets.symmetric(vertical: 18)
             : const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        errorStyle: AppTypography.caption(color: context.themeError),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: context.themeBorder, width: 1.5),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: context.themeBorder, width: 1.5),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -146,7 +168,7 @@ class AppTextField extends StatelessWidget {
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: context.themeBorder.withValues(alpha: 0.5),
+            color: borderColor.withValues(alpha: 0.4),
             width: 1.5,
           ),
         ),

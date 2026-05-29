@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -7,19 +8,20 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
+import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SuperAdminPage extends StatefulWidget {
+class SuperAdminPage extends ConsumerStatefulWidget {
   const SuperAdminPage({super.key});
 
   @override
-  State<SuperAdminPage> createState() => _SuperAdminPageState();
+  ConsumerState<SuperAdminPage> createState() => _SuperAdminPageState();
 }
 
-class _SuperAdminPageState extends State<SuperAdminPage>
+class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
     with DoubleTapExitMixin {
   int _tab = 0; // 0 = branches, 1 = create admin
 
@@ -90,6 +92,7 @@ class _SuperAdminPageState extends State<SuperAdminPage>
             ],
           ),
           actions: [
+            _ThemeToggleButton(),
             IconButton(
               icon: const Icon(Icons.logout),
               tooltip: 'Logout',
@@ -117,6 +120,31 @@ class _SuperAdminPageState extends State<SuperAdminPage>
           ),
         ),
         body: _tab == 0 ? const _BranchesTab() : const _CreateAdminTab(),
+      ),
+    );
+  }
+}
+
+// ── Theme toggle ───────────────────────────────────────────────────────────────
+
+class _ThemeToggleButton extends ConsumerWidget {
+  const _ThemeToggleButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return IconButton(
+      tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+      onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+      icon: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        transitionBuilder: (child, anim) =>
+            RotationTransition(turns: anim, child: child),
+        child: Icon(
+          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+          key: ValueKey(isDark),
+          color: AppColors.white,
+        ),
       ),
     );
   }
