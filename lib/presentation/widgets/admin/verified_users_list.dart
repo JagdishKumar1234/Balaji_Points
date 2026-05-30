@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -75,7 +77,7 @@ class VerifiedUsersList extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: context.themeSurface,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.all16,
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.black.withValues(alpha: 0.05),
@@ -114,13 +116,7 @@ class VerifiedUsersList extends StatelessWidget {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '$firstName $lastName',
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 16,
-                          color: context.themePrimary,
-                        ),
-                      ),
+                      AppText.label('$firstName $lastName'),
                       const SizedBox(height: 4),
                       Row(
                         children: [
@@ -152,7 +148,7 @@ class VerifiedUsersList extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: _getTierColor(tier).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.md12,
                           border: Border.all(
                             color: _getTierColor(tier).withValues(alpha: 0.3),
                             width: 1,
@@ -172,13 +168,7 @@ class VerifiedUsersList extends StatelessWidget {
                         children: [
                           Icon(Icons.stars, size: 14, color: AppColors.warning),
                           const SizedBox(width: 4),
-                          Text(
-                            '$totalPoints',
-                            style: AppTypography.labelLarge().copyWith(
-                              fontSize: 14,
-                              color: context.themePrimary,
-                            ),
-                          ),
+                          AppText.label('$totalPoints'),
                         ],
                       ),
                     ],
@@ -216,7 +206,7 @@ class VerifiedUsersList extends StatelessWidget {
                           vertical: 12,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.md12,
                         ),
                       ),
                     ),
@@ -243,13 +233,7 @@ class VerifiedUsersList extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: Text(
-            value,
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 13,
-              color: context.themePrimary,
-            ),
-          ),
+          child: AppText.label(value),
         ),
       ],
     );
@@ -258,15 +242,15 @@ class VerifiedUsersList extends StatelessWidget {
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
       case 'bronze':
-        return AppColors.lightSoftSurface;
+        return AppColors.softSurface;
       case 'silver':
-        return AppColors.lightTextSecondary;
+        return AppColors.textSecondary;
       case 'gold':
         return AppColors.warning;
       case 'platinum':
-        return const Color(0xFF7C3AED);
+        return AppColors.tierPlatinum;
       default:
-        return AppColors.lightPrimary;
+        return AppColors.primary;
     }
   }
 }
@@ -332,7 +316,7 @@ class CarpenterDetailPage extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.all16,
                       boxShadow: [
                         BoxShadow(
                           color: context.themePrimary.withValues(alpha: 0.3),
@@ -379,20 +363,14 @@ class CarpenterDetailPage extends StatelessWidget {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Purchase Bills',
-                            style: AppTypography.labelLarge().copyWith(
-                              fontSize: 18,
-                              color: context.themePrimary,
-                            ),
-                          ),
+                          AppText.label('Purchase Bills'),
                           const SizedBox(height: 12),
                           if (bills.isEmpty)
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 color: context.themeSurface,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: AppRadius.md12,
                               ),
                               child: Center(
                                 child: Text(
@@ -420,7 +398,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: context.themeSurface,
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: AppRadius.md12,
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
@@ -435,7 +413,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                           style: AppTypography.labelLarge()
                                               .copyWith(
                                                 fontSize: 18,
-                                                color: context.themePrimary,
+                                                color: context.themeContentColor,
                                               ),
                                         ),
                                         const SizedBox(height: 4),
@@ -444,7 +422,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                           style: AppTypography.bodyMedium()
                                               .copyWith(
                                                 fontSize: 13,
-                                                color: context.themePrimary
+                                                color: context.themeContentColor
                                                     .withValues(alpha: 0.7),
                                               ),
                                         ),
@@ -454,7 +432,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                             style: AppTypography.bodyMedium()
                                                 .copyWith(
                                                   fontSize: 12,
-                                                  color: context.themePrimary
+                                                  color: context.themeContentColor
                                                       .withValues(alpha: 0.5),
                                                 ),
                                           ),
@@ -469,7 +447,7 @@ class CarpenterDetailPage extends StatelessWidget {
                                         color: status == 'approved'
                                             ? AppColors.success.withValues(alpha: 0.1)
                                             : AppColors.warning.withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: AppRadius.md12,
                                       ),
                                       child: Text(
                                         status.toUpperCase(),

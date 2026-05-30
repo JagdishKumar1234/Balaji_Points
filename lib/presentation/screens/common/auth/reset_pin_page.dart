@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -283,7 +284,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
 
                     // Glass card
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: AppRadius.all24,
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                         child: AppCard(
@@ -334,7 +335,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     decoration: BoxDecoration(
                                       color: AppColors.success.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: AppRadius.sm8,
                                       border: Border.all(color: AppColors.success, width: 1.5),
                                     ),
                                     child: Row(
@@ -491,12 +492,12 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
   }) {
     return InkWell(
       onTap: () => _makePhoneCall(phone.replaceAll('-', '')),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.sm8,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.sm8,
         ),
         child: Row(
           children: [
@@ -597,8 +598,8 @@ class CelebrationPainter extends CustomPainter {
   Color _colorForType(FloatingType type) {
     switch (type) {
       case FloatingType.coin: return AppColors.warning;
-      case FloatingType.star: return AppColors.lightSecondary;
-      case FloatingType.sparkle: return AppColors.lightPrimary;
+      case FloatingType.star: return AppColors.gold;
+      case FloatingType.sparkle: return AppColors.primary;
       case FloatingType.points: return AppColors.success;
     }
   }

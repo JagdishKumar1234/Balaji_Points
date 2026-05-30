@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 
@@ -14,7 +15,7 @@ class HomeHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themeSecondary.withValues(alpha: 0.3),

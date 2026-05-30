@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'app_loader.dart';
 
-enum AppButtonVariant { primary, secondary, outline, danger }
+/// Balaji Points Design System v2.0 — Button.
+///
+/// Variants:
+///   primary  — navy bg, white text   (default)
+///   secondary — transparent, navy border + text
+///   gold     — gold bg, navy text    (redeem / claim only)
+///   danger   — red bg, white text
+///   outline  — alias for secondary
+enum AppButtonVariant { primary, secondary, outline, gold, danger }
 
 class AppButton extends StatelessWidget {
   final String label;
@@ -24,7 +34,7 @@ class AppButton extends StatelessWidget {
     this.fullWidth = true,
     this.width,
     this.icon,
-    this.verticalPadding = 16,
+    this.verticalPadding = 14,
   });
 
   const AppButton.primary({
@@ -35,7 +45,7 @@ class AppButton extends StatelessWidget {
     this.fullWidth = true,
     this.width,
     this.icon,
-    this.verticalPadding = 16,
+    this.verticalPadding = 14,
   }) : variant = AppButtonVariant.primary;
 
   const AppButton.secondary({
@@ -46,7 +56,7 @@ class AppButton extends StatelessWidget {
     this.fullWidth = true,
     this.width,
     this.icon,
-    this.verticalPadding = 16,
+    this.verticalPadding = 14,
   }) : variant = AppButtonVariant.secondary;
 
   const AppButton.outline({
@@ -57,17 +67,28 @@ class AppButton extends StatelessWidget {
     this.fullWidth = true,
     this.width,
     this.icon,
-    this.verticalPadding = 16,
+    this.verticalPadding = 14,
   }) : variant = AppButtonVariant.outline;
+
+  const AppButton.gold({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.isLoading = false,
+    this.fullWidth = true,
+    this.width,
+    this.icon,
+    this.verticalPadding = 14,
+  }) : variant = AppButtonVariant.gold;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark   = Theme.of(context).brightness == Brightness.dark;
     final disabled = isLoading || onPressed == null;
 
-    final bg    = _backgroundColor(context, isDark, disabled);
-    final fg    = _foregroundColor(context, isDark, disabled);
-    final border = _borderSide(context, isDark, disabled);
+    final bg     = _bg(context, isDark, disabled);
+    final fg     = _fg(context, isDark, disabled);
+    final border = _border(context, isDark, disabled);
 
     final Widget child = isLoading
         ? AppLoader(size: 20, strokeWidth: 2, color: fg)
@@ -76,32 +97,32 @@ class AppButton extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 Icon(icon, size: 18, color: fg),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
               ],
-              Text(
-                label,
-                style: AppTypography.buttonMedium(color: fg).copyWith(fontSize: 16),
-              ),
+              Text(label, style: AppTypography.buttonMedium(color: fg)),
             ],
           );
 
     return ElevatedButton(
       onPressed: disabled ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: bg,
-        foregroundColor: fg,
+        backgroundColor:         bg,
+        foregroundColor:         fg,
         disabledBackgroundColor: bg,
         disabledForegroundColor: fg,
-        shadowColor: AppColors.transparent,
-        elevation: 0,
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: verticalPadding),
+        shadowColor:  Colors.transparent,
+        elevation:    0,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: verticalPadding,
+        ),
         minimumSize: fullWidth
             ? const Size(double.infinity, 0)
             : width != null
                 ? Size(width!, 0)
-                : const Size(0, 0),
+                : Size.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.all16,
           side: border,
         ),
       ),
@@ -109,41 +130,46 @@ class AppButton extends StatelessWidget {
     );
   }
 
-  Color _backgroundColor(BuildContext context, bool isDark, bool disabled) {
-    final alpha = disabled ? 0.50 : 1.0;
+  Color _bg(BuildContext context, bool isDark, bool disabled) {
+    final a = disabled ? 0.50 : 1.0;
     switch (variant) {
       case AppButtonVariant.primary:
-        return context.themePrimary.withValues(alpha: alpha);
-      case AppButtonVariant.secondary:
-        return context.themeSecondary.withValues(alpha: alpha);
+        return AppColors.primary.withValues(alpha: a);
+      case AppButtonVariant.gold:
+        return AppColors.gold.withValues(alpha: a);
       case AppButtonVariant.danger:
-        return context.themeError.withValues(alpha: alpha);
+        return AppColors.error.withValues(alpha: a);
+      case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
-        // Transparent bg; dim with a faint surface tint when disabled.
         return disabled
             ? (isDark
-                ? AppColors.darkBorder.withValues(alpha: 0.15)
-                : context.themePrimary.withValues(alpha: 0.06))
-            : AppColors.transparent;
+                ? AppColors.darkBorder.withValues(alpha: 0.12)
+                : AppColors.primary.withValues(alpha: 0.05))
+            : Colors.transparent;
     }
   }
 
-  Color _foregroundColor(BuildContext context, bool isDark, bool disabled) {
-    final mutedAlpha = disabled ? 0.45 : 1.0;
+  Color _fg(BuildContext context, bool isDark, bool disabled) {
+    final dimmed = disabled ? 0.45 : 1.0;
     switch (variant) {
+      case AppButtonVariant.gold:
+        return AppColors.primary.withValues(alpha: disabled ? 0.5 : 1.0);
+      case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
-        return context.themePrimary.withValues(alpha: mutedAlpha);
+        return (isDark ? AppColors.darkTextPrimary : AppColors.primary)
+            .withValues(alpha: dimmed);
       default:
-        // White text on filled buttons; dim when disabled.
         return AppColors.white.withValues(alpha: disabled ? 0.65 : 1.0);
     }
   }
 
-  BorderSide _borderSide(BuildContext context, bool isDark, bool disabled) {
+  BorderSide _border(BuildContext context, bool isDark, bool disabled) {
     switch (variant) {
+      case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
         return BorderSide(
-          color: context.themePrimary.withValues(alpha: disabled ? 0.30 : 1.0),
+          color: (isDark ? AppColors.darkBorder : AppColors.primary)
+              .withValues(alpha: disabled ? 0.30 : 1.0),
           width: 1.5,
         );
       default:

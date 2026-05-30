@@ -1,19 +1,25 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 
-// Accent palette — icon color + light/dark card background tints
-// Each entry: [iconColor, lightBg, darkBg]
+// Accent palette — [iconColor, lightCardBg]
+// In dark mode the card bg is always the same dark surface; only the icon
+// colour changes so the grid stays calm instead of each tile being a
+// different deep colour.
 const List<List<Color>> _kAccents = [
-  [Color(0xFF2E7D32), Color(0xFFE8F5E9), Color(0xFF1B3A1F)], // green  — pending
-  [Color(0xFF1565C0), Color(0xFFE3F2FD), Color(0xFF0D2A4A)], // blue   — history
-  [Color(0xFFE65100), Color(0xFFFFF3E0), Color(0xFF3B1A00)], // orange — offers
-  [Color(0xFF7B1FA2), Color(0xFFF3E5F5), Color(0xFF2D0B40)], // purple — users
-  [Color(0xFFC62828), Color(0xFFFFEBEE), Color(0xFF3D0A0A)], // red    — notif/orders
-  [Color(0xFF00838F), Color(0xFFE0F7FA), Color(0xFF003338)], // cyan   — products
-  [Color(0xFFF9A825), Color(0xFFFFF8E1), Color(0xFF3A2A00)], // amber  — spin
+  [Color(0xFF4CAF50), Color(0xFFE8F5E9)], // green  — pending
+  [Color(0xFF42A5F5), Color(0xFFE3F2FD)], // blue   — history
+  [Color(0xFFFF8A65), Color(0xFFFFF3E0)], // orange — offers
+  [Color(0xFFBA68C8), Color(0xFFF3E5F5)], // purple — users
+  [Color(0xFFEF5350), Color(0xFFFFEBEE)], // red    — notif/orders
+  [Color(0xFF26C6DA), Color(0xFFE0F7FA)], // cyan   — products
+  [Color(0xFFFFCA28), Color(0xFFFFF8E1)], // amber  — spin
 ];
+
+// Single dark card surface used by every tile in dark mode
+const Color _kDarkCardBg = Color(0xFF1A1F2E);
 
 /// Admin dashboard: 8 section cards with live Firestore counts.
 class AdminDashboard extends StatefulWidget {
@@ -56,7 +62,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           child: RefreshIndicator(
             onRefresh: _onRefresh,
-            color: context.themePrimary,
+            color: context.themeContentColor,
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               key: ValueKey<int>(_refreshKey),
               stream: FirebaseFirestore.instance
@@ -169,39 +175,27 @@ class _SectionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = _kAccents[section.accentIndex];
-    final iconColor = accent[0];
-    final cardBg  = isDark ? accent[2] : accent[1];
+    final accent     = _kAccents[section.accentIndex];
+    final iconColor  = accent[0];
+    // Dark mode: one unified surface colour for all cards — only the icon
+    // colour differs, keeping the grid calm and readable.
+    final cardBg     = isDark ? _kDarkCardBg : accent[1];
+    final borderColor = isDark
+        ? AppColors.darkBorder
+        : iconColor.withValues(alpha: 0.20);
 
     return Material(
-      borderRadius: BorderRadius.circular(20),
-      elevation: 4,
-      shadowColor: iconColor.withValues(alpha: 0.30),
+      borderRadius: AppRadius.all16,
+      elevation: isDark ? 0 : 2,
+      shadowColor: isDark ? AppColors.transparent : iconColor.withValues(alpha: 0.20),
+      color: cardBg,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                cardBg,
-                Color.lerp(cardBg, iconColor, 0.08)!,
-              ],
-            ),
-            border: Border.all(
-              color: iconColor.withValues(alpha: isDark ? 0.35 : 0.30),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: iconColor.withValues(alpha: isDark ? 0.15 : 0.18),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            borderRadius: AppRadius.all16,
+            border: Border.all(color: borderColor, width: 1),
           ),
           child: Stack(
             children: [
@@ -212,31 +206,21 @@ class _SectionTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // Icon container — accent tint only
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: iconColor.withValues(alpha: isDark ? 0.25 : 0.18),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: iconColor.withValues(alpha: 0.20),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                          color: iconColor.withValues(alpha: isDark ? 0.15 : 0.12),
+                          borderRadius: AppRadius.all16,
                         ),
                         child: Icon(section.icon, size: 28, color: iconColor),
                       ),
                       const SizedBox(height: 10),
-                      Text(
+                      AppText.label(
                         section.label,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 13,
-                          color: context.themeTextPrimary,
-                        ),
                       ),
                     ],
                   ),
@@ -244,9 +228,9 @@ class _SectionTile extends StatelessWidget {
               ),
               // Badge
               if (section.id == 'users' && secondaryCount != null)
-                _Badge(label: '$secondaryCount', iconColor: iconColor)
+                _Badge(label: '$secondaryCount', iconColor: iconColor, isDark: isDark)
               else if (count != null && count! > 0)
-                _Badge(label: '$count', iconColor: iconColor),
+                _Badge(label: '$count', iconColor: iconColor, isDark: isDark),
             ],
           ),
         ),
@@ -256,35 +240,23 @@ class _SectionTile extends StatelessWidget {
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge({required this.label, required this.iconColor});
+  const _Badge({required this.label, required this.iconColor, required this.isDark});
   final String label;
   final Color iconColor;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 8,
-      right: 8,
+      top: 10,
+      right: 10,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: iconColor,
+          color: isDark ? iconColor.withValues(alpha: 0.85) : iconColor,
           borderRadius: BorderRadius.circular(999),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.20),
-              blurRadius: 4,
-              offset: const Offset(0, 1),
-            ),
-          ],
         ),
-        child: Text(
-          label,
-          style: AppTypography.labelLarge().copyWith(
-            fontSize: 12,
-            color: AppColors.white,
-          ),
-        ),
+        child: AppText.labelSmall(label, color: AppColors.white),
       ),
     );
   }
@@ -297,45 +269,22 @@ class _DashboardPatternPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final baseBg = isDark ? AppColors.darkBackground : AppColors.lightSoftSurface;
-    final lineColor = isDark
-        ? AppColors.darkBorder.withValues(alpha: 0.25)
-        : AppColors.lightSecondary.withValues(alpha: 0.06);
+    final baseBg = isDark ? AppColors.darkBackground : AppColors.softSurface;
     final dotColor = isDark
-        ? AppColors.darkBorder.withValues(alpha: 0.30)
-        : AppColors.lightSecondary.withValues(alpha: 0.08);
+        ? AppColors.darkBorder.withValues(alpha: 0.18)
+        : AppColors.gold.withValues(alpha: 0.06);
 
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     canvas.drawRect(rect, Paint()..color = baseBg);
 
-    // Horizontal grain lines
-    const grainSpacing = 28.0;
-    final grainPaint = Paint()
-      ..color = lineColor
-      ..strokeWidth = 1.2
-      ..style = PaintingStyle.stroke;
-    for (double y = 0; y < size.height + grainSpacing; y += grainSpacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), grainPaint);
-    }
-
-    // Diagonal weave
-    const diagonalSpacing = 32.0;
-    final diagPaint = Paint()
-      ..color = lineColor
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    for (double d = -size.height; d < size.width + size.height; d += diagonalSpacing) {
-      canvas.drawLine(Offset(d, -1), Offset(d + size.height + 1, size.height + 1), diagPaint);
-    }
-
-    // Dot grid
-    const dotSpacing = 20.0;
+    // Subtle dot grid only — cleaner than grain lines
+    const dotSpacing = 24.0;
     final dotPaint = Paint()
       ..color = dotColor
       ..style = PaintingStyle.fill;
-    for (double x = 0; x < size.width + dotSpacing; x += dotSpacing) {
-      for (double y = 0; y < size.height + dotSpacing; y += dotSpacing) {
-        canvas.drawCircle(Offset(x, y), 1.2, dotPaint);
+    for (double x = dotSpacing / 2; x < size.width; x += dotSpacing) {
+      for (double y = dotSpacing / 2; y < size.height; y += dotSpacing) {
+        canvas.drawCircle(Offset(x, y), 1.0, dotPaint);
       }
     }
   }

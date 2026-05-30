@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 
-/// Standard themed text field.
-/// Use [AppTextField.phone] for mobile number input (prefix +91, numeric).
-/// Use [AppTextField.pin] for 4-digit PIN input (obscured, centered, large).
+/// Balaji Points Design System v2.0 — Text field.
+///
+/// Light: fill = white, border = #E5E7EB, focused = navy.
+/// Dark:  fill = #171A22, border = #2B313D, focused = gold.
 class AppTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -23,7 +25,6 @@ class AppTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final _Variant _variant;
 
-  // ── Normal text field ────────────────────────────────────────────────────────
   const AppTextField({
     super.key,
     required this.controller,
@@ -42,7 +43,6 @@ class AppTextField extends StatelessWidget {
     this.inputFormatters,
   }) : _variant = _Variant.normal;
 
-  // ── Phone number field ───────────────────────────────────────────────────────
   const AppTextField.phone({
     super.key,
     required this.controller,
@@ -61,7 +61,6 @@ class AppTextField extends StatelessWidget {
         letterSpacing = null,
         inputFormatters = null;
 
-  // ── 4-digit PIN field ────────────────────────────────────────────────────────
   const AppTextField.pin({
     super.key,
     required this.controller,
@@ -82,103 +81,90 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPin = _variant == _Variant.pin;
+    final isPin   = _variant == _Variant.pin;
     final isPhone = _variant == _Variant.phone;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark  = Theme.of(context).brightness == Brightness.dark;
 
-    // Fill: surface in light, slightly elevated surface in dark so the field
-    // stands out from a dark card background.
     final fillColor = enabled
-        ? (isDark
-            ? AppColors.darkBackground.withValues(alpha: 0.60)
-            : context.themeSurface)
+        ? (isDark ? AppColors.darkSurface : AppColors.surface)
         : (isDark
-            ? AppColors.darkBackground.withValues(alpha: 0.30)
-            : context.themeSurface.withValues(alpha: 0.60));
+            ? AppColors.darkSurface.withValues(alpha: 0.5)
+            : AppColors.softSurface);
 
-    // Label: use textSecondary when unfocused (visible on both light/dark),
-    // themePrimary when floating/focused.
-    final labelColor = context.themeTextSecondary;
-    final floatingLabelColor = context.themePrimary;
-
-    // Border colours
-    final borderColor = isDark
-        ? AppColors.darkBorder
-        : context.themeBorder;
+    final borderColor  = isDark ? AppColors.darkBorder : AppColors.border;
+    final focusedColor = isDark ? AppColors.gold        : AppColors.primary;
+    final labelColor   = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
 
     return TextFormField(
-      controller: controller,
-      enabled: enabled,
-      obscureText: obscureText,
+      controller:   controller,
+      enabled:      enabled,
+      obscureText:  obscureText,
       keyboardType: keyboardType,
-      textAlign: textAlign,
-      maxLength: maxLength,
-      cursorColor: context.themePrimary,
+      textAlign:    textAlign,
+      maxLength:    maxLength,
+      cursorColor:  focusedColor,
       inputFormatters: inputFormatters ??
-          (isPin || isPhone
-              ? [FilteringTextInputFormatter.digitsOnly]
-              : null),
+          (isPin || isPhone ? [FilteringTextInputFormatter.digitsOnly] : null),
       onChanged: onChanged,
       style: isPin
-          ? AppTypography.buttonMedium(color: context.themeTextPrimary).copyWith(
-              fontSize: 22,
+          ? AppTypography.title(color: context.themeTextPrimary).copyWith(
               letterSpacing: letterSpacing ?? 12,
             )
-          : AppTypography.bodyLarge(color: context.themeTextPrimary),
+          : AppTypography.body(color: context.themeTextPrimary),
       decoration: InputDecoration(
-        labelText: label,
-        labelStyle: AppTypography.labelMedium(color: labelColor),
-        floatingLabelStyle: AppTypography.labelMedium(color: floatingLabelColor),
-        hintText: hint,
-        hintStyle: AppTypography.bodyMedium(color: context.themeTextMuted),
+        labelText:          label,
+        labelStyle:         AppTypography.body(color: labelColor),
+        floatingLabelStyle: AppTypography.caption(color: focusedColor),
+        hintText:           hint,
+        hintStyle:          AppTypography.body(color: context.themeTextMuted),
         counterText: '',
-        filled: true,
-        fillColor: fillColor,
+        filled:      true,
+        fillColor:   fillColor,
+        errorStyle:  AppTypography.caption(color: AppColors.error),
+
         prefixIcon: isPhone
             ? Padding(
                 padding: const EdgeInsets.only(left: 16, right: 8),
                 child: Text(
                   '+91',
-                  style: AppTypography.labelLarge(color: context.themeTextPrimary),
+                  style: AppTypography.body(color: context.themeTextPrimary),
                 ),
               )
             : (prefixIcon != null
-                ? Icon(prefixIcon, color: context.themePrimary, size: 20)
+                ? Icon(prefixIcon, color: focusedColor, size: 20)
                 : null),
         prefixIconConstraints: isPhone
             ? const BoxConstraints(minWidth: 0, minHeight: 0)
             : null,
         suffixIcon: suffix,
+
         contentPadding: isPin
             ? const EdgeInsets.symmetric(vertical: 18)
-            : const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        errorStyle: AppTypography.caption(color: context.themeError),
+            : const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: borderColor, width: 1.5),
+          borderRadius: AppRadius.all16,
+          borderSide: BorderSide(color: borderColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: borderColor, width: 1.5),
+          borderRadius: AppRadius.all16,
+          borderSide: BorderSide(color: borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: context.themePrimary, width: 2),
+          borderRadius: AppRadius.all16,
+          borderSide: BorderSide(color: focusedColor, width: 2),
         ),
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: borderColor.withValues(alpha: 0.4),
-            width: 1.5,
-          ),
+          borderRadius: AppRadius.all16,
+          borderSide: BorderSide(color: borderColor.withValues(alpha: 0.4)),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: context.themeError, width: 1.5),
+          borderRadius: AppRadius.all16,
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: context.themeError, width: 2),
+          borderRadius: AppRadius.all16,
+          borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
       ),
       validator: validator,

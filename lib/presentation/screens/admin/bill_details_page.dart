@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -43,7 +45,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
 
     try {
       // Load bill data
-      final billDoc = await _firestore.collection('bills').doc(widget.billId).get();
+      final billDoc = await _firestore
+          .collection('bills')
+          .doc(widget.billId)
+          .get();
       if (billDoc.exists) {
         _billData = billDoc.data();
         _billData!['billId'] = billDoc.id;
@@ -103,11 +108,15 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                         errorBuilder: (_, __, ___) => Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.error, color: context.themeError, size: 60),
+                            Icon(
+                              Icons.error,
+                              color: context.themeError,
+                              size: 60,
+                            ),
                             const SizedBox(height: 8),
-                            Text(
+                            AppText.body(
                               l10n.failedToLoadImage,
-                              style: const TextStyle(color: AppColors.white),
+                              color: AppColors.white,
                             ),
                           ],
                         ),
@@ -115,11 +124,15 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.image_not_supported, size: 60, color: context.themeTextSecondary),
+                          Icon(
+                            Icons.image_not_supported,
+                            size: 60,
+                            color: context.themeTextSecondary,
+                          ),
                           const SizedBox(height: 8),
-                          Text(
+                          AppText.body(
                             l10n.noImageAvailable,
-                            style: const TextStyle(color: AppColors.white),
+                            color: AppColors.white,
                           ),
                         ],
                       ),
@@ -280,7 +293,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Bill withdrawn successfully. Points have been reversed.'),
+            content: Text(
+              'Bill withdrawn successfully. Points have been reversed.',
+            ),
             backgroundColor: AppColors.warning,
           ),
         );
@@ -317,10 +332,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(
           title,
-          style: AppTypography.labelLarge().copyWith(fontSize: 20, color: confirmColor),
+          style: AppTypography.labelLarge().copyWith(
+            fontSize: 20,
+            color: confirmColor,
+          ),
         ),
         content: Text(
           message,
@@ -331,18 +349,24 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               'Cancel',
-              style: AppTypography.labelLarge().copyWith(color: context.themeTextSecondary),
+              style: AppTypography.labelLarge().copyWith(
+                color: context.themeTextSecondary,
+              ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: confirmColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             ),
             child: Text(
               confirmText,
-              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
+              style: AppTypography.labelLarge().copyWith(
+                color: confirmColor == context.themeError
+                    ? context.themeOnError
+                    : AppColors.white,
+              ),
             ),
           ),
         ],
@@ -366,14 +390,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: Text(
-            'Bill Details',
-            style: AppTypography.labelLarge().copyWith(fontSize: 18, color: context.themePrimary),
-          ),
+          title: AppText.label('Bill Details'),
           centerTitle: true,
         ),
         body: Center(
-          child: CircularProgressIndicator(color: context.themePrimary),
+          child: CircularProgressIndicator(color: context.themeContentColor),
         ),
       );
     }
@@ -389,22 +410,20 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: Text(
-            'Bill Details',
-            style: AppTypography.labelLarge().copyWith(fontSize: 18, color: context.themePrimary),
-          ),
+          title: AppText.label('Bill Details'),
           centerTitle: true,
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, size: 64, color: context.themeTextSecondary),
-              const SizedBox(height: 16),
-              Text(
-                'Bill not found',
-                style: AppTypography.labelLarge().copyWith(fontSize: 18, color: context.themePrimary),
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: context.themeTextSecondary,
               ),
+              const SizedBox(height: 16),
+              AppText.label('Bill not found'),
             ],
           ),
         ),
@@ -415,7 +434,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     final amount = _billData!['amount'] ?? 0;
     // For approved bills, use pointsEarned field; otherwise calculate from amount
     final points = status == 'approved'
-        ? (_billData!['pointsEarned'] as num?)?.toInt() ?? (amount / 1000).floor()
+        ? (_billData!['pointsEarned'] as num?)?.toInt() ??
+              (amount / 1000).floor()
         : (amount / 1000).floor();
     final imageUrl = _billData!['imageUrl'] as String? ?? '';
     final carpenterPhone = _billData!['carpenterPhone'] as String? ?? '';
@@ -424,7 +444,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     final approvedAt = _billData!['approvedAt'] as Timestamp?;
 
     final carpenterName = _carpenterData != null
-        ? '${_carpenterData!['firstName'] ?? ''} ${_carpenterData!['lastName'] ?? ''}'.trim()
+        ? '${_carpenterData!['firstName'] ?? ''} ${_carpenterData!['lastName'] ?? ''}'
+              .trim()
         : 'Carpenter';
     final profileImageUrl = _carpenterData?['profileImage'] as String?;
     final carpenterTier = _carpenterData?['tier'] as String? ?? 'Bronze';
@@ -440,10 +461,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Bill Details',
-          style: AppTypography.labelLarge().copyWith(fontSize: 18, color: context.themePrimary),
-        ),
+        title: AppText.label('Bill Details'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -465,14 +483,17 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   children: [
                     // Status Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: status == 'approved'
                             ? AppColors.success
                             : status == 'rejected'
-                                ? context.themeError
-                                : AppColors.warning,
-                        borderRadius: BorderRadius.circular(12),
+                            ? context.themeError
+                            : AppColors.warning,
+                        borderRadius: AppRadius.md12,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -481,8 +502,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             status == 'approved'
                                 ? Icons.check_circle
                                 : status == 'rejected'
-                                    ? Icons.cancel
-                                    : Icons.pending,
+                                ? Icons.cancel
+                                : Icons.pending,
                             color: AppColors.white,
                             size: 20,
                           ),
@@ -491,8 +512,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             status == 'approved'
                                 ? 'APPROVED'
                                 : status == 'rejected'
-                                    ? 'REJECTED'
-                                    : 'PENDING APPROVAL',
+                                ? 'REJECTED'
+                                : 'PENDING APPROVAL',
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 14,
                               color: AppColors.white,
@@ -509,18 +530,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     Card(
                       elevation: 4,
                       shadowColor: context.themePrimary.withValues(alpha: 0.3),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppRadius.all16,
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              context.themeSurface,
-                              context.themePrimary.withValues(alpha: 0.03),
-                            ],
-                          ),
+                          borderRadius: AppRadius.all16,
+                          color: context.themeSurface,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -529,126 +545,140 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.person_outline, size: 20, color: context.themePrimary),
+                                  Icon(
+                                    Icons.person_outline,
+                                    size: 20,
+                                    color: context.themeContentColor,
+                                  ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    'Carpenter Information',
-                                    style: AppTypography.labelLarge().copyWith(
-                                      fontSize: 16,
-                                      color: context.themePrimary,
+                                  AppText.label('Carpenter Information'),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  // Profile Image
+                                  Container(
+                                    width: 70,
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: context.themePrimary.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      border: Border.all(
+                                        color: context.themePrimary.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        width: 3,
+                                      ),
+                                    ),
+                                    child:
+                                        profileImageUrl != null &&
+                                            profileImageUrl.isNotEmpty
+                                        ? ClipOval(
+                                            child: Image.network(
+                                              profileImageUrl,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) =>
+                                                  Icon(
+                                                    Icons.person,
+                                                    color: context
+                                                        .themeContentColor,
+                                                    size: 36,
+                                                  ),
+                                            ),
+                                          )
+                                        : Icon(
+                                            Icons.person,
+                                            color: context.themeContentColor,
+                                            size: 36,
+                                          ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        AppText.label(carpenterName),
+                                        const SizedBox(height: 4),
+                                        if (carpenterPhone.isNotEmpty)
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.phone,
+                                                size: 14,
+                                                color:
+                                                    context.themeTextSecondary,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                carpenterPhone,
+                                                style: AppTypography.bodyMedium()
+                                                    .copyWith(
+                                                      fontSize: 14,
+                                                      color: context
+                                                          .themeTextSecondary,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.workspace_premium,
+                                              size: 14,
+                                              color: AppColors.warning,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '$carpenterTier Tier',
+                                              style: AppTypography.labelLarge()
+                                                  .copyWith(
+                                                    fontSize: 13,
+                                                    color: AppColors.warning,
+                                                  ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Icon(
+                                              Icons.stars,
+                                              size: 14,
+                                              color: context.themeContentColor,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            AppText.label(
+                                              '$carpenterPoints pts',
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                // Profile Image
-                                Container(
-                                  width: 70,
-                                  height: 70,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: context.themePrimary.withValues(alpha: 0.1),
-                                    border: Border.all(
-                                      color: context.themePrimary.withValues(alpha: 0.3),
-                                      width: 3,
-                                    ),
-                                  ),
-                                  child: profileImageUrl != null && profileImageUrl.isNotEmpty
-                                      ? ClipOval(
-                                          child: Image.network(
-                                            profileImageUrl,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) => Icon(
-                                              Icons.person,
-                                              color: context.themePrimary,
-                                              size: 36,
-                                            ),
-                                          ),
-                                        )
-                                      : Icon(Icons.person, color: context.themePrimary, size: 36),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        carpenterName,
-                                        style: AppTypography.labelLarge().copyWith(
-                                          fontSize: 18,
-                                          color: context.themePrimary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      if (carpenterPhone.isNotEmpty)
-                                        Row(
-                                          children: [
-                                            Icon(Icons.phone, size: 14, color: context.themeTextSecondary),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              carpenterPhone,
-                                              style: AppTypography.bodyMedium().copyWith(
-                                                fontSize: 14,
-                                                color: context.themeTextSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.workspace_premium, size: 14, color: AppColors.warning),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '$carpenterTier Tier',
-                                            style: AppTypography.labelLarge().copyWith(
-                                              fontSize: 13,
-                                              color: AppColors.warning,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Icon(Icons.stars, size: 14, color: context.themeSecondary),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '$carpenterPoints pts',
-                                            style: AppTypography.labelLarge().copyWith(
-                                              fontSize: 13,
-                                              color: context.themeSecondary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
                     const SizedBox(height: 16),
 
                     // Bill Amount & Points Card
                     Card(
                       elevation: 4,
-                      shadowColor: context.themeSecondary.withValues(alpha: 0.3),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shadowColor: context.themeSecondary.withValues(
+                        alpha: 0.3,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppRadius.all16,
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              context.themeSurface,
-                              context.themeSecondary.withValues(alpha: 0.05),
-                            ],
-                          ),
+                          borderRadius: AppRadius.all16,
+                          color: context.themeSurface,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -657,109 +687,119 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.receipt_long, size: 20, color: context.themePrimary),
+                                  Icon(
+                                    Icons.receipt_long,
+                                    size: 20,
+                                    color: context.themeContentColor,
+                                  ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    'Bill Summary',
-                                    style: AppTypography.labelLarge().copyWith(
-                                      fontSize: 16,
-                                      color: context.themePrimary,
+                                  AppText.label('Bill Summary'),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.success.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: AppRadius.md12,
+                                        border: Border.all(
+                                          color: AppColors.success,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.currency_rupee,
+                                            size: 32,
+                                            color: AppColors.success,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            '₹${amount.toStringAsFixed(0)}',
+                                            style: AppTypography.labelLarge()
+                                                .copyWith(
+                                                  fontSize: 24,
+                                                  color: AppColors.success,
+                                                ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Bill Amount',
+                                            style: AppTypography.bodyMedium()
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: context.themeSecondary
+                                            .withValues(alpha: 0.1),
+                                        borderRadius: AppRadius.md12,
+                                        border: Border.all(
+                                          color: context.themeSecondary
+                                              .withValues(alpha: 0.5),
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.monetization_on,
+                                            size: 32,
+                                            color: context.themeContentColor,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          AppText.label('$points'),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Points Earned',
+                                            style: AppTypography.bodyMedium()
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.success.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: AppColors.success, width: 2),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Icon(Icons.currency_rupee, size: 32, color: AppColors.success),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          '₹${amount.toStringAsFixed(0)}',
-                                          style: AppTypography.labelLarge().copyWith(
-                                            fontSize: 24,
-                                            color: AppColors.success,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Bill Amount',
-                                          style: AppTypography.bodyMedium().copyWith(
-                                            fontSize: 12,
-                                            color: context.themeTextSecondary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: context.themeSecondary.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: context.themeSecondary.withValues(alpha: 0.5), width: 2),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Icon(Icons.monetization_on, size: 32, color: context.themeSecondary),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          '$points',
-                                          style: AppTypography.labelLarge().copyWith(
-                                            fontSize: 24,
-                                            color: context.themeSecondary,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Points Earned',
-                                          style: AppTypography.bodyMedium().copyWith(
-                                            fontSize: 12,
-                                            color: context.themeTextSecondary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Dates Information Card
                     Card(
                       elevation: 4,
                       shadowColor: context.themePrimary.withValues(alpha: 0.2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppRadius.all16,
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              context.themeSurface,
-                              context.themePrimary.withValues(alpha: 0.03),
-                            ],
-                          ),
+                          borderRadius: AppRadius.all16,
+                          color: context.themeSurface,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -768,15 +808,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.timeline, size: 20, color: context.themePrimary),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Timeline',
-                                    style: AppTypography.labelLarge().copyWith(
-                                      fontSize: 16,
-                                      color: context.themePrimary,
-                                    ),
+                                  Icon(
+                                    Icons.timeline,
+                                    size: 20,
+                                    color: context.themeContentColor,
                                   ),
+                                  const SizedBox(width: 8),
+                                  AppText.label('Timeline'),
                                 ],
                               ),
                               const SizedBox(height: 16),
@@ -785,7 +823,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   icon: Icons.receipt_long,
                                   label: 'Bill Date',
                                   date: billDate.toDate(),
-                                  color: context.themePrimary,
+                                  color: context.themeContentColor,
                                 ),
                                 const SizedBox(height: 8),
                               ],
@@ -800,10 +838,16 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                               ],
                               if (approvedAt != null)
                                 _buildDateRow(
-                                  icon: status == 'approved' ? Icons.check_circle : Icons.cancel,
-                                  label: status == 'approved' ? 'Approved' : 'Rejected',
+                                  icon: status == 'approved'
+                                      ? Icons.check_circle
+                                      : Icons.cancel,
+                                  label: status == 'approved'
+                                      ? 'Approved'
+                                      : 'Rejected',
                                   date: approvedAt.toDate(),
-                                  color: status == 'approved' ? AppColors.success : context.themeError,
+                                  color: status == 'approved'
+                                      ? AppColors.success
+                                      : context.themeError,
                                 ),
                             ],
                           ),
@@ -817,11 +861,15 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     if (imageUrl.isNotEmpty) ...[
                       Card(
                         elevation: 4,
-                        shadowColor: context.themePrimary.withValues(alpha: 0.2),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shadowColor: context.themePrimary.withValues(
+                          alpha: 0.2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.all16,
+                        ),
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.all16,
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -837,19 +885,18 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(Icons.image_outlined, size: 20, color: context.themePrimary),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Bill Image',
-                                          style: AppTypography.labelLarge().copyWith(
-                                            fontSize: 16,
-                                            color: context.themePrimary,
-                                          ),
+                                        Icon(
+                                          Icons.image_outlined,
+                                          size: 20,
+                                          color: context.themeContentColor,
                                         ),
+                                        const SizedBox(width: 8),
+                                        AppText.label('Bill Image'),
                                       ],
                                     ),
                                     TextButton.icon(
@@ -867,21 +914,24 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   onTap: () => _viewBillImage(imageUrl),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: AppRadius.md12,
                                       border: Border.all(
-                                        color: context.themePrimary.withValues(alpha: 0.2),
+                                        color: context.themePrimary.withValues(
+                                          alpha: 0.2,
+                                        ),
                                         width: 2,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: context.themePrimary.withValues(alpha: 0.1),
+                                          color: context.themePrimary
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
                                       ],
                                     ),
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: AppRadius.sm8,
                                       child: Image.network(
                                         imageUrl,
                                         width: double.infinity,
@@ -894,11 +944,16 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Icon(Icons.error_outline, color: context.themeTextMuted, size: 48),
+                                                Icon(
+                                                  Icons.error_outline,
+                                                  color: context.themeTextMuted,
+                                                  size: 48,
+                                                ),
                                                 const SizedBox(height: 8),
-                                                Text(
+                                                AppText.body(
                                                   l10n.failedToLoadImage,
-                                                  style: TextStyle(color: context.themeTextSecondary, fontSize: 14),
+                                                  color: context
+                                                      .themeTextSecondary,
                                                 ),
                                               ],
                                             ),
@@ -934,24 +989,30 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                       child: ElevatedButton.icon(
                         onPressed: _isProcessing ? null : _rejectBill,
                         icon: _isProcessing
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 16,
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    context.themeOnError,
+                                  ),
                                 ),
                               )
                             : const Icon(Icons.close, size: 20),
                         label: Text(
                           l10n.reject,
-                          style: AppTypography.labelLarge().copyWith(fontSize: 16),
+                          style: AppTypography.labelLarge().copyWith(
+                            fontSize: 16,
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.themeError,
-                          foregroundColor: AppColors.white,
+                          foregroundColor: context.themeOnError,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: AppRadius.md12,
+                          ),
                         ),
                       ),
                     ),
@@ -966,19 +1027,25 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                                 ),
                               )
                             : const Icon(Icons.check_circle, size: 20),
                         label: Text(
                           l10n.approveBill,
-                          style: AppTypography.labelLarge().copyWith(fontSize: 16),
+                          style: AppTypography.labelLarge().copyWith(
+                            fontSize: 16,
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.success,
                           foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: AppRadius.md12,
+                          ),
                         ),
                       ),
                     ),
@@ -991,14 +1058,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           if (status == 'approved')
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    context.themeBackground,
-                    AppColors.warning.withValues(alpha: 0.05),
-                  ],
-                ),
+                color: context.themeBackground,
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.warning.withValues(alpha: 0.15),
@@ -1015,12 +1075,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.warning,
-                        AppColors.warning,
-                      ],
+                      colors: [AppColors.warning, AppColors.warning],
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.all16,
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.warning.withValues(alpha: 0.4),
@@ -1033,7 +1090,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     color: AppColors.transparent,
                     child: InkWell(
                       onTap: _isProcessing ? null : _withdrawBill,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.all16,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         child: Row(
@@ -1045,7 +1102,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                                 ),
                               )
                             else
@@ -1079,7 +1138,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   l10n.reversePointsAndUndoApproval,
                                   style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
-                                    color: AppColors.white.withValues(alpha: 0.9),
+                                    color: AppColors.white.withValues(
+                                      alpha: 0.9,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -1097,14 +1158,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           if (status == 'rejected')
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    context.themeBackground,
-                    AppColors.success.withValues(alpha: 0.05),
-                  ],
-                ),
+                color: context.themeBackground,
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.success.withValues(alpha: 0.15),
@@ -1121,12 +1175,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.success,
-                        AppColors.success,
-                      ],
+                      colors: [AppColors.success, AppColors.success],
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.all16,
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.success.withValues(alpha: 0.4),
@@ -1139,7 +1190,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     color: AppColors.transparent,
                     child: InkWell(
                       onTap: _isProcessing ? null : _approveBill,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.all16,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         child: Row(
@@ -1151,7 +1202,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                                 ),
                               )
                             else
@@ -1185,7 +1238,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                   l10n.awardPointsAndMarkAsApproved,
                                   style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
-                                    color: AppColors.white.withValues(alpha: 0.9),
+                                    color: AppColors.white.withValues(
+                                      alpha: 0.9,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -1215,7 +1270,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.sm8,
           ),
           child: Icon(icon, size: 18, color: color),
         ),
@@ -1236,7 +1291,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                 DateFormat('dd MMM yyyy, hh:mm a').format(date),
                 style: AppTypography.labelLarge().copyWith(
                   fontSize: 14,
-                  color: context.themePrimary,
+                  color: context.themeContentColor,
                 ),
               ),
             ],

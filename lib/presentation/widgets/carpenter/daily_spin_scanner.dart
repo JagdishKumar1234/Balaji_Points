@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -30,15 +31,15 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
       color: AppColors.warning,
     ),
     PrizeItem(icon: Icons.star, points: 20, color: AppColors.warning),
-    PrizeItem(icon: Icons.diamond, points: 30, color: AppColors.lightPrimary),
+    PrizeItem(icon: Icons.diamond, points: 30, color: AppColors.primary),
     PrizeItem(icon: Icons.emoji_events, points: 40, color: AppColors.warning),
-    PrizeItem(icon: Icons.card_giftcard, points: 50, color: AppColors.lightPrimary),
-    PrizeItem(icon: Icons.auto_awesome, points: 60, color: AppColors.lightSecondary),
-    PrizeItem(icon: Icons.military_tech, points: 70, color: AppColors.lightPrimary),
+    PrizeItem(icon: Icons.card_giftcard, points: 50, color: AppColors.primary),
+    PrizeItem(icon: Icons.auto_awesome, points: 60, color: AppColors.gold),
+    PrizeItem(icon: Icons.military_tech, points: 70, color: AppColors.primary),
     PrizeItem(
       icon: Icons.workspace_premium,
       points: 80,
-      color: AppColors.lightSecondary,
+      color: AppColors.gold,
     ),
   ];
 
@@ -151,7 +152,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all24),
         backgroundColor: AppColors.white,
         title: Column(
           children: [
@@ -195,7 +196,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                     context.themeSecondary.withValues(alpha: 0.7),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.all16,
                 boxShadow: [
                   BoxShadow(
                     color: context.themeSecondary.withValues(alpha: 0.3),
@@ -235,7 +236,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                   vertical: 14,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.all16,
                 ),
                 elevation: 2,
               ),
@@ -267,7 +268,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
           end: Alignment.bottomRight,
           colors: [AppColors.white, context.themePrimary.withValues(alpha: 0.05)],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.all24,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -286,7 +287,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: context.themeSecondary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.md12,
                 ),
                 child: Icon(
                   Icons.qr_code_scanner,
@@ -320,7 +321,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.black.withValues(alpha: 0.87),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.all16,
               border: Border.all(
                 color: context.themeSecondary.withValues(alpha: 0.3),
                 width: 2,
@@ -366,7 +367,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                               color: isSelected && _isSpinning
                                   ? prize.color.withValues(alpha: 0.2)
                                   : AppColors.white.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: AppRadius.md12,
                               border: Border.all(
                                 color: isSelected && _isSpinning
                                     ? prize.color.withValues(alpha: 
@@ -461,7 +462,7 @@ class _DailySpinScannerState extends ConsumerState<DailySpinScanner>
                 disabledBackgroundColor: context.themeBorder,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.all16,
                 ),
                 elevation: spinState.canSpin && !_isSpinning ? 4 : 0,
               ),

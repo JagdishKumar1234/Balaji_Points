@@ -1,3 +1,5 @@
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -141,37 +143,25 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                           ),
                           child: Icon(
                             Icons.receipt,
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                             size: 24,
                           ),
                         ),
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              userName,
-                              style: AppTypography.labelLarge().copyWith(
-                                fontSize: 16,
-                                color: context.themePrimary,
-                              ),
-                            ),
+                            AppText.label(userName),
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                Text(
-                                  '$pointsFromAmount pts',
-                                  style: AppTypography.labelLarge().copyWith(
-                                    fontSize: 18,
-                                    color: context.themePrimary,
-                                  ),
-                                ),
+                                AppText.label('$pointsFromAmount pts'),
                                 const SizedBox(width: 8),
                                 Text(
                                   rupeeText,
                                   style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 14,
-                                    color: context.themePrimary.withValues(alpha: 
-                                      0.6,
+                                    color: context.themePrimary.withValues(
+                                      alpha: 0.6,
                                     ),
                                   ),
                                 ),
@@ -185,31 +175,13 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                             'Points: $points',
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
-                              color: context.themePrimary.withValues(alpha: 0.6),
+                              color: context.themePrimary.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                           ),
                         ),
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(status).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: _getStatusColor(status).withValues(alpha: 0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            status.toUpperCase(),
-                            style: AppTypography.labelLarge().copyWith(
-                              fontSize: 11,
-                              color: _getStatusColor(status),
-                            ),
-                          ),
-                        ),
+                        trailing: StatusChip(status: status, compact: true),
                         children: [
                           _buildDetailRow(Icons.phone, 'Phone', phone),
                           if (billDate != null) ...[
@@ -323,10 +295,11 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                                     ),
                                     child: Text(
                                       'Approve',
-                                      style: AppTypography.labelLarge().copyWith(
-                                        fontSize: 14,
-                                        color: AppColors.white,
-                                      ),
+                                      style: AppTypography.labelLarge()
+                                          .copyWith(
+                                            fontSize: 14,
+                                            color: AppColors.white,
+                                          ),
                                     ),
                                   ),
                                 ),
@@ -383,7 +356,11 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: context.themePrimary.withValues(alpha: 0.6)),
+        Icon(
+          icon,
+          size: 16,
+          color: context.themePrimary.withValues(alpha: 0.6),
+        ),
         const SizedBox(width: 8),
         Text(
           '$label: ',
@@ -392,15 +369,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             color: context.themePrimary.withValues(alpha: 0.7),
           ),
         ),
-        Expanded(
-          child: Text(
-            value,
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 13,
-              color: context.themePrimary,
-            ),
-          ),
-        ),
+        Expanded(child: AppText.label(value)),
       ],
     );
   }
@@ -431,29 +400,14 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Approve Bill',
-          style: AppTypography.labelLarge().copyWith(
-            fontSize: 20,
-            color: context.themePrimary,
-          ),
-        ),
-        content: Text(
+        title: AppText.label('Approve Bill'),
+        content: AppText.body(
           'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n$points points will be added to the user.',
-          style: AppTypography.bodyMedium().copyWith(
-            fontSize: 16,
-            color: context.themePrimary,
-          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themePrimary,
-              ),
-            ),
+            child: AppText.label('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -465,7 +419,9 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             ),
             child: Text(
               'Approve',
-              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.white,
+              ),
             ),
           ),
         ],
@@ -478,10 +434,14 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
     }
 
     AppLogger.debug('✅ UI (BillManagement): User confirmed approval');
-    AppLogger.debug('   Parameters: billId="$billId", userId="$userId", amount=$amount');
+    AppLogger.debug(
+      '   Parameters: billId="$billId", userId="$userId", amount=$amount',
+    );
 
     try {
-      AppLogger.debug('📞 UI (BillManagement): Calling _billService.approveBill()...');
+      AppLogger.debug(
+        '📞 UI (BillManagement): Calling _billService.approveBill()...',
+      );
       final success = await _billService.approveBill(billId, userId, amount);
       AppLogger.debug('📥 UI (BillManagement): approveBill returned: $success');
 
@@ -527,22 +487,11 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             color: context.themeError,
           ),
         ),
-        content: Text(
-          'Are you sure you want to reject this bill?',
-          style: AppTypography.bodyMedium().copyWith(
-            fontSize: 16,
-            color: context.themePrimary,
-          ),
-        ),
+        content: AppText.body('Are you sure you want to reject this bill?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themePrimary,
-              ),
-            ),
+            child: AppText.label('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -554,7 +503,9 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
             ),
             child: Text(
               'Reject',
-              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
+              style: AppTypography.labelLarge().copyWith(
+                color: context.themeOnError,
+              ),
             ),
           ),
         ],

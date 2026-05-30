@@ -1,108 +1,124 @@
 import 'package:flutter/material.dart';
 
+/// Balaji Points Design System v2.0 — Color tokens.
+///
+/// One primary color (navy), one accent (gold), one success, one error.
+/// No gradients, no neon, no heavy tints.
 class AppColors {
   AppColors._();
 
-  // --------------------------------------------------------------------------
-  // LIGHT THEME
-  // --------------------------------------------------------------------------
+  // ── Brand ──────────────────────────────────────────────────────────────────
 
-  /// Primary Brand Color
-  /// Deep premium navy blue
-  static const Color lightPrimary = Color(0xFF1D2B6B);
+  static const Color primary      = Color(0xFF243B6B); // navy
+  static const Color primaryLight = Color(0xFF3655A7); // lighter navy for hover/pressed
+  static const Color primarySoft  = Color(0xFFEAF0FF); // very light navy tint (chips, tags)
 
-  /// Secondary Accent
-  /// Warm wood amber for carpenter identity
-  static const Color lightSecondary = Color(0xFFD97706);
+  static const Color gold     = Color(0xFFF4B400); // accent — points, rewards
+  static const Color goldSoft = Color(0xFFFFF7DD); // very light gold tint
 
-  /// Main backgrounds
-  static const Color lightBackground = Color(0xFFF8F9FB);
-  static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightSoftSurface = Color(0xFFF2F4F7);
+  // ── Status ─────────────────────────────────────────────────────────────────
 
-  /// Borders & dividers
-  static const Color lightBorder = Color(0xFFE4E7EC);
+  static const Color success = Color(0xFF22C55E);
+  static const Color error   = Color(0xFFEF4444);
+  static const Color warning = Color(0xFFF59E0B); // expiring-soon only
 
-  /// Typography
-  static const Color lightTextPrimary = Color(0xFF101828);
-  static const Color lightTextSecondary = Color(0xFF667085);
-  static const Color lightTextMuted = Color(0xFF98A2B3);
+  // ── Light theme surfaces ────────────────────────────────────────────────────
 
-  // --------------------------------------------------------------------------
-  // DARK THEME
-  // --------------------------------------------------------------------------
+  static const Color background   = Color(0xFFF8F9FB);
+  static const Color surface      = Color(0xFFFFFFFF);
+  static const Color softSurface  = Color(0xFFF2F4F7);
+  static const Color border       = Color(0xFFE5E7EB);
 
-  /// Keep same brand color for consistency
-  static const Color darkPrimary = lightPrimary;
+  // ── Light theme text ────────────────────────────────────────────────────────
 
-  /// Same secondary accent
-  static const Color darkSecondary = lightSecondary;
+  static const Color textPrimary   = Color(0xFF111827);
+  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color textMuted     = Color(0xFF9CA3AF);
 
-  /// Dark backgrounds
-  static const Color darkBackground = Color(0xFF0F1115);
-  static const Color darkSurface = Color(0xFF171A22);
+  // ── Dark theme surfaces ─────────────────────────────────────────────────────
 
-  /// Borders
-  static const Color darkBorder = Color(0xFF313543);
+  static const Color darkBackground  = Color(0xFF0F1115);
+  static const Color darkSurface     = Color(0xFF171A22);
+  static const Color darkSoftSurface = Color(0xFF1E2430);
+  static const Color darkBorder      = Color(0xFF2B313D);
 
-  /// Typography
-  static const Color darkTextPrimary = Color(0xFFFFFFFF);
-  static const Color darkTextSecondary = Color(0xFFA0A8B8);
-  static const Color darkTextMuted = Color(0xFF6B7280);
+  // ── Dark theme text ─────────────────────────────────────────────────────────
 
-  // --------------------------------------------------------------------------
-  // STATUS COLORS
-  // --------------------------------------------------------------------------
+  static const Color darkTextPrimary   = Color(0xFFFFFFFF);
+  static const Color darkTextSecondary = Color(0xFFD1D5DB);
+  static const Color darkTextMuted     = Color(0xFF9CA3AF);
 
-  static const Color success = Color(0xFF16A34A);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFDC2626);
+  // ── Loyalty tiers ───────────────────────────────────────────────────────────
 
-  // --------------------------------------------------------------------------
-  // COMMON
-  // --------------------------------------------------------------------------
+  static const Color tierBronze   = Color(0xFFCD7F32);
+  static const Color tierSilver   = Color(0xFFC0C0C0);
+  static const Color tierGold     = gold;
+  static const Color tierPlatinum = Color(0xFF7C3AED);
 
-  static const Color white = Color(0xFFFFFFFF);
-  static const Color black = Color(0xFF000000);
+  // ── Common ──────────────────────────────────────────────────────────────────
+
+  static const Color white       = Color(0xFFFFFFFF);
+  static const Color black       = Color(0xFF000000);
   static const Color transparent = Colors.transparent;
 
-  // --------------------------------------------------------------------------
-  // HELPERS
-  // --------------------------------------------------------------------------
+  // ── Shadow helper ───────────────────────────────────────────────────────────
 
-  static Color shadow(bool isDark) {
-    return isDark
-        ? black.withValues(alpha: 0.30)
-        : black.withValues(alpha: 0.06);
-  }
+  /// Single shadow level — opacity 0.05, blur 24, offset (0, 8).
+  static List<BoxShadow> get shadowLevel1 => [
+        BoxShadow(
+          color: black.withValues(alpha: 0.05),
+          blurRadius: 24,
+          offset: const Offset(0, 8),
+        ),
+      ];
 
-  static Color overlay(double opacity) {
-    return black.withValues(alpha: opacity);
-  }
+  /// Dark-mode variant — slightly stronger.
+  static List<BoxShadow> get shadowLevel1Dark => [
+        BoxShadow(
+          color: black.withValues(alpha: 0.20),
+          blurRadius: 24,
+          offset: const Offset(0, 8),
+        ),
+      ];
 }
+
+// ── BuildContext extensions ──────────────────────────────────────────────────
 
 extension AppColorsThemeExtension on BuildContext {
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
 
-  Color get themePrimary => Theme.of(this).colorScheme.primary;
-  Color get themeSecondary => Theme.of(this).colorScheme.secondary;
-  Color get themeSurface => Theme.of(this).colorScheme.surface;
-  Color get themeCard => isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-  Color get themeBackground => Theme.of(this).scaffoldBackgroundColor;
+  // Brand
+  Color get themePrimary      => Theme.of(this).colorScheme.primary;
+  Color get themePrimaryLight => isDarkMode ? AppColors.primaryLight : AppColors.primaryLight;
+  Color get themePrimarySoft  => isDarkMode ? AppColors.primary.withValues(alpha: 0.12) : AppColors.primarySoft;
+  Color get themeGold         => AppColors.gold;
+  Color get themeGoldSoft     => isDarkMode ? AppColors.gold.withValues(alpha: 0.15) : AppColors.goldSoft;
+  Color get themeSecondary    => Theme.of(this).colorScheme.secondary; // = gold
 
-  Color get themeSoftSurface =>
-      isDarkMode ? AppColors.darkSurface : AppColors.lightSoftSurface;
-  Color get themeBorder =>
-      isDarkMode ? AppColors.darkBorder : AppColors.lightBorder;
-  /// Subtle divider/separator: white 12% on dark, black 8% on light.
-  Color get themeLineBorder =>
-      isDarkMode ? AppColors.white.withValues(alpha: 0.12) : AppColors.black.withValues(alpha: 0.08);
+  // Surfaces
+  Color get themeBackground   => Theme.of(this).scaffoldBackgroundColor;
+  Color get themeSurface      => Theme.of(this).colorScheme.surface;
+  Color get themeSoftSurface  => isDarkMode ? AppColors.darkSoftSurface : AppColors.softSurface;
+  Color get themeCard         => isDarkMode ? AppColors.darkSurface : AppColors.surface;
+  Color get themeBorder       => isDarkMode ? AppColors.darkBorder : AppColors.border;
+  Color get themeLineBorder   => isDarkMode
+      ? AppColors.white.withValues(alpha: 0.08)
+      : AppColors.black.withValues(alpha: 0.06);
 
-  Color get themeTextPrimary => Theme.of(this).colorScheme.onSurface;
-  Color get themeTextSecondary =>
-      isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
-  Color get themeTextMuted =>
-      isDarkMode ? AppColors.darkTextMuted : AppColors.lightTextMuted;
-  Color get themeError => Theme.of(this).colorScheme.error;
+  // Text
+  Color get themeTextPrimary   => Theme.of(this).colorScheme.onSurface;
+  Color get themeTextSecondary => isDarkMode ? AppColors.darkTextSecondary : AppColors.textSecondary;
+  Color get themeTextMuted     => isDarkMode ? AppColors.darkTextMuted : AppColors.textMuted;
+
+  // Status
+  Color get themeError   => Theme.of(this).colorScheme.error;
   Color get themeOnError => Theme.of(this).colorScheme.onError;
+
+  // Foreground — white in dark (so icons/text never appear as navy on dark bg)
+  Color get themeContentColor =>
+      isDarkMode ? AppColors.darkTextPrimary : AppColors.primary;
+
+  // Shadow
+  List<BoxShadow> get themeShadow =>
+      isDarkMode ? AppColors.shadowLevel1Dark : AppColors.shadowLevel1;
 }

@@ -221,7 +221,7 @@ class _AboutDeveloperCredits extends StatelessWidget {
         const SizedBox(height: 14),
         InkWell(
           onTap: () => _tryLaunch(context, Uri(scheme: 'mailto', path: _email)),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.sm8,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(
@@ -254,7 +254,7 @@ class _AboutDeveloperCredits extends StatelessWidget {
         const SizedBox(height: 4),
         InkWell(
           onTap: () => _tryLaunch(context, Uri(scheme: 'tel', path: _phoneTel)),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.sm8,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(

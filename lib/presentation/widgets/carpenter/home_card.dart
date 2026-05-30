@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 
@@ -18,7 +19,7 @@ class HomeCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: color.withValues(alpha: 0.15),
@@ -28,7 +29,7 @@ class HomeCard extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.all16,
         onTap: () {},
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

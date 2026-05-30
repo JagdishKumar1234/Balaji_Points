@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -35,9 +37,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
           child: Container(
             constraints: const BoxConstraints(maxHeight: 600),
             child: Column(
@@ -47,7 +47,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: context.themePrimary,
+                    color: context.themeContentColor,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
@@ -96,7 +96,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                       ),
                       prefixIcon: Icon(
                         Icons.search,
-                        color: context.themePrimary,
+                        color: context.themeContentColor,
                       ),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
@@ -112,7 +112,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                       filled: true,
                       fillColor: context.themeSoftSurface,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.md12,
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -130,238 +130,251 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                         .collection('users')
                         .snapshots(),
                     builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          l10n.errorLoadingCarpenters,
-                          style: AppTypography.bodyMedium().copyWith(
-                            color: context.themeError,
-                          ),
-                        ),
-                      );
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: context.themePrimary,
-                        ),
-                      );
-                    }
-
-                    var carpenters = snapshot.data?.docs ?? [];
-
-                    // Filter to show only carpenters (exclude admins)
-                    carpenters = carpenters.where((doc) {
-                      final user = doc.data() as Map<String, dynamic>;
-                      final role = user['role'] as String?;
-                      return role != 'admin' &&
-                          (role == null || role.isEmpty || role == 'carpenter');
-                    }).toList();
-
-                    // Apply search filter
-                    if (_searchQuery.isNotEmpty) {
-                      carpenters = carpenters.where((doc) {
-                        final user = doc.data() as Map<String, dynamic>;
-                        final firstName =
-                            (user['firstName'] ?? '').toString().toLowerCase();
-                        final lastName =
-                            (user['lastName'] ?? '').toString().toLowerCase();
-                        final phone =
-                            (user['phone'] ?? '').toString().toLowerCase();
-                        final fullName = '$firstName $lastName'.trim();
-
-                        return fullName.contains(_searchQuery) ||
-                            phone.contains(_searchQuery);
-                      }).toList();
-                    }
-
-                    if (carpenters.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.person_off,
-                              size: 64,
-                              color: context.themeTextMuted,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              _searchQuery.isNotEmpty
-                                  ? l10n.noCarpentersFound
-                                  : l10n.noCarpentersAvailable,
-                              style: AppTypography.bodyMedium().copyWith(
-                                fontSize: 16,
-                                color: context.themeTextSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: carpenters.length,
-                      itemBuilder: (context, index) {
-                        final doc = carpenters[index];
-                        final user = doc.data() as Map<String, dynamic>;
-                        final userId = doc.id;
-                        final firstName = user['firstName'] ?? '';
-                        final lastName = user['lastName'] ?? '';
-                        final name = ('$firstName $lastName').trim().isEmpty
-                            ? 'Carpenter'
-                            : ('$firstName $lastName').trim();
-                        final phone = user['phone'] ?? '';
-                        final profileImage = user['profileImage'] as String?;
-                        final tier = user['tier'] ?? 'Bronze';
-                        final points = user['totalPoints'] ?? 0;
-
-                        final isSelected = widget.selectedCarpenter != null &&
-                            widget.selectedCarpenter!['userId'] == userId;
-
-                        return InkWell(
-                          onTap: () {
-                            widget.onCarpenterSelected({
-                              'userId': userId,
-                              'firstName': firstName,
-                              'lastName': lastName,
-                              'name': name,
-                              'phone': phone,
-                              'profileImage': profileImage,
-                              'tier': tier,
-                              'totalPoints': points,
-                            });
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? context.themePrimary.withValues(alpha: 0.1)
-                                  : AppColors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected
-                                    ? context.themePrimary
-                                    : context.themeBorder,
-                                width: isSelected ? 2 : 1,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                // Profile Image
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: context.themePrimary.withValues(alpha: 0.1),
-                                    border: Border.all(
-                                      color: context.themePrimary.withValues(alpha: 0.3),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: profileImage != null &&
-                                          profileImage.isNotEmpty
-                                      ? ClipOval(
-                                          child: Image.network(
-                                            profileImage,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) => Icon(
-                                              Icons.person,
-                                              color: context.themePrimary,
-                                              size: 28,
-                                            ),
-                                          ),
-                                        )
-                                      : Icon(
-                                          Icons.person,
-                                          color: context.themePrimary,
-                                          size: 28,
-                                        ),
-                                ),
-                                const SizedBox(width: 12),
-                                // Name and Details
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        name,
-                                        style: AppTypography.labelLarge().copyWith(
-                                          fontSize: 16,
-                                          color: context.themePrimary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        phone,
-                                        style: AppTypography.bodyMedium()
-                                            .copyWith(
-                                          fontSize: 12,
-                                          color: context.themeTextSecondary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: context.themePrimary
-                                                  .withValues(alpha: 0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              tier,
-                                              style: AppTypography.labelLarge()
-                                                  .copyWith(
-                                                fontSize: 10,
-                                                color: context.themePrimary,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            '$points pts',
-                                            style: AppTypography.bodyMedium()
-                                                .copyWith(
-                                              fontSize: 11,
-                                              color: context.themeTextSecondary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (isSelected)
-                                  Icon(
-                                    Icons.check_circle,
-                                    color: context.themePrimary,
-                                    size: 24,
-                                  ),
-                              ],
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            l10n.errorLoadingCarpenters,
+                            style: AppTypography.bodyMedium().copyWith(
+                              color: context.themeError,
                             ),
                           ),
                         );
-                      },
-                    );
-                  },
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: context.themeContentColor,
+                          ),
+                        );
+                      }
+
+                      var carpenters = snapshot.data?.docs ?? [];
+
+                      // Filter to show only carpenters (exclude admins)
+                      carpenters = carpenters.where((doc) {
+                        final user = doc.data() as Map<String, dynamic>;
+                        final role = user['role'] as String?;
+                        return role != 'admin' &&
+                            (role == null ||
+                                role.isEmpty ||
+                                role == 'carpenter');
+                      }).toList();
+
+                      // Apply search filter
+                      if (_searchQuery.isNotEmpty) {
+                        carpenters = carpenters.where((doc) {
+                          final user = doc.data() as Map<String, dynamic>;
+                          final firstName = (user['firstName'] ?? '')
+                              .toString()
+                              .toLowerCase();
+                          final lastName = (user['lastName'] ?? '')
+                              .toString()
+                              .toLowerCase();
+                          final phone = (user['phone'] ?? '')
+                              .toString()
+                              .toLowerCase();
+                          final fullName = '$firstName $lastName'.trim();
+
+                          return fullName.contains(_searchQuery) ||
+                              phone.contains(_searchQuery);
+                        }).toList();
+                      }
+
+                      if (carpenters.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.person_off,
+                                size: 64,
+                                color: context.themeTextMuted,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                _searchQuery.isNotEmpty
+                                    ? l10n.noCarpentersFound
+                                    : l10n.noCarpentersAvailable,
+                                style: AppTypography.bodyMedium().copyWith(
+                                  fontSize: 16,
+                                  color: context.themeTextSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: carpenters.length,
+                        itemBuilder: (context, index) {
+                          final doc = carpenters[index];
+                          final user = doc.data() as Map<String, dynamic>;
+                          final userId = doc.id;
+                          final firstName = user['firstName'] ?? '';
+                          final lastName = user['lastName'] ?? '';
+                          final name = ('$firstName $lastName').trim().isEmpty
+                              ? 'Carpenter'
+                              : ('$firstName $lastName').trim();
+                          final phone = user['phone'] ?? '';
+                          final profileImage = user['profileImage'] as String?;
+                          final tier = user['tier'] ?? 'Bronze';
+                          final points = user['totalPoints'] ?? 0;
+
+                          final isSelected =
+                              widget.selectedCarpenter != null &&
+                              widget.selectedCarpenter!['userId'] == userId;
+
+                          return InkWell(
+                            onTap: () {
+                              widget.onCarpenterSelected({
+                                'userId': userId,
+                                'firstName': firstName,
+                                'lastName': lastName,
+                                'name': name,
+                                'phone': phone,
+                                'profileImage': profileImage,
+                                'tier': tier,
+                                'totalPoints': points,
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? context.themePrimary.withValues(
+                                        alpha: 0.1,
+                                      )
+                                    : context.themeSurface,
+                                borderRadius: AppRadius.md12,
+                                border: Border.all(
+                                  color: isSelected
+                                      ? context.themePrimary
+                                      : context.themeBorder,
+                                  width: isSelected ? 2 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  // Profile Image
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: context.themePrimary.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      border: Border.all(
+                                        color: context.themePrimary.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child:
+                                        profileImage != null &&
+                                            profileImage.isNotEmpty
+                                        ? ClipOval(
+                                            child: Image.network(
+                                              profileImage,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) =>
+                                                  Icon(
+                                                    Icons.person,
+                                                    color: context
+                                                        .themeContentColor,
+                                                    size: 28,
+                                                  ),
+                                            ),
+                                          )
+                                        : Icon(
+                                            Icons.person,
+                                            color: context.themeContentColor,
+                                            size: 28,
+                                          ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  // Name and Details
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        AppText.label(name),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          phone,
+                                          style: AppTypography.bodyMedium()
+                                              .copyWith(
+                                                fontSize: 12,
+                                                color:
+                                                    context.themeTextSecondary,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 2,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: context.themeContentColor
+                                                    .withValues(alpha: 0.1),
+                                                borderRadius: AppRadius.sm8,
+                                              ),
+                                              child: Text(
+                                                tier,
+                                                style: AppTypography.labelLarge()
+                                                    .copyWith(
+                                                      fontSize: 10,
+                                                      color: context
+                                                          .themeContentColor,
+                                                    ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              '$points pts',
+                                              style: AppTypography.bodyMedium()
+                                                  .copyWith(
+                                                    fontSize: 11,
+                                                    color: context
+                                                        .themeTextSecondary,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: context.themeContentColor,
+                                      size: 24,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 
@@ -376,7 +389,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: context.themeSoftSurface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.md12,
           border: Border.all(
             color: selectedCarpenter != null
                 ? context.themePrimary
@@ -386,24 +399,14 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.person,
-              color: context.themePrimary,
-              size: 24,
-            ),
+            Icon(Icons.person, color: context.themeContentColor, size: 24),
             const SizedBox(width: 12),
             Expanded(
               child: selectedCarpenter != null
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          selectedCarpenter['name'] ?? 'Carpenter',
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 16,
-                            color: context.themePrimary,
-                          ),
-                        ),
+                        AppText.label(selectedCarpenter['name'] ?? 'Carpenter'),
                         const SizedBox(height: 2),
                         Text(
                           selectedCarpenter['phone'] ?? '',
@@ -424,7 +427,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
             ),
             Icon(
               Icons.arrow_drop_down,
-              color: context.themePrimary,
+              color: context.themeContentColor,
               size: 24,
             ),
           ],
@@ -433,4 +436,3 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
     );
   }
 }
-

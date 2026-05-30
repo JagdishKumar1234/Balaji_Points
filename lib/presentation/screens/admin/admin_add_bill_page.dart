@@ -1,7 +1,7 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
@@ -169,7 +169,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
             ListTile(
               leading: Icon(
                 Icons.photo_library,
-                color: context.themePrimary,
+                color: context.themeContentColor,
               ),
               title: Text(l10n?.selectImage ?? 'Choose from Gallery'),
               onTap: () {
@@ -178,7 +178,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.camera_alt, color: context.themePrimary),
+              leading: Icon(Icons.camera_alt, color: context.themeContentColor),
               title: Text(l10n?.selectImage ?? 'Take Photo'),
               onTap: () {
                 Navigator.pop(context);
@@ -220,7 +220,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
     if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
+          content: AppText.label(
             l10n?.enterValidAmount ?? 'Please enter a valid amount',
           ),
           backgroundColor: context.themeError,
@@ -253,7 +253,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         return;
       }
 
-      final carpenterId = _selectedCarpenter!['userId'] as String? ??
+      final carpenterId =
+          _selectedCarpenter!['userId'] as String? ??
           _selectedCarpenter!['phone'] as String;
       final carpenterPhone = _selectedCarpenter!['phone'] as String;
 
@@ -384,7 +385,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               ),
               title: AppText.label(
                 'Add Bill for Carpenter',
-                color: context.themePrimary,
+                color: context.themeContentColor,
               ),
               centerTitle: true,
             ),
@@ -404,7 +405,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Carpenter Selection
                           AppText.label(
                             'Carpenter *',
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
                           CarpenterSelectionWidget(
@@ -421,7 +422,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Amount Field
                           AppText.label(
                             l10n?.billAmount ?? 'Bill Amount (₹) *',
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
 
@@ -434,13 +435,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             suffix: amount > 0
                                 ? Padding(
                                     padding: const EdgeInsets.only(right: 12),
-                                    child: Text(
-                                      '$points pts',
-                                      style: AppTypography.labelLarge().copyWith(
-                                        color: context.themeSecondary,
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                                    child: AppText.labelSmall('$points pts', color: context.themeContentColor),
                                   )
                                 : null,
                             validator: (value) {
@@ -462,7 +457,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Bill Date Field
                           AppText.label(
                             l10n?.billDate ?? 'Bill Date *',
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
 
@@ -475,28 +470,34 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                               ),
                               decoration: BoxDecoration(
                                 color: context.themeSurface,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.all16,
                                 border: Border.all(
-                                  color: context.themePrimary.withValues(alpha: 0.3),
+                                  color: context.themePrimary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
                                     Icons.calendar_today,
-                                    color: context.themePrimary,
+                                    color: context.themeContentColor,
                                     size: 24,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: AppText.body(
-                                      DateFormat('dd MMM yyyy').format(_billDate),
-                                      color: context.themePrimary,
+                                      DateFormat(
+                                        'dd MMM yyyy',
+                                      ).format(_billDate),
+                                      color: context.themeContentColor,
                                     ),
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,
-                                    color: context.themePrimary.withValues(alpha: 0.5),
+                                    color: context.themePrimary.withValues(
+                                      alpha: 0.5,
+                                    ),
                                     size: 16,
                                   ),
                                 ],
@@ -509,7 +510,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Bill Image Section
                           AppText.label(
                             l10n?.billImage ?? 'Bill Image (Optional)',
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
 
@@ -519,16 +520,18 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                               height: 200,
                               decoration: BoxDecoration(
                                 color: context.themeSurface,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.all16,
                                 border: Border.all(
-                                  color: context.themePrimary.withValues(alpha: 0.3),
+                                  color: context.themePrimary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   width: 2,
                                   style: BorderStyle.solid,
                                 ),
                               ),
                               child: _selectedImage != null
                                   ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(14),
+                                      borderRadius: AppRadius.all16,
                                       child: Image.file(
                                         _selectedImage!,
                                         fit: BoxFit.cover,
@@ -541,14 +544,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                         Icon(
                                           Icons.add_photo_alternate,
                                           size: 64,
-                                          color: context.themePrimary
+                                          color: context.themeContentColor
                                               .withValues(alpha: 0.5),
                                         ),
                                         const SizedBox(height: 12),
                                         AppText.bodySmall(
                                           l10n?.tapToAddBillImage ??
                                               'Tap to add bill image',
-                                          color: context.themePrimary
+                                          color: context.themeContentColor
                                               .withValues(alpha: 0.6),
                                         ),
                                       ],
@@ -562,13 +565,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           AppText.label(
                             l10n?.storeVendorNameOptional ??
                                 'Store/Vendor Name (Optional)',
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
 
                           AppTextField(
                             controller: _storeNameController,
-                            label: l10n?.enterStoreOrVendorNameOptional ??
+                            label:
+                                l10n?.enterStoreOrVendorNameOptional ??
                                 'Enter store or vendor name (optional)',
                             prefixIcon: Icons.store,
                           ),
@@ -579,13 +583,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           AppText.label(
                             l10n?.billInvoiceNumberOptional ??
                                 'Bill/Invoice Number (Optional)',
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
 
                           AppTextField(
                             controller: _billNumberController,
-                            label: l10n?.enterBillOrInvoiceNumberOptional ??
+                            label:
+                                l10n?.enterBillOrInvoiceNumberOptional ??
                                 'Enter bill or invoice number (optional)',
                             prefixIcon: Icons.receipt,
                           ),
@@ -595,13 +600,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                           // Notes Field (Optional)
                           AppText.label(
                             l10n?.notesOptional ?? 'Notes (Optional)',
-                            color: context.themePrimary,
+                            color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
 
                           AppTextField(
                             controller: _notesController,
-                            label: l10n?.addAnyAdditionalNotes ??
+                            label:
+                                l10n?.addAnyAdditionalNotes ??
                                 'Add any additional notes...',
                             prefixIcon: Icons.note,
                           ),

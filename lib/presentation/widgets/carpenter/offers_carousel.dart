@@ -226,7 +226,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
       height: AppSpacing.sm,
       decoration: BoxDecoration(
         color: isActive ? context.themeSecondary : context.themeBorder,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.xs4,
       ),
     );
   }

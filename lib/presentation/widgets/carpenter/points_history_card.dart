@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:flutter/material.dart';
@@ -111,7 +112,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themePrimary.withValues(alpha: 0.1),
@@ -131,7 +132,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: context.themeSecondary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.md12,
                   ),
                   child: Icon(
                     Icons.history_rounded,
@@ -227,7 +228,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.themeSoftSurface.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.md12,
         border: Border.all(
           color: context.themePrimary.withValues(alpha: 0.1),
           width: 1,
@@ -243,7 +244,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
               color: points > 0
                   ? AppColors.success.withValues(alpha: 0.1)
                   : context.themeError.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.sm8,
             ),
             child: Icon(
               points > 0 ? Icons.add_circle : Icons.remove_circle,
@@ -284,7 +285,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
               color: points > 0
                   ? AppColors.success.withValues(alpha: 0.1)
                   : context.themeError.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.sm8,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -316,7 +317,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themePrimary.withValues(alpha: 0.1),
@@ -337,7 +338,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themePrimary.withValues(alpha: 0.1),

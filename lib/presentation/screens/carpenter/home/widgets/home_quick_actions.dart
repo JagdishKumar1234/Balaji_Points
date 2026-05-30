@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,7 +27,7 @@ class HomeQuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF171A22) : AppColors.white;
+    final cardColor = context.themeSurface;
 
     final actions = [
       _QuickAction(
@@ -40,14 +41,14 @@ class HomeQuickActions extends StatelessWidget {
         icon: Icons.account_balance_wallet_rounded,
         label: 'Wallet',
         sublabel: 'My Points',
-        color: const Color(0xFFD97706),
+        color: AppColors.gold,
         onTap: () => context.go('/wallet'),
       ),
       _QuickAction(
         icon: Icons.redeem_rounded,
         label: 'Rewards',
         sublabel: 'Redeem Now',
-        color: const Color(0xFF7C3AED),
+        color: AppColors.tierPlatinum,
         onTap: () => context.push('/notifications'),
       ),
       _QuickAction(
@@ -61,7 +62,7 @@ class HomeQuickActions extends StatelessWidget {
         icon: Icons.leaderboard_rounded,
         label: 'Leaderboard',
         sublabel: 'Top Carpenters',
-        color: const Color(0xFF16A34A),
+        color: AppColors.success,
         onTap: () => context.push('/notifications'),
       ),
     ];
@@ -71,7 +72,7 @@ class HomeQuickActions extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: isDark ? 0.25 : 0.07),
@@ -110,7 +111,7 @@ class _QuickActionItem extends StatelessWidget {
               height: 52,
               decoration: BoxDecoration(
                 color: action.color.withValues(alpha: isDark ? 0.22 : 0.12),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.all16,
               ),
               child: Icon(action.icon, size: 26, color: action.color),
             ),

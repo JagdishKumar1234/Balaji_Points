@@ -1,9 +1,11 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:intl/intl.dart';
-
 
 class OrdersManagement extends StatefulWidget {
   const OrdersManagement({super.key});
@@ -14,11 +16,13 @@ class OrdersManagement extends StatefulWidget {
 
 class _OrdersManagementState extends State<OrdersManagement> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String _selectedStatusFilter = 'all'; // all, pending, processing, completed, cancelled
+  String _selectedStatusFilter =
+      'all'; // all, pending, processing, completed, cancelled
 
   Stream<QuerySnapshot<Map<String, dynamic>>> _ordersStream() {
-    Query<Map<String, dynamic>> query =
-        _firestore.collection('orders').orderBy('createdAt', descending: true);
+    Query<Map<String, dynamic>> query = _firestore
+        .collection('orders')
+        .orderBy('createdAt', descending: true);
 
     if (_selectedStatusFilter != 'all') {
       query = query.where('status', isEqualTo: _selectedStatusFilter);
@@ -36,8 +40,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
 
   void _openOrderDetails(Map<String, dynamic> order) {
     final createdAt = order['createdAt'] as Timestamp?;
-    final createdDate =
-        createdAt != null ? createdAt.toDate() : DateTime.now();
+    final createdDate = createdAt != null ? createdAt.toDate() : DateTime.now();
     final dateStr = DateFormat('dd MMM yyyy, hh:mm a').format(createdDate);
 
     final items = (order['items'] as List?)?.cast<Map<String, dynamic>>() ?? [];
@@ -73,15 +76,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          'Order ${order['orderId'] ?? ''}',
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 18,
-                            color: context.themePrimary,
-                          ),
-                        ),
+                        AppText.label('Order ${order['orderId'] ?? ''}'),
                         const Spacer(),
-                        _StatusChip(status: order['status'] as String? ?? ''),
+                        StatusChip(status: order['status'] as String? ?? ''),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -94,12 +91,8 @@ class _OrdersManagementState extends State<OrdersManagement> {
                     ),
                     const SizedBox(height: 12),
                     if (shopName.isNotEmpty || shopAddress.isNotEmpty) ...[
-                      Text(
+                      AppText.label(
                         shopName.isNotEmpty ? shopName : 'Shop details',
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 14,
-                          color: context.themePrimary,
-                        ),
                       ),
                       if (shopAddress.isNotEmpty)
                         Text(
@@ -135,14 +128,9 @@ class _OrdersManagementState extends State<OrdersManagement> {
                         ),
                       const SizedBox(height: 12),
                     ],
-                    if (carpenterName.isNotEmpty || carpenterPhone.isNotEmpty) ...[
-                      Text(
-                        'Carpenter',
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 14,
-                          color: context.themePrimary,
-                        ),
-                      ),
+                    if (carpenterName.isNotEmpty ||
+                        carpenterPhone.isNotEmpty) ...[
+                      AppText.label('Carpenter'),
                       if (carpenterName.isNotEmpty)
                         Text(
                           carpenterName,
@@ -162,13 +150,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       const SizedBox(height: 12),
                     ],
                     if (address.isNotEmpty) ...[
-                      Text(
-                        'Shipping address',
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 14,
-                          color: context.themePrimary,
-                        ),
-                      ),
+                      AppText.label('Shipping address'),
                       Text(
                         address,
                         style: AppTypography.bodyMedium().copyWith(
@@ -178,13 +160,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                       ),
                       const SizedBox(height: 12),
                     ],
-                    Text(
-                      'Items',
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 15,
-                        color: context.themePrimary,
-                      ),
-                    ),
+                    AppText.label('Items'),
                     const SizedBox(height: 8),
                     ...items.map((item) {
                       final name = item['name'] ?? '';
@@ -195,15 +171,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Row(
                           children: [
-                            Expanded(
-                              child: Text(
-                                name,
-                                style: AppTypography.bodyMedium().copyWith(
-                                  fontSize: 14,
-                                  color: context.themePrimary,
-                                ),
-                              ),
-                            ),
+                            Expanded(child: AppText.body(name)),
                             Text(
                               'x$qty @ ₹${price.toStringAsFixed(0)}',
                               style: AppTypography.bodyMedium().copyWith(
@@ -212,13 +180,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              '₹${lineTotal.toStringAsFixed(0)}',
-                              style: AppTypography.labelLarge().copyWith(
-                                fontSize: 14,
-                                color: context.themePrimary,
-                              ),
-                            ),
+                            AppText.label('₹${lineTotal.toStringAsFixed(0)}'),
                           ],
                         ),
                       );
@@ -227,20 +189,8 @@ class _OrdersManagementState extends State<OrdersManagement> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Total',
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 16,
-                            color: context.themePrimary,
-                          ),
-                        ),
-                        Text(
-                          '₹${total.toStringAsFixed(0)}',
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 18,
-                            color: context.themePrimary,
-                          ),
-                        ),
+                        AppText.label('Total'),
+                        AppText.label('₹${total.toStringAsFixed(0)}'),
                       ],
                     ),
                   ],
@@ -274,10 +224,7 @@ class _OrdersManagementState extends State<OrdersManagement> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Orders',
-                  style: AppTypography.labelLarge(),
-                ),
+                Text('Orders', style: AppTypography.labelLarge()),
                 const SizedBox(width: 12),
                 ChoiceChip(
                   label: const Text('All'),
@@ -328,21 +275,19 @@ class _OrdersManagementState extends State<OrdersManagement> {
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(
-                  child: Text(
+                  child: AppText.body(
                     'Error loading orders:\n${snapshot.error}',
+                    color: context.themeError,
                     textAlign: TextAlign.center,
-                    style: AppTypography.bodyMedium().copyWith(
-                      fontSize: 14,
-                      color: context.themeError,
-                    ),
                   ),
                 );
               }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
-                  child:
-                      CircularProgressIndicator(color: context.themePrimary),
+                  child: CircularProgressIndicator(
+                    color: context.themeContentColor,
+                  ),
                 );
               }
 
@@ -358,21 +303,12 @@ class _OrdersManagementState extends State<OrdersManagement> {
                         color: context.themeBorder,
                       ),
                       const SizedBox(height: 12),
-                      Text(
-                        'No orders yet',
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 18,
-                          color: context.themePrimary,
-                        ),
-                      ),
+                      AppText.label('No orders yet'),
                       const SizedBox(height: 4),
-                      Text(
+                      AppText.body(
                         'New orders will appear here as carpenters place them.',
+                        color: context.themeTextSecondary,
                         textAlign: TextAlign.center,
-                        style: AppTypography.bodyMedium().copyWith(
-                          fontSize: 13,
-                          color: context.themeTextSecondary,
-                        ),
                       ),
                     ],
                   ),
@@ -388,21 +324,21 @@ class _OrdersManagementState extends State<OrdersManagement> {
                   final orderId = data['orderId'] as String? ?? doc.id;
                   final status = data['status'] as String? ?? 'pending';
                   final createdAt = data['createdAt'] as Timestamp?;
-                  final createdDate =
-                      createdAt != null ? createdAt.toDate() : DateTime.now();
+                  final createdDate = createdAt != null
+                      ? createdAt.toDate()
+                      : DateTime.now();
                   final total = (data['totalAmount'] as num?)?.toDouble() ?? 0;
                   final carpenterName =
                       (data['carpenterName'] as String?) ?? '';
                   final carpenterPhone =
                       (data['carpenterPhone'] as String?) ?? '';
 
-                  final dateStr =
-                      DateFormat('dd MMM yyyy').format(createdDate);
+                  final dateStr = DateFormat('dd MMM yyyy').format(createdDate);
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 10),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: AppRadius.all16,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -413,55 +349,35 @@ class _OrdersManagementState extends State<OrdersManagement> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
+                                AppText.label(
                                   'Order $orderId',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style:
-                                      AppTypography.labelLarge().copyWith(
-                                    fontSize: 15,
-                                    color: context.themePrimary,
-                                  ),
                                 ),
                                 const SizedBox(height: 2),
-                                Text(
+                                AppText.bodySmall(
                                   dateStr,
+                                  color: context.themeTextSecondary,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style:
-                                      AppTypography.bodyMedium().copyWith(
-                                    fontSize: 12,
-                                    color: context.themeTextSecondary,
-                                  ),
                                 ),
                                 if (carpenterName.isNotEmpty ||
                                     carpenterPhone.isNotEmpty) ...[
                                   const SizedBox(height: 2),
-                                  Text(
+                                  AppText.bodySmall(
                                     [
                                       if (carpenterName.isNotEmpty)
                                         carpenterName,
                                       if (carpenterPhone.isNotEmpty)
                                         carpenterPhone,
                                     ].join(' • '),
+                                    color: context.themeTextSecondary,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style:
-                                        AppTypography.bodyMedium().copyWith(
-                                      fontSize: 12,
-                                      color: context.themeTextSecondary,
-                                    ),
                                   ),
                                 ] else
                                   const SizedBox(height: 4),
-                                Text(
-                                  '₹${total.toStringAsFixed(0)}',
-                                  style:
-                                      AppTypography.labelLarge().copyWith(
-                                    fontSize: 16,
-                                    color: context.themePrimary,
-                                  ),
-                                ),
+                                AppText.label('₹${total.toStringAsFixed(0)}'),
                               ],
                             ),
                           ),
@@ -472,54 +388,51 @@ class _OrdersManagementState extends State<OrdersManagement> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 DropdownButton<String>(
-                                value: status,
-                                borderRadius: BorderRadius.circular(12),
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: 'pending',
-                                    child: Text('Pending'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'processing',
-                                    child: Text('Processing'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'completed',
-                                    child: Text('Completed'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'cancelled',
-                                    child: Text('Cancelled'),
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  if (value == null) return;
-                                  _updateStatus(doc.id, value);
-                                },
-                              ),
-                              const SizedBox(height: 4),
-                              OutlinedButton(
-                                onPressed: () => _openOrderDetails(data),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  side: BorderSide(
-                                    color: context.themeBorder,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                                  value: status,
+                                  borderRadius: AppRadius.md12,
+                                  items: const [
+                                    DropdownMenuItem(
+                                      value: 'pending',
+                                      child: Text('Pending'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'processing',
+                                      child: Text('Processing'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'completed',
+                                      child: Text('Completed'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'cancelled',
+                                      child: Text('Cancelled'),
+                                    ),
+                                  ],
+                                  onChanged: (value) {
+                                    if (value == null) return;
+                                    _updateStatus(doc.id, value);
+                                  },
                                 ),
-                                child: const Text(
-                                  'View',
-                                  style: TextStyle(fontSize: 12),
+                                const SizedBox(height: 4),
+                                OutlinedButton(
+                                  onPressed: () => _openOrderDetails(data),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    side: BorderSide(
+                                      color: context.themeBorder,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: AppRadius.sm8,
+                                    ),
+                                  ),
+                                  child: AppText.caption('View'),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                         ],
                       ),
                     ),
@@ -533,68 +446,3 @@ class _OrdersManagementState extends State<OrdersManagement> {
     );
   }
 }
-
-class _StatusChip extends StatelessWidget {
-  final String status;
-
-  const _StatusChip({required this.status});
-
-  Color _backgroundForStatus() {
-    switch (status) {
-      case 'completed':
-        return AppColors.success.withValues(alpha: 0.2);
-      case 'processing':
-        return AppColors.warning.withValues(alpha: 0.2);
-      case 'cancelled':
-        return AppColors.error.withValues(alpha: 0.15);
-      default:
-        return AppColors.lightTextSecondary.withValues(alpha: 0.15);
-    }
-  }
-
-  Color _textColorForStatus() {
-    switch (status) {
-      case 'completed':
-        return AppColors.success;
-      case 'processing':
-        return AppColors.lightSecondary;
-      case 'cancelled':
-        return AppColors.error;
-      default:
-        return AppColors.lightTextPrimary;
-    }
-  }
-
-  String _labelForStatus() {
-    switch (status) {
-      case 'completed':
-        return 'Completed';
-      case 'processing':
-        return 'Processing';
-      case 'cancelled':
-        return 'Cancelled';
-      case 'pending':
-      default:
-        return 'Pending';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: _backgroundForStatus(),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        _labelForStatus(),
-        style: AppTypography.labelLarge().copyWith(
-          fontSize: 11,
-          color: _textColorForStatus(),
-        ),
-      ),
-    );
-  }
-}
-

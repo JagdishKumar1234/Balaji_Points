@@ -1,5 +1,7 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 
 /// Inline circular loader sized to fit within a row or button.
 class AppLoader extends StatelessWidget {
@@ -47,13 +49,16 @@ class AppFullScreenLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ModalBarrier(dismissible: false, color: AppColors.black.withValues(alpha: 0.4)),
+        ModalBarrier(
+          dismissible: false,
+          color: AppColors.black.withValues(alpha: 0.4),
+        ),
         Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
             decoration: BoxDecoration(
               color: context.themeSurface,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.all16,
               boxShadow: [
                 BoxShadow(
                   color: AppColors.black.withValues(alpha: 0.15),
@@ -65,16 +70,17 @@ class AppFullScreenLoader extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                AppLoader(size: 40, strokeWidth: 3, color: context.themePrimary),
+                AppLoader(
+                  size: 40,
+                  strokeWidth: 3,
+                  color: context.themePrimary,
+                ),
                 if (message != null) ...[
                   const SizedBox(height: 16),
-                  Text(
+                  AppText.body(
                     message!,
-                    style: TextStyle(
-                      color: context.themeTextSecondary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    color: context.themeTextSecondary,
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ],

@@ -227,8 +227,8 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.white,
-        foregroundColor: context.themePrimary,
+        backgroundColor: context.themeBackground,
+        foregroundColor: context.themeTextPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
@@ -236,7 +236,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         ),
         title: AppText.h4(
           'Diagnostic: User ${widget.phoneNumber}',
-          color: context.themePrimary,
+          color: context.themeTextPrimary,
         ),
         centerTitle: true,
         actions: [
@@ -311,7 +311,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText.h4(title, color: context.themePrimary),
+          AppText.h4(title, color: context.themeContentColor),
           const SizedBox(height: 12),
           ...children,
         ],
@@ -327,7 +327,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         children: [
           SizedBox(
             width: 180,
-            child: AppText.label('$label:', color: context.themePrimary),
+            child: AppText.label('$label:', color: context.themeContentColor),
           ),
           Expanded(
             child: AppText.body(

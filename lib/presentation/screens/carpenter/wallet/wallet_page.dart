@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -142,7 +143,7 @@ class _ShimmerPointsCard extends StatelessWidget {
       height: 100,
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: AppRadius.all16,
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
   }
@@ -170,7 +171,7 @@ class _WalletIntroBanner extends StatelessWidget {
             height: 34,
             decoration: BoxDecoration(
               color: context.themePrimary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.sm8,
             ),
             child: Icon(
               Icons.account_balance_wallet_outlined,
@@ -219,7 +220,7 @@ class _PointsCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themePrimary.withValues(alpha: 0.35),
@@ -252,7 +253,7 @@ class _PointsCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
               color: AppColors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.all16,
             ),
             child: Text(
               tier,
@@ -304,7 +305,7 @@ class _StatCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(11),
+              borderRadius: AppRadius.md12,
             ),
             child: Icon(icon, color: color, size: 22),
           ),
@@ -390,7 +391,7 @@ class _AddBillButton extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themeSecondary.withValues(alpha: 0.28),
@@ -403,7 +404,7 @@ class _AddBillButton extends StatelessWidget {
         color: AppColors.transparent,
         child: InkWell(
           onTap: () => context.push('/add-bill'),
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.all16,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
@@ -454,7 +455,7 @@ class _SectionHeader extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: context.themePrimary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppRadius.sm8,
           ),
           child: Icon(icon, color: context.themePrimary, size: 18),
         ),
@@ -622,7 +623,7 @@ class _BillCard extends StatelessWidget {
             height: 46,
             decoration: BoxDecoration(
               color: statusColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.md12,
             ),
             child: Icon(_statusIcon(status), color: statusColor, size: 20),
           ),
@@ -671,7 +672,7 @@ class _BillCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: statusColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.md12,
               border: Border.all(color: statusColor.withValues(alpha: 0.3)),
             ),
             child: Text(
@@ -690,7 +691,7 @@ class _BillCard extends StatelessWidget {
       case 'approved': return AppColors.success;
       case 'pending':  return AppColors.warning;
       case 'rejected': return AppColors.error;
-      default:         return AppColors.lightTextSecondary;
+      default:         return AppColors.textSecondary;
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/providers/home_provider.dart';
 
 // ---------------------------------------------------------------------------
@@ -40,10 +42,10 @@ String _tierNextLabel(String tier) {
 
 Color _tierColor(String tier) {
   switch (tier) {
-    case 'Silver':  return const Color(0xFF9E9E9E);
+    case 'Silver':  return AppColors.tierSilver;
     case 'Gold':    return AppColors.warning;
-    case 'Platinum': return const Color(0xFF7C3AED);
-    default:        return const Color(0xFFCD7F32); // Bronze
+    case 'Platinum': return AppColors.tierPlatinum;
+    default:        return AppColors.tierBronze; // Bronze
   }
 }
 
@@ -123,7 +125,7 @@ class HomeHeroCard extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       height: _cardHeight,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: isDark ? 0.35 : 0.12),
@@ -133,7 +135,7 @@ class HomeHeroCard extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -292,9 +294,8 @@ class HomeHeroCard extends StatelessWidget {
                               Icon(Icons.workspace_premium_rounded,
                                   size: 13, color: tierColor),
                               const SizedBox(width: 4),
-                              Text('Platinum — Highest Tier!',
-                                  style: AppTypography.caption(
-                                      color: tierColor)),
+                              AppText.caption('Platinum — Highest Tier!',
+                                  color: tierColor),
                             ],
                           ),
                       ],
@@ -313,7 +314,7 @@ class HomeHeroCard extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: tierColor.withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.all16,
                   boxShadow: [
                     BoxShadow(
                       color: tierColor.withValues(alpha: 0.35),
@@ -357,7 +358,7 @@ class HomeHeroCardShimmer extends StatelessWidget {
       height: HomeHeroCard._cardHeight,
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
   }

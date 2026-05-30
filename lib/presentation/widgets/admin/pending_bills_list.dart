@@ -1,6 +1,8 @@
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
@@ -56,9 +58,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                               color: context.themeError,
                               size: 60,
                             ),
-                            Text(
+                            AppText.body(
                               l10n.failedToLoadImage,
-                              style: const TextStyle(color: AppColors.white),
+                              color: AppColors.white,
                             ),
                           ],
                         ),
@@ -113,29 +115,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Approve Bill',
-          style: AppTypography.labelLarge().copyWith(
-            fontSize: 20,
-            color: context.themePrimary,
-          ),
-        ),
-        content: Text(
+        title: AppText.label('Approve Bill'),
+        content: AppText.body(
           'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${(amount / 1000).floor()} points will be added to the carpenter.',
-          style: AppTypography.bodyMedium().copyWith(
-            fontSize: 16,
-            color: context.themePrimary,
-          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themePrimary,
-              ),
-            ),
+            child: AppText.label('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -147,7 +134,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
             ),
             child: Text(
               'Approve',
-              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.white,
+              ),
             ),
           ),
         ],
@@ -228,22 +217,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
             color: context.themeError,
           ),
         ),
-        content: Text(
-          'Are you sure you want to reject this bill?',
-          style: AppTypography.bodyMedium().copyWith(
-            fontSize: 16,
-            color: context.themePrimary,
-          ),
-        ),
+        content: AppText.body('Are you sure you want to reject this bill?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themePrimary,
-              ),
-            ),
+            child: AppText.label('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -255,7 +233,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
             ),
             child: Text(
               'Reject',
-              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
+              style: AppTypography.labelLarge().copyWith(
+                color: context.themeOnError,
+              ),
             ),
           ),
         ],
@@ -305,7 +285,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
       context: context,
       barrierDismissible: false,
       builder: (_) => Center(
-        child: CircularProgressIndicator(color: context.themePrimary),
+        child: CircularProgressIndicator(color: context.themeContentColor),
       ),
     );
   }
@@ -510,7 +490,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   Expanded(
                     child: TextField(
                       controller: _carpenterNameController,
-                      onChanged: (value) => setState(() => _carpenterNameFilter = value.toLowerCase()),
+                      onChanged: (value) => setState(
+                        () => _carpenterNameFilter = value.toLowerCase(),
+                      ),
                       style: AppTypography.bodyMedium().copyWith(fontSize: 13),
                       decoration: InputDecoration(
                         hintText: 'Search carpenter...',
@@ -518,10 +500,18 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           color: context.themeTextSecondary,
                           fontSize: 13,
                         ),
-                        prefixIcon: Icon(Icons.search, color: context.themeTextSecondary, size: 18),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: context.themeTextSecondary,
+                          size: 18,
+                        ),
                         suffixIcon: _carpenterNameFilter.isNotEmpty
                             ? IconButton(
-                                icon: Icon(Icons.clear, size: 16, color: context.themeTextSecondary),
+                                icon: Icon(
+                                  Icons.clear,
+                                  size: 16,
+                                  color: context.themeTextSecondary,
+                                ),
                                 onPressed: () {
                                   _carpenterNameController.clear();
                                   setState(() => _carpenterNameFilter = '');
@@ -534,14 +524,18 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide(
-                            color: context.themeTextSecondary.withValues(alpha: 0.2),
+                            color: context.themeTextSecondary.withValues(
+                              alpha: 0.2,
+                            ),
                             width: 1,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide(
-                            color: context.themeTextSecondary.withValues(alpha: 0.2),
+                            color: context.themeTextSecondary.withValues(
+                              alpha: 0.2,
+                            ),
                             width: 1,
                           ),
                         ),
@@ -552,7 +546,10 @@ class _PendingBillsListState extends State<PendingBillsList> {
                             width: 1,
                           ),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         isDense: true,
                       ),
                     ),
@@ -568,11 +565,16 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        _showFilters ? Icons.filter_list : Icons.filter_list_outlined,
-                        color: _showFilters ? context.themePrimary : context.themeTextSecondary,
+                        _showFilters
+                            ? Icons.filter_list
+                            : Icons.filter_list_outlined,
+                        color: _showFilters
+                            ? context.themeContentColor
+                            : context.themeTextSecondary,
                         size: 20,
                       ),
-                      onPressed: () => setState(() => _showFilters = !_showFilters),
+                      onPressed: () =>
+                          setState(() => _showFilters = !_showFilters),
                       padding: const EdgeInsets.all(8),
                       constraints: const BoxConstraints(
                         minWidth: 36,
@@ -593,14 +595,19 @@ class _PendingBillsListState extends State<PendingBillsList> {
                       child: InkWell(
                         onTap: () => _selectStartDate(context),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: context.themeSoftSurface,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _startDate != null
                                   ? context.themePrimary.withValues(alpha: 0.4)
-                                  : context.themeTextSecondary.withValues(alpha: 0.2),
+                                  : context.themeTextSecondary.withValues(
+                                      alpha: 0.2,
+                                    ),
                               width: 1,
                             ),
                           ),
@@ -610,7 +617,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                               Icon(
                                 Icons.calendar_today,
                                 size: 14,
-                                color: _startDate != null ? context.themePrimary : context.themeTextSecondary,
+                                color: _startDate != null
+                                    ? context.themeContentColor
+                                    : context.themeTextSecondary,
                               ),
                               const SizedBox(width: 6),
                               Expanded(
@@ -620,14 +629,21 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                       : 'From',
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
-                                    color: _startDate != null ? context.themePrimary : context.themeTextSecondary,
+                                    color: _startDate != null
+                                        ? context.themeContentColor
+                                        : context.themeTextSecondary,
                                   ),
                                 ),
                               ),
                               if (_startDate != null)
                                 InkWell(
-                                  onTap: () => setState(() => _startDate = null),
-                                  child: Icon(Icons.close, size: 14, color: context.themeTextSecondary),
+                                  onTap: () =>
+                                      setState(() => _startDate = null),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 14,
+                                    color: context.themeTextSecondary,
+                                  ),
                                 ),
                             ],
                           ),
@@ -639,14 +655,19 @@ class _PendingBillsListState extends State<PendingBillsList> {
                       child: InkWell(
                         onTap: () => _selectEndDate(context),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: context.themeSoftSurface,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _endDate != null
                                   ? context.themePrimary.withValues(alpha: 0.4)
-                                  : context.themeTextSecondary.withValues(alpha: 0.2),
+                                  : context.themeTextSecondary.withValues(
+                                      alpha: 0.2,
+                                    ),
                               width: 1,
                             ),
                           ),
@@ -656,7 +677,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                               Icon(
                                 Icons.event,
                                 size: 14,
-                                color: _endDate != null ? context.themePrimary : context.themeTextSecondary,
+                                color: _endDate != null
+                                    ? context.themeContentColor
+                                    : context.themeTextSecondary,
                               ),
                               const SizedBox(width: 6),
                               Expanded(
@@ -666,14 +689,20 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                       : 'To',
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
-                                    color: _endDate != null ? context.themePrimary : context.themeTextSecondary,
+                                    color: _endDate != null
+                                        ? context.themeContentColor
+                                        : context.themeTextSecondary,
                                   ),
                                 ),
                               ),
                               if (_endDate != null)
                                 InkWell(
                                   onTap: () => setState(() => _endDate = null),
-                                  child: Icon(Icons.close, size: 14, color: context.themeTextSecondary),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 14,
+                                    color: context.themeTextSecondary,
+                                  ),
                                 ),
                             ],
                           ),
@@ -682,10 +711,17 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     ),
                     if (_hasActiveFilters())
                       IconButton(
-                        icon: Icon(Icons.clear_all, size: 18, color: context.themePrimary),
+                        icon: Icon(
+                          Icons.clear_all,
+                          size: 18,
+                          color: context.themeContentColor,
+                        ),
                         onPressed: _clearFilters,
                         padding: const EdgeInsets.all(4),
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
                         tooltip: 'Clear Filters',
                       ),
                   ],
@@ -711,7 +747,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   if (!snap.hasData) {
                     return Center(
                       child: CircularProgressIndicator(
-                        color: context.themePrimary,
+                        color: context.themeContentColor,
                       ),
                     );
                   }
@@ -794,23 +830,20 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           return Card(
                             elevation: 4,
                             margin: const EdgeInsets.only(bottom: 12),
-                            shadowColor: context.themeSecondary.withValues(alpha: 0.3),
+                            shadowColor: context.themeSecondary.withValues(
+                              alpha: 0.3,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    context.themeSurface,
-                                    context.themeSecondary.withValues(alpha: 0.05),
-                                  ],
-                                ),
+                                color: context.themeSurface,
                                 border: Border.all(
-                                  color: context.themeSecondary.withValues(alpha: 0.2),
+                                  color: context.themeSecondary.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   width: 1.5,
                                 ),
                               ),
@@ -835,433 +868,471 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // ------------ CARPENTER PROFILE ROW -------------
-                                    Row(
-                                      children: [
-                                        // Profile Image
-                                        Container(
-                                          width: 50,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: context.themePrimary
-                                                .withValues(alpha: 0.1),
-                                            border: Border.all(
-                                              color: context.themePrimary
-                                                  .withValues(alpha: 0.3),
-                                              width: 2,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // ------------ CARPENTER PROFILE ROW -------------
+                                      Row(
+                                        children: [
+                                          // Profile Image
+                                          Container(
+                                            width: 50,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: context.themeContentColor
+                                                  .withValues(alpha: 0.1),
+                                              border: Border.all(
+                                                color: context.themeContentColor
+                                                    .withValues(alpha: 0.3),
+                                                width: 2,
+                                              ),
                                             ),
+                                            child:
+                                                profileImageUrl != null &&
+                                                    profileImageUrl.isNotEmpty
+                                                ? ClipOval(
+                                                    child: Image.network(
+                                                      profileImageUrl,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder:
+                                                          (_, __, ___) => Icon(
+                                                            Icons.person,
+                                                            color: context
+                                                                .themeContentColor,
+                                                            size: 28,
+                                                          ),
+                                                    ),
+                                                  )
+                                                : Icon(
+                                                    Icons.person,
+                                                    color: context
+                                                        .themeContentColor,
+                                                    size: 28,
+                                                  ),
                                           ),
-                                          child:
-                                              profileImageUrl != null &&
-                                                  profileImageUrl.isNotEmpty
-                                              ? ClipOval(
-                                                  child: Image.network(
-                                                    profileImageUrl,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder:
-                                                        (_, __, ___) => Icon(
-                                                          Icons.person,
-                                                          color: context.themePrimary,
-                                                          size: 28,
-                                                        ),
-                                                  ),
-                                                )
-                                              : Icon(
-                                                  Icons.person,
-                                                  color: context.themePrimary,
-                                                  size: 28,
-                                                ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        // Name
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                carpenterName,
-                                                style: AppTypography.labelLarge()
-                                                    .copyWith(
-                                                      fontSize: 16,
-                                                      color:
-                                                          context.themePrimary,
-                                                    ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              if (phone.isNotEmpty)
-                                                Text(
-                                                  phone,
-                                                  style: AppTypography.bodyMedium().copyWith(
-                                                        fontSize: 12,
-                                                        color: context.themeTextSecondary,
-                                                      ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                        // Points, Amount, and Image Thumbnail
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            // Image Thumbnail (if available)
-                                            if (imageUrl.isNotEmpty) ...[
-                                              GestureDetector(
-                                                onTap: () => _viewBillImage(imageUrl),
-                                                child: Container(
-                                                  width: 50,
-                                                  height: 50,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(8),
-                                                    border: Border.all(
-                                                      color: context.themePrimary.withValues(alpha: 0.3),
-                                                      width: 2,
-                                                    ),
-                                                  ),
-                                                  child: ClipRRect(
-                                                    borderRadius: BorderRadius.circular(6),
-                                                    child: Stack(
-                                                      children: [
-                                                        Image.network(
-                                                          imageUrl,
-                                                          fit: BoxFit.cover,
-                                                          width: 50,
-                                                          height: 50,
-                                                          errorBuilder: (_, __, ___) => Container(
-                                                            color: context.themeBorder,
-                                                            child: Icon(
-                                                              Icons.broken_image,
-                                                              size: 20,
-                                                              color: context.themeTextSecondary,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        // Overlay icon to indicate it's clickable
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            gradient: LinearGradient(
-                                                              begin: Alignment.topCenter,
-                                                              end: Alignment.bottomCenter,
-                                                              colors: [
-                                                                AppColors.black.withValues(alpha: 0.3),
-                                                                AppColors.transparent,
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          child: Center(
-                                                            child: Icon(
-                                                              Icons.zoom_in,
-                                                              color: AppColors.white,
-                                                              size: 16,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                            ],
-                                            // Points and Amount Column
-                                            Column(
+                                          const SizedBox(width: 12),
+                                          // Name
+                                          Expanded(
+                                            child: Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                // Points Container
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 6,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: context.themeSecondary
-                                                        .withValues(alpha: 0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(8),
-                                                    border: Border.all(
-                                                      color: context.themePrimary
-                                                          .withValues(alpha: 0.3),
-                                                      width: 1.5,
-                                                    ),
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.monetization_on,
-                                                        size: 18,
-                                                        color:
-                                                            context.themeSecondary,
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                        '${(amount / 1000).floor()} pts',
-                                                        style: AppTypography.labelLarge().copyWith(
-                                                              fontSize: 15,
-                                                              color: context.themeSecondary,
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                Text(
+                                                  carpenterName,
+                                                  style:
+                                                      AppTypography.labelLarge()
+                                                          .copyWith(
+                                                            fontSize: 16,
+                                                            color: context
+                                                                .themePrimary,
+                                                          ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                const SizedBox(height: 6),
-                                                // Amount Container
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 6,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: AppColors.success.withValues(alpha: 
-                                                      0.15,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(8),
-                                                    border: Border.all(
-                                                      color: context.themePrimary
-                                                          .withValues(alpha: 0.3),
-                                                      width: 1.5,
-                                                    ),
-                                                  ),
-                                                  child: Text(
-                                                    '₹${amount.toStringAsFixed(0)}',
-                                                    style: AppTypography.labelLarge().copyWith(
-                                                          fontSize: 13,
-                                                          color:
-                                                              AppColors.success,
+                                                if (phone.isNotEmpty)
+                                                  Text(
+                                                    phone,
+                                                    style: AppTypography.bodyMedium()
+                                                        .copyWith(
+                                                          fontSize: 12,
+                                                          color: context
+                                                              .themeTextSecondary,
                                                         ),
                                                   ),
-                                                ),
                                               ],
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10),
-
-                                    // ------------ DATE ROW -------------
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Bill Date
-                                        if (billDate != null)
+                                          ),
+                                          // Points, Amount, and Image Thumbnail
                                           Row(
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Icon(
-                                                Icons.receipt_long,
-                                                size: 14,
-                                                color: context.themePrimary,
-                                              ),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                'Bill Date: ',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: context.themeTextSecondary,
-                                                  fontWeight: FontWeight.w500,
+                                              // Image Thumbnail (if available)
+                                              if (imageUrl.isNotEmpty) ...[
+                                                GestureDetector(
+                                                  onTap: () =>
+                                                      _viewBillImage(imageUrl),
+                                                  child: Container(
+                                                    width: 50,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                      border: Border.all(
+                                                        color: context
+                                                            .themePrimary
+                                                            .withValues(
+                                                              alpha: 0.3,
+                                                            ),
+                                                        width: 2,
+                                                      ),
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            6,
+                                                          ),
+                                                      child: Stack(
+                                                        children: [
+                                                          Image.network(
+                                                            imageUrl,
+                                                            fit: BoxFit.cover,
+                                                            width: 50,
+                                                            height: 50,
+                                                            errorBuilder:
+                                                                (
+                                                                  _,
+                                                                  __,
+                                                                  ___,
+                                                                ) => Container(
+                                                                  color: context
+                                                                      .themeBorder,
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .broken_image,
+                                                                    size: 20,
+                                                                    color: context
+                                                                        .themeTextSecondary,
+                                                                  ),
+                                                                ),
+                                                          ),
+                                                          // Overlay icon to indicate it's clickable
+                                                          Container(
+                                                            decoration: BoxDecoration(
+                                                              gradient: LinearGradient(
+                                                                begin: Alignment
+                                                                    .topCenter,
+                                                                end: Alignment
+                                                                    .bottomCenter,
+                                                                colors: [
+                                                                  AppColors
+                                                                      .black
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.3,
+                                                                      ),
+                                                                  AppColors
+                                                                      .transparent,
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            child: Center(
+                                                              child: Icon(
+                                                                Icons.zoom_in,
+                                                                color: AppColors
+                                                                    .white,
+                                                                size: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                              Text(
-                                                DateFormat(
-                                                  'dd MMM yyyy',
-                                                ).format(billDate.toDate()),
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: context.themePrimary,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        // Approved Date (if available)
-                                        if (approvedAt != null) ...[
-                                          if (billDate != null)
-                                            const SizedBox(height: 4),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.check_circle,
-                                                size: 14,
-                                                color: AppColors.success,
-                                              ),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                'Approved: ',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: context.themeTextSecondary,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              Text(
-                                                DateFormat(
-                                                  'dd MMM yyyy, hh:mm a',
-                                                ).format(approvedAt.toDate()),
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: AppColors.success,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                        // Submitted Date (if bill date not available, show createdAt)
-                                        if (billDate == null &&
-                                            createdAt != null)
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.schedule,
-                                                size: 14,
-                                                color: context.themeTextSecondary,
-                                              ),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                'Submitted: ',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: context.themeTextSecondary,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              Text(
-                                                DateFormat(
-                                                  'dd MMM yyyy, hh:mm a',
-                                                ).format(createdAt.toDate()),
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: context.themeTextSecondary,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-
-                                    // ------------ BILL IMAGE (if expanded) -------------
-                                    if (isExpanded && imageUrl.isNotEmpty) ...[
-                                      const SizedBox(height: 10),
-                                      GestureDetector(
-                                        onTap: () => _viewBillImage(imageUrl),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                          child: Image.network(
-                                            imageUrl,
-                                            height: 170,
-                                            width: double.infinity,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) =>
-                                                Container(
-                                                  height: 170,
-                                                  color: context.themeBorder,
-                                                  child: Center(
-                                                    child: Column(
+                                                const SizedBox(width: 8),
+                                              ],
+                                              // Points and Amount Column
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  // Points Container
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 10,
+                                                          vertical: 6,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: context
+                                                          .themeContentColor
+                                                          .withValues(
+                                                            alpha: 0.2,
+                                                          ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                      border: Border.all(
+                                                        color: context
+                                                            .themeContentColor
+                                                            .withValues(
+                                                              alpha: 0.3,
+                                                            ),
+                                                        width: 1.5,
+                                                      ),
+                                                    ),
+                                                    child: Row(
                                                       mainAxisSize:
                                                           MainAxisSize.min,
                                                       children: [
                                                         Icon(
-                                                          Icons.error_outline,
-                                                          color:
-                                                              context.themeTextMuted,
-                                                          size: 40,
+                                                          Icons.monetization_on,
+                                                          size: 18,
+                                                          color: context
+                                                              .themeSecondary,
                                                         ),
                                                         const SizedBox(
-                                                          height: 8,
+                                                          width: 4,
                                                         ),
-                                                        Text(
-                                                          l10n.failedToLoadImage,
-                                                          style: TextStyle(
-                                                            color: Colors
-                                                                .grey[600],
-                                                            fontSize: 12,
-                                                          ),
+                                                        AppText.label(
+                                                          '${(amount / 1000).floor()} pts',
                                                         ),
                                                       ],
                                                     ),
                                                   ),
-                                                ),
+                                                  const SizedBox(height: 6),
+                                                  // Amount Container
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 10,
+                                                          vertical: 6,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.success
+                                                          .withValues(
+                                                            alpha: 0.15,
+                                                          ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                      border: Border.all(
+                                                        color: context
+                                                            .themeContentColor
+                                                            .withValues(
+                                                              alpha: 0.3,
+                                                            ),
+                                                        width: 1.5,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      '₹${amount.toStringAsFixed(0)}',
+                                                      style:
+                                                          AppTypography.labelLarge()
+                                                              .copyWith(
+                                                                fontSize: 13,
+                                                                color: AppColors
+                                                                    .success,
+                                                              ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
 
-                                    const SizedBox(height: 10),
+                                      const SizedBox(height: 10),
 
-                                    // ------------ ACTION BUTTONS -------------
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: ElevatedButton.icon(
-                                            onPressed: () =>
-                                                _rejectBill(billId),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: context.themeError,
-                                              elevation: 0,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 10,
+                                      // ------------ DATE ROW -------------
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Bill Date
+                                          if (billDate != null)
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.receipt_long,
+                                                  size: 14,
+                                                  color:
+                                                      context.themeContentColor,
+                                                ),
+                                                const SizedBox(width: 6),
+                                                AppText.caption(
+                                                  'Bill Date: ',
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                                AppText.labelSmall(
+                                                  DateFormat(
+                                                    'dd MMM yyyy',
+                                                  ).format(billDate.toDate()),
+                                                  color:
+                                                      context.themeContentColor,
+                                                ),
+                                              ],
+                                            ),
+                                          // Approved Date (if available)
+                                          if (approvedAt != null) ...[
+                                            if (billDate != null)
+                                              const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.check_circle,
+                                                  size: 14,
+                                                  color: AppColors.success,
+                                                ),
+                                                const SizedBox(width: 6),
+                                                AppText.caption(
+                                                  'Approved: ',
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                                AppText.labelSmall(
+                                                  DateFormat(
+                                                    'dd MMM yyyy, hh:mm a',
+                                                  ).format(approvedAt.toDate()),
+                                                  color: AppColors.success,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                          // Submitted Date (if bill date not available, show createdAt)
+                                          if (billDate == null &&
+                                              createdAt != null)
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.schedule,
+                                                  size: 14,
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                                const SizedBox(width: 6),
+                                                AppText.caption(
+                                                  'Submitted: ',
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                                AppText.caption(
+                                                  DateFormat(
+                                                    'dd MMM yyyy, hh:mm a',
+                                                  ).format(createdAt.toDate()),
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                              ],
+                                            ),
+                                        ],
+                                      ),
+
+                                      // ------------ BILL IMAGE (if expanded) -------------
+                                      if (isExpanded &&
+                                          imageUrl.isNotEmpty) ...[
+                                        const SizedBox(height: 10),
+                                        GestureDetector(
+                                          onTap: () => _viewBillImage(imageUrl),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            child: Image.network(
+                                              imageUrl,
+                                              height: 170,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) =>
+                                                  Container(
+                                                    height: 170,
+                                                    color: context.themeBorder,
+                                                    child: Center(
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.error_outline,
+                                                            color: context
+                                                                .themeTextMuted,
+                                                            size: 40,
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          AppText.caption(
+                                                            l10n.failedToLoadImage,
+                                                            color: context
+                                                                .themeTextMuted,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
                                                   ),
-                                            ),
-                                            icon: Icon(
-                                              Icons.close,
-                                              color: context.themeError,
-                                              size: 18,
-                                            ),
-                                            label: Text(
-                                              l10n.reject,
-                                              style: TextStyle(
-                                                color: context.themeError,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: ElevatedButton.icon(
-                                            onPressed: () => _approveBill(bill),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: AppColors.success,
-                                              foregroundColor: AppColors.white,
-                                              elevation: 0,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                  ),
-                                            ),
-                                            icon: const Icon(
-                                              Icons.check,
-                                              size: 18,
-                                            ),
-                                            label: Text(
-                                              l10n.approve,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                              ),
                                             ),
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ],
+
+                                      const SizedBox(height: 10),
+
+                                      // ------------ ACTION BUTTONS -------------
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: ElevatedButton.icon(
+                                              onPressed: () =>
+                                                  _rejectBill(billId),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    context.themeError,
+                                                foregroundColor:
+                                                    context.themeOnError,
+                                                elevation: 0,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                    ),
+                                              ),
+                                              icon: Icon(
+                                                Icons.close,
+                                                color: context.themeOnError,
+                                                size: 18,
+                                              ),
+                                              label: Text(
+                                                l10n.reject,
+                                                style: TextStyle(
+                                                  color: context.themeOnError,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: ElevatedButton.icon(
+                                              onPressed: () =>
+                                                  _approveBill(bill),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppColors.success,
+                                                foregroundColor:
+                                                    AppColors.white,
+                                                elevation: 0,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                    ),
+                                              ),
+                                              icon: const Icon(
+                                                Icons.check,
+                                                size: 18,
+                                              ),
+                                              label: Text(
+                                                l10n.approve,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
                           );
                         },
                       );
@@ -1278,6 +1349,8 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     context.push('/admin/add-bill');
                   },
                   backgroundColor: context.themePrimary,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
                   icon: const Icon(Icons.add, color: AppColors.white),
                   label: Text(
                     'Add Bill',

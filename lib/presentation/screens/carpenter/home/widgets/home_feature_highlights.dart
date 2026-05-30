@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,7 +27,7 @@ class HomeFeatureHighlights extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF171A22) : AppColors.white;
+    final cardColor = context.themeSurface;
 
     final features = [
       _FeatureHighlight(
@@ -40,7 +41,7 @@ class HomeFeatureHighlights extends StatelessWidget {
         icon: Icons.redeem_rounded,
         label: 'REDEEM MORE',
         sublabel: 'Exciting Rewards\n& Gifts',
-        iconColor: const Color(0xFF7C3AED),
+        iconColor: AppColors.tierPlatinum,
         onTap: () => context.push('/notifications'),
       ),
       _FeatureHighlight(
@@ -64,7 +65,7 @@ class HomeFeatureHighlights extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: isDark ? 0.25 : 0.07),

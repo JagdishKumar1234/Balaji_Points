@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'top_carpenters_display.dart';
@@ -64,7 +65,7 @@ class TopCarpentersList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.themeSurface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.all16,
         border: Border.all(
           color: context.themeSecondary.withValues(alpha: 0.2),
           width: 1.5,
@@ -144,7 +145,7 @@ class TopCarpentersList extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: AppColors.warning.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.md12,
               border: Border.all(color: AppColors.warning.withValues(alpha: 0.4), width: 1),
             ),
             child: Row(

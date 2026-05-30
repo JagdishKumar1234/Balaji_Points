@@ -1,3 +1,6 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -55,10 +58,8 @@ class _ProductsManagementState extends State<ProductsManagement> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => _CreateEditProductDialog(
-        productId: productId,
-        product: product,
-      ),
+      builder: (context) =>
+          _CreateEditProductDialog(productId: productId, product: product),
     );
   }
 
@@ -66,11 +67,8 @@ class _ProductsManagementState extends State<ProductsManagement> {
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Delete product',
-          style: AppTypography.labelLarge(),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        title: Text('Delete product', style: AppTypography.labelLarge()),
         content: Text(
           'Are you sure you want to delete this product?\nThis action cannot be undone.',
           style: AppTypography.bodyMedium(),
@@ -80,16 +78,11 @@ class _ProductsManagementState extends State<ProductsManagement> {
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: "action",
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.themeError,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Delete'),
+            variant: AppButtonVariant.danger,
+            fullWidth: false,
           ),
         ],
       ),
@@ -101,7 +94,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? 'Product deleted successfully' : 'Failed to delete product',
+            success
+                ? 'Product deleted successfully'
+                : 'Failed to delete product',
           ),
           backgroundColor: success ? AppColors.success : context.themeError,
         ),
@@ -124,7 +119,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       padding: const EdgeInsets.all(20),
-                      color: AppColors.white,
+                      color: context.themeSoftSurface,
                       child: const Text('Failed to load image'),
                     );
                   },
@@ -173,7 +168,9 @@ class _ProductsManagementState extends State<ProductsManagement> {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
+              child: CircularProgressIndicator(
+                color: context.themeContentColor,
+              ),
             );
           }
 
@@ -190,13 +187,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
                     color: context.themeBorder,
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    'No products added yet',
-                    style: AppTypography.labelLarge().copyWith(
-                      fontSize: 20,
-                      color: context.themePrimary,
-                    ),
-                  ),
+                  AppText.label('No products added yet'),
                   const SizedBox(height: 8),
                   Text(
                     'Tap on "Add product" to create your first product.',
@@ -232,9 +223,7 @@ class _ProductsManagementState extends State<ProductsManagement> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -274,12 +263,8 @@ class _ProductsManagementState extends State<ProductsManagement> {
                           Row(
                             children: [
                               Expanded(
-                                child: Text(
+                                child: AppText.label(
                                   name.isNotEmpty ? name : 'Unnamed product',
-                                  style: AppTypography.labelLarge().copyWith(
-                                    fontSize: 18,
-                                    color: context.themePrimary,
-                                  ),
                                 ),
                               ),
                               Container(
@@ -324,17 +309,16 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                   Icon(
                                     Icons.category_outlined,
                                     size: 16,
-                                    color: context.themePrimary,
+                                    color: context.themeContentColor,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
                                     subCategory.isNotEmpty
                                         ? '$mainCategory • $subCategory'
                                         : mainCategory,
-                                    style:
-                                        AppTypography.labelLarge().copyWith(
+                                    style: AppTypography.labelLarge().copyWith(
                                       fontSize: 12,
-                                      color: context.themePrimary,
+                                      color: context.themeContentColor,
                                     ),
                                   ),
                                 ],
@@ -370,20 +354,18 @@ class _ProductsManagementState extends State<ProductsManagement> {
                             children: [
                               Expanded(
                                 child: OutlinedButton.icon(
-                                  onPressed: () => _showEditProductDialog(
-                                    productId,
-                                    data,
-                                  ),
+                                  onPressed: () =>
+                                      _showEditProductDialog(productId, data),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: context.themePrimary,
                                     side: BorderSide(
-                                      color: context.themePrimary,
+                                      color: context.themeContentColor,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: AppRadius.md12,
                                     ),
                                   ),
                                   icon: const Icon(Icons.edit, size: 18),
@@ -397,14 +379,12 @@ class _ProductsManagementState extends State<ProductsManagement> {
                                       _deleteProduct(productId, imageUrl),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: context.themeError,
-                                    side: BorderSide(
-                                      color: context.themeError,
-                                    ),
+                                    side: BorderSide(color: context.themeError),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: AppRadius.md12,
                                     ),
                                   ),
                                   icon: const Icon(Icons.delete, size: 18),
@@ -426,11 +406,10 @@ class _ProductsManagementState extends State<ProductsManagement> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateProductDialog,
         backgroundColor: context.themeSecondary,
+        foregroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         icon: const Icon(Icons.add),
-        label: Text(
-          'Add product',
-          style: AppTypography.labelLarge(),
-        ),
+        label: Text('Add product', style: AppTypography.labelLarge()),
       ),
     );
   }
@@ -461,21 +440,9 @@ class _ProductInfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: context.themeTextSecondary),
           const SizedBox(width: 4),
-          Text(
-            '$label:',
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 12,
-              color: context.themeTextPrimary,
-            ),
-          ),
+          AppText.label('$label:'),
           const SizedBox(width: 4),
-          Text(
-            value,
-            style: AppTypography.bodyMedium().copyWith(
-              fontSize: 12,
-              color: context.themeTextPrimary,
-            ),
-          ),
+          AppText.body(value),
         ],
       ),
     );
@@ -527,10 +494,8 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       final product = widget.product!;
       _nameController.text = (product['name'] ?? '') as String;
       final priceNum = (product['price'] ?? 0) as num;
-      _priceController.text =
-          priceNum == 0 ? '' : priceNum.toStringAsFixed(0);
-      _descriptionController.text =
-          (product['description'] ?? '') as String;
+      _priceController.text = priceNum == 0 ? '' : priceNum.toStringAsFixed(0);
+      _descriptionController.text = (product['description'] ?? '') as String;
       _sizeController.text = (product['size'] ?? '') as String;
       _thicknessController.text = (product['thickness'] ?? '') as String;
       _qualityController.text = (product['quality'] ?? '') as String;
@@ -548,8 +513,10 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
         }
       }
       _selectedMainCategory =
-          (product['mainCategory'] ?? product['category'] ??
-                  _selectedMainCategory) as String;
+          (product['mainCategory'] ??
+                  product['category'] ??
+                  _selectedMainCategory)
+              as String;
       _selectedSubCategory =
           (product['subCategory'] ?? _selectedSubCategory) as String;
       _isActive = (product['isActive'] ?? true) as bool;
@@ -653,9 +620,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       }
 
       // Upload any newly added images
-      final allImageUrls = <String>[
-        ..._existingImageUrls,
-      ];
+      final allImageUrls = <String>[..._existingImageUrls];
 
       if (_newImageFiles.isNotEmpty) {
         setState(() {
@@ -663,8 +628,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
         });
 
         for (final file in _newImageFiles) {
-          final uploadedUrl =
-              await _productService.uploadProductImage(file);
+          final uploadedUrl = await _productService.uploadProductImage(file);
           if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
             allImageUrls.add(uploadedUrl);
           }
@@ -680,8 +644,9 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
         setState(() {
           _isUploadingCatalogPdf = true;
         });
-        finalCatalogPdfUrl = await _productService
-            .uploadProductCatalogPdf(_newCatalogPdfFile!);
+        finalCatalogPdfUrl = await _productService.uploadProductCatalogPdf(
+          _newCatalogPdfFile!,
+        );
         setState(() {
           _isUploadingCatalogPdf = false;
         });
@@ -693,8 +658,9 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
           productId: widget.productId!,
           name: name,
           mainCategory: _selectedMainCategory,
-          subCategory:
-              _selectedSubCategory.isEmpty ? null : _selectedSubCategory,
+          subCategory: _selectedSubCategory.isEmpty
+              ? null
+              : _selectedSubCategory,
           price: parsedPrice,
           description: description.isEmpty ? null : description,
           size: size.isEmpty ? null : size,
@@ -702,27 +668,32 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
           quality: quality.isEmpty ? null : quality,
           imageUrls: allImageUrls,
           isActive: _isActive,
-          oldImageUrl:
-              _existingImageUrls.isNotEmpty ? _existingImageUrls.first : null,
-          catalogPdfUrl: finalCatalogPdfUrl != null && finalCatalogPdfUrl.isNotEmpty
+          oldImageUrl: _existingImageUrls.isNotEmpty
+              ? _existingImageUrls.first
+              : null,
+          catalogPdfUrl:
+              finalCatalogPdfUrl != null && finalCatalogPdfUrl.isNotEmpty
               ? finalCatalogPdfUrl
               : null,
-          oldCatalogPdfUrl:
-              _existingCatalogPdfUrl.isNotEmpty ? _existingCatalogPdfUrl : null,
+          oldCatalogPdfUrl: _existingCatalogPdfUrl.isNotEmpty
+              ? _existingCatalogPdfUrl
+              : null,
         );
       } else {
         success = await _productService.createProduct(
           name: name,
           mainCategory: _selectedMainCategory,
-          subCategory:
-              _selectedSubCategory.isEmpty ? null : _selectedSubCategory,
+          subCategory: _selectedSubCategory.isEmpty
+              ? null
+              : _selectedSubCategory,
           price: parsedPrice,
           description: description.isEmpty ? null : description,
           size: size.isEmpty ? null : size,
           thickness: thickness.isEmpty ? null : thickness,
           quality: quality.isEmpty ? null : quality,
           imageUrls: allImageUrls,
-          catalogPdfUrl: finalCatalogPdfUrl != null && finalCatalogPdfUrl.isNotEmpty
+          catalogPdfUrl:
+              finalCatalogPdfUrl != null && finalCatalogPdfUrl.isNotEmpty
               ? finalCatalogPdfUrl
               : null,
           isActive: _isActive,
@@ -770,7 +741,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
     final title = _isEditMode ? 'Edit product' : 'Add new product';
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 720),
         child: Column(
@@ -779,16 +750,18 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [context.themePrimary, context.themeSecondary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                color: context.themeContentColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
                 ),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.inventory_2, color: AppColors.white, size: 26),
+                  const Icon(
+                    Icons.inventory_2,
+                    color: AppColors.white,
+                    size: 26,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -802,9 +775,11 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                   IconButton(
                     icon: const Icon(Icons.close, color: AppColors.white),
                     onPressed:
-                        (_isSaving || _isUploadingImage || _isUploadingCatalogPdf)
-                            ? null
-                            : () => Navigator.of(context).pop(),
+                        (_isSaving ||
+                            _isUploadingImage ||
+                            _isUploadingCatalogPdf)
+                        ? null
+                        : () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
@@ -823,14 +798,14 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           height: 170,
                           decoration: BoxDecoration(
                             color: context.themeSoftSurface,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: AppRadius.all16,
                             border: Border.all(color: context.themeBorder),
                           ),
                           child: Builder(
                             builder: (context) {
                               if (_newImageFiles.isNotEmpty) {
                                 return ClipRRect(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: AppRadius.all16,
                                   child: Image.file(
                                     _newImageFiles.first,
                                     fit: BoxFit.cover,
@@ -840,7 +815,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                               }
                               if (_existingImageUrls.isNotEmpty) {
                                 return ClipRRect(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: AppRadius.all16,
                                   child: Image.network(
                                     _existingImageUrls.first,
                                     fit: BoxFit.cover,
@@ -857,12 +832,8 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                     color: context.themeTextMuted,
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
+                                  AppText.bodySmall(
                                     'Tap to upload product images',
-                                    style: AppTypography.bodySmall().copyWith(
-                                      fontSize: 14,
-                                      color: context.themeTextSecondary,
-                                    ),
                                   ),
                                 ],
                               );
@@ -886,7 +857,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: context.themeSoftSurface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.md12,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -895,16 +866,12 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                               children: [
                                 Icon(
                                   Icons.picture_as_pdf,
-                                  color: context.themePrimary,
+                                  color: context.themeContentColor,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: Text(
+                                  child: AppText.bodySmall(
                                     'Catalog PDF (optional)',
-                                    style: AppTypography.bodySmall().copyWith(
-                                      fontSize: 14,
-                                      color: context.themePrimary,
-                                    ),
                                   ),
                                 ),
                                 if (_existingCatalogPdfUrl.isNotEmpty &&
@@ -935,7 +902,8 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                 ),
                                 const SizedBox(width: 8),
                                 OutlinedButton.icon(
-                                  onPressed: (_isSaving ||
+                                  onPressed:
+                                      (_isSaving ||
                                           _isUploadingImage ||
                                           _isUploadingCatalogPdf)
                                       ? null
@@ -953,7 +921,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                       vertical: 10,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: AppRadius.sm8,
                                     ),
                                   ),
                                 ),
@@ -970,19 +938,14 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                       height: 16,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          context.themePrimary,
-                                        ),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              context.themePrimary,
+                                            ),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
-                                    Text(
-                                      'Uploading PDF...',
-                                      style: AppTypography.bodySmall().copyWith(
-                                        fontSize: 13,
-                                        color: context.themePrimary,
-                                      ),
-                                    ),
+                                    AppText.bodySmall('Uploading PDF...'),
                                   ],
                                 ),
                               ),
@@ -998,12 +961,12 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                         decoration: InputDecoration(
                           labelText: 'Product name',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                             borderSide: BorderSide(
-                              color: context.themePrimary,
+                              color: context.themeContentColor,
                               width: 2,
                             ),
                           ),
@@ -1018,15 +981,16 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _priceController,
-                        keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
                           labelText: 'Price for carpenter (₹)',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                         ),
                       ),
@@ -1041,14 +1005,16 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           labelText: 'Description (optional)',
                           hintText: 'Short description visible in details',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        initialValue: _ProductsManagementState._mainCategories
-                                .contains(_selectedMainCategory)
+                        initialValue:
+                            _ProductsManagementState._mainCategories.contains(
+                              _selectedMainCategory,
+                            )
                             ? _selectedMainCategory
                             : _ProductsManagementState._mainCategories.first,
                         items: _ProductsManagementState._mainCategories
@@ -1062,7 +1028,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                         decoration: InputDecoration(
                           labelText: 'Main category (e.g. Laminates)',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                         ),
                         onChanged: (value) {
@@ -1092,7 +1058,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                         decoration: InputDecoration(
                           labelText: 'Application / space (optional)',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                         ),
                         onChanged: (value) {
@@ -1111,7 +1077,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           labelText: 'Size (optional)',
                           hintText: 'e.g. 8ft x 4ft',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                         ),
                       ),
@@ -1125,7 +1091,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           labelText: 'Thickness (optional)',
                           hintText: 'e.g. 19mm, 0.8mm',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                         ),
                       ),
@@ -1139,7 +1105,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           labelText: 'Quality / Grade (optional)',
                           hintText: 'e.g. Premium, BWR, BWP',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.md12,
                           ),
                         ),
                       ),
@@ -1148,13 +1114,13 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: context.themeSoftSurface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.md12,
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.visibility,
-                              color: context.themePrimary,
+                              color: context.themeContentColor,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -1194,20 +1160,15 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              Text(
-                                'Uploading image...',
-                                style: AppTypography.bodySmall().copyWith(
-                                  fontSize: 14,
-                                  color: context.themePrimary,
-                                ),
-                              ),
+                              AppText.bodySmall('Uploading image...'),
                             ],
                           ),
                         ),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (_isSaving ||
+                          onPressed:
+                              (_isSaving ||
                                   _isUploadingImage ||
                                   _isUploadingCatalogPdf)
                               ? null
@@ -1217,7 +1178,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                             foregroundColor: AppColors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: AppRadius.md12,
                             ),
                           ),
                           child: _isSaving
@@ -1232,7 +1193,9 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   ),
                                 )
                               : Text(
-                                  _isEditMode ? 'Update product' : 'Save product',
+                                  _isEditMode
+                                      ? 'Update product'
+                                      : 'Save product',
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 16,
                                     color: AppColors.white,
@@ -1251,4 +1214,3 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
     );
   }
 }
-

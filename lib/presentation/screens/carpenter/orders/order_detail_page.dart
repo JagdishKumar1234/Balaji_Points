@@ -7,12 +7,12 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final String orderId;
@@ -30,7 +30,8 @@ class OrderDetailPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
+        backgroundColor:
+            theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
         foregroundColor: context.themeTextPrimary,
         elevation: 0,
         leading: IconButton(
@@ -70,10 +71,13 @@ class OrderDetailPage extends StatelessWidget {
           }
 
           final data = snapshot.data!.data() ?? {};
-          final items = (data['items'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+          final items =
+              (data['items'] as List?)?.cast<Map<String, dynamic>>() ?? [];
           final createdAt = data['createdAt'] as Timestamp?;
           final createdDate = createdAt?.toDate() ?? DateTime.now();
-          final dateStr = DateFormat('dd MMM yyyy, hh:mm a').format(createdDate);
+          final dateStr = DateFormat(
+            'dd MMM yyyy, hh:mm a',
+          ).format(createdDate);
           final total = (data['totalAmount'] as num?)?.toDouble() ?? 0;
           final shopName = data['shopName'] as String? ?? '';
           final shopAddress = data['shopAddress'] as String? ?? '';
@@ -87,7 +91,9 @@ class OrderDetailPage extends StatelessWidget {
           final orderNo = data['orderId'] as String? ?? orderId;
 
           return Padding(
-            padding: CarpenterShellLayout.scrollViewPadding(MediaQuery.of(context)),
+            padding: CarpenterShellLayout.scrollViewPadding(
+              MediaQuery.of(context),
+            ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
@@ -110,7 +116,7 @@ class OrderDetailPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      _StatusChip(status: status),
+                      StatusChip(status: status),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -119,37 +125,52 @@ class OrderDetailPage extends StatelessWidget {
                   if (shopName.isNotEmpty || shopAddress.isNotEmpty) ...[
                     AppText.h4(shopName.isNotEmpty ? shopName : 'Shop details'),
                     if (shopAddress.isNotEmpty)
-                      AppText.bodySmall(shopAddress,
-                          color: context.themeTextSecondary),
+                      AppText.bodySmall(
+                        shopAddress,
+                        color: context.themeTextSecondary,
+                      ),
                     if (shopGstNo.isNotEmpty)
-                      AppText.bodySmall('GST: $shopGstNo',
-                          color: context.themeTextSecondary),
+                      AppText.bodySmall(
+                        'GST: $shopGstNo',
+                        color: context.themeTextSecondary,
+                      ),
                     if (shopPhone.isNotEmpty)
-                      AppText.bodySmall('Phone: $shopPhone',
-                          color: context.themeTextSecondary),
+                      AppText.bodySmall(
+                        'Phone: $shopPhone',
+                        color: context.themeTextSecondary,
+                      ),
                     if (shopEmail.isNotEmpty)
-                      AppText.bodySmall(shopEmail,
-                          color: context.themeTextSecondary),
+                      AppText.bodySmall(
+                        shopEmail,
+                        color: context.themeTextSecondary,
+                      ),
                     const SizedBox(height: 16),
                   ],
 
                   // Carpenter block
-                  if (carpenterName.isNotEmpty || carpenterPhone.isNotEmpty) ...[
+                  if (carpenterName.isNotEmpty ||
+                      carpenterPhone.isNotEmpty) ...[
                     const AppText.label('Carpenter'),
                     if (carpenterName.isNotEmpty)
-                      AppText.bodySmall(carpenterName,
-                          color: context.themeTextSecondary),
+                      AppText.bodySmall(
+                        carpenterName,
+                        color: context.themeTextSecondary,
+                      ),
                     if (carpenterPhone.isNotEmpty)
-                      AppText.bodySmall(carpenterPhone,
-                          color: context.themeTextSecondary),
+                      AppText.bodySmall(
+                        carpenterPhone,
+                        color: context.themeTextSecondary,
+                      ),
                     const SizedBox(height: 16),
                   ],
 
                   // Shipping address
                   if (address.isNotEmpty) ...[
                     const AppText.label('Shipping address'),
-                    AppText.bodySmall(address,
-                        color: context.themeTextSecondary),
+                    AppText.bodySmall(
+                      address,
+                      color: context.themeTextSecondary,
+                    ),
                     const SizedBox(height: 16),
                   ],
 
@@ -165,11 +186,14 @@ class OrderDetailPage extends StatelessWidget {
                         // Header row
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: context.themeSoftSurface,
                             borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(12)),
+                              top: Radius.circular(12),
+                            ),
                           ),
                           child: Row(
                             children: [
@@ -179,18 +203,24 @@ class OrderDetailPage extends StatelessWidget {
                               ),
                               const Expanded(
                                 flex: 2,
-                                child: AppText.labelSmall('Qty',
-                                    textAlign: TextAlign.right),
+                                child: AppText.labelSmall(
+                                  'Qty',
+                                  textAlign: TextAlign.right,
+                                ),
                               ),
                               const Expanded(
                                 flex: 2,
-                                child: AppText.labelSmall('Price',
-                                    textAlign: TextAlign.right),
+                                child: AppText.labelSmall(
+                                  'Price',
+                                  textAlign: TextAlign.right,
+                                ),
                               ),
                               const Expanded(
                                 flex: 2,
-                                child: AppText.labelSmall('Total',
-                                    textAlign: TextAlign.right),
+                                child: AppText.labelSmall(
+                                  'Total',
+                                  textAlign: TextAlign.right,
+                                ),
                               ),
                             ],
                           ),
@@ -199,7 +229,9 @@ class OrderDetailPage extends StatelessWidget {
                           const Divider(height: 1),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             child: Row(
                               children: [
                                 Expanded(
@@ -226,17 +258,21 @@ class OrderDetailPage extends StatelessWidget {
                                 ),
                                 Expanded(
                                   flex: 2,
-                                  child: Builder(builder: (context) {
-                                    final numPrice = (item['price'] ?? 0) as num;
-                                    final numQty = (item['quantity'] ?? 0) as num;
-                                    final numLine =
-                                        (item['lineTotal'] as num?) ??
-                                            (numPrice * numQty);
-                                    return AppText.bodySmall(
-                                      '₹${numLine.toStringAsFixed(0)}',
-                                      textAlign: TextAlign.right,
-                                    );
-                                  }),
+                                  child: Builder(
+                                    builder: (context) {
+                                      final numPrice =
+                                          (item['price'] ?? 0) as num;
+                                      final numQty =
+                                          (item['quantity'] ?? 0) as num;
+                                      final numLine =
+                                          (item['lineTotal'] as num?) ??
+                                          (numPrice * numQty);
+                                      return AppText.bodySmall(
+                                        '₹${numLine.toStringAsFixed(0)}',
+                                        textAlign: TextAlign.right,
+                                      );
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
@@ -292,7 +328,8 @@ class OrderDetailPage extends StatelessWidget {
     final carpenterName = order['carpenterName'] as String? ?? '';
     final carpenterPhone = order['carpenterPhone'] as String? ?? '';
     final advance = (order['advanceAmount'] as num?)?.toDouble() ?? 0.0;
-    final balance = (order['balanceAmount'] as num?)?.toDouble() ?? (total - advance);
+    final balance =
+        (order['balanceAmount'] as num?)?.toDouble() ?? (total - advance);
     final deliveryTs = order['deliveryDate'] as Timestamp?;
     final deliveryDateStr = deliveryTs != null
         ? DateFormat('dd MMM yyyy').format(deliveryTs.toDate())
@@ -300,7 +337,9 @@ class OrderDetailPage extends StatelessWidget {
 
     pw.MemoryImage? logoImage;
     try {
-      final logoData = await rootBundle.load('assets/images/balaji_point_logo.png');
+      final logoData = await rootBundle.load(
+        'assets/images/balaji_point_logo.png',
+      );
       logoImage = pw.MemoryImage(logoData.buffer.asUint8List());
     } catch (_) {}
 
@@ -328,16 +367,24 @@ class OrderDetailPage extends StatelessWidget {
                         pw.Text(
                           shopName.toUpperCase(),
                           style: pw.TextStyle(
-                              fontSize: 16, fontWeight: pw.FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
                         ),
                       if (shopAddress.isNotEmpty)
-                        pw.Text(shopAddress,
-                            style: const pw.TextStyle(fontSize: 11)),
-                      pw.Text('Phone: $shopPhone | GSTIN: $shopGstNo',
-                          style: const pw.TextStyle(fontSize: 11)),
+                        pw.Text(
+                          shopAddress,
+                          style: const pw.TextStyle(fontSize: 11),
+                        ),
+                      pw.Text(
+                        'Phone: $shopPhone | GSTIN: $shopGstNo',
+                        style: const pw.TextStyle(fontSize: 11),
+                      ),
                       if (shopEmail.isNotEmpty)
-                        pw.Text(shopEmail,
-                            style: const pw.TextStyle(fontSize: 11)),
+                        pw.Text(
+                          shopEmail,
+                          style: const pw.TextStyle(fontSize: 11),
+                        ),
                     ],
                   ),
                 ],
@@ -347,66 +394,106 @@ class OrderDetailPage extends StatelessWidget {
               pw.SizedBox(height: 12),
 
               // Customer details
-              pw.Text('CUSTOMER DETAILS',
-                  style: pw.TextStyle(
-                      fontSize: 12, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                'CUSTOMER DETAILS',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 4),
               if (carpenterName.isNotEmpty)
-                pw.Text('Name: $carpenterName',
-                    style: const pw.TextStyle(fontSize: 11)),
+                pw.Text(
+                  'Name: $carpenterName',
+                  style: const pw.TextStyle(fontSize: 11),
+                ),
               if (carpenterPhone.isNotEmpty)
-                pw.Text('Contact: $carpenterPhone',
-                    style: const pw.TextStyle(fontSize: 11)),
+                pw.Text(
+                  'Contact: $carpenterPhone',
+                  style: const pw.TextStyle(fontSize: 11),
+                ),
               if (address.isNotEmpty) ...[
                 pw.SizedBox(height: 6),
-                pw.Text('Shipping Address:',
-                    style: pw.TextStyle(
-                        fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                pw.Text(
+                  'Shipping Address:',
+                  style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
                 pw.Text(address, style: const pw.TextStyle(fontSize: 11)),
               ],
               pw.SizedBox(height: 12),
 
               // Order details
-              pw.Text('ORDER DETAILS',
-                  style: pw.TextStyle(
-                      fontSize: 12, fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 4),
-              pw.Text('Order No: #$orderNo',
-                  style: const pw.TextStyle(fontSize: 11)),
-              pw.Text('Date: $dateStr',
-                  style: const pw.TextStyle(fontSize: 11)),
               pw.Text(
-                  'Status: ${status[0].toUpperCase()}${status.substring(1)}',
-                  style: const pw.TextStyle(fontSize: 11)),
+                'ORDER DETAILS',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text(
+                'Order No: #$orderNo',
+                style: const pw.TextStyle(fontSize: 11),
+              ),
+              pw.Text(
+                'Date: $dateStr',
+                style: const pw.TextStyle(fontSize: 11),
+              ),
+              pw.Text(
+                'Status: ${status[0].toUpperCase()}${status.substring(1)}',
+                style: const pw.TextStyle(fontSize: 11),
+              ),
               pw.SizedBox(height: 8),
-              pw.Text('ITEMS:',
-                  style: pw.TextStyle(
-                      fontSize: 12, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                'ITEMS:',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 4),
               ...items.map((item) {
                 final name = (item['name'] ?? '') as String;
                 final qty = (item['quantity'] ?? 0) as int;
-                final size = (item['size'] ?? item['thickness'] ?? '') as String;
+                final size =
+                    (item['size'] ?? item['thickness'] ?? '') as String;
                 final unit = (item['unit'] as String?) ?? 'Nos';
                 final nameWithSize = size.isNotEmpty ? '$name ($size)' : name;
-                return pw.Text('$nameWithSize - $qty $unit',
-                    style: const pw.TextStyle(fontSize: 11));
+                return pw.Text(
+                  '$nameWithSize - $qty $unit',
+                  style: const pw.TextStyle(fontSize: 11),
+                );
               }),
               pw.SizedBox(height: 12),
 
               // Payment summary
-              pw.Text('PAYMENT SUMMARY',
-                  style: pw.TextStyle(
-                      fontSize: 12, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                'PAYMENT SUMMARY',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 4),
-              pw.Text('Total Order Value: ₹ ${total.toStringAsFixed(0)}',
-                  style: const pw.TextStyle(fontSize: 11)),
-              pw.Text('Advance Paid: ₹ ${advance.toStringAsFixed(0)}',
-                  style: const pw.TextStyle(fontSize: 11)),
-              pw.Text('Balance to Pay: ₹ ${balance.toStringAsFixed(0)}',
-                  style: const pw.TextStyle(fontSize: 11)),
-              pw.Text('Expected Delivery Date: $deliveryDateStr',
-                  style: const pw.TextStyle(fontSize: 11)),
+              pw.Text(
+                'Total Order Value: ₹ ${total.toStringAsFixed(0)}',
+                style: const pw.TextStyle(fontSize: 11),
+              ),
+              pw.Text(
+                'Advance Paid: ₹ ${advance.toStringAsFixed(0)}',
+                style: const pw.TextStyle(fontSize: 11),
+              ),
+              pw.Text(
+                'Balance to Pay: ₹ ${balance.toStringAsFixed(0)}',
+                style: const pw.TextStyle(fontSize: 11),
+              ),
+              pw.Text(
+                'Expected Delivery Date: $deliveryDateStr',
+                style: const pw.TextStyle(fontSize: 11),
+              ),
               pw.SizedBox(height: 16),
               pw.Text(
                 'Thank you for your order! We will notify you once the materials are ready for dispatch.',
@@ -420,58 +507,5 @@ class OrderDetailPage extends StatelessWidget {
 
     final bytes = await pdf.save();
     await Printing.sharePdf(bytes: bytes, filename: 'order_$orderNo.pdf');
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Status chip (shared with orders list)
-// ---------------------------------------------------------------------------
-
-class _StatusChip extends StatelessWidget {
-  final String status;
-
-  const _StatusChip({required this.status});
-
-  static Color _bg(String s) {
-    switch (s) {
-      case 'completed': return AppColors.success.withValues(alpha: 0.15);
-      case 'processing': return AppColors.warning.withValues(alpha: 0.15);
-      case 'cancelled': return AppColors.error.withValues(alpha: 0.15);
-      default: return AppColors.lightTextMuted.withValues(alpha: 0.15);
-    }
-  }
-
-  static Color _fg(String s) {
-    switch (s) {
-      case 'completed': return AppColors.success;
-      case 'processing': return const Color(0xFF92400E);
-      case 'cancelled': return const Color(0xFF991B1B);
-      default: return AppColors.lightTextSecondary;
-    }
-  }
-
-  static String _label(String s) {
-    switch (s) {
-      case 'completed': return 'Completed';
-      case 'processing': return 'Processing';
-      case 'cancelled': return 'Cancelled';
-      default: return 'Pending';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: _bg(status),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        _label(status),
-        style: AppTypography.labelSmall(color: _fg(status))
-            .copyWith(fontWeight: FontWeight.w600),
-      ),
-    );
   }
 }

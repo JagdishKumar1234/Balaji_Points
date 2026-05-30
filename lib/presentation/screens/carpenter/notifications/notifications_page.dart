@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 // lib/presentation/screens/notifications/notifications_page.dart
@@ -362,7 +363,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Row(
           children: [
             Container(
@@ -404,7 +405,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.md12,
               ),
             ),
             child: const Text('Delete All', style: TextStyle(fontSize: 16)),
@@ -771,7 +772,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     margin: const EdgeInsets.only(bottom: 12),
                                     decoration: BoxDecoration(
                                       color: context.themeError,
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: AppRadius.all16,
                                     ),
                                     alignment: Alignment.centerRight,
                                     padding: const EdgeInsets.only(right: 24),
@@ -790,7 +791,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                           builder: (context) => AlertDialog(
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(16),
+                                                  AppRadius.all16,
                                             ),
                                             title: const Text(
                                               'Delete Notification',
@@ -837,12 +838,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   child: InkWell(
                                     onTap: () =>
                                         _handleNotificationTap(data, type),
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius: AppRadius.all16,
                                     child: Container(
                                       margin: const EdgeInsets.only(bottom: 12),
                                       decoration: BoxDecoration(
                                         color: theme.colorScheme.surface,
-                                        borderRadius: BorderRadius.circular(14),
+                                        borderRadius: AppRadius.all16,
                                         boxShadow: [
                                           BoxShadow(
                                             color: AppColors.black.withValues(
@@ -861,7 +862,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                         ],
                                       ),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(14),
+                                        borderRadius: AppRadius.all16,
                                         child: Container(
                                           decoration: BoxDecoration(
                                             border: Border(

@@ -1,7 +1,10 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pdf/pdf.dart';
@@ -70,9 +73,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               color: context.themeError,
                               size: 60,
                             ),
-                            Text(
+                            AppText.body(
                               l10n.failedToLoadImage,
-                              style: const TextStyle(color: AppColors.white),
+                              color: AppColors.white,
                             ),
                           ],
                         ),
@@ -588,7 +591,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       color: (_billsForExport.isEmpty || _isExporting)
                           ? context.themeTextSecondary.withValues(alpha: 0.1)
                           : context.themePrimary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.sm8,
                     ),
                     child: IconButton(
                       icon: _isExporting
@@ -597,7 +600,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: context.themePrimary,
+                                color: context.themeContentColor,
                               ),
                             )
                           : Icon(
@@ -623,7 +626,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       color: _showFilters
                           ? context.themePrimary.withValues(alpha: 0.1)
                           : context.themeTextSecondary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.sm8,
                     ),
                     child: IconButton(
                       icon: Icon(
@@ -664,13 +667,13 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           ),
                           decoration: BoxDecoration(
                             color: context.themeSoftSurface,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.sm8,
                             border: Border.all(
                               color: _startDate != null
-                                  ? context.themePrimary.withValues(
-                                      alpha: 0.4,
-                                    )
-                                  : context.themeTextSecondary.withValues(alpha: 0.2),
+                                  ? context.themePrimary.withValues(alpha: 0.4)
+                                  : context.themeTextSecondary.withValues(
+                                      alpha: 0.2,
+                                    ),
                               width: 1,
                             ),
                           ),
@@ -724,13 +727,13 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           ),
                           decoration: BoxDecoration(
                             color: context.themeSoftSurface,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.sm8,
                             border: Border.all(
                               color: _endDate != null
-                                  ? context.themePrimary.withValues(
-                                      alpha: 0.4,
-                                    )
-                                  : context.themeTextSecondary.withValues(alpha: 0.2),
+                                  ? context.themePrimary.withValues(alpha: 0.4)
+                                  : context.themeTextSecondary.withValues(
+                                      alpha: 0.2,
+                                    ),
                               width: 1,
                             ),
                           ),
@@ -810,21 +813,25 @@ class _BillHistoryListState extends State<BillHistoryList> {
                     filled: true,
                     fillColor: context.themeSoftSurface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.sm8,
                       borderSide: BorderSide(
-                        color: context.themeTextSecondary.withValues(alpha: 0.2),
+                        color: context.themeTextSecondary.withValues(
+                          alpha: 0.2,
+                        ),
                         width: 1,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.sm8,
                       borderSide: BorderSide(
-                        color: context.themeTextSecondary.withValues(alpha: 0.2),
+                        color: context.themeTextSecondary.withValues(
+                          alpha: 0.2,
+                        ),
                         width: 1,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.sm8,
                       borderSide: BorderSide(
                         color: context.themePrimary.withValues(alpha: 0.5),
                         width: 1,
@@ -884,7 +891,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
               if (!snap.hasData) {
                 return Center(
                   child: CircularProgressIndicator(
-                    color: context.themePrimary,
+                    color: context.themeContentColor,
                   ),
                 );
               }
@@ -972,21 +979,12 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             ? AppColors.success.withValues(alpha: 0.3)
                             : context.themeError.withValues(alpha: 0.3),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: AppRadius.all16,
                         ),
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                context.themeSurface,
-                                status == 'approved'
-                                    ? AppColors.success.withValues(alpha: 0.05)
-                                    : context.themeError.withValues(alpha: 0.05),
-                              ],
-                            ),
+                            borderRadius: AppRadius.all16,
+                            color: context.themeSurface,
                             border: Border.all(
                               color: status == 'approved'
                                   ? AppColors.success.withValues(alpha: 0.2)
@@ -995,7 +993,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             ),
                           ),
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.all16,
                             onTap: () async {
                               // Navigate to Bill Details page
                               final result = await Navigator.push(
@@ -1027,10 +1025,10 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                         height: 36,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: context.themePrimary
+                                          color: context.themeContentColor
                                               .withValues(alpha: 0.1),
                                           border: Border.all(
-                                            color: context.themePrimary
+                                            color: context.themeContentColor
                                                 .withValues(alpha: 0.3),
                                             width: 1,
                                           ),
@@ -1045,15 +1043,16 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                   errorBuilder: (_, __, ___) =>
                                                       Icon(
                                                         Icons.person,
-                                                        color: AppColors
-                                                            .lightPrimary,
+                                                        color:
+                                                            AppColors.primary,
                                                         size: 20,
                                                       ),
                                                 ),
                                               )
                                             : Icon(
                                                 Icons.person,
-                                                color: context.themePrimary,
+                                                color:
+                                                    context.themeContentColor,
                                                 size: 20,
                                               ),
                                       ),
@@ -1074,7 +1073,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                             .copyWith(
                                                               fontSize: 14,
                                                               color: AppColors
-                                                                  .lightPrimary,
+                                                                  .primary,
                                                               height: 1.2,
                                                             ),
                                                     maxLines: 1,
@@ -1084,52 +1083,10 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 ),
                                                 const SizedBox(width: 6),
                                                 // Status Badge - Inline
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 6,
-                                                        vertical: 2,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: status == 'approved'
-                                                        ? AppColors.success
-                                                        : context.themeError,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          6,
-                                                        ),
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                        status == 'approved'
-                                                            ? Icons.check_circle
-                                                            : Icons.cancel,
-                                                        size: 10,
-                                                        color:
-                                                            status == 'approved'
-                                                            ? AppColors.success
-                                                            : context.themeError,
-                                                      ),
-                                                      const SizedBox(width: 3),
-                                                      Text(
-                                                        status == 'approved'
-                                                            ? 'Approved'
-                                                            : 'Rejected',
-                                                        style: AppTypography.labelLarge()
-                                                            .copyWith(
-                                                              fontSize: 9,
-                                                              color:
-                                                                  status ==
-                                                                      'approved'
-                                                                  ? AppColors.success
-                                                                  : context.themeError,
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                StatusChip(
+                                                  status: status,
+                                                  compact: true,
+                                                  showIcon: true,
                                                 ),
                                               ],
                                             ),
@@ -1137,14 +1094,13 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                               const SizedBox(height: 2),
                                               Text(
                                                 phone,
-                                                style:
-                                                    AppTypography.bodyMedium()
-                                                        .copyWith(
-                                                          fontSize: 11,
-                                                          color:
-                                                              context.themeTextSecondary,
-                                                          height: 1.2,
-                                                        ),
+                                                style: AppTypography.bodyMedium()
+                                                    .copyWith(
+                                                      fontSize: 11,
+                                                      color: context
+                                                          .themeTextSecondary,
+                                                      height: 1.2,
+                                                    ),
                                               ),
                                             ],
                                           ],
@@ -1164,18 +1120,15 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 width: 45,
                                                 height: 45,
                                                 decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
+                                                  borderRadius: AppRadius.sm8,
                                                   border: Border.all(
-                                                    color: AppColors
-                                                        .lightPrimary
+                                                    color: AppColors.primary
                                                         .withValues(alpha: 0.3),
                                                     width: 1.5,
                                                   ),
                                                 ),
                                                 child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
+                                                  borderRadius: AppRadius.sm8,
                                                   child: Stack(
                                                     children: [
                                                       Image.network(
@@ -1189,12 +1142,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                               __,
                                                               ___,
                                                             ) => Container(
-                                                              color: context.themeBorder,
+                                                              color: context
+                                                                  .themeBorder,
                                                               child: Icon(
                                                                 Icons
                                                                     .broken_image,
                                                                 size: 18,
-                                                                color: context.themeTextSecondary,
+                                                                color: context
+                                                                    .themeTextSecondary,
                                                               ),
                                                             ),
                                                       ),
@@ -1247,11 +1202,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 decoration: BoxDecoration(
                                                   color: AppColors.success
                                                       .withValues(alpha: 0.15),
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
+                                                  borderRadius: AppRadius.sm8,
                                                   border: Border.all(
-                                                    color: AppColors
-                                                        .lightPrimary
+                                                    color: AppColors.primary
                                                         .withValues(
                                                           alpha: 0.25,
                                                         ),
@@ -1264,7 +1217,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                       AppTypography.labelLarge()
                                                           .copyWith(
                                                             fontSize: 13,
-                                                            color: AppColors.success,
+                                                            color: AppColors
+                                                                .success,
                                                             height: 1,
                                                           ),
                                                 ),
@@ -1278,13 +1232,12 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                       vertical: 3,
                                                     ),
                                                 decoration: BoxDecoration(
-                                                  color: context.themePrimary
+                                                  color: context
+                                                      .themeContentColor
                                                       .withValues(alpha: 0.15),
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
+                                                  borderRadius: AppRadius.sm8,
                                                   border: Border.all(
-                                                    color: AppColors
-                                                        .lightPrimary
+                                                    color: AppColors.primary
                                                         .withValues(
                                                           alpha: 0.25,
                                                         ),
@@ -1298,8 +1251,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                     Icon(
                                                       Icons.stars,
                                                       size: 10,
-                                                      color: AppColors
-                                                          .lightPrimary,
+                                                      color: AppColors.primary,
                                                     ),
                                                     const SizedBox(width: 3),
                                                     Text(
@@ -1309,7 +1261,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                               .copyWith(
                                                                 fontSize: 11,
                                                                 color: AppColors
-                                                                    .lightPrimary,
+                                                                    .primary,
                                                                 height: 1,
                                                               ),
                                                     ),
@@ -1332,18 +1284,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                         Icon(
                                           Icons.receipt_long,
                                           size: 12,
-                                          color: context.themePrimary,
+                                          color: context.themeContentColor,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
+                                        AppText.caption(
                                           DateFormat(
                                             'dd MMM yyyy',
                                           ).format(billDate.toDate()),
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: context.themePrimary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          color: context.themeContentColor,
                                         ),
                                         if (approvedAt != null) ...[
                                           const SizedBox(width: 8),
@@ -1369,17 +1317,13 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                               : context.themeError,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
+                                        AppText.caption(
                                           DateFormat(
                                             'dd MMM, hh:mm a',
                                           ).format(approvedAt.toDate()),
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: status == 'approved'
-                                                ? AppColors.success
-                                                : context.themeError,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          color: status == 'approved'
+                                              ? AppColors.success
+                                              : context.themeError,
                                         ),
                                       ],
                                       if (billDate == null &&
@@ -1391,15 +1335,11 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                           color: context.themeTextSecondary,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
+                                        AppText.caption(
                                           DateFormat(
                                             'dd MMM yyyy',
                                           ).format(createdAt.toDate()),
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: context.themeTextSecondary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          color: context.themeTextSecondary,
                                         ),
                                       ],
                                     ],
@@ -1411,7 +1351,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                     GestureDetector(
                                       onTap: () => _viewBillImage(imageUrl),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: AppRadius.sm8,
                                         child: Image.network(
                                           imageUrl,
                                           height: 200,
@@ -1428,18 +1368,15 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                     children: [
                                                       Icon(
                                                         Icons.error_outline,
-                                                        color:
-                                                            context.themeTextMuted,
+                                                        color: context
+                                                            .themeTextMuted,
                                                         size: 40,
                                                       ),
                                                       const SizedBox(height: 8),
-                                                      Text(
+                                                      AppText.caption(
                                                         l10n.failedToLoadImage,
-                                                        style: TextStyle(
-                                                          color:
-                                                              context.themeTextSecondary,
-                                                          fontSize: 12,
-                                                        ),
+                                                        color: context
+                                                            .themeTextSecondary,
                                                       ),
                                                     ],
                                                   ),
@@ -1470,12 +1407,12 @@ class _BillHistoryListState extends State<BillHistoryList> {
     final isSelected = _selectedStatus == value;
     return InkWell(
       onTap: () => setState(() => _selectedStatus = value),
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: AppRadius.sm8,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isSelected ? color : color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: AppRadius.sm8,
           border: Border.all(
             color: color.withValues(alpha: isSelected ? 1.0 : 0.3),
             width: 1,

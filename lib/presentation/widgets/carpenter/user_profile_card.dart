@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ class _UserProfileCardState extends State<UserProfileCard>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themePrimary.withValues(alpha: 0.3),
@@ -140,7 +141,7 @@ class _UserProfileCardState extends State<UserProfileCard>
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: AppColors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.md12,
               border: Border.all(
                 color: AppColors.white.withValues(alpha: 0.3),
                 width: 1,

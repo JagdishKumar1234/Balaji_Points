@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
@@ -41,10 +42,8 @@ class CarpenterBottomNavBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final barBg = isDark ? const Color(0xFF141C2E) : AppColors.white;
-    final topBorder = isDark
-        ? AppColors.white.withValues(alpha: 0.08)
-        : AppColors.black.withValues(alpha: 0.08);
+    final barBg = context.themeSurface;
+    final topBorder = context.themeLineBorder;
 
     return Container(
       decoration: BoxDecoration(
@@ -153,7 +152,7 @@ class _NavTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 color: selected ? pillBg : Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.all16,
               ),
               child: Icon(
                 selected ? activeIcon : icon,

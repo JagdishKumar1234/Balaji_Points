@@ -1,6 +1,8 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'todays_eligible_carpenters.dart';
 
@@ -89,9 +91,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
             ),
             backgroundColor: context.themeSecondary,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
           ),
         );
       }
@@ -134,9 +134,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
               ),
               backgroundColor: context.themeSecondary,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             ),
           );
           setState(() => _isSpinning = false);
@@ -167,9 +165,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
               ),
               backgroundColor: context.themeError,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             ),
           );
           setState(() => _isSpinning = false);
@@ -234,18 +230,16 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 const Icon(Icons.celebration, color: AppColors.white),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
+                  child: AppText.section(
                     '🎉 $carpenterName is today\'s winner!',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    color: AppColors.white,
                   ),
                 ),
               ],
             ),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             duration: const Duration(seconds: 4),
           ),
         );
@@ -263,9 +257,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
             ),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
           ),
         );
         setState(() => _isSpinning = false);
@@ -276,33 +268,19 @@ class _DailySpinManagementState extends State<DailySpinManagement>
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            context.themeSoftSurface,
-            context.themeSoftSurface.withValues(alpha: 0.8),
-          ],
-        ),
-      ),
+      color: context.themeBackground,
       child: CustomScrollView(
         slivers: [
           // Modern Header
           SliverToBoxAdapter(
             child: Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    context.themePrimary,
-                    context.themePrimary.withValues(alpha: 0.8),
-                  ],
-                ),
+                color: context.themeContentColor,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.black.withValues(alpha: 0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    color: AppColors.black.withValues(alpha: 0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -318,7 +296,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: AppColors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: AppRadius.all16,
                             ),
                             child: const Icon(
                               Icons.casino,
@@ -331,20 +309,13 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                const AppText.hero(
                                   'Daily Spin',
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.white,
-                                  ),
+                                  color: AppColors.white,
                                 ),
-                                Text(
+                                AppText.body(
                                   'Select a lucky winner',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.white.withValues(alpha: 0.9),
-                                  ),
+                                  color: AppColors.white.withValues(alpha: 0.9),
                                 ),
                               ],
                             ),
@@ -395,10 +366,8 @@ class _DailySpinManagementState extends State<DailySpinManagement>
 
         return Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.white, context.themeSoftSurface],
-            ),
-            borderRadius: BorderRadius.circular(24),
+            color: context.themeSurface,
+            borderRadius: AppRadius.all24,
             boxShadow: [
               BoxShadow(
                 color: AppColors.black.withValues(alpha: 0.1),
@@ -522,15 +491,10 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.warning,
-                              context.themeSoftSurface,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
+                          color: context.themeSurface,
+                          borderRadius: AppRadius.all16,
                           border: Border.all(
-                            color: context.themeSecondary,
+                            color: AppColors.warning.withValues(alpha: 0.5),
                             width: 2,
                           ),
                         ),
@@ -547,7 +511,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: context.themeSecondary,
+                                color: context.themeContentColor,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -603,7 +567,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                       color: canSpin
                           ? AppColors.success
                           : context.themeSoftSurface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.md12,
                       border: Border.all(
                         color: canSpin
                             ? AppColors.success
@@ -622,14 +586,11 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           size: 20,
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        AppText.section(
                           statusText,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: canSpin
-                                ? AppColors.success
-                                : context.themeSecondary,
-                          ),
+                          color: canSpin
+                              ? AppColors.success
+                              : context.themeSecondary,
                         ),
                       ],
                     ),
@@ -660,7 +621,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                             vertical: 20,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.all16,
                           ),
                           elevation: _isSpinning ? 0 : 8,
                           shadowColor: context.themePrimary.withValues(
@@ -709,7 +670,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                       vertical: 20,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.all16,
                     ),
                   ),
                   child: const Row(
@@ -742,13 +703,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: context.themeSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(color: context.themeBorder),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppColors.black.withValues(alpha: 0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -758,11 +720,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
         children: [
           Row(
             children: [
-              Icon(Icons.today, color: context.themeSecondary, size: 24),
+              Icon(Icons.today, color: context.themeContentColor, size: 24),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Today\'s Winners',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: context.themeTextPrimary,
+                ),
               ),
             ],
           ),
@@ -787,12 +753,12 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: context.themeSoftSurface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.md12,
                   ),
                   child: Center(
-                    child: Text(
+                    child: AppText.body(
                       'No winners yet today',
-                      style: TextStyle(color: context.themeTextSecondary),
+                      color: context.themeTextSecondary,
                     ),
                   ),
                 );
@@ -805,11 +771,11 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [AppColors.warning, context.themeSoftSurface],
+                      color: context.themeSoftSurface,
+                      borderRadius: AppRadius.md12,
+                      border: Border.all(
+                        color: AppColors.warning.withValues(alpha: 0.4),
                       ),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.warning),
                     ),
                     child: Row(
                       children: [
@@ -818,7 +784,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           height: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.white,
+                            color: context.themeSoftSurface,
                             image:
                                 data['carpenterPhoto'] != null &&
                                     data['carpenterPhoto'].toString().isNotEmpty
@@ -831,16 +797,20 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           child:
                               data['carpenterPhoto'] == null ||
                                   data['carpenterPhoto'].toString().isEmpty
-                              ? Icon(Icons.person, color: context.themeTextSecondary)
+                              ? Icon(
+                                  Icons.person,
+                                  color: context.themeTextSecondary,
+                                )
                               : null,
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
                             data['carpenterName'] ?? 'Unknown',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
+                              color: context.themeTextPrimary,
                             ),
                           ),
                         ),
@@ -869,13 +839,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: context.themeSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(color: context.themeBorder),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppColors.black.withValues(alpha: 0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -887,13 +858,17 @@ class _DailySpinManagementState extends State<DailySpinManagement>
             children: [
               Icon(
                 Icons.calendar_month,
-                color: context.themeSecondary,
+                color: context.themeContentColor,
                 size: 24,
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Monthly Winners',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: context.themeTextPrimary,
+                ),
               ),
             ],
           ),
@@ -919,7 +894,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: context.themeSoftSurface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.md12,
                   ),
                   child: Center(
                     child: Text(
@@ -956,7 +931,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
                       color: context.themeSoftSurface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.md12,
                       border: Border.all(color: context.themeBorder),
                     ),
                     child: ExpansionTile(
@@ -964,27 +939,21 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: context.themeSecondary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.sm8,
                         ),
                         child: Icon(
                           Icons.calendar_today,
-                          color: context.themeSecondary,
+                          color: context.themeContentColor,
                           size: 20,
                         ),
                       ),
-                      title: Text(
+                      title: AppText.section(
                         formattedDate,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        color: context.themeTextPrimary,
                       ),
-                      subtitle: Text(
+                      subtitle: AppText.body(
                         '${winners.length} winner${winners.length > 1 ? 's' : ''}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: context.themeTextSecondary,
-                        ),
+                        color: context.themeTextSecondary,
                       ),
                       children: winners.map((winner) {
                         return ListTile(
@@ -1000,12 +969,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                             child:
                                 winner['carpenterPhoto']?.toString().isEmpty ??
                                     true
-                                ? Icon(Icons.person, color: context.themeTextSecondary)
+                                ? Icon(
+                                    Icons.person,
+                                    color: context.themeTextSecondary,
+                                  )
                                 : null,
                           ),
-                          title: Text(
+                          title: AppText.label(
                             winner['carpenterName'] ?? 'Unknown',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           trailing: const Icon(
                             Icons.emoji_events,

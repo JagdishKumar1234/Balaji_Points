@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,14 +23,14 @@ class HomeTopCarpenters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF171A22) : AppColors.white;
+    final cardColor = context.themeSurface;
     final top3 = homeState.topCarpenters.take(3).toList();
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: isDark ? 0.25 : 0.07),
@@ -49,7 +51,7 @@ class HomeTopCarpenters extends StatelessWidget {
                   height: 32,
                   decoration: BoxDecoration(
                     color: AppColors.warning.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.sm8,
                   ),
                   child: const Icon(Icons.emoji_events_rounded,
                       size: 18, color: AppColors.warning),
@@ -64,9 +66,8 @@ class HomeTopCarpenters extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Leaderboard',
-                          style: AppTypography.labelMedium(
-                              color: context.themePrimary)),
+                      AppText.labelSmall('Leaderboard',
+                          color: context.themeContentColor),
                       const SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,
                           size: 14, color: context.themePrimary),
@@ -120,33 +121,211 @@ class HomeTopCarpenters extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// TODAY'S WINNER  — standalone card for home page
+// TODAY'S WINNER  — reads from daily_winners/{YYYY-MM-DD} set by admin spin
 // ---------------------------------------------------------------------------
 
 class HomeTodaysWinnerCard extends StatelessWidget {
-  final HomeState homeState;
-  const HomeTodaysWinnerCard({super.key, required this.homeState});
+  const HomeTodaysWinnerCard({super.key});
+
+  static String get _todayKey {
+    final now = DateTime.now();
+    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (homeState.rankingsLoading || homeState.topCarpenters.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final winner = homeState.topCarpenters.first;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('daily_winners')
+          .doc(_todayKey)
+          .snapshots(),
+      builder: (context, snap) {
+        // Loading
+        if (snap.connectionState == ConnectionState.waiting) {
+          return _WinnerCardShell(
+            isDark: isDark,
+            child: _WinnerShimmer(isDark: isDark),
+          );
+        }
+
+        // No winner yet today — show placeholder card
+        final data = snap.data?.data();
+        if (data == null) {
+          return _WinnerCardShell(
+            isDark: isDark,
+            child: Row(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.warning.withValues(alpha: 0.12),
+                    border: Border.all(
+                        color: AppColors.warning.withValues(alpha: 0.30),
+                        width: 2),
+                  ),
+                  child: const Icon(Icons.emoji_events_rounded,
+                      color: AppColors.warning, size: 28),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Today's Winner",
+                        style: AppTypography.overline(color: AppColors.warning)
+                            .copyWith(letterSpacing: 0.8),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'No Winner Today',
+                        style: AppTypography.h5(color: context.themeTextPrimary),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Spin not done yet · $_todayKey',
+                        style: AppTypography.caption(
+                            color: context.themeTextSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.warning.withValues(alpha: 0.10),
+                    borderRadius: AppRadius.md12,
+                  ),
+                  child: Icon(Icons.hourglass_top_rounded,
+                      color: AppColors.warning.withValues(alpha: 0.60),
+                      size: 22),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final name = (data['carpenterName'] as String? ?? '').trim();
+        final photo = (data['carpenterPhoto'] as String? ?? '').trim();
+        final displayName = name.isEmpty ? 'Carpenter' : name;
+        final hasPhoto = photo.isNotEmpty;
+
+        return _WinnerCardShell(
+          isDark: isDark,
+          child: Row(
+            children: [
+              // Avatar: photo or initials circle
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.warning.withValues(alpha: 0.18),
+                      border: Border.all(
+                          color: AppColors.warning.withValues(alpha: 0.5),
+                          width: 2),
+                    ),
+                    child: hasPhoto
+                        ? ClipOval(
+                            child: Image.network(
+                              photo,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  _InitialsCircle(name: displayName),
+                            ),
+                          )
+                        : _InitialsCircle(name: displayName),
+                  ),
+                  // Trophy badge bottom-right
+                  Positioned(
+                    bottom: -4,
+                    right: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.warning,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.emoji_events_rounded,
+                          color: AppColors.white, size: 12),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(width: 14),
+
+              // Name + label
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Today's Lucky Winner 🎉",
+                      style: AppTypography.overline(color: AppColors.warning)
+                          .copyWith(letterSpacing: 0.8),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      displayName,
+                      style: AppTypography.h5(color: context.themeTextPrimary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Selected via daily spin · $_todayKey',
+                      style: AppTypography.caption(
+                          color: context.themeTextSecondary),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Crown
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.14),
+                  borderRadius: AppRadius.md12,
+                ),
+                child: const Icon(Icons.workspace_premium_rounded,
+                    color: AppColors.warning, size: 24),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _WinnerCardShell extends StatelessWidget {
+  final bool isDark;
+  final Widget child;
+  const _WinnerCardShell({required this.isDark, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
               ? [const Color(0xFF2A1F00), const Color(0xFF1A1400)]
-              : [const Color(0xFFFFFBEB), const Color(0xFFFEF3C7)],
+              : [AppColors.goldSoft, AppColors.goldSoft],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         border: Border.all(
           color: AppColors.warning.withValues(alpha: isDark ? 0.45 : 0.35),
           width: 1.5,
@@ -159,94 +338,65 @@ class HomeTodaysWinnerCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Trophy + rank bubble
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.warning.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                        color: AppColors.warning.withValues(alpha: 0.40),
-                        width: 2),
-                  ),
-                  child: const Icon(Icons.emoji_events_rounded,
-                      color: AppColors.warning, size: 30),
-                ),
-                Positioned(
-                  bottom: -4,
-                  right: -4,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.warning,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text('#1',
-                        style: AppTypography.labelSmall(color: AppColors.white)
-                            .copyWith(fontWeight: FontWeight.w900)),
-                  ),
-                ),
-              ],
-            ),
+      child: child,
+    );
+  }
+}
 
-            const SizedBox(width: 14),
+class _InitialsCircle extends StatelessWidget {
+  final String name;
+  const _InitialsCircle({required this.name});
 
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Today's Winner",
-                    style: AppTypography.overline(color: AppColors.warning)
-                        .copyWith(letterSpacing: 0.8),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    winner.name,
-                    style: AppTypography.h5(color: context.themeTextPrimary),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.stars_rounded,
-                          color: AppColors.warning, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${winner.points} pts',
-                        style:
-                            AppTypography.labelMedium(color: AppColors.warning),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+  String get _initials {
+    final parts = name.trim().split(' ');
+    if (parts.length == 1) return parts[0].isNotEmpty ? parts[0][0].toUpperCase() : '?';
+    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+  }
 
-            // Crown icon
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.warning.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.workspace_premium_rounded,
-                  color: AppColors.warning, size: 24),
-            ),
-          ],
-        ),
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        _initials,
+        style: AppTypography.labelLarge(color: AppColors.warning)
+            .copyWith(fontWeight: FontWeight.w900),
       ),
+    );
+  }
+}
+
+class _WinnerShimmer extends StatelessWidget {
+  final bool isDark;
+  const _WinnerShimmer({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final shimmerColor =
+        isDark ? AppColors.white.withValues(alpha: 0.08) : AppColors.black.withValues(alpha: 0.06);
+    return Row(
+      children: [
+        Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: shimmerColor,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(height: 10, width: 100, color: shimmerColor),
+              const SizedBox(height: 8),
+              Container(height: 16, width: 160, color: shimmerColor),
+              const SizedBox(height: 6),
+              Container(height: 10, width: 120, color: shimmerColor),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -279,11 +429,11 @@ class HomeYourPositionCard extends StatelessWidget {
         gradient: LinearGradient(
           colors: isDark
               ? [const Color(0xFF0D1A3A), const Color(0xFF091226)]
-              : [const Color(0xFF1D2B6B), const Color(0xFF2D4A9E)],
+              : [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: context.themePrimary.withValues(alpha: isDark ? 0.25 : 0.30),
@@ -358,7 +508,7 @@ class HomeYourPositionCard extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: AppColors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.md12,
                 ),
                 child: const Icon(Icons.leaderboard_rounded,
                     color: AppColors.white, size: 22),

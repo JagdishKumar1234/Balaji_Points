@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
@@ -25,7 +26,7 @@ class ShimmerCard extends StatelessWidget {
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: borderRadius ?? BorderRadius.circular(20),
+        borderRadius: borderRadius ?? AppRadius.all16,
       ),
       child: Shimmer.fromColors(
         baseColor: context.themeBorder,
@@ -33,7 +34,7 @@ class ShimmerCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.white,
-            borderRadius: borderRadius ?? BorderRadius.circular(20),
+            borderRadius: borderRadius ?? AppRadius.all16,
           ),
         ),
       ),
@@ -54,7 +55,7 @@ class ShimmerOfferCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: context.themeSurface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.all16,
         ),
       ),
     );
@@ -72,7 +73,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
       ),
       child: Shimmer.fromColors(
         baseColor: context.themeBorder,
@@ -85,7 +86,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
               width: 200,
               decoration: BoxDecoration(
                 color: AppColors.white,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: AppRadius.xs4,
               ),
             ),
             const SizedBox(height: 20),
@@ -135,7 +136,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
             width: 60,
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.xs4,
             ),
           ),
           const SizedBox(height: 8),
@@ -172,7 +173,7 @@ class ShimmerWinnerCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.all16,
       ),
       child: Shimmer.fromColors(
         baseColor: AppColors.white.withValues(alpha: 0.3),
@@ -199,7 +200,7 @@ class ShimmerWinnerCard extends StatelessWidget {
                     width: 150,
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: AppRadius.xs4,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -209,7 +210,7 @@ class ShimmerWinnerCard extends StatelessWidget {
                     width: 100,
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: AppRadius.xs4,
                     ),
                   ),
                 ],
@@ -237,7 +238,7 @@ class ShimmerPositionCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.all16,
       ),
       child: Shimmer.fromColors(
         baseColor: AppColors.white.withValues(alpha: 0.3),
@@ -264,7 +265,7 @@ class ShimmerPositionCard extends StatelessWidget {
                     width: 80,
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: AppRadius.xs4,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -274,7 +275,7 @@ class ShimmerPositionCard extends StatelessWidget {
                     width: 150,
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: AppRadius.xs4,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -284,7 +285,7 @@ class ShimmerPositionCard extends StatelessWidget {
                     width: 120,
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: AppRadius.xs4,
                     ),
                   ),
                 ],

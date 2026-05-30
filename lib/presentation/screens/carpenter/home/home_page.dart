@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:math';
 
 import 'package:confetti/confetti.dart';
@@ -88,7 +89,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all24),
         insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
         backgroundColor: Theme.of(ctx).colorScheme.surface,
         child: Padding(
@@ -166,7 +167,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final isDark = theme.brightness == Brightness.dark;
     final mq = MediaQuery.of(context);
     final canvas =
-        isDark ? const Color(0xFF0F1115) : const Color(0xFFF4F6FA);
+        context.themeBackground;
     final bottomPadding = CarpenterShellLayout.bottomPaddingForScrollView(mq);
     final fg = isDark ? AppColors.white : context.themeTextPrimary;
     final bg = canvas; // transparent — same as scaffold background
@@ -212,12 +213,12 @@ class _HomePageState extends ConsumerState<HomePage>
               height: 36,
               decoration: BoxDecoration(
                 color: context.themePrimary.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.sm8,
                 border: Border.all(
                     color: context.themePrimary.withValues(alpha: 0.18)),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(9),
+                borderRadius: AppRadius.sm8,
                 child: Image.asset(
                   'assets/images/balaji_point_logo.png',
                   width: 36,
@@ -323,7 +324,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
                   // Today's Winner — standalone card
                   RepaintBoundary(
-                    child: HomeTodaysWinnerCard(homeState: homeState),
+                    child: const HomeTodaysWinnerCard(),
                   ).enterCard(delay: AppAnimations.stagger(4)),
 
                   if (homeState.topCarpenters.isNotEmpty)

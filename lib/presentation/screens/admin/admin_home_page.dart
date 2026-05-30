@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
@@ -59,7 +60,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: AppText.h3(l10n.logout),
         content: AppText.body(l10n.logoutConfirmation),
         actions: [
@@ -110,7 +111,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: const AppText.h4('Delete All Notifications'),
         content: const AppText.body(
           'Are you sure you want to delete all admin notifications?',
@@ -209,7 +210,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         backgroundColor: context.themeBackground,
         appBar: AppBar(
           backgroundColor: context.themeBackground,
-          foregroundColor: context.themePrimary,
+          foregroundColor: context.themeTextPrimary,
           elevation: 0,
           scrolledUnderElevation: 0,
           titleSpacing: _showDashboard ? 0 : null,
@@ -227,7 +228,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: AppRadius.sm8,
                         child: Image.asset(
                           AppConstants.logoPath,
                           width: 36,
@@ -237,16 +238,11 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: context.themePrimary.withValues(
-                                alpha: 0.15,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
+                              color: context.themeTextPrimary.withValues(alpha: 0.15),
+                              borderRadius: AppRadius.sm8,
                             ),
-                            child: Icon(
-                              Icons.forest,
-                              color: context.themePrimary,
-                              size: 22,
-                            ),
+                            child: Icon(Icons.forest,
+                                color: context.themeTextPrimary, size: 22),
                           ),
                         ),
                       ),
@@ -258,13 +254,13 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                         children: [
                           AppText.label(
                             'Balaji Points - Admin Panel',
-                            color: context.themePrimary,
+                            color: context.themeTextPrimary,
                             maxLines: 1,
                           ),
                           const SizedBox(height: 2),
                           AppText.muted(
                             AppConstants.shopNameShort,
-                            color: context.themePrimary.withValues(alpha: 0.65),
+                            color: context.themeTextSecondary,
                             maxLines: 1,
                           ),
                         ],
@@ -276,12 +272,12 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
               ? _usersCountTitle()
               : AppText.label(
                   _sectionTitle(_selectedSection!),
-                  color: context.themePrimary,
+                  color: context.themeTextPrimary,
                 ),
           centerTitle: !_showDashboard,
           actions: [
             // Theme toggle — same animated icon as carpenter home
-            _AdminThemeToggle(fgColor: context.themePrimary),
+            _AdminThemeToggle(fgColor: context.themeTextPrimary),
             if (!_showDashboard && _selectedSection == 'notifications')
               IconButton(
                 icon: const Icon(Icons.delete_outline, size: 24),
@@ -351,10 +347,10 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         }).length;
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppText.label('Users - ...', color: context.themePrimary);
+          return AppText.label('Users - ...', color: context.themeTextPrimary);
         }
 
-        return AppText.label('Users - $count', color: context.themePrimary);
+        return AppText.label('Users - $count', color: context.themeTextPrimary);
       },
     );
   }

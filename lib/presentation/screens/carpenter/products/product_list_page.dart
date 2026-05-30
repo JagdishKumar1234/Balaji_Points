@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
@@ -510,7 +511,7 @@ class _CartIconButton extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
               decoration: BoxDecoration(
                 color: context.themeError,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.sm8,
                 border: Border.all(color: AppColors.white, width: 1),
               ),
               child: Text(

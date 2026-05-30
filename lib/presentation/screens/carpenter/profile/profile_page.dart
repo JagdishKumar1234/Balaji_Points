@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -135,7 +136,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(l10n.logout, style: AppTypography.h4()),
         content: Text(
           l10n.logoutConfirmation,
@@ -153,7 +154,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: AppRadius.md12),
             ),
             child: Text(l10n.yes,
                 style: AppTypography.labelLarge(color: AppColors.white)
@@ -208,7 +209,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: AppRadius.all24,
             boxShadow: [
               BoxShadow(
                 color: AppColors.black.withValues(alpha: 0.2),
@@ -240,7 +241,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: AppColors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.md12,
                         ),
                         child: const Icon(Icons.support_agent,
                             color: AppColors.white, size: 28),
@@ -313,7 +314,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: iconColor.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.all16,
         border: Border.all(color: iconColor.withValues(alpha: 0.2)),
       ),
       child: Column(
@@ -325,7 +326,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: iconColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.md12,
                 ),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
@@ -352,7 +353,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.md12,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.05),
@@ -367,7 +368,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: AppColors.success.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.sm8,
             ),
             child: Icon(icon, color: const Color(0xFF388E3C), size: 20),
           ),
@@ -394,7 +395,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.md12,
               boxShadow: [
                 BoxShadow(
                   color: AppColors.success.withValues(alpha: 0.30),
@@ -406,7 +407,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             child: Material(
               color: AppColors.transparent,
               child: InkWell(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.md12,
                 onTap: onTap,
                 child: const Padding(
                   padding: EdgeInsets.all(12),
@@ -442,7 +443,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.md12,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -455,7 +456,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         color: AppColors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.md12,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             child: Row(
@@ -485,7 +486,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.md12,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -511,7 +512,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: context.themePrimary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.sm8,
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<Locale>(
@@ -521,7 +522,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       color: context.themePrimary, size: 20),
                   style: AppTypography.labelMedium(color: context.themePrimary),
                   dropdownColor: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.md12,
                   onChanged: (Locale? newLocale) {
                     if (newLocale != null) {
                       ref
@@ -550,7 +551,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.md12,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -653,7 +654,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.surface,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.all16,
                                 boxShadow: [
                                   BoxShadow(
                                     color: AppColors.black
@@ -712,8 +713,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                                       valueColor:
                                                           const AlwaysStoppedAnimation<
                                                                   Color>(
-                                                              AppColors
-                                                                  .lightPrimary),
+                                                              AppColors.primary),
                                                     ),
                                                   ),
                                                 );
@@ -795,7 +795,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           color: context.themeSecondary
                                               .withValues(alpha: 0.2),
                                           borderRadius:
-                                              BorderRadius.circular(12),
+                                              AppRadius.md12,
                                         ),
                                         child: Text(
                                           _tier(),
@@ -883,7 +883,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     margin: const EdgeInsets.only(top: 8),
                                     decoration: BoxDecoration(
                                       borderRadius:
-                                          BorderRadius.circular(16),
+                                          AppRadius.all16,
                                       boxShadow: [
                                         BoxShadow(
                                           color: context.themeError
@@ -905,7 +905,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                                 vertical: 18),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(16),
+                                              AppRadius.all16,
                                         ),
                                         elevation: 0,
                                       ),

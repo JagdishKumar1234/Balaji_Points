@@ -303,7 +303,7 @@ class _BranchCard extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: context.themePrimary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.md12,
               ),
               child: Icon(Icons.store, color: context.themePrimary),
             ),
@@ -331,7 +331,7 @@ class _BranchCard extends StatelessWidget {
                           color: isActive
                               ? AppColors.success.withValues(alpha: 0.12)
                               : context.themeError.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(99),
+                          borderRadius: AppRadius.pill,
                         ),
                         child: Text(
                           isActive ? 'Active' : 'Inactive',

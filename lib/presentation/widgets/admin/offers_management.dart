@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -18,19 +20,20 @@ class OffersManagement extends StatefulWidget {
 class _OffersManagementState extends State<OffersManagement> {
   final OfferService _offerService = OfferService();
 
-  void _showCreateOfferDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const CreateOfferDialog(),
-    );
+  void _navigateToCreateOfferPage() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const CreateOfferPage()));
   }
 
   void _showEditOfferDialog(Map<String, dynamic> offer) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => CreateOfferDialog(offer: offer),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        child: CreateOfferForm(offer: offer),
+      ),
     );
   }
 
@@ -39,7 +42,7 @@ class _OffersManagementState extends State<OffersManagement> {
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(
           l10n.deleteOffer,
           style: AppTypography.labelLarge().copyWith(fontSize: 20),
@@ -51,20 +54,13 @@ class _OffersManagementState extends State<OffersManagement> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(
-              l10n.cancel,
-              style: AppTypography.bodySmall().copyWith(
-                color: context.themeTextSecondary,
-              ),
-            ),
+            child: AppText.bodySmall(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeError,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             ),
             child: Text(l10n.delete, style: AppTypography.labelLarge()),
           ),
@@ -104,7 +100,7 @@ class _OffersManagementState extends State<OffersManagement> {
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       padding: const EdgeInsets.all(20),
-                      color: AppColors.white,
+                      color: context.themeSoftSurface,
                       child: const Text('Failed to load image'),
                     );
                   },
@@ -132,16 +128,18 @@ class _OffersManagementState extends State<OffersManagement> {
     return Scaffold(
       backgroundColor: context.themeSoftSurface,
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('offers')
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('offers').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: context.themeError),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: context.themeError,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     l10n.errorLoadingOffers,
@@ -163,7 +161,9 @@ class _OffersManagementState extends State<OffersManagement> {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
+              child: CircularProgressIndicator(
+                color: context.themeContentColor,
+              ),
             );
           }
 
@@ -180,13 +180,7 @@ class _OffersManagementState extends State<OffersManagement> {
                     color: context.themeBorder,
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    l10n.noOffersCreated,
-                    style: AppTypography.labelLarge().copyWith(
-                      fontSize: 20,
-                      color: context.themePrimary,
-                    ),
-                  ),
+                  AppText.label(l10n.noOffersCreated),
                   const SizedBox(height: 8),
                   Text(
                     l10n.createFirstOffer,
@@ -218,9 +212,7 @@ class _OffersManagementState extends State<OffersManagement> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -263,15 +255,7 @@ class _OffersManagementState extends State<OffersManagement> {
                           // Title and Status
                           Row(
                             children: [
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  style: AppTypography.labelLarge().copyWith(
-                                    fontSize: 18,
-                                    color: context.themePrimary,
-                                  ),
-                                ),
-                              ),
+                              Expanded(child: AppText.label(title)),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -281,14 +265,14 @@ class _OffersManagementState extends State<OffersManagement> {
                                   color: isActive
                                       ? AppColors.success
                                       : context.themeBorder,
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: AppRadius.sm8,
                                 ),
                                 child: Text(
                                   isActive ? l10n.active : l10n.inactive,
                                   style: AppTypography.labelLarge().copyWith(
                                     fontSize: 12,
                                     color: isActive
-                                        ? AppColors.success
+                                        ? AppColors.white
                                         : context.themeTextSecondary,
                                   ),
                                 ),
@@ -319,15 +303,8 @@ class _OffersManagementState extends State<OffersManagement> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  context.themePrimary,
-                                  context.themeSecondary,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
+                              color: context.themePrimary,
+                              borderRadius: AppRadius.md12,
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -374,7 +351,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                 Icon(
                                   Icons.event_busy,
                                   size: 14,
-                                  color: context.themeSecondary,
+                                  color: context.themeContentColor,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
@@ -385,7 +362,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                   ),
                                   style: AppTypography.bodyMedium().copyWith(
                                     fontSize: 12,
-                                    color: context.themeSecondary,
+                                    color: context.themeContentColor,
                                   ),
                                 ),
                               ],
@@ -406,13 +383,13 @@ class _OffersManagementState extends State<OffersManagement> {
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: context.themePrimary,
                                     side: BorderSide(
-                                      color: context.themePrimary,
+                                      color: context.themeContentColor,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: AppRadius.md12,
                                     ),
                                   ),
                                   icon: const Icon(Icons.edit, size: 18),
@@ -434,7 +411,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                       vertical: 12,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: AppRadius.md12,
                                     ),
                                   ),
                                   icon: const Icon(Icons.delete, size: 18),
@@ -457,8 +434,10 @@ class _OffersManagementState extends State<OffersManagement> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showCreateOfferDialog,
+        onPressed: _navigateToCreateOfferPage,
         backgroundColor: context.themeSecondary,
+        foregroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         icon: const Icon(Icons.add),
         label: Text(
           l10n.createOffer,
@@ -469,17 +448,49 @@ class _OffersManagementState extends State<OffersManagement> {
   }
 }
 
-// Create/Edit Offer Dialog
-class CreateOfferDialog extends StatefulWidget {
-  final Map<String, dynamic>? offer;
-
-  const CreateOfferDialog({super.key, this.offer});
+class CreateOfferPage extends StatelessWidget {
+  const CreateOfferPage({super.key});
 
   @override
-  State<CreateOfferDialog> createState() => _CreateOfferDialogState();
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          l10n.createNewOffer,
+          style: AppTypography.labelLarge().copyWith(fontSize: 20),
+        ),
+        titleTextStyle: AppTypography.labelLarge().copyWith(
+          fontSize: 20,
+          color: AppColors.white,
+        ),
+        backgroundColor: context.themeContentColor,
+        iconTheme: const IconThemeData(color: AppColors.white),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: CreateOfferForm(),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _CreateOfferDialogState extends State<CreateOfferDialog> {
+// Create/Edit Offer Form
+class CreateOfferForm extends StatefulWidget {
+  final Map<String, dynamic>? offer;
+
+  const CreateOfferForm({super.key, this.offer});
+
+  @override
+  State<CreateOfferForm> createState() => _CreateOfferFormState();
+}
+
+class _CreateOfferFormState extends State<CreateOfferForm> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -688,382 +699,369 @@ class _CreateOfferDialogState extends State<CreateOfferDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [context.themePrimary, context.themeSecondary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.local_offer, color: AppColors.white, size: 28),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      isEditMode ? l10n.editOffer : l10n.createNewOffer,
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 20,
-                        color: AppColors.white,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: AppColors.white),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.all16,
+        color: context.themeSurface,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: context.themeContentColor,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
             ),
+            child: Row(
+              children: [
+                const Icon(Icons.local_offer, color: AppColors.white, size: 28),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    isEditMode ? l10n.editOffer : l10n.createNewOffer,
+                    style: AppTypography.labelLarge().copyWith(
+                      fontSize: 20,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, color: AppColors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
 
-            // Form Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Banner Image Picker
-                      GestureDetector(
-                        onTap: _pickBanner,
-                        child: Container(
-                          height: 160,
-                          decoration: BoxDecoration(
-                            color: context.themeSoftSurface,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: context.themeBorder),
-                          ),
-                          child: _bannerFile != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.file(
-                                    _bannerFile!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  ),
-                                )
-                              : _existingBannerUrl != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(
-                                    _existingBannerUrl!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  ),
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.add_photo_alternate,
-                                      size: 48,
-                                      color: context.themeTextMuted,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      l10n.tapToUploadBanner,
-                                      style: AppTypography.bodySmall()
-                                          .copyWith(
-                                            fontSize: 14,
-                                            color: context.themeTextSecondary,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Title
-                      TextFormField(
-                        controller: _titleController,
-                        style: AppTypography.bodyMedium().copyWith(
-                          fontSize: 16,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: l10n.offerTitleLabel,
-                          labelStyle: AppTypography.bodySmall().copyWith(
-                            color: context.themePrimary,
-                          ),
-                          hintText: l10n.offerTitleHint,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: context.themePrimary,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.enterOfferTitle;
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Description
-                      TextFormField(
-                        controller: _descriptionController,
-                        style: AppTypography.bodyMedium().copyWith(
-                          fontSize: 16,
-                        ),
-                        maxLines: 3,
-                        decoration: InputDecoration(
-                          labelText: l10n.descriptionLabel,
-                          labelStyle: AppTypography.bodySmall().copyWith(
-                            color: context.themePrimary,
-                          ),
-                          hintText: l10n.descriptionHint,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: context.themePrimary,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Points (Optional)
-                      TextFormField(
-                        controller: _pointsController,
-                        style: AppTypography.bodyMedium().copyWith(
-                          fontSize: 16,
-                        ),
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: l10n.pointsRequiredLabel.replaceAll('*', '').trim(),
-                          labelStyle: AppTypography.bodySmall().copyWith(
-                            color: context.themePrimary,
-                          ),
-                          hintText: l10n.pointsHint,
-                          prefixIcon: Icon(
-                            Icons.stars,
-                            color: context.themeSecondary,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: context.themePrimary,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          // Points is optional, but if provided, must be a valid number
-                          if (value != null && value.trim().isNotEmpty) {
-                            if (int.tryParse(value) == null) {
-                              return l10n.enterValidNumber;
-                            }
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Valid Until Date
-                      InkWell(
-                        onTap: _selectValidUntilDate,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: context.themeTextMuted),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.event,
-                                color: context.themePrimary,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  _validUntil != null
-                                      ? l10n.validUntilDisplay(
-                                          DateFormat(
-                                            'dd MMM yyyy',
-                                          ).format(_validUntil!),
-                                        )
-                                      : l10n.setValidUntilDate,
-                                  style: AppTypography.bodyMedium().copyWith(
-                                    fontSize: 16,
-                                    color: _validUntil != null
-                                        ? context.themePrimary
-                                        : context.themeTextSecondary,
-                                  ),
-                                ),
-                              ),
-                              if (_validUntil != null)
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.clear,
-                                    size: 20,
-                                    color: context.themeTextSecondary,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _validUntil = null;
-                                    });
-                                  },
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Active Status Toggle
-                      Container(
-                        padding: const EdgeInsets.all(12),
+          // Form Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Banner Image Picker
+                    GestureDetector(
+                      onTap: _pickBanner,
+                      child: Container(
+                        height: 160,
                         decoration: BoxDecoration(
                           color: context.themeSoftSurface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.md12,
+                          border: Border.all(color: context.themeBorder),
+                        ),
+                        child: _bannerFile != null
+                            ? ClipRRect(
+                                borderRadius: AppRadius.md12,
+                                child: Image.file(
+                                  _bannerFile!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              )
+                            : _existingBannerUrl != null
+                            ? ClipRRect(
+                                borderRadius: AppRadius.md12,
+                                child: Image.network(
+                                  _existingBannerUrl!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_photo_alternate,
+                                    size: 48,
+                                    color: context.themeTextMuted,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l10n.tapToUploadBanner,
+                                    style: AppTypography.bodySmall().copyWith(
+                                      fontSize: 14,
+                                      color: context.themeTextSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Title
+                    TextFormField(
+                      controller: _titleController,
+                      style: AppTypography.bodyMedium().copyWith(fontSize: 16),
+                      decoration: InputDecoration(
+                        labelText: l10n.offerTitleLabel,
+                        labelStyle: AppTypography.bodySmall().copyWith(
+                          color: context.themeContentColor,
+                        ),
+                        hintText: l10n.offerTitleHint,
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.md12,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: AppRadius.md12,
+                          borderSide: BorderSide(
+                            color: context.themeContentColor,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.enterOfferTitle;
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Description
+                    TextFormField(
+                      controller: _descriptionController,
+                      style: AppTypography.bodyMedium().copyWith(fontSize: 16),
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: l10n.descriptionLabel,
+                        labelStyle: AppTypography.bodySmall().copyWith(
+                          color: context.themeContentColor,
+                        ),
+                        hintText: l10n.descriptionHint,
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.md12,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: AppRadius.md12,
+                          borderSide: BorderSide(
+                            color: context.themeContentColor,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Points (Optional)
+                    TextFormField(
+                      controller: _pointsController,
+                      style: AppTypography.bodyMedium().copyWith(fontSize: 16),
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: l10n.pointsRequiredLabel
+                            .replaceAll('*', '')
+                            .trim(),
+                        labelStyle: AppTypography.bodySmall().copyWith(
+                          color: context.themeContentColor,
+                        ),
+                        hintText: l10n.pointsHint,
+                        prefixIcon: Icon(
+                          Icons.stars,
+                          color: context.themeContentColor,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.md12,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: AppRadius.md12,
+                          borderSide: BorderSide(
+                            color: context.themeContentColor,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        // Points is optional, but if provided, must be a valid number
+                        if (value != null && value.trim().isNotEmpty) {
+                          if (int.tryParse(value) == null) {
+                            return l10n.enterValidNumber;
+                          }
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Valid Until Date
+                    InkWell(
+                      onTap: _selectValidUntilDate,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: context.themeTextMuted),
+                          borderRadius: AppRadius.md12,
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.visibility,
-                              color: context.themePrimary,
-                            ),
+                            Icon(Icons.event, color: context.themeContentColor),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                l10n.offerStatus,
-                                style: AppTypography.bodySmall().copyWith(
+                                _validUntil != null
+                                    ? l10n.validUntilDisplay(
+                                        DateFormat(
+                                          'dd MMM yyyy',
+                                        ).format(_validUntil!),
+                                      )
+                                    : l10n.setValidUntilDate,
+                                style: AppTypography.bodyMedium().copyWith(
                                   fontSize: 16,
+                                  color: _validUntil != null
+                                      ? context.themePrimary
+                                      : context.themeTextSecondary,
                                 ),
                               ),
                             ),
-                            Switch(
-                              value: _isActive,
-                              onChanged: (value) {
-                                setState(() {
-                                  _isActive = value;
-                                });
-                              },
-                              activeTrackColor: context.themeSecondary,
-                              activeThumbColor: AppColors.white,
-                            ),
-                            Text(
-                              _isActive ? l10n.active : l10n.inactive,
-                              style: AppTypography.labelLarge().copyWith(
-                                fontSize: 14,
-                                color: _isActive ? AppColors.success : context.themeTextSecondary,
+                            if (_validUntil != null)
+                              IconButton(
+                                icon: Icon(
+                                  Icons.clear,
+                                  size: 20,
+                                  color: context.themeTextSecondary,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _validUntil = null;
+                                  });
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Active Status Toggle
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: context.themeSoftSurface,
+                        borderRadius: AppRadius.md12,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.visibility,
+                            color: context.themeContentColor,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              l10n.offerStatus,
+                              style: AppTypography.bodySmall().copyWith(
+                                fontSize: 16,
                               ),
                             ),
+                          ),
+                          Switch(
+                            value: _isActive,
+                            onChanged: (value) {
+                              setState(() {
+                                _isActive = value;
+                              });
+                            },
+                            activeTrackColor: context.themeSecondary,
+                            activeThumbColor: AppColors.white,
+                          ),
+                          Text(
+                            _isActive ? l10n.active : l10n.inactive,
+                            style: AppTypography.labelLarge().copyWith(
+                              fontSize: 14,
+                              color: _isActive
+                                  ? AppColors.success
+                                  : context.themeTextSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Upload Status
+                    if (_isUploadingBanner)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  context.themePrimary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            AppText.bodySmall(l10n.uploadingBanner),
                           ],
                         ),
                       ),
 
-                      const SizedBox(height: 20),
-
-                      // Upload Status
-                      if (_isUploadingBanner)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 16,
-                                height: 16,
+                    // Save Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: (_isSaving || _isUploadingBanner)
+                            ? null
+                            : _saveOffer,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.themeSecondary,
+                          foregroundColor: AppColors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: AppRadius.md12,
+                          ),
+                        ),
+                        child: _isSaving
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    context.themePrimary,
+                                    AppColors.white,
                                   ),
+                                ),
+                              )
+                            : Text(
+                                isEditMode
+                                    ? l10n.updateOffer
+                                    : l10n.createOffer,
+                                style: AppTypography.labelLarge().copyWith(
+                                  fontSize: 16,
+                                  color: AppColors.white,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Text(
-                                l10n.uploadingBanner,
-                                style: AppTypography.bodySmall().copyWith(
-                                  fontSize: 14,
-                                  color: context.themePrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      // Save Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: (_isSaving || _isUploadingBanner)
-                              ? null
-                              : _saveOffer,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: context.themeSecondary,
-                            foregroundColor: AppColors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: _isSaving
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppColors.white,
-                                    ),
-                                  ),
-                                )
-                              : Text(
-                                  isEditMode
-                                      ? l10n.updateOffer
-                                      : l10n.createOffer,
-                                  style: AppTypography.labelLarge().copyWith(
-                                    fontSize: 16,
-                                    color: AppColors.white,
-                                  ),
-                                ),
-                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -76,7 +76,7 @@ class HomeDrawer extends StatelessWidget {
                           ? const Color(0xFF2563EB).withValues(alpha: 0.6)
                           : context.themeSecondary.withValues(alpha: 0.15),
                       isDark
-                          ? const Color(0xFF7C3AED).withValues(alpha: 0.7)
+                          ? AppColors.tierPlatinum.withValues(alpha: 0.7)
                           : AppColors.warning.withValues(alpha: 0.9),
                     ],
                   ),

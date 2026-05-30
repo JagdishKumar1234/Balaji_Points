@@ -1,3 +1,6 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -60,7 +63,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: const Text('Delete All Notifications'),
         content: const Text('Are you sure you want to delete all admin notifications?'),
         actions: [
@@ -68,15 +71,12 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.themeError,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          AppButton(
+              label: "action",
+              onPressed: () => Navigator.of(context).pop(true),
+              variant: AppButtonVariant.danger,
+              fullWidth: false,
             ),
-            child: const Text('Delete'),
-          ),
         ],
       ),
     );
@@ -255,13 +255,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     children: [
                       const SizedBox(height: 24),
-                      Text(
-                        'No Notifications',
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 24,
-                          color: context.themePrimary,
-                        ),
-                      ),
+                      AppText.label('No Notifications'),
                       const SizedBox(height: 8),
                       Text(
                         'You don\'t have any admin notifications yet',
@@ -293,7 +287,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                   onRefresh: () async {
                     await Future.delayed(const Duration(milliseconds: 500));
                   },
-                  color: context.themePrimary,
+                  color: context.themeContentColor,
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: sortedNotifications.length,
@@ -317,7 +311,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
                             color: context.themeError,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.all16,
                           ),
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 24),
@@ -332,7 +326,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: AppRadius.all16,
                                   ),
                                   title: const Text('Delete Notification'),
                                   content: const Text(
@@ -344,18 +338,13 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                           Navigator.of(context).pop(false),
                                       child: const Text('Cancel'),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () =>
+                                    AppButton(
+              label: "action",
+              onPressed: () =>
                                           Navigator.of(context).pop(true),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: context.themeError,
-                                        foregroundColor: AppColors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: const Text('Delete'),
-                                    ),
+              variant: AppButtonVariant.danger,
+              fullWidth: false,
+            ),
                                   ],
                                 ),
                               ) ??
@@ -364,12 +353,12 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                         onDismissed: (_) => _deleteNotification(doc.id),
                         child: InkWell(
                           onTap: null,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.all16,
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surface,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: AppRadius.all16,
                               boxShadow: [
                                 BoxShadow(
                                   color:
@@ -410,7 +399,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                               .withValues(alpha: 0.1),
                                         ],
                                       ),
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: AppRadius.md12,
                                     ),
                                     child: Icon(
                                       notificationIcon,
@@ -434,7 +423,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                                 style: AppTypography.labelLarge()
                                                     .copyWith(
                                                   fontSize: 15,
-                                                  color: context.themePrimary,
+                                                  color: context.themeContentColor,
                                                   letterSpacing: -0.2,
                                                 ),
                                               ),

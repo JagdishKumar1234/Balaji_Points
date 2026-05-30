@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -21,7 +22,7 @@ class WoodenTexture extends StatelessWidget {
         // Wooden texture background
         CustomPaint(
           painter: _WoodenTexturePainter(
-            baseColor: baseColor ?? AppColors.lightSoftSurface,
+            baseColor: baseColor ?? AppColors.softSurface,
             opacity: opacity,
           ),
           child: Container(),
@@ -48,7 +49,7 @@ class _WoodenTexturePainter extends CustomPainter {
       colors: [
         baseColor,
         baseColor.withValues(alpha: 0.95),
-        Color.lerp(baseColor, AppColors.lightSecondary, 0.1)!,
+        Color.lerp(baseColor, AppColors.gold, 0.1)!,
       ],
     );
 
@@ -112,7 +113,7 @@ class _WoodenTexturePainter extends CustomPainter {
           final shadowPaint = Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1.2
-            ..color = AppColors.lightSecondary.withValues(alpha: grainOpacity * 0.4);
+            ..color = AppColors.gold.withValues(alpha: grainOpacity * 0.4);
 
           final shadowPath = Path();
           shadowPath.moveTo(variation + 2, y + 1);
@@ -133,7 +134,7 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Knot shadow
       final shadowPaint = Paint()
-        ..color = AppColors.lightSecondary.withValues(alpha: opacity * 0.5)
+        ..color = AppColors.gold.withValues(alpha: opacity * 0.5)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(Offset(knotX + 1, knotY + 1), knotRadius, shadowPaint);
 
@@ -145,7 +146,7 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Knot center (darker)
       final centerPaint = Paint()
-        ..color = AppColors.lightSecondary.withValues(alpha: opacity * 1.2)
+        ..color = AppColors.gold.withValues(alpha: opacity * 1.2)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(Offset(knotX, knotY), knotRadius * 0.4, centerPaint);
 
@@ -164,7 +165,7 @@ class _WoodenTexturePainter extends CustomPainter {
 
       // Shadow line
       final shadowLinePaint = Paint()
-        ..color = AppColors.lightSecondary.withValues(alpha: opacity * 0.3)
+        ..color = AppColors.gold.withValues(alpha: opacity * 0.3)
         ..strokeWidth = 1.5
         ..style = PaintingStyle.stroke;
       canvas.drawLine(
@@ -200,7 +201,7 @@ class _WoodenTexturePainter extends CustomPainter {
         AppColors.white.withValues(alpha: opacity * 0.15),
         AppColors.transparent,
         AppColors.transparent,
-        AppColors.lightSecondary.withValues(alpha: opacity * 0.1),
+        AppColors.gold.withValues(alpha: opacity * 0.1),
       ],
       stops: const [0.0, 0.3, 0.7, 1.0],
     );
@@ -240,18 +241,18 @@ class WoodenContainer extends StatelessWidget {
     return Container(
       margin: margin,
       decoration: BoxDecoration(
-        borderRadius: borderRadius ?? BorderRadius.circular(20),
+        borderRadius: borderRadius ?? AppRadius.all16,
         boxShadow: boxShadow,
       ),
       child: ClipRRect(
-        borderRadius: borderRadius ?? BorderRadius.circular(20),
+        borderRadius: borderRadius ?? AppRadius.all16,
         child: Stack(
           children: [
             // Wooden texture background
             Positioned.fill(
               child: CustomPaint(
                 painter: _WoodenTexturePainter(
-                  baseColor: baseColor ?? AppColors.lightSoftSurface,
+                  baseColor: baseColor ?? AppColors.softSurface,
                   opacity: opacity,
                 ),
               ),

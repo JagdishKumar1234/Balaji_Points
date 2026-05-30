@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -76,7 +77,7 @@ class _AddBillPageState extends State<AddBillPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Row(
           children: [
             Container(
@@ -413,7 +414,7 @@ class _AddBillPageState extends State<AddBillPage> {
                           height: 180,
                           decoration: BoxDecoration(
                             color: context.themeSurface,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.all16,
                             border: Border.all(
                               color: context.themePrimary.withValues(
                                 alpha: 0.3,
@@ -423,7 +424,7 @@ class _AddBillPageState extends State<AddBillPage> {
                           ),
                           child: _selectedImage != null
                               ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: AppRadius.all16,
                                   child: Image.file(
                                     _selectedImage!,
                                     fit: BoxFit.cover,
@@ -491,7 +492,7 @@ class _AddBillPageState extends State<AddBillPage> {
                           ),
                           decoration: BoxDecoration(
                             color: context.themeSurface,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.all16,
                             border: Border.all(
                               color: context.themePrimary.withValues(
                                 alpha: 0.3,

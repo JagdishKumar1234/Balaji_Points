@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -181,7 +182,7 @@ class _Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: AppRadius.all16,
       child: Image.asset(
         'assets/images/balaji_point_logo.png',
         width: 100,

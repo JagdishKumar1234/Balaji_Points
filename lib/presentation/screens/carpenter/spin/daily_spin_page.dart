@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -72,7 +73,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(
           '🎉 Congratulations!',
           style: TextStyle(
@@ -120,7 +121,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                   vertical: 12,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.md12,
                 ),
               ),
               child: const Text('Great!', style: TextStyle(fontSize: 16)),
@@ -281,7 +282,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                           vertical: 18,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: AppRadius.all24,
                         ),
                       ),
                       child: Text(
@@ -304,7 +305,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE3F2FD),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.md12,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

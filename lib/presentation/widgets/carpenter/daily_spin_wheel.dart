@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -137,7 +138,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(
           '🎉 Congratulations!',
           style: TextStyle(
@@ -191,7 +192,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                   vertical: 12,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.md12,
                 ),
               ),
               child: const Text('Great!', style: TextStyle(fontSize: 16)),
@@ -211,7 +212,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.all24,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -345,7 +346,7 @@ class _DailySpinWheelState extends ConsumerState<DailySpinWheel>
                   horizontal: 40,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: AppRadius.all24,
                 ),
               ),
               child: _isSpinning
@@ -399,13 +400,13 @@ class SpinWheelPainter extends CustomPainter {
 
     final colors = [
       AppColors.error,
-      AppColors.lightSecondary,
+      AppColors.gold,
       AppColors.warning,
       AppColors.success,
-      AppColors.lightPrimary,
-      AppColors.lightPrimary,
-      AppColors.lightPrimary,
-      AppColors.lightSecondary,
+      AppColors.primary,
+      AppColors.primary,
+      AppColors.primary,
+      AppColors.gold,
     ];
 
     final pointValues = [10, 20, 30, 40, 50, 60, 70, 80];
@@ -472,7 +473,7 @@ class SpinWheelPainter extends CustomPainter {
 
     // Outer border
     final borderPaint = Paint()
-      ..color = AppColors.lightSecondary
+      ..color = AppColors.gold
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, borderPaint);

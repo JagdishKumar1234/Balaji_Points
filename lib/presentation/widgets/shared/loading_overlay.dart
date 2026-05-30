@@ -1,4 +1,6 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../providers/loading_provider.dart';
@@ -21,7 +23,7 @@ class LoadingOverlay extends ConsumerWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.all16,
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.black.withValues(alpha: 0.1),
@@ -42,14 +44,7 @@ class LoadingOverlay extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    'Loading...',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: context.themeTextPrimary,
-                    ),
-                  ),
+                  AppText.body('Loading...', color: context.themeTextPrimary),
                 ],
               ),
             ),

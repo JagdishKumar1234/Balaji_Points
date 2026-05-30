@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
@@ -95,7 +97,7 @@ class _HomeProductCategoriesState extends State<HomeProductCategories> {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: cardBg,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.all16,
             boxShadow: [
               BoxShadow(
                 color: AppColors.black.withValues(alpha: isDark ? 0.25 : 0.07),
@@ -117,7 +119,7 @@ class _HomeProductCategoriesState extends State<HomeProductCategories> {
                       height: 32,
                       decoration: BoxDecoration(
                         color: context.themePrimary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.sm8,
                       ),
                       child: Icon(Icons.inventory_2_rounded,
                           size: 18, color: context.themePrimary),
@@ -135,9 +137,8 @@ class _HomeProductCategoriesState extends State<HomeProductCategories> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('View All',
-                              style: AppTypography.labelMedium(
-                                  color: context.themePrimary)),
+                          AppText.labelSmall('View All',
+                              color: context.themeContentColor),
                           const SizedBox(width: 2),
                           Icon(Icons.arrow_forward_rounded,
                               size: 14, color: context.themePrimary),
@@ -258,7 +259,7 @@ class _CategoryChip extends StatelessWidget {
           color: selected
               ? accent
               : accent.withValues(alpha: isDark ? 0.15 : 0.10),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.all16,
           border: Border.all(
             color: accent.withValues(alpha: selected ? 0 : 0.30),
             width: 1,
@@ -312,7 +313,7 @@ class _ProductCard extends StatelessWidget {
             '')
         .trim();
     final accent = cat.isNotEmpty ? _categoryAccent(cat) : context.themePrimary;
-    final surfaceBg = isDark ? const Color(0xFF1E2130) : const Color(0xFFF8F9FB);
+    final surfaceBg = context.themeSurface;
 
     return GestureDetector(
       onTap: () => context.push(
@@ -321,7 +322,7 @@ class _ProductCard extends StatelessWidget {
         width: 148,
         decoration: BoxDecoration(
           color: surfaceBg,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.all16,
           border: Border.all(
             color: accent.withValues(alpha: isDark ? 0.25 : 0.15),
             width: 1,
@@ -424,7 +425,7 @@ class _ProductShimmerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shimmerBg = isDark ? const Color(0xFF1E2130) : const Color(0xFFF0F2F5);
+    final shimmerBg = context.themeSoftSurface;
     return SizedBox(
       height: 200,
       child: ListView.builder(
@@ -437,7 +438,7 @@ class _ProductShimmerRow extends StatelessWidget {
             width: 148,
             decoration: BoxDecoration(
               color: shimmerBg,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.all16,
             ),
           )
               .animate(onPlay: (c) => c.repeat())

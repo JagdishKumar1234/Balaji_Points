@@ -190,7 +190,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                 children: [
                   const SizedBox(height: AppSpacing.sm),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.all16,
                     child: Image.asset(
                       'assets/images/balaji_point_logo.png',
                       width: 80,

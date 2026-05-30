@@ -110,7 +110,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                   children: [
                     // ── Logo ──
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.all16,
                       child: Image.asset(
                         'assets/images/balaji_point_logo.png',
                         width: 88,

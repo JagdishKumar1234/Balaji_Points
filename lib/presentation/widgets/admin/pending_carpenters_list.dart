@@ -1,6 +1,8 @@
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/user/user_service.dart';
 import '../../../core/logger.dart';
@@ -33,10 +35,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text(
-                'Error: ${snapshot.error}',
-                style: AppTypography.bodyMedium().copyWith(color: context.themeError),
-              ),
+              child: AppText.body('Error: ${snapshot.error}', color: context.themeError),
             );
           }
 
@@ -51,21 +50,9 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                     color: context.themePrimary.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'No Pending Requests',
-                    style: AppTypography.labelLarge().copyWith(
-                      fontSize: 18,
-                      color: context.themePrimary.withValues(alpha: 0.7),
-                    ),
-                  ),
+                  AppText.label('No Pending Requests'),
                   const SizedBox(height: 8),
-                  Text(
-                    'All carpenters have been verified',
-                    style: AppTypography.bodyMedium().copyWith(
-                      fontSize: 14,
-                      color: context.themePrimary.withValues(alpha: 0.5),
-                    ),
-                  ),
+                  AppText.body('All carpenters have been verified', color: context.themeTextSecondary),
                 ],
               ),
             );
@@ -90,8 +77,8 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  color: context.themeSurface,
+                  borderRadius: AppRadius.all16,
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.black.withValues(alpha: 0.05),
@@ -117,12 +104,8 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                           shape: BoxShape.circle,
                         ),
                         child: Center(
-                          child: Text(
+                          child: AppText.label(
                             '${firstName[0]}${lastName.isNotEmpty ? lastName[0] : ''}',
-                            style: AppTypography.labelLarge().copyWith(
-                              fontSize: 18,
-                              color: context.themePrimary,
-                            ),
                           ),
                         ),
                       ),
@@ -132,31 +115,19 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '$firstName $lastName',
-                              style: AppTypography.labelLarge().copyWith(
-                                fontSize: 16,
-                                color: context.themePrimary,
-                              ),
-                            ),
+                            AppText.label('$firstName $lastName'),
                             const SizedBox(height: 4),
                             Row(
                               children: [
                                 Icon(
                                   Icons.phone,
                                   size: 14,
-                                  color: context.themePrimary.withValues(alpha: 0.6),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  phone,
-                                  style: AppTypography.bodyMedium().copyWith(
-                                    fontSize: 13,
-                                    color: context.themePrimary.withValues(alpha: 
-                                      0.6,
-                                    ),
+                                  color: context.themePrimary.withValues(
+                                    alpha: 0.6,
                                   ),
                                 ),
+                                const SizedBox(width: 4),
+                                AppText.body(phone, color: context.themeTextSecondary),
                               ],
                             ),
                           ],
@@ -170,19 +141,13 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.warning.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.md12,
                           border: Border.all(
                             color: AppColors.warning.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
-                        child: Text(
-                          'Pending',
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 11,
-                            color: context.themeSecondary,
-                          ),
-                        ),
+                        child: AppText.label('Pending'),
                       ),
                     ],
                   ),
@@ -223,16 +188,10 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                               side: BorderSide(color: context.themeError),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: AppRadius.md12,
                               ),
                             ),
-                            child: Text(
-                              'Reject',
-                              style: AppTypography.labelLarge().copyWith(
-                                fontSize: 14,
-                                color: context.themeError,
-                              ),
-                            ),
+                            child: AppText.label('Reject', color: context.themeError),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -250,7 +209,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                               backgroundColor: context.themeSecondary,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: AppRadius.md12,
                               ),
                               elevation: 0,
                             ),
@@ -265,13 +224,7 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
                                       ),
                                     ),
                                   )
-                                : Text(
-                                    'Approve',
-                                    style: AppTypography.labelLarge().copyWith(
-                                      fontSize: 14,
-                                      color: AppColors.white,
-                                    ),
-                                  ),
+                                : AppText.label('Approve', color: AppColors.white),
                           ),
                         ),
                       ],
@@ -289,24 +242,14 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: context.themePrimary.withValues(alpha: 0.6)),
+        Icon(
+          icon,
+          size: 16,
+          color: context.themePrimary.withValues(alpha: 0.6),
+        ),
         const SizedBox(width: 8),
-        Text(
-          '$label: ',
-          style: AppTypography.bodySmall().copyWith(
-            fontSize: 13,
-            color: context.themePrimary.withValues(alpha: 0.7),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 13,
-              color: context.themePrimary,
-            ),
-          ),
-        ),
+        AppText.bodySmall('$label: ', color: context.themeTextSecondary),
+        Expanded(child: AppText.label(value)),
       ],
     );
   }
@@ -323,43 +266,25 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Approve Carpenter',
-          style: AppTypography.labelLarge().copyWith(
-            fontSize: 20,
-            color: context.themePrimary,
-          ),
-        ),
-        content: Text(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        title: AppText.label('Approve Carpenter'),
+        content: AppText.body(
           'Are you sure you want to approve $userName?\n\nThis will create a verified user account.',
-          style: AppTypography.bodyMedium().copyWith(
-            fontSize: 16,
-            color: context.themePrimary,
-          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themePrimary,
-              ),
-            ),
+            child: AppText.label('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeSecondary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.md12,
               ),
             ),
-            child: Text(
-              'Approve',
-              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
-            ),
+            child: AppText.label('Approve', color: AppColors.white),
           ),
         ],
       ),
@@ -431,44 +356,22 @@ class _PendingCarpentersListState extends State<PendingCarpentersList> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Reject Carpenter',
-          style: AppTypography.labelLarge().copyWith(
-            fontSize: 20,
-            color: context.themeError,
-          ),
-        ),
-        content: Text(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        title: AppText.label('Reject Carpenter', color: context.themeError),
+        content: AppText.body(
           'Are you sure you want to reject $userName?\n\nThis action cannot be undone.',
-          style: AppTypography.bodyMedium().copyWith(
-            fontSize: 16,
-            color: context.themePrimary,
-          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themePrimary,
-              ),
-            ),
+            child: AppText.label('Cancel'),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.themeError,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+          AppButton(
+              label: "action",
+              onPressed: () => Navigator.pop(context, true),
+              variant: AppButtonVariant.danger,
+              fullWidth: false,
             ),
-            child: Text(
-              'Reject',
-              style: AppTypography.labelLarge().copyWith(color: AppColors.white),
-            ),
-          ),
         ],
       ),
     );

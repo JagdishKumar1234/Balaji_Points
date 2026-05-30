@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -248,7 +249,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: AppRadius.all16,
                               gradient: LinearGradient(
                                 colors: [
                                   const Color(0xFF2196F3),
@@ -273,7 +274,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             vertical: 8,
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: AppRadius.all16,
                             child: Image.network(
                               url,
                               fit: BoxFit.cover,
@@ -504,7 +505,7 @@ class _DetailCartIconButton extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
               decoration: BoxDecoration(
                 color: context.themeError,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.sm8,
                 border: Border.all(
                   color: AppColors.white,
                   width: 1,

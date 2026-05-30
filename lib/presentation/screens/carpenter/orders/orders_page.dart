@@ -9,6 +9,7 @@ import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -45,7 +46,8 @@ class _OrdersPageState extends State<OrdersPage> {
         ? AppColors.white.withValues(alpha: 0.12)
         : AppColors.black.withValues(alpha: 0.08);
     return AppBar(
-      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
+      backgroundColor:
+          theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
       foregroundColor: context.themeTextPrimary,
       elevation: 0,
       leading: IconButton(
@@ -116,7 +118,11 @@ class _OrdersPageState extends State<OrdersPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.receipt_long_outlined, size: 80, color: context.themeBorder),
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: 80,
+                    color: context.themeBorder,
+                  ),
                   const SizedBox(height: 16),
                   const AppText.h4('No orders yet'),
                   const SizedBox(height: 8),
@@ -130,7 +136,9 @@ class _OrdersPageState extends State<OrdersPage> {
           }
 
           return Padding(
-            padding: CarpenterShellLayout.scrollViewPadding(MediaQuery.of(context)),
+            padding: CarpenterShellLayout.scrollViewPadding(
+              MediaQuery.of(context),
+            ),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: docs.length,
@@ -142,7 +150,9 @@ class _OrdersPageState extends State<OrdersPage> {
                 final total = (data['totalAmount'] as num?)?.toDouble() ?? 0;
                 final createdAt = data['createdAt'] as Timestamp?;
                 final createdDate = createdAt?.toDate() ?? DateTime.now();
-                final dateStr = DateFormat('dd MMM yyyy, hh:mm a').format(createdDate);
+                final dateStr = DateFormat(
+                  'dd MMM yyyy, hh:mm a',
+                ).format(createdDate);
 
                 return _OrderCard(
                   orderId: orderId,
@@ -187,135 +197,88 @@ class _OrderCard extends StatelessWidget {
       borderRadius: 18,
       onTap: onTap,
       child: Row(
-            children: [
-              // Gradient left stripe
-              Container(
-                width: 6,
-                height: 82,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.horizontal(left: Radius.circular(18)),
-                  gradient: LinearGradient(
-                    colors: [context.themePrimary, context.themeSecondary],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
+        children: [
+          // Gradient left stripe
+          Container(
+            width: 6,
+            height: 82,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.horizontal(left: Radius.circular(18)),
+              gradient: LinearGradient(
+                colors: [context.themePrimary, context.themeSecondary],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.receipt_long,
-                                  size: 16,
-                                  color: context.themePrimary,
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: AppText.label(
-                                    'Order $orderId',
-                                    maxLines: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                            AppText.bodySmall(dateStr),
-                            const SizedBox(height: 6),
-                            AppText.label(
-                              '₹${total.toStringAsFixed(0)}',
+                            Icon(
+                              Icons.receipt_long,
+                              size: 16,
                               color: context.themePrimary,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: AppText.label(
+                                'Order $orderId',
+                                maxLines: 1,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _StatusChip(status: status),
-                          const SizedBox(height: 6),
-                          TextButton.icon(
-                            onPressed: onTap,
-                            icon: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                            label: const Text('Details', style: TextStyle(fontSize: 11)),
-                            style: TextButton.styleFrom(
-                              foregroundColor: context.themePrimary,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
+                        const SizedBox(height: 2),
+                        AppText.bodySmall(dateStr),
+                        const SizedBox(height: 6),
+                        AppText.label(
+                          '₹${total.toStringAsFixed(0)}',
+                          color: context.themePrimary,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      StatusChip(status: status),
+                      const SizedBox(height: 6),
+                      TextButton.icon(
+                        onPressed: onTap,
+                        icon: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 14,
+                        ),
+                        label: const Text(
+                          'Details',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        style: TextButton.styleFrom(
+                          foregroundColor: context.themePrimary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
                           ),
-                        ],
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                       ),
                     ],
                   ),
-                ),
+                ],
               ),
-            ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Status chip
-// ---------------------------------------------------------------------------
-
-class _StatusChip extends StatelessWidget {
-  final String status;
-
-  const _StatusChip({required this.status});
-
-  static Color _bg(String s) {
-    switch (s) {
-      case 'completed': return AppColors.success.withValues(alpha: 0.15);
-      case 'processing': return AppColors.warning.withValues(alpha: 0.15);
-      case 'cancelled': return AppColors.error.withValues(alpha: 0.15);
-      default: return AppColors.lightTextMuted.withValues(alpha: 0.15);
-    }
-  }
-
-  static Color _fg(String s) {
-    switch (s) {
-      case 'completed': return AppColors.success;
-      case 'processing': return const Color(0xFF92400E);
-      case 'cancelled': return const Color(0xFF991B1B);
-      default: return AppColors.lightTextSecondary;
-    }
-  }
-
-  static String _label(String s) {
-    switch (s) {
-      case 'completed': return 'Completed';
-      case 'processing': return 'Processing';
-      case 'cancelled': return 'Cancelled';
-      default: return 'Pending';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: _bg(status),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        _label(status),
-        style: AppTypography.labelSmall(color: _fg(status))
-            .copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
       ),
     );
   }

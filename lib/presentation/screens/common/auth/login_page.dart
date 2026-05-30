@@ -237,7 +237,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                         // ── Logo ──
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: AppRadius.all16,
                           child: Image.asset(
                             'assets/images/balaji_point_logo.png',
                             width: 96,
@@ -393,7 +393,7 @@ class _LanguagePicker extends ConsumerWidget {
         child: DropdownButton<Locale>(
           value: ref.watch(localeProvider),
           style: AppTypography.bodyMedium(color: context.themeTextPrimary),
-          dropdownColor: isDark ? AppColors.darkSurface : AppColors.white,
+          dropdownColor: context.themeSurface,
           iconEnabledColor: isDark ? AppColors.white : context.themePrimary,
           onChanged: (locale) {
             if (locale != null) {

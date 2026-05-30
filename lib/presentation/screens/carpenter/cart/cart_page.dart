@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -273,14 +274,14 @@ class _CartPageState extends State<CartPage> {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: AppRadius.all16,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Row(
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: AppRadius.md12,
                                 child: SizedBox(
                                   width: 72,
                                   height: 72,
@@ -397,7 +398,7 @@ class _CartPageState extends State<CartPage> {
                       labelText: 'Delivery address (optional)',
                       hintText: 'Site / shop address to show in order',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.md12,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,

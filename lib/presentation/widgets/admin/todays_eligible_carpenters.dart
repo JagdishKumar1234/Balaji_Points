@@ -1,6 +1,7 @@
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -137,8 +138,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: context.themeSurface,
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -154,13 +155,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(context.themeSecondary),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Loading eligible carpenters...',
-            style: AppTypography.bodyMedium().copyWith(
-              fontSize: 14,
-              color: context.themeTextSecondary,
-            ),
-          ),
+          AppText.body('Loading eligible carpenters...', color: context.themeTextSecondary),
         ],
       ),
     );
@@ -172,7 +167,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: context.themeError,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.all16,
         border: Border.all(color: context.themeError),
       ),
       child: Column(
@@ -180,21 +175,9 @@ class TodaysEligibleCarpenters extends StatelessWidget {
         children: [
           Icon(Icons.error_outline, color: context.themeError, size: 48),
           const SizedBox(height: 12),
-          Text(
-            'Error loading data',
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 16,
-              color: context.themeError,
-            ),
-          ),
+          AppText.label('Error loading data', color: context.themeError),
           const SizedBox(height: 8),
-          Text(
-            error,
-            style: AppTypography.bodyMedium().copyWith(
-              fontSize: 12,
-              color: context.themeError,
-            ),
-            textAlign: TextAlign.center,
+          AppText.bodySmall(error, color: context.themeError, textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -206,8 +189,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: context.themeSurface,
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.05),
@@ -225,21 +208,11 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             color: context.themeTextMuted,
           ),
           const SizedBox(height: 16),
-          Text(
-            'No Eligible Carpenters Today',
-            style: AppTypography.labelLarge().copyWith(
-              fontSize: 18,
-              color: context.themePrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          AppText.label('No Eligible Carpenters Today', textAlign: TextAlign.center),
           const SizedBox(height: 8),
-          Text(
+          AppText.body(
             'No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!',
-            style: AppTypography.bodyMedium().copyWith(
-              fontSize: 14,
-              color: context.themeTextSecondary,
-            ),
+            color: context.themeTextSecondary,
             textAlign: TextAlign.center,
           ),
         ],
@@ -253,8 +226,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: context.themeSurface,
+        borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -287,7 +260,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: AppColors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.md12,
                   ),
                   child: const Icon(
                     Icons.check_circle,
@@ -300,21 +273,10 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Today\'s Eligible Carpenters',
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 20,
-                          color: AppColors.white,
-                        ),
-                      ),
+                      AppText.label('Today\'s Eligible Carpenters', color: AppColors.white),
                       const SizedBox(height: 4),
-                      Text(
-                        '$todayStr • ${carpenters.length} eligible',
-                        style: AppTypography.bodyMedium().copyWith(
-                          fontSize: 13,
-                          color: AppColors.white.withValues(alpha: 0.9),
-                        ),
-                      ),
+                      AppText.body('$todayStr • ${carpenters.length} eligible',
+                          color: AppColors.white.withValues(alpha: 0.9)),
                     ],
                   ),
                 ),
@@ -350,7 +312,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.md12,
         border: Border.all(
           color: context.themeSecondary.withValues(alpha: 0.2),
           width: 1.5,
@@ -367,13 +329,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Text(
-                '$rank',
-                style: AppTypography.labelLarge().copyWith(
-                  fontSize: 18,
-                  color: context.themeSecondary,
-                ),
-              ),
+              child: AppText.label('$rank'),
             ),
           ),
           const SizedBox(width: 16),
@@ -400,7 +356,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                           child: Icon(
                             Icons.person,
                             size: 28,
-                            color: context.themeSecondary,
+                            color: context.themeContentColor,
                           ),
                         );
                       },
@@ -410,7 +366,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                       child: Icon(
                         Icons.person,
                         size: 28,
-                        color: context.themeSecondary,
+                        color: context.themeContentColor,
                       ),
                     ),
             ),
@@ -422,27 +378,13 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: AppTypography.labelLarge().copyWith(
-                    fontSize: 16,
-                    color: context.themePrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                AppText.label(name, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     Icon(Icons.phone, size: 14, color: context.themeTextSecondary),
                     const SizedBox(width: 4),
-                    Text(
-                      phone,
-                      style: AppTypography.bodyMedium().copyWith(
-                        fontSize: 13,
-                        color: context.themeTextSecondary,
-                      ),
-                    ),
+                    AppText.body(phone, color: context.themeTextSecondary),
                   ],
                 ),
               ],
@@ -460,7 +402,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.success,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.sm8,
                   border: Border.all(color: AppColors.success),
                 ),
                 child: Row(
@@ -468,13 +410,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   children: [
                     Icon(Icons.receipt, size: 14, color: AppColors.success),
                     const SizedBox(width: 4),
-                    Text(
-                      '$billsCount',
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 13,
-                        color: AppColors.success,
-                      ),
-                    ),
+                    AppText.labelSmall('$billsCount', color: AppColors.white),
                   ],
                 ),
               ),
@@ -486,7 +422,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.warning,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.sm8,
                   border: Border.all(color: AppColors.warning),
                 ),
                 child: Row(
@@ -498,13 +434,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                       color: AppColors.warning,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      '+$totalPoints',
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 13,
-                        color: context.themeSecondary,
-                      ),
-                    ),
+                    AppText.label('+$totalPoints'),
                   ],
                 ),
               ),
