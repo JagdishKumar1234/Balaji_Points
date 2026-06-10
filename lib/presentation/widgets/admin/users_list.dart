@@ -248,7 +248,8 @@ class _UsersListState extends State<UsersList> {
                       ? 'Carpenter'
                       : '$firstName $lastName'.trim();
                   final phone = (data['phone'] ?? '').toString().trim();
-                  final points = (data['totalPoints'] ?? 0).toString();
+                  final rawPoints = data['totalPoints'];
+                  final points = (rawPoints is num ? rawPoints.toInt() : 0).toString();
                   final tier = (data['tier'] ?? 'Bronze').toString();
                   DateTime? joinedDate;
                   if (data['createdAt'] is Timestamp) {
@@ -788,14 +789,18 @@ class _UsersListState extends State<UsersList> {
                 switch (_selectedSort) {
                   case 'points':
                     // Sort by points (high to low)
-                    final aPoints = aData['totalPoints'] ?? 0;
-                    final bPoints = bData['totalPoints'] ?? 0;
+                    final aRaw = aData['totalPoints'];
+                    final bRaw = bData['totalPoints'];
+                    final aPoints = aRaw is num ? aRaw.toInt() : 0;
+                    final bPoints = bRaw is num ? bRaw.toInt() : 0;
                     return bPoints.compareTo(aPoints);
 
                   case 'pointsLowToHigh':
                     // Sort by points (low to high)
-                    final aPoints = aData['totalPoints'] ?? 0;
-                    final bPoints = bData['totalPoints'] ?? 0;
+                    final aRaw = aData['totalPoints'];
+                    final bRaw = bData['totalPoints'];
+                    final aPoints = aRaw is num ? aRaw.toInt() : 0;
+                    final bPoints = bRaw is num ? bRaw.toInt() : 0;
                     return aPoints.compareTo(bPoints);
 
                   case 'newest':
@@ -896,7 +901,8 @@ class _UsersListState extends State<UsersList> {
                   final firstName = user['firstName'] ?? '';
                   final lastName = user['lastName'] ?? '';
                   final phone = user['phone'] ?? '';
-                  final totalPoints = user['totalPoints'] ?? 0;
+                  final rawTotalPoints = user['totalPoints'];
+                  final totalPoints = rawTotalPoints is num ? rawTotalPoints.toInt() : 0;
                   final tier = user['tier'] ?? 'Bronze';
                   final profileImage = user['profileImage'] ?? '';
                   final createdAt = user['createdAt'] is Timestamp
@@ -1455,9 +1461,27 @@ class _PointsHistoryView extends StatelessWidget {
           );
         }
 
+        // Deduplicate history by billId (keep first occurrence with latest timestamp)
+        final Map<String, Map<String, dynamic>> deduplicatedMap = {};
+        for (final item in pointsHistory) {
+          final billId = item['billId'] as String? ?? '';
+          if (billId.isNotEmpty) {
+            final existing = deduplicatedMap[billId];
+            final currentTime = item['createdAt'] as Timestamp?;
+            final existingTime = existing?['createdAt'] as Timestamp?;
+
+            // Keep the entry with the latest timestamp
+            if (existing == null || (currentTime != null && existingTime != null && currentTime.compareTo(existingTime) > 0)) {
+              deduplicatedMap[billId] = item;
+            }
+          }
+        }
+
+        final deduplicatedHistory = deduplicatedMap.values.toList();
+
         // Calculate sum of all history entries
         int historySum = 0;
-        for (final entry in pointsHistory) {
+        for (final entry in deduplicatedHistory) {
           final points = entry['points'] as num?;
           if (points != null) {
             historySum += points.toInt();
@@ -1465,7 +1489,7 @@ class _PointsHistoryView extends StatelessWidget {
         }
 
         // Sort history by date (newest first)
-        final sortedHistory = List<Map<String, dynamic>>.from(pointsHistory);
+        final sortedHistory = List<Map<String, dynamic>>.from(deduplicatedHistory);
         sortedHistory.sort((a, b) {
           final aTime = a['createdAt'] as Timestamp?;
           final bTime = b['createdAt'] as Timestamp?;
@@ -1498,7 +1522,7 @@ class _PointsHistoryView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${pointsHistory.length}',
+                        '${deduplicatedHistory.length}',
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 16,
                           color: context.themeTextPrimary,
@@ -1826,9 +1850,27 @@ class _WithdrawalListState extends State<_WithdrawalList> {
 
   @override
   Widget build(BuildContext context) {
+    // Deduplicate history by billId (keep first occurrence with latest timestamp)
+    final Map<String, Map<String, dynamic>> deduplicatedMap = {};
+    for (final item in widget.history) {
+      final billId = item['billId'] as String? ?? '';
+      if (billId.isNotEmpty) {
+        final existing = deduplicatedMap[billId];
+        final currentTime = item['createdAt'] as Timestamp?;
+        final existingTime = existing?['createdAt'] as Timestamp?;
+
+        // Keep the entry with the latest timestamp
+        if (existing == null || (currentTime != null && existingTime != null && currentTime.compareTo(existingTime) > 0)) {
+          deduplicatedMap[billId] = item;
+        }
+      }
+    }
+
+    final deduplicatedHistory = deduplicatedMap.values.toList();
+
     return Column(
       children: [
-        ...widget.history.map<Widget>((item) {
+        ...deduplicatedHistory.map<Widget>((item) {
           final billId = item['billId'] as String? ?? '';
           final points = (item['points'] as num?)?.toInt() ?? 0;
           final timestamp = item['createdAt'] as Timestamp?;

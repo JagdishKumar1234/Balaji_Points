@@ -79,13 +79,13 @@ class PointsScanDetailsPage extends StatelessWidget {
 
                   return _UserScanCard(
                     userId: userId,
-                    totalPoints: (userData['totalPoints'] as int?) ?? 0,
+                    totalPoints: (userData['totalPoints'] is num ? (userData['totalPoints'] as num).toInt() : 0),
                     historySum: (userData['historySum'] as num?)?.toInt() ?? 0,
                     pointsDifference:
                         (userData['pointsDifference'] as num?)?.toInt() ?? 0,
-                    historyLength: (userData['historyLength'] as int?) ?? 0,
-                    uniqueBills: (userData['uniqueBills'] as int?) ?? 0,
-                    duplicateCount: (userData['duplicateCount'] as int?) ?? 0,
+                    historyLength: (userData['historyLength'] as num?)?.toInt() ?? 0,
+                    uniqueBills: (userData['uniqueBills'] as num?)?.toInt() ?? 0,
+                    duplicateCount: (userData['duplicateCount'] as num?)?.toInt() ?? 0,
                     duplicateBillIds:
                         (userData['duplicateBillIds'] as List<dynamic>?)
                                 ?.cast<String>() ??

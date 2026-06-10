@@ -131,7 +131,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   }
 
   String _tier() => _userData?['tier'] as String? ?? 'Bronze';
-  int _points() => _userData?['totalPoints'] as int? ?? 0;
+  int _points() {
+    final raw = _userData?['totalPoints'];
+    return raw is num ? raw.toInt() : 0;
+  }
 
   Future<void> _handleLogout(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
