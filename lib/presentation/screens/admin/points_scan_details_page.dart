@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'bill_duplicate_details_page.dart';
 
 class PointsScanDetailsPage extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -424,7 +425,22 @@ class _UserScanCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: duplicateBillIds
-                  .map((billId) => Container(
+                  .map((billIdWithCount) {
+                    // billIdWithCount format: "Bill_ID (2x)"
+                    final billId = billIdWithCount.split(' ').first;
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                BillDuplicateDetailsPage(
+                              billId: billId,
+                              userId: userId,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 6,
@@ -436,9 +452,19 @@ class _UserScanCard extends StatelessWidget {
                             color: AppColors.warning.withValues(alpha: 0.3),
                           ),
                         ),
-                        child:
-                            AppText.bodySmall(billId, color: AppColors.warning),
-                      ))
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AppText.bodySmall(billIdWithCount,
+                                color: AppColors.warning),
+                            const SizedBox(width: 4),
+                            Icon(Icons.arrow_forward_ios_rounded,
+                                size: 12, color: AppColors.warning),
+                          ],
+                        ),
+                      ),
+                    );
+                  })
                   .toList(),
             ),
           ],
