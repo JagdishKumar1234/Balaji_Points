@@ -476,6 +476,45 @@ class _AddBillPageState extends State<AddBillPage> {
                         },
                       ),
 
+                      const SizedBox(height: 12),
+                      ValueListenableBuilder(
+                        valueListenable: _amountController,
+                        builder: (context, value, _) {
+                          final amount = double.tryParse(value.text.trim());
+                          if (amount != null && amount > 0) {
+                            final estimatedPoints = amount / 1000;
+                            final pointsDisplay = estimatedPoints.toStringAsFixed(2);
+                            return Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: context.themePrimary.withValues(alpha: 0.1),
+                                borderRadius: AppRadius.md12,
+                                border: Border.all(
+                                  color: context.themePrimary.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.star,
+                                    color: context.themePrimary,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: AppText.label(
+                                      'You will earn $pointsDisplay points when approved',
+                                      color: context.themePrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+
                       const SizedBox(height: 32),
 
                       // Bill Date

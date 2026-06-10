@@ -175,7 +175,7 @@ class DailySpinNotifier extends Notifier<DailySpinState> {
       }
 
       final userData = userDoc.data()!;
-      final currentPoints = (userData['totalPoints'] ?? 0) as int;
+      final currentPoints = ((userData['totalPoints'] ?? 0) as num).toDouble();
       final oldTier = userData['tier'] as String? ?? 'Bronze';
       final newTotalPoints = currentPoints + finalPointsWon;
       final newTier = _calculateTier(newTotalPoints);
@@ -306,7 +306,7 @@ class DailySpinNotifier extends Notifier<DailySpinState> {
   }
 
   /// Calculate tier based on points
-  String _calculateTier(int points) {
+  String _calculateTier(double points) {
     if (points >= 10000) {
       return 'Platinum';
     } else if (points >= 5000) {
@@ -322,7 +322,7 @@ class DailySpinNotifier extends Notifier<DailySpinState> {
   Future<void> _checkAndNotifyMilestone(
     NotificationService notificationService,
     String userId,
-    int newPoints,
+    double newPoints,
   ) async {
     try {
       // Define milestone thresholds

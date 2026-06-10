@@ -112,7 +112,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                     final notes = data['notes'] ?? '';
 
                     // compute points from amount and prepare both displays
-                    final int pointsFromAmount = (amount / 1000).floor();
+                    final int pointsFromAmount = (amount / 1000).round();
                     final String rupeeText = '₹${amount.toStringAsFixed(0)}';
 
                     return Container(
@@ -372,18 +372,6 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         Expanded(child: AppText.label(value)),
       ],
     );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return AppColors.success;
-      case 'rejected':
-        return context.themeError;
-      case 'pending':
-      default:
-        return AppColors.warning;
-    }
   }
 
   String _formatDate(DateTime date) {

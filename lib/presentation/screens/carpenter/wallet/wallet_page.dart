@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import 'package:balaji_points/core/design/app_animations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -99,19 +98,19 @@ class WalletPage extends ConsumerWidget {
                         .enterCard(delay: AppAnimations.stagger(3)),
                     const SizedBox(height: 16),
 
-                    // Recent bills header
+                    // Points history header
                     _SectionHeader(
-                      icon: Icons.receipt_long,
-                      title: l10n.recentBills,
-                      subtitle: 'Latest 10 updates',
+                      icon: Icons.history,
+                      title: 'Points History',
+                      subtitle: 'All transactions',
                     ).fadeIn(delay: AppAnimations.stagger(3)),
                     const SizedBox(height: 8),
 
-                    // Bills list
+                    // Points history table
                     if (!idsReady)
                       const _BillsLoading()
                     else
-                      _BillsList(ids: ids),
+                      _PointsHistoryTable(ids: ids),
 
                     const SizedBox(height: 14),
                   ],
@@ -199,14 +198,14 @@ class _WalletIntroBanner extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _PointsCard extends StatelessWidget {
-  final int points;
+  final double points;
   final String tier;
   const _PointsCard({required this.points, required this.tier});
 
   @override
   Widget build(BuildContext context) {
-    final nf = NumberFormat.decimalPattern();
     final l10n = AppLocalizations.of(context)!;
+    final pointsDisplay = points.toStringAsFixed(2);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -244,7 +243,7 @@ class _PointsCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                nf.format(points),
+                pointsDisplay,
                 style: AppTypography.pointsHero(color: AppColors.white),
               ),
             ],
@@ -498,6 +497,297 @@ class _BillsLoading extends StatelessWidget {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Points History Table - Shows all transactions in tabular form
+// ---------------------------------------------------------------------------
+
+class _PointsHistoryTable extends ConsumerStatefulWidget {
+  final List<String> ids;
+  const _PointsHistoryTable({required this.ids});
+
+  @override
+  ConsumerState<_PointsHistoryTable> createState() => _PointsHistoryTableState();
+}
+
+class _PointsHistoryTableState extends ConsumerState<_PointsHistoryTable> {
+  @override
+  Widget build(BuildContext context) {
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('user_points')
+          .where('userId', whereIn: widget.ids)
+          .snapshots(),
+      builder: (context, snap) {
+        if (snap.hasError) {
+          return _errorCard(context, snap.error.toString());
+        }
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const _BillsLoading();
+        }
+
+        // Collect all history entries from all user_points docs
+        final allHistory = <Map<String, dynamic>>[];
+        double grandTotal = 0;
+
+        if (snap.hasData) {
+          for (final doc in snap.data!.docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final history = (data['pointsHistory'] as List<dynamic>?) ?? [];
+            for (final entry in history) {
+              final entryMap = Map<String, dynamic>.from(entry as Map);
+              allHistory.add(entryMap);
+              final points = (entryMap['points'] as num?)?.toDouble() ?? 0;
+              grandTotal += points;
+            }
+          }
+        }
+
+        if (allHistory.isEmpty) {
+          return _emptyCard(context);
+        }
+
+        // Sort by date descending
+        allHistory.sort((a, b) {
+          final aDate = (a['date'] as Timestamp?)?.toDate() ?? DateTime.now();
+          final bDate = (b['date'] as Timestamp?)?.toDate() ?? DateTime.now();
+          return bDate.compareTo(aDate);
+        });
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Points history list (card-based, no scroll)
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: allHistory.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final entry = allHistory[index];
+                final date =
+                    (entry['date'] as Timestamp?)?.toDate() ??
+                    DateTime.now();
+                final reason = (entry['reason'] as String?) ?? 'Transaction';
+                final points = (entry['points'] as num?)?.toDouble() ?? 0;
+
+                final timeStr =
+                    '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+                final dateStr =
+                    '${date.day}/${date.month}/${date.year}';
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: context.themeSurface,
+                    borderRadius: AppRadius.md12,
+                    border: Border.all(
+                      color: context.themeTextPrimary.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      // Date & Time (left)
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dateStr,
+                              style: AppTypography.labelSmall(
+                                color: context.themeTextPrimary
+                                    .withValues(alpha: 0.6),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              timeStr,
+                              style: AppTypography.bodySmall(
+                                color: context.themeTextPrimary,
+                              ).copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Reason (middle - flexible)
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Reason',
+                              style: AppTypography.labelSmall(
+                                color: context.themeTextPrimary
+                                    .withValues(alpha: 0.6),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              reason,
+                              style: AppTypography.bodySmall(
+                                color: context.themeTextPrimary,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Points (right)
+                      Container(
+                        decoration: BoxDecoration(
+                          color: context.themePrimary.withValues(alpha: 0.08),
+                          borderRadius: AppRadius.sm8,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Points',
+                              style: AppTypography.labelSmall(
+                                color: context.themeTextPrimary
+                                    .withValues(alpha: 0.6),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              points.toStringAsFixed(2),
+                              style: AppTypography.h5(
+                                color: context.themePrimary,
+                              ).copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            // Grand total card
+            Container(
+              decoration: BoxDecoration(
+                color: context.themePrimary.withValues(alpha: 0.08),
+                borderRadius: AppRadius.md12,
+                border: Border.all(
+                  color: context.themePrimary.withValues(alpha: 0.15),
+                  width: 2,
+                ),
+              ),
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total Points Earned',
+                        style: AppTypography.labelSmall(
+                          color: context.themeTextPrimary
+                              .withValues(alpha: 0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${allHistory.length} transactions',
+                        style: AppTypography.bodySmall(
+                          color: context.themeTextPrimary
+                              .withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: context.themePrimary,
+                      borderRadius: AppRadius.sm8,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Text(
+                      grandTotal.toStringAsFixed(2),
+                      style: AppTypography.h5(
+                        color: AppColors.white,
+                      ).copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _errorCard(BuildContext context, String error) {
+    return AppCard(
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        children: [
+          Icon(Icons.error_outline, size: 48, color: context.themeError),
+          const SizedBox(height: 12),
+          Text(
+            'Error loading history',
+            style: AppTypography.bodyLarge(color: context.themeError)
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            style: AppTypography.labelSmall(
+                color: context.themeTextPrimary.withValues(alpha: 0.5)),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyCard(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        children: [
+          Icon(
+            Icons.history,
+            size: 48,
+            color: context.themeTextPrimary.withValues(alpha: 0.3),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'No transactions yet',
+            style: AppTypography.bodyLarge(
+                color: context.themeTextPrimary.withValues(alpha: 0.6))
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your points history will appear here',
+            style: AppTypography.bodySmall(
+                color: context.themeTextPrimary.withValues(alpha: 0.5)),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Deprecated: Use _PointsHistoryTable instead
+// ignore: unused_element
 class _BillsList extends StatelessWidget {
   final List<String> ids;
   const _BillsList({required this.ids});
@@ -593,6 +883,8 @@ class _BillsList extends StatelessWidget {
   }
 }
 
+// Deprecated: Use _PointsHistoryTable instead
+// ignore: unused_element
 class _BillCard extends StatelessWidget {
   final Map<String, dynamic> bill;
   const _BillCard({required this.bill});
@@ -603,7 +895,6 @@ class _BillCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final cardBg = isDark ? theme.colorScheme.surface : AppColors.white;
 
-    final amount = bill['amount'] ?? 0.0;
     final status = (bill['status'] ?? 'pending') as String;
     final pointsEarned = bill['pointsEarned'] ?? 0;
     final createdAt = bill['createdAt'] as Timestamp?;
@@ -638,24 +929,19 @@ class _BillCard extends StatelessWidget {
                       .copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      '₹${(amount as num).toStringAsFixed(0)}',
-                      style: AppTypography.bodySmall(color: context.themePrimary)
-                          .copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    if ((pointsEarned as num) > 0) ...[
-                      const SizedBox(width: 6),
-                      Text(
-                        '• $pointsEarned pts',
-                        style: AppTypography.labelSmall(
-                          color: context.themeTextPrimary.withValues(alpha: 0.6),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+                if (status == 'approved' && (pointsEarned as num) > 0) ...[
+                  Text(
+                    '${(pointsEarned).toString().contains('.') ? pointsEarned : '$pointsEarned.00'} pts',
+                    style: AppTypography.bodySmall(color: context.themePrimary)
+                        .copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ] else ...[
+                  Text(
+                    'Pending approval',
+                    style: AppTypography.bodySmall(color: context.themeTextPrimary.withValues(alpha: 0.6))
+                        .copyWith(fontWeight: FontWeight.w500),
+                  ),
+                ],
                 if (createdAt != null) ...[
                   const SizedBox(height: 4),
                   Text(

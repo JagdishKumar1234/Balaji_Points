@@ -53,8 +53,9 @@ class _HomePageState extends ConsumerState<HomePage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _confettiController =
-        ConfettiController(duration: const Duration(seconds: 3));
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
     _loadAppVersion();
   }
 
@@ -62,8 +63,9 @@ class _HomePageState extends ConsumerState<HomePage>
     try {
       final info = await PackageInfo.fromPlatform();
       if (!mounted) return;
-      setState(() =>
-          _appVersion = 'Version ${info.version} (${info.buildNumber})');
+      setState(
+        () => _appVersion = 'Version ${info.version} (${info.buildNumber})',
+      );
     } catch (_) {
       if (!mounted) return;
       setState(() => _appVersion = 'Version 1.0.0');
@@ -104,8 +106,11 @@ class _HomePageState extends ConsumerState<HomePage>
                   shape: BoxShape.circle,
                   color: context.themeError.withValues(alpha: 0.08),
                 ),
-                child: Icon(Icons.logout_rounded,
-                    color: context.themeError, size: 26),
+                child: Icon(
+                  Icons.logout_rounded,
+                  color: context.themeError,
+                  size: 26,
+                ),
               ),
               const SizedBox(height: 20),
               AppText.h4(l10n.logout),
@@ -149,10 +154,12 @@ class _HomePageState extends ConsumerState<HomePage>
         if (context.mounted) context.go('/login');
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('${l10n.logoutFailed}: $e'),
-            backgroundColor: context.themeError,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.logoutFailed}: $e'),
+              backgroundColor: context.themeError,
+            ),
+          );
         }
       }
     }
@@ -166,8 +173,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final mq = MediaQuery.of(context);
-    final canvas =
-        context.themeBackground;
+    final canvas = context.themeBackground;
     final bottomPadding = CarpenterShellLayout.bottomPaddingForScrollView(mq);
     final fg = isDark ? AppColors.white : context.themeTextPrimary;
     final bg = canvas; // transparent — same as scaffold background
@@ -181,8 +187,9 @@ class _HomePageState extends ConsumerState<HomePage>
         topKey == homeState.userDocId &&
         topKey != _confettiPlayedKey) {
       _confettiPlayedKey = topKey;
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _confettiController.play());
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _confettiController.play(),
+      );
     }
 
     AppLogger.data('Home build · loading=${homeState.loading}');
@@ -215,7 +222,8 @@ class _HomePageState extends ConsumerState<HomePage>
                 color: context.themePrimary.withValues(alpha: 0.10),
                 borderRadius: AppRadius.sm8,
                 border: Border.all(
-                    color: context.themePrimary.withValues(alpha: 0.18)),
+                  color: context.themePrimary.withValues(alpha: 0.18),
+                ),
               ),
               child: ClipRRect(
                 borderRadius: AppRadius.sm8,
@@ -225,9 +233,10 @@ class _HomePageState extends ConsumerState<HomePage>
                   height: 36,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Icon(
-                      Icons.storefront_rounded,
-                      color: context.themePrimary,
-                      size: 20),
+                    Icons.storefront_rounded,
+                    color: context.themePrimary,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -247,7 +256,9 @@ class _HomePageState extends ConsumerState<HomePage>
                     '${l10n.companyName} · ${l10n.homeStoreBranch}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.caption(color: fg.withValues(alpha: 0.55)),
+                    style: AppTypography.caption(
+                      color: fg.withValues(alpha: 0.55),
+                    ),
                   ),
                 ],
               ),
@@ -289,20 +300,17 @@ class _HomePageState extends ConsumerState<HomePage>
 
                   const SizedBox(height: AppSpacing.md),
 
-                  // Quick actions
-                  const RepaintBoundary(child: HomeQuickActions())
-                      .fadeIn(delay: AppAnimations.stagger(1)),
-
-                  const SizedBox(height: AppSpacing.md),
-
                   // Offers
                   if (homeState.offersLoading ||
                       homeState.offers.isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(l10n.latestOffers,
-                          style: AppTypography.h5(
-                              color: context.themeTextPrimary)),
+                      child: Text(
+                        l10n.latestOffers,
+                        style: AppTypography.h5(
+                          color: context.themeTextPrimary,
+                        ),
+                      ),
                     ).fadeIn(delay: AppAnimations.stagger(2)),
                     const SizedBox(height: AppSpacing.sm),
                     RepaintBoundary(
@@ -317,8 +325,9 @@ class _HomePageState extends ConsumerState<HomePage>
                   ],
 
                   // Product categories + real product cards
-                  RepaintBoundary(child: HomeProductCategories())
-                      .enterCard(delay: AppAnimations.stagger(3)),
+                  RepaintBoundary(
+                    child: HomeProductCategories(),
+                  ).enterCard(delay: AppAnimations.stagger(3)),
 
                   const SizedBox(height: AppSpacing.md),
 
@@ -346,8 +355,9 @@ class _HomePageState extends ConsumerState<HomePage>
                   const SizedBox(height: AppSpacing.md),
 
                   // Feature highlights
-                  const RepaintBoundary(child: HomeFeatureHighlights())
-                      .enterCard(delay: AppAnimations.stagger(7)),
+                  const RepaintBoundary(
+                    child: HomeFeatureHighlights(),
+                  ).enterCard(delay: AppAnimations.stagger(7)),
 
                   const SizedBox(height: AppSpacing.sectionGap),
                 ],
@@ -427,8 +437,7 @@ class _NavBarIconButton extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: context.themeBackground, width: 1),
                 ),
-                constraints:
-                    const BoxConstraints(minWidth: 16, minHeight: 16),
+                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                 child: Text(
                   badge! > 99 ? '99+' : '$badge',
                   style: AppTypography.overline(color: AppColors.white),

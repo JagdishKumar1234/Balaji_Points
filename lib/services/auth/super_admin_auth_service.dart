@@ -31,10 +31,13 @@ class SuperAdminAuthService {
 
       // Step 1: Normalize phone and verify PIN
       final normalizedPhone = _pinAuthService.normalizePhone(phone);
-      final pinValid = await _pinAuthService.verifyPin(normalizedPhone, pin);
+      final verifiedUser = await _pinAuthService.verifyPin(
+        phone: normalizedPhone,
+        pin: pin,
+      );
 
-      if (!pinValid) {
-        AppLogger.warn('❌ Invalid PIN for super_admin: $normalizedPhone');
+      if (verifiedUser == null) {
+        AppLogger.warning('❌ Invalid PIN for super_admin: $normalizedPhone');
         await _logFailedAttempt(normalizedPhone, ipAddress);
         return false;
       }
@@ -42,14 +45,14 @@ class SuperAdminAuthService {
       // Step 2: Get user and verify role
       final user = await _getUserByPhone(normalizedPhone);
       if (user == null) {
-        AppLogger.warn('❌ Super admin not found: $normalizedPhone');
+        AppLogger.warning('❌ Super admin not found: $normalizedPhone');
         await _logFailedAttempt(normalizedPhone, ipAddress);
         return false;
       }
 
       final role = user['role'] as String?;
       if (role != 'super_admin') {
-        AppLogger.warn(
+        AppLogger.warning(
           '❌ User is not super_admin (role: $role): $normalizedPhone',
         );
         await _logFailedAttempt(normalizedPhone, ipAddress);
@@ -60,7 +63,7 @@ class SuperAdminAuthService {
       final status = user['status'] as String?;
       if (status?.toLowerCase() != 'verified' &&
           status?.toLowerCase() != 'active') {
-        AppLogger.warn(
+        AppLogger.warning(
           '❌ Super admin account inactive: $normalizedPhone (status: $status)',
         );
         await _logFailedAttempt(normalizedPhone, ipAddress);
@@ -72,7 +75,7 @@ class SuperAdminAuthService {
       if (lastLogin != null) {
         final elapsed = DateTime.now().difference(lastLogin.toDate());
         if (elapsed > const Duration(days: 30)) {
-          AppLogger.warn(
+          AppLogger.warning(
             '⚠️ Super admin account inactive for 30+ days: $normalizedPhone',
           );
           // Allow login but log as security event
@@ -108,7 +111,11 @@ class SuperAdminAuthService {
       final normalizedPhone = _pinAuthService.normalizePhone(phone);
 
       // Verify PIN
-      if (!await _pinAuthService.verifyPin(normalizedPhone, pin)) {
+      final verifiedUser = await _pinAuthService.verifyPin(
+        phone: normalizedPhone,
+        pin: pin,
+      );
+      if (verifiedUser == null) {
         return null;
       }
 
@@ -135,7 +142,7 @@ class SuperAdminAuthService {
           .get();
 
       if (query.docs.isNotEmpty) {
-        return query.docs.first.data();
+        return query.docs.first.data() as Map<String, dynamic>?;
       }
       return null;
     } catch (e) {
@@ -294,7 +301,7 @@ class SuperAdminAuthService {
         });
       }
 
-      AppLogger.warn('🚨 All super admin sessions invalidated (emergency)');
+      AppLogger.warning('🚨 All super admin sessions invalidated (emergency)');
     } catch (e) {
       AppLogger.error('Error invalidating sessions', e);
     }

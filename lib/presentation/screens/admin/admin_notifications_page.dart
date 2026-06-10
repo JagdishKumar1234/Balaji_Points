@@ -17,13 +17,9 @@ import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 class AdminNotificationsPage extends StatefulWidget {
   /// If embedded inside `AdminHomePage`, the parent already shows AppBar.
   /// In that case we must not render `HomeNavBar` again.
-  const AdminNotificationsPage({
-    super.key,
-    this.embedded = false,
-  });
+  const AdminNotificationsPage({super.key, this.embedded = false});
 
   final bool embedded;
- 
 
   @override
   State<AdminNotificationsPage> createState() => _AdminNotificationsPageState();
@@ -65,18 +61,20 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: const Text('Delete All Notifications'),
-        content: const Text('Are you sure you want to delete all admin notifications?'),
+        content: const Text(
+          'Are you sure you want to delete all admin notifications?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Cancel'),
           ),
           AppButton(
-              label: "action",
-              onPressed: () => Navigator.of(context).pop(true),
-              variant: AppButtonVariant.danger,
-              fullWidth: false,
-            ),
+            label: "action",
+            onPressed: () => Navigator.of(context).pop(true),
+            variant: AppButtonVariant.danger,
+            fullWidth: false,
+          ),
         ],
       ),
     );
@@ -195,8 +193,9 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
             stream: _notificationsStream,
             builder: (context, snapshot) {
-              final notificationCount =
-                  snapshot.hasError ? 0 : snapshot.data?.docs.length ?? 0;
+              final notificationCount = snapshot.hasError
+                  ? 0
+                  : snapshot.data?.docs.length ?? 0;
 
               if (widget.embedded) {
                 // Parent `AdminHomePage` already provides the top AppBar.
@@ -212,8 +211,9 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.delete_outline, size: 22),
-                    onPressed:
-                        notificationCount > 0 ? _deleteAllNotifications : null,
+                    onPressed: notificationCount > 0
+                        ? _deleteAllNotifications
+                        : null,
                     tooltip: notificationCount > 0 ? 'Delete All' : null,
                   ),
                 ],
@@ -248,7 +248,8 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                 }
 
                 final notifications =
-                    snapshot.data?.docs ?? const <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+                    snapshot.data?.docs ??
+                    const <QueryDocumentSnapshot<Map<String, dynamic>>>[];
 
                 if (notifications.isEmpty) {
                   return ListView(
@@ -273,10 +274,12 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                 sortedNotifications.sort((a, b) {
                   final aSentAtValue = a.data()['sentAt'];
                   final bSentAtValue = b.data()['sentAt'];
-                  final Timestamp? aTs =
-                      aSentAtValue is Timestamp ? aSentAtValue : null;
-                  final Timestamp? bTs =
-                      bSentAtValue is Timestamp ? bSentAtValue : null;
+                  final Timestamp? aTs = aSentAtValue is Timestamp
+                      ? aSentAtValue
+                      : null;
+                  final Timestamp? bTs = bSentAtValue is Timestamp
+                      ? bSentAtValue
+                      : null;
                   if (aTs == null && bTs == null) return 0;
                   if (aTs == null) return 1;
                   if (bTs == null) return -1;
@@ -339,12 +342,12 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                       child: const Text('Cancel'),
                                     ),
                                     AppButton(
-              label: "action",
-              onPressed: () =>
+                                      label: "action",
+                                      onPressed: () =>
                                           Navigator.of(context).pop(true),
-              variant: AppButtonVariant.danger,
-              fullWidth: false,
-            ),
+                                      variant: AppButtonVariant.danger,
+                                      fullWidth: false,
+                                    ),
                                   ],
                                 ),
                               ) ??
@@ -361,14 +364,16 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                               borderRadius: AppRadius.all16,
                               boxShadow: [
                                 BoxShadow(
-                                  color:
-                                      AppColors.black.withValues(alpha: 0.04),
+                                  color: AppColors.black.withValues(
+                                    alpha: 0.04,
+                                  ),
                                   blurRadius: 10,
                                   offset: const Offset(0, 2),
                                 ),
                                 BoxShadow(
-                                  color:
-                                      AppColors.black.withValues(alpha: 0.02),
+                                  color: AppColors.black.withValues(
+                                    alpha: 0.02,
+                                  ),
                                   blurRadius: 4,
                                   offset: const Offset(0, 1),
                                 ),
@@ -393,10 +398,12 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                         colors: [
-                                          notificationColor
-                                              .withValues(alpha: 0.2),
-                                          notificationColor
-                                              .withValues(alpha: 0.1),
+                                          notificationColor.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          notificationColor.withValues(
+                                            alpha: 0.1,
+                                          ),
                                         ],
                                       ),
                                       borderRadius: AppRadius.md12,
@@ -422,19 +429,17 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                                 title,
                                                 style: AppTypography.labelLarge()
                                                     .copyWith(
-                                                  fontSize: 15,
-                                                  color: context.themeContentColor,
-                                                  letterSpacing: -0.2,
-                                                ),
+                                                      fontSize: 15,
+                                                      color: context
+                                                          .themeContentColor,
+                                                      letterSpacing: -0.2,
+                                                    ),
                                               ),
                                             ),
                                             const SizedBox(width: 8),
-                                            Text(
+                                            AppText.caption(
                                               _formatTimestamp(sentAt),
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: context.themeTextSecondary,
-                                              ),
+                                              color: context.themeTextSecondary,
                                             ),
                                           ],
                                         ),
@@ -446,9 +451,10 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                             overflow: TextOverflow.ellipsis,
                                             style: AppTypography.bodyMedium()
                                                 .copyWith(
-                                              fontSize: 13,
-                                              color: context.themeTextSecondary,
-                                            ),
+                                                  fontSize: 13,
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
                                           ),
                                         ],
                                       ],
@@ -471,4 +477,3 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
     );
   }
 }
-

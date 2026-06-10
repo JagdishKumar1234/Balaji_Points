@@ -618,8 +618,9 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
           .where('phone', isEqualTo: phone)
           .limit(1)
           .get();
-      if (snap.docs.isEmpty)
+      if (snap.docs.isEmpty) {
         throw Exception('User doc not found after creation.');
+      }
 
       final userId = snap.docs.first.id;
       await BranchService().assignAdminToBranch(

@@ -182,9 +182,46 @@ class HomeHeroCard extends StatelessWidget {
                         ),
                         child: ClipOval(
                           child: hasValidImage
-                              ? Image.network(profileImage, fit: BoxFit.cover)
-                              : Icon(Icons.person_rounded,
-                                  size: 28, color: tierColor),
+                              ? Image.network(
+                                  profileImage,
+                                  key: ValueKey<String>(profileImage),
+                                  fit: BoxFit.cover,
+                                  cacheWidth: 120,
+                                  cacheHeight: 120,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) {
+                                      return child;
+                                    }
+                                    return Container(
+                                      color: context.themeSecondary
+                                          .withValues(alpha: 0.3),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes!
+                                              : null,
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  tierColor),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, _) =>
+                                      Container(
+                                    color: context.themeSecondary,
+                                    child: Icon(Icons.person_rounded,
+                                        color: AppColors.white, size: 28),
+                                  ),
+                                )
+                              : Container(
+                                  color: context.themeSecondary,
+                                  child: Icon(Icons.person_rounded,
+                                      color: AppColors.white, size: 28),
+                                ),
                         ),
                       ),
                       const SizedBox(width: 10),

@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/user/user_service.dart';
+import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/services/platform/cart_service.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/top_carpenters_display.dart';
@@ -101,12 +103,21 @@ class HomeNotifier extends Notifier<HomeState> {
   final _firestore = FirebaseFirestore.instance;
   final _session = SessionService();
   final _userService = UserService();
+  final _syncService = UserPointsSyncService();
   final _cartService = CartService();
+  VoidCallback? _pointsListener;
 
   @override
   HomeState build() {
+    ref.onDispose(_dispose);
     _load();
     return const HomeState();
+  }
+
+  void _dispose() {
+    if (_pointsListener != null) {
+      _syncService.pointsData.removeListener(_pointsListener!);
+    }
   }
 
   // ── Public API ──────────────────────────────────────────────────────────────
@@ -148,6 +159,9 @@ class HomeNotifier extends Notifier<HomeState> {
         userDocId: docId,
       );
 
+      // Subscribe to real-time points updates
+      _startPointsSync();
+
       // Subscribe cart count
       if (userId != null) {
         _cartService.watchCartCount(userId).listen((n) {
@@ -159,6 +173,18 @@ class HomeNotifier extends Notifier<HomeState> {
     } catch (e) {
       AppLogger.error('HomeNotifier _loadUser failed', e);
     }
+  }
+
+  Future<void> _startPointsSync() async {
+    _pointsListener ??= () {
+      final data = _syncService.pointsData.value;
+      if (data == null) return;
+      state = state.copyWith(points: _asInt(data['totalPoints']));
+    };
+    _syncService.pointsData.removeListener(_pointsListener!);
+    _syncService.pointsData.addListener(_pointsListener!);
+    await _syncService.start();
+    _pointsListener?.call();
   }
 
   Future<void> _loadOffers() async {

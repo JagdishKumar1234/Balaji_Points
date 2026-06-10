@@ -281,7 +281,7 @@ class BillService {
       AppLogger.debug('   ✓ amount is valid: $amount');
       AppLogger.info('  ✓ amount is valid: $amount');
 
-      final pointsEarned = (amount / 1000).floor();
+      final pointsEarned = amount / 1000;
       AppLogger.debug('   ✓ pointsEarned calculated: $pointsEarned');
       AppLogger.info('  ✓ pointsEarned calculated: $pointsEarned');
 
@@ -393,10 +393,10 @@ class BillService {
         AppLogger.info('  User not found, using 0 as current points');
       }
 
-      final int currentPoints = currentPointsRaw is num
-          ? currentPointsRaw.toInt()
-          : int.tryParse(currentPointsRaw.toString()) ?? 0;
-      AppLogger.info('  ✓ Current points (int): $currentPoints');
+      final double currentPoints = (currentPointsRaw is num
+          ? currentPointsRaw.toDouble()
+          : double.tryParse(currentPointsRaw.toString())) ?? 0.0;
+      AppLogger.info('  ✓ Current points: $currentPoints');
       AppLogger.info('  ✓ Points to add: $pointsEarned');
 
       // Get old tier before calculating new tier (for tier upgrade notification)
@@ -404,8 +404,8 @@ class BillService {
           ? (userDoc.data()?['tier'] as String? ?? 'Bronze')
           : 'Bronze';
 
-      final newTotalPoints = currentPoints + pointsEarned;
-      final newTier = _calculateTier(newTotalPoints);
+      final double newTotalPoints = currentPoints + pointsEarned;
+      final newTier = _calculateTier(newTotalPoints.toInt());
       AppLogger.info('  ✓ Old tier: $oldTier');
       AppLogger.info('  ✓ New total points: $newTotalPoints');
       AppLogger.info('  ✓ New tier: $newTier');
@@ -479,6 +479,18 @@ class BillService {
           '    Existing history length: ${existingHistory.length}',
         );
 
+        // Check if this bill was already added to history (deduplication)
+        final billAlreadyInHistory = existingHistory.any((entry) {
+          final entryMap = entry as Map<String, dynamic>;
+          return entryMap['billId'] == billId;
+        });
+
+        if (billAlreadyInHistory) {
+          AppLogger.warning(
+            '    ⚠️ Bill $billId already in points history - skipping duplicate entry',
+          );
+        }
+
         // Check if userId exists in existing document (required by Firestore rules)
         final existingUserId = existingData['userId'] as String?;
         AppLogger.info('    Existing userId: "$existingUserId"');
@@ -489,14 +501,15 @@ class BillService {
 
         if (existingUserId == null || existingUserId != finalCarpenterId) {
           // If userId is missing or doesn't match, use set to fix it
-          // Merge existing history with new entry
+          // Merge existing history with new entry (avoid duplicates)
           AppLogger.info('    Using batch.set() (userId missing or mismatch)');
+          final historyToAdd = billAlreadyInHistory ? existingHistory : [...existingHistory, newHistoryEntry];
           final userPointsSetData = {
             'userId': finalCarpenterId, // Ensure userId matches document ID
             'totalPoints': newTotalPoints,
             'tier': newTier,
             'lastUpdated': FieldValue.serverTimestamp(),
-            'pointsHistory': [...existingHistory, newHistoryEntry],
+            'pointsHistory': historyToAdd,
           };
           AppLogger.info('    User points set data: $userPointsSetData');
           final historyList = userPointsSetData['pointsHistory'] as List;
@@ -504,7 +517,7 @@ class BillService {
           batch.set(userPointsRef, userPointsSetData, SetOptions(merge: false));
           AppLogger.info('    ✓ User points set added to batch');
         } else {
-          // userId exists and matches, can use update with arrayUnion
+          // userId exists and matches, can use update with arrayUnion (only if not already in history)
           AppLogger.info(
             '    Using batch.update() with arrayUnion (userId matches)',
           );
@@ -512,8 +525,13 @@ class BillService {
             'totalPoints': newTotalPoints,
             'tier': newTier,
             'lastUpdated': FieldValue.serverTimestamp(),
-            'pointsHistory': FieldValue.arrayUnion([newHistoryEntry]),
           };
+
+          // Only add to history if not already present
+          if (!billAlreadyInHistory) {
+            userPointsUpdateData['pointsHistory'] = FieldValue.arrayUnion([newHistoryEntry]);
+          }
+
           AppLogger.info('    User points update data: $userPointsUpdateData');
           batch.update(userPointsRef, userPointsUpdateData);
           AppLogger.info('    ✓ User points update added to batch');
@@ -920,7 +938,7 @@ class BillService {
   Future<void> _checkAndNotifyMilestone(
     NotificationService notificationService,
     String userId,
-    int newPoints,
+    double newPoints,
   ) async {
     try {
       // Define milestone thresholds

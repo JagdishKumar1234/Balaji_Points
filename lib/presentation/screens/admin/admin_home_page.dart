@@ -300,9 +300,20 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         ),
         body: Container(
           color: context.themeSoftSurface,
-          child: _showDashboard
-              ? AdminDashboard(onOpenSection: _openSection)
-              : _buildSectionContent(_selectedSection!),
+          child: Column(
+            children: [
+              Expanded(
+                child: _showDashboard
+                    ? AdminDashboard(onOpenSection: _openSection)
+                    : _buildSectionContent(_selectedSection!),
+              ),
+              // Bottom safe area padding
+              SizedBox(
+                height: MediaQuery.of(context).viewInsets.bottom +
+                    MediaQuery.of(context).padding.bottom,
+              ),
+            ],
+          ),
         ),
       ),
     );

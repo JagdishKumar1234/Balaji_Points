@@ -1,0 +1,321 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/services/maintenance/points_sync_repair_service.dart';
+
+class PointsRepairPage extends ConsumerStatefulWidget {
+  const PointsRepairPage({super.key});
+
+  @override
+  ConsumerState<PointsRepairPage> createState() => _PointsRepairPageState();
+}
+
+class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
+  final _repairService = PointsSyncRepairService();
+  Map<String, dynamic>? _report;
+  bool _isLoading = false;
+  String? _error;
+  String? _success;
+  Map<String, int?>? _repairResults;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.themeBackground,
+      appBar: AppBar(
+        backgroundColor: context.themeBackground,
+        foregroundColor: context.themeTextPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: AppText.h3('Points Repair Tool', color: context.themeTextPrimary),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Info card
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: context.themePrimary.withValues(alpha: 0.08),
+                borderRadius: AppRadius.all16,
+                border: Border.all(
+                  color: context.themePrimary.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline, color: context.themePrimary),
+                      const SizedBox(width: 8),
+                      AppText.label('Points Data Repair',
+                          color: context.themeTextPrimary),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  AppText.body(
+                    'This tool scans user points data and fixes:\n'
+                    '• Duplicate history entries\n'
+                    '• Inconsistent totalPoints\n'
+                    '• Mismatched tiers',
+                    color: context.themeTextSecondary,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Report section
+            if (_report != null) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: context.themeSurface,
+                  borderRadius: AppRadius.all16,
+                  border: Border.all(color: context.themeBorder),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText.h5('Scan Report', color: context.themeTextPrimary),
+                    const SizedBox(height: 12),
+                    _buildReportRow('Total users scanned',
+                        '${_report!['totalUsersScanned']}'),
+                    _buildReportRow('Users with issues',
+                        '${_report!['usersWithIssues']}'),
+                    _buildReportRow('Users with duplicates',
+                        '${_report!['usersWithDuplicates']}'),
+                    _buildReportRow(
+                        'Total duplicate entries', '${_report!['totalDuplicates']}'),
+                    _buildReportRow('Points mismatches',
+                        '${_report!['pointsMismatches']}'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Repair results
+            if (_repairResults != null) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.08),
+                  borderRadius: AppRadius.all16,
+                  border: Border.all(
+                    color: AppColors.success.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.check_circle,
+                            color: AppColors.success, size: 22),
+                        const SizedBox(width: 8),
+                        AppText.h5('Repair Complete',
+                            color: context.themeTextPrimary),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    for (final entry in _repairResults!.entries)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppText.body(entry.key,
+                                color: context.themeTextSecondary),
+                            AppText.body(
+                              entry.value != null
+                                  ? '${entry.value} pts'
+                                  : 'Failed',
+                              color: entry.value != null
+                                  ? AppColors.success
+                                  : AppColors.error,
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Error message
+            if (_error != null) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.08),
+                  borderRadius: AppRadius.all16,
+                  border: Border.all(
+                    color: AppColors.error.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: AppColors.error),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: AppText.body(_error!, color: AppColors.error),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Success message
+            if (_success != null) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.08),
+                  borderRadius: AppRadius.all16,
+                  border: Border.all(
+                    color: AppColors.success.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: AppColors.success),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: AppText.body(_success!, color: AppColors.success),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Action buttons
+            if (!_isLoading) ...[
+              AppButton(
+                label: _report == null ? 'Scan for Issues' : 'Scan Again',
+                onPressed: _scanForIssues,
+                variant: AppButtonVariant.primary,
+              ),
+              const SizedBox(height: 12),
+              if (_report != null && _report!['usersWithIssues'] > 0)
+                AppButton(
+                  label: 'Repair All Users',
+                  onPressed: _repairAll,
+                  variant: AppButtonVariant.primary,
+                ),
+            ] else
+              const SizedBox(
+                height: 56,
+                child: AppLoader(),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReportRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          AppText.body(label, color: context.themeTextSecondary),
+          AppText.body(value, color: context.themeTextPrimary),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _scanForIssues() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+      _success = null;
+    });
+
+    try {
+      final report = await _repairService.generateRepairReport();
+      setState(() {
+        _report = report;
+        _isLoading = false;
+        if (report['usersWithIssues'] == 0) {
+          _success = 'No issues found! All user data is consistent.';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Scan failed: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _repairAll() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        title: AppText.h4('Repair All Users?'),
+        content: AppText.body(
+          'This will repair ${_report!['usersWithIssues']} users by:\n\n'
+          '• Removing duplicate history entries\n'
+          '• Recalculating correct totals\n'
+          '• Updating tier assignments\n\n'
+          'This action cannot be undone easily.',
+          color: context.themeTextSecondary,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: AppText.body('Cancel', color: context.themeTextSecondary),
+          ),
+          AppButton(
+            label: 'Repair',
+            onPressed: () => Navigator.of(context).pop(true),
+            variant: AppButtonVariant.danger,
+            fullWidth: false,
+            verticalPadding: 10,
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final result = await _repairService.repairAllUsers();
+      setState(() {
+        _isLoading = false;
+        if (result['success']) {
+          _repairResults = (result['results'] as Map).cast<String, int?>();
+          _success =
+              'Repaired ${result['repaired']}/${result['total']} users successfully!';
+        } else {
+          _error = result['error'] ?? 'Repair failed';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Repair failed: $e';
+        _isLoading = false;
+      });
+    }
+  }
+}

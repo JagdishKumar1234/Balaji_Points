@@ -280,7 +280,7 @@ class NotificationService {
   Future<bool> sendBillApprovedNotification({
     required String userId,
     required double amount,
-    required int points,
+    required double points,
     required String billId,
   }) async {
     return await sendNotification(
@@ -288,7 +288,7 @@ class NotificationService {
       type: NotificationType.billApproved,
       title: '🎉 Bill Approved!',
       body:
-          'Your bill of ₹${amount.toStringAsFixed(0)} has been approved. You earned $points points!',
+          'You earned ${points.toStringAsFixed(2)} points!',
       data: {
         'billId': billId,
         'amount': amount.toString(),
@@ -344,17 +344,17 @@ class NotificationService {
   Future<bool> sendTierUpgradedNotification({
     required String userId,
     required String newTier,
-    required int points,
+    required double points,
   }) async {
     return await sendNotification(
       userId: userId,
       type: NotificationType.tierUpgraded,
       title: '🎊 Tier Upgraded!',
       body:
-          'Congratulations! You\'ve been upgraded to $newTier tier with $points points!',
+          'Congratulations! You\'ve been upgraded to $newTier tier with ${points.toStringAsFixed(2)} points!',
       data: {
         'tier': newTier,
-        'points': points,
+        'points': points.toString(),
         'screen': '/notifications', // Navigate to notifications screen
       },
     );
@@ -612,7 +612,7 @@ class NotificationService {
   /// Send points milestone notification
   Future<bool> sendPointsMilestoneNotification({
     required String userId,
-    required int points,
+    required double points,
     required int milestone,
   }) async {
     return await sendNotification(
@@ -621,8 +621,8 @@ class NotificationService {
       title: '🎯 Milestone Reached!',
       body: 'Congratulations! You\'ve reached $milestone points!',
       data: {
-        'points': points,
-        'milestone': milestone,
+        'points': points.toString(),
+        'milestone': milestone.toString(),
         'screen': '/notifications', // Navigate to notifications screen
       },
     );

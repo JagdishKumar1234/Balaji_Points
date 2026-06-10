@@ -17,7 +17,7 @@ class WalletState {
   final String? error;
 
   // Points / tier
-  final int totalPoints;
+  final double totalPoints;
   final String tier;
 
   // Carpenter query IDs (userId + phone, for Firestore whereIn)
@@ -31,7 +31,7 @@ class WalletState {
   const WalletState({
     this.loading = true,
     this.error,
-    this.totalPoints = 0,
+    this.totalPoints = 0.0,
     this.tier = 'Bronze',
     this.carpenterIds = const [],
     this.idsLoaded = false,
@@ -42,7 +42,7 @@ class WalletState {
   WalletState copyWith({
     bool? loading,
     String? error,
-    int? totalPoints,
+    double? totalPoints,
     String? tier,
     List<String>? carpenterIds,
     bool? idsLoaded,
@@ -122,7 +122,7 @@ class WalletNotifier extends Notifier<WalletState> {
       final data = _syncService.pointsData.value;
       if (data == null) return;
       state = state.copyWith(
-        totalPoints: _asInt(data['totalPoints']),
+        totalPoints: _asDouble(data['totalPoints']),
         tier: data['tier'] as String? ?? state.tier,
       );
     };
@@ -132,9 +132,9 @@ class WalletNotifier extends Notifier<WalletState> {
     _pointsListener?.call();
   }
 
-  static int _asInt(dynamic v) {
-    if (v is num) return v.toInt();
-    return int.tryParse(v?.toString() ?? '') ?? 0;
+  static double _asDouble(dynamic v) {
+    if (v is num) return v.toDouble();
+    return double.tryParse(v?.toString() ?? '') ?? 0.0;
   }
 }
 

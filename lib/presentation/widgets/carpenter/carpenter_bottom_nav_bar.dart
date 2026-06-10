@@ -195,25 +195,23 @@ class _CenterAddButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Raised circle — floats slightly above bar
-            Transform.translate(
-              offset: const Offset(0, -3),
-              child: Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: context.themePrimary,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.themePrimary.withValues(alpha: 0.45),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.add_rounded, color: AppColors.white, size: 28),
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: context.themePrimary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: context.themePrimary.withValues(alpha: 0.45),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
+              child: const Icon(Icons.add_rounded, color: AppColors.white, size: 24),
             ),
+            const SizedBox(height: 1),
             // Label
             Text(
               label,
@@ -221,7 +219,7 @@ class _CenterAddButton extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppTypography.caption(
                 color: context.themePrimary,
-              ).copyWith(fontWeight: FontWeight.w700),
+              ).copyWith(fontWeight: FontWeight.w700, fontSize: 10),
             ),
           ],
         ),

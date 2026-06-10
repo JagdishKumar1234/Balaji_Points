@@ -435,8 +435,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     // For approved bills, use pointsEarned field; otherwise calculate from amount
     final points = status == 'approved'
         ? (_billData!['pointsEarned'] as num?)?.toInt() ??
-              (amount / 1000).floor()
-        : (amount / 1000).floor();
+              (amount / 1000).round()
+        : (amount / 1000).round();
     final imageUrl = _billData!['imageUrl'] as String? ?? '';
     final carpenterPhone = _billData!['carpenterPhone'] as String? ?? '';
     final billDate = _billData!['billDate'] as Timestamp?;

@@ -227,7 +227,7 @@ class UserService {
       final doc = await _firestore
           .collection('users')
           .doc(docId)
-          .get(const GetOptions(source: Source.server));
+          .get(GetOptions(source: forceRefresh ? Source.server : Source.serverAndCache));
 
       Map<String, dynamic>? data = doc.exists ? doc.data() : null;
       if (data == null) {

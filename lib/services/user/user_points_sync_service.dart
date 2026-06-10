@@ -45,5 +45,13 @@ class UserPointsSyncService {
     _subscribedDocPath = null;
     await start();
   }
+
+  void reset() {
+    _subscription?.cancel();
+    _subscription = null;
+    _subscribedDocPath = null;
+    pointsData.value = null;
+    _isStarting = false;
+  }
 }
 

@@ -108,13 +108,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   }
 
   Future<void> _subscribeUserPoints() async {
-    _userPointsListener ??= () {
+    if (_userPointsListener != null) {
+      _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
+    }
+    _userPointsListener = () {
       if (!mounted) return;
       final data = _userPointsSyncService.pointsData.value;
       if (data == null) return;
       setState(() => _userData = {...?_userData, ...data});
     };
-    _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
     _userPointsSyncService.pointsData.addListener(_userPointsListener!);
     await _userPointsSyncService.start();
     _userPointsListener?.call();
@@ -565,11 +567,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         child: Row(
           children: [
             Icon(
-              themeMode == ThemeMode.dark
-                  ? Icons.dark_mode
-                  : themeMode == ThemeMode.light
-                      ? Icons.light_mode
-                      : Icons.brightness_auto,
+              themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
               color: context.themePrimary,
               size: 24,
             ),
@@ -584,22 +582,25 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 selectedBackgroundColor: context.themePrimary,
                 selectedForegroundColor: AppColors.white,
                 side: BorderSide(color: theme.colorScheme.outline),
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(36, 32),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                minimumSize: const Size(40, 36),
                 textStyle: AppTypography.labelSmall(),
               ),
               segments: const [
                 ButtonSegment(
-                    value: ThemeMode.light,
-                    icon: Icon(Icons.light_mode, size: 16)),
+                  value: ThemeMode.light,
+                  label: Text('Light'),
+                  icon: Icon(Icons.light_mode, size: 16),
+                ),
                 ButtonSegment(
-                    value: ThemeMode.system,
-                    icon: Icon(Icons.brightness_auto, size: 16)),
-                ButtonSegment(
-                    value: ThemeMode.dark,
-                    icon: Icon(Icons.dark_mode, size: 16)),
+                  value: ThemeMode.dark,
+                  label: Text('Dark'),
+                  icon: Icon(Icons.dark_mode, size: 16),
+                ),
               ],
-              selected: {themeMode},
+              selected: {
+                themeMode == ThemeMode.system ? ThemeMode.light : themeMode
+              },
               onSelectionChanged: (modes) {
                 ref
                     .read(themeModeProvider.notifier)

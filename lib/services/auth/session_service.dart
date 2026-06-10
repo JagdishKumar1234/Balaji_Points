@@ -1,6 +1,7 @@
 // filepath: lib/services/session_service.dart
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:balaji_points/services/user/user_points_sync_service.dart';
 
 /// Service for managing user session with secure storage
 class SessionService {
@@ -171,6 +172,7 @@ class SessionService {
 
   /// Clear session (logout)
   Future<void> clearSession() async {
+    UserPointsSyncService().reset();
     await _storage.deleteAll();
   }
 
