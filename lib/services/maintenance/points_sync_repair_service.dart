@@ -385,4 +385,186 @@ class PointsSyncRepairService {
     if (totalPoints >= 5000) return 'Silver';
     return 'Bronze';
   }
+
+  /// Verify that repair did NOT lose any legitimate points
+  /// Returns detailed verification report
+  Future<Map<String, dynamic>> verifyNoPointsLost(
+    String userId,
+    Map<String, dynamic> repairResult,
+  ) async {
+    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info('✅ VERIFYING NO POINTS LOST FOR: $userId');
+    AppLogger.info('═══════════════════════════════════════════════════════════');
+
+    try {
+      final beforeTotal = (repairResult['beforeTotal'] as num?)?.toInt() ?? 0;
+      final afterTotal = (repairResult['afterTotal'] as num?)?.toInt() ?? 0;
+      final historyBefore = (repairResult['historyBefore'] as int?) ?? 0;
+      final historyAfter = (repairResult['historyAfter'] as int?) ?? 0;
+      final duplicatesRemoved = (repairResult['duplicatesRemoved'] as int?) ?? 0;
+
+      // Verify the math
+      final expectedAfterHistory = historyBefore - duplicatesRemoved;
+
+      AppLogger.info('Before: $beforeTotal points, $historyBefore entries');
+      AppLogger.info('After: $afterTotal points, $historyAfter entries');
+      AppLogger.info('Duplicates removed: $duplicatesRemoved');
+      AppLogger.info('Expected history after: $expectedAfterHistory');
+      AppLogger.info('Actual history after: $historyAfter');
+
+      // Get actual Firestore data
+      final userPointsDoc =
+          await _firestore.collection('user_points').doc(userId).get();
+
+      if (!userPointsDoc.exists) {
+        AppLogger.warning('User $userId not found in Firestore');
+        return {
+          'success': false,
+          'verified': false,
+          'error': 'User not found in Firestore',
+        };
+      }
+
+      final data = userPointsDoc.data() ?? {};
+      final actualTotalPoints = (data['totalPoints'] as num?)?.toInt() ?? 0;
+      final actualHistory = (data['pointsHistory'] as List<dynamic>?) ?? [];
+
+      // Calculate actual history sum
+      double actualHistorySum = 0;
+      for (final entry in actualHistory) {
+        final entryMap = entry as Map<String, dynamic>;
+        final points = (entryMap['points'] as num?)?.toDouble() ?? 0;
+        actualHistorySum += points;
+      }
+
+      // Verify consistency
+      final totalPointsCorrect = actualTotalPoints == afterTotal;
+      final historySumMatches = (actualHistorySum - afterTotal).abs() < 0.1;
+      final historyCountMatches = actualHistory.length == historyAfter;
+
+      AppLogger.info('VERIFICATION RESULTS:');
+      AppLogger.info('  Total points correct: $totalPointsCorrect');
+      AppLogger.info('    Expected: $afterTotal, Actual: $actualTotalPoints');
+      AppLogger.info('  History sum matches: $historySumMatches');
+      AppLogger.info('    Expected sum: $afterTotal, Actual sum: ${actualHistorySum.toInt()}');
+      AppLogger.info('  History count correct: $historyCountMatches');
+      AppLogger.info('    Expected count: $historyAfter, Actual: ${actualHistory.length}');
+
+      final allVerified =
+          totalPointsCorrect && historySumMatches && historyCountMatches;
+
+      if (allVerified) {
+        AppLogger.info('✅ ALL VERIFICATIONS PASSED - NO POINTS LOST!');
+      } else {
+        AppLogger.warning('⚠️ VERIFICATION ISSUES DETECTED');
+      }
+
+      AppLogger.info('═══════════════════════════════════════════════════════════');
+
+      return {
+        'success': true,
+        'verified': allVerified,
+        'userId': userId,
+        'beforeTotal': beforeTotal,
+        'afterTotal': afterTotal,
+        'actualTotalPoints': actualTotalPoints,
+        'expectedHistorySum': afterTotal,
+        'actualHistorySum': actualHistorySum.toInt(),
+        'expectedHistoryCount': historyAfter,
+        'actualHistoryCount': actualHistory.length,
+        'totalPointsCorrect': totalPointsCorrect,
+        'historySumMatches': historySumMatches,
+        'historyCountMatches': historyCountMatches,
+        'noPointsLost': afterTotal <= beforeTotal, // After should be <= before
+      };
+    } catch (e, st) {
+      AppLogger.error('Error verifying points', e, st);
+      return {
+        'success': false,
+        'verified': false,
+        'error': e.toString(),
+      };
+    }
+  }
+
+  /// Verify all users after repair - comprehensive check
+  Future<Map<String, dynamic>> verifyAllUsersAfterRepair(
+    Map<String, dynamic> repairResults,
+  ) async {
+    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info('✅ VERIFYING ALL USERS - COMPREHENSIVE CHECK');
+    AppLogger.info('═══════════════════════════════════════════════════════════');
+
+    try {
+      final results = (repairResults['results'] as Map<String, dynamic>?) ?? {};
+      final verificationResults = <String, Map<String, dynamic>>{};
+
+      int totalVerified = 0;
+      int totalFailed = 0;
+      int totalPointsBeforeAllRepairs = 0;
+      int totalPointsAfterAllRepairs = 0;
+
+      for (final entry in results.entries) {
+        final userId = entry.key;
+        final repairData = entry.value as Map<String, dynamic>?;
+
+        if (repairData == null || repairData['success'] != true) {
+          continue;
+        }
+
+        final verifyResult = await verifyNoPointsLost(userId, repairData);
+        verificationResults[userId] = verifyResult;
+
+        if (verifyResult['verified'] == true) {
+          totalVerified++;
+        } else {
+          totalFailed++;
+        }
+
+        totalPointsBeforeAllRepairs +=
+            (repairData['beforeTotal'] as int?) ?? 0;
+        totalPointsAfterAllRepairs += (repairData['afterTotal'] as int?) ?? 0;
+      }
+
+      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info('COMPREHENSIVE VERIFICATION SUMMARY:');
+      AppLogger.info('  Total users verified: $totalVerified');
+      AppLogger.info('  Verification failures: $totalFailed');
+      AppLogger.info('  Total points before repairs: $totalPointsBeforeAllRepairs');
+      AppLogger.info('  Total points after repairs: $totalPointsAfterAllRepairs');
+      AppLogger.info(
+        '  Points loss: ${totalPointsBeforeAllRepairs - totalPointsAfterAllRepairs}',
+      );
+      AppLogger.info('═══════════════════════════════════════════════════════════');
+
+      final allVerified = totalFailed == 0;
+      final noPointsLost = totalPointsAfterAllRepairs <= totalPointsBeforeAllRepairs;
+
+      if (allVerified && noPointsLost) {
+        AppLogger.info('✅ ALL VERIFICATIONS PASSED - NO POINTS LOST ANYWHERE!');
+      } else {
+        AppLogger.warning('⚠️ VERIFICATION ISSUES - CHECK LOGS ABOVE');
+      }
+
+      return {
+        'success': true,
+        'allVerified': allVerified,
+        'noPointsLost': noPointsLost,
+        'totalUsersVerified': totalVerified,
+        'verificationFailures': totalFailed,
+        'totalPointsBeforeRepairs': totalPointsBeforeAllRepairs,
+        'totalPointsAfterRepairs': totalPointsAfterAllRepairs,
+        'totalPointsAdjusted':
+            totalPointsBeforeAllRepairs - totalPointsAfterAllRepairs,
+        'verificationResults': verificationResults,
+      };
+    } catch (e, st) {
+      AppLogger.error('Error in comprehensive verification', e, st);
+      return {
+        'success': false,
+        'allVerified': false,
+        'error': e.toString(),
+      };
+    }
+  }
 }

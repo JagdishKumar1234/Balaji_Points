@@ -345,12 +345,24 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
 
     try {
       final result = await _repairService.repairAllUsers();
+
+      // Verify no points were lost
+      final verificationResult =
+          await _repairService.verifyAllUsersAfterRepair(result);
+
       setState(() {
         _isLoading = false;
         if (result['success']) {
           _repairResults = result;
-          _success =
-              'Repaired ${result['repaired']}/${result['total']} users successfully!';
+
+          if (verificationResult['allVerified'] == true &&
+              verificationResult['noPointsLost'] == true) {
+            _success =
+                'Repaired ${result['repaired']}/${result['total']} users successfully!\n✅ Verified: NO POINTS LOST';
+          } else {
+            _success =
+                'Repaired ${result['repaired']}/${result['total']} users.\n⚠️ Some verification issues - check logs';
+          }
         } else {
           _error = result['error'] ?? 'Repair failed';
         }
