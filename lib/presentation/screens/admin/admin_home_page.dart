@@ -23,6 +23,7 @@ import '../../widgets/admin/daily_spin_management.dart';
 import '../../widgets/admin/bill_history_list.dart';
 import '../../widgets/admin/orders_management.dart';
 import 'admin_notifications_page.dart';
+import 'points_repair_page.dart';
 
 class AdminHomePage extends ConsumerStatefulWidget {
   const AdminHomePage({super.key});
@@ -337,6 +338,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return 'Orders';
       case 'spin':
         return 'Spin';
+      case 'points-repair':
+        return 'Points Repair';
       default:
         return 'Admin';
     }
@@ -384,6 +387,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return const OrdersManagement();
       case 'spin':
         return const DailySpinManagement();
+      case 'points-repair':
+        return const PointsRepairPage();
       default:
         return const SizedBox.shrink();
     }

@@ -40,6 +40,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     _SectionCard(id: 'products',      label: 'Products',       icon: Icons.inventory_2,    accentIndex: 5),
     _SectionCard(id: 'orders',        label: 'Orders',         icon: Icons.shopping_bag,   accentIndex: 4),
     _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 6),
+    _SectionCard(id: 'points-repair', label: 'Points Repair',  icon: Icons.build_circle,   accentIndex: 2),
   ];
 
   int _refreshKey = 0;
