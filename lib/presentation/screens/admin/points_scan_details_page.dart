@@ -226,10 +226,18 @@ class _UserScanCard extends StatelessWidget {
                 .doc(userId)
                 .get(),
             builder: (context, snapshot) {
-              final userData =
-                  snapshot.data?.data() as Map<String, dynamic>? ?? {};
-              final displayName = userData['displayName'] as String? ?? 'User';
-              final profileImage = userData['profileImage'] as String?;
+              String displayName = 'Loading...';
+              String? profileImage;
+
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                final userData =
+                    snapshot.data?.data() as Map<String, dynamic>? ?? {};
+                displayName = userData['displayName'] as String? ?? userId;
+                profileImage = userData['profileImage'] as String?;
+              } else if (snapshot.hasError) {
+                displayName = userId;
+              }
 
               return Row(
                 children: [

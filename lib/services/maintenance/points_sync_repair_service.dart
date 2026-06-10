@@ -63,6 +63,8 @@ class PointsSyncRepairService {
           totalPointsDifference += pointsDiff;
 
           issues[userId] = {
+            'userId': userId,
+            'docId': doc.id,
             'duplicateCount': duplicatesInThisUser,
             'historySum': historySum,
             'totalPoints': totalPoints,
