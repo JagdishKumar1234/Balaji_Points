@@ -66,7 +66,7 @@ class _UsersListState extends State<UsersList> {
         final data = doc.data();
         final firstName = (data['firstName'] ?? '').toString().toLowerCase();
         final lastName = (data['lastName'] ?? '').toString().toLowerCase();
-        final phone = (data['phone'] ?? '').toString().toLowerCase();
+        final phone = (data['phoneNumber'] ?? data['phone'] ?? '').toString().toLowerCase();
         final tier = data['tier'] ?? 'Bronze';
 
         final matchesSearch =
