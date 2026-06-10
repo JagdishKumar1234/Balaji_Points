@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/services/maintenance/points_sync_repair_service.dart';
 import 'points_repair_details_page.dart';
@@ -224,10 +223,7 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                   variant: AppButtonVariant.primary,
                 ),
             ] else
-              const SizedBox(
-                height: 56,
-                child: AppLoader(),
-              ),
+              _buildScanLoadingAnimation(),
           ],
         ),
       ),
@@ -385,5 +381,74 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
         _isLoading = false;
       });
     }
+  }
+
+  Widget _buildScanLoadingAnimation() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: context.themePrimary.withValues(alpha: 0.3),
+                width: 3,
+              ),
+              color: context.themePrimary.withValues(alpha: 0.05),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(
+                  Icons.document_scanner_rounded,
+                  size: 40,
+                  color: context.themePrimary,
+                ),
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: context.themePrimary.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          AppText.h5(
+            'Scanning for Issues...',
+            color: context.themeTextPrimary,
+          ),
+          const SizedBox(height: 8),
+          AppText.body(
+            'Analyzing all user points data',
+            color: context.themeTextSecondary,
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              3,
+              (index) => Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: context.themePrimary,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:intl/intl.dart';
 
 class PointsScanDetailsPage extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -176,7 +178,7 @@ class _SummaryRow extends StatelessWidget {
   }
 }
 
-// User scan card - detailed info
+// User scan card - detailed info with user profile
 class _UserScanCard extends StatelessWidget {
   final String userId;
   final int totalPoints;
@@ -217,32 +219,106 @@ class _UserScanCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // User ID & issues summary
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: AppText.body(
-                  userId,
-                  color: context.themeTextSecondary,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              if (hasDuplicates)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+          // User header with profile
+          FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(userId)
+                .get(),
+            builder: (context, snapshot) {
+              final userData =
+                  snapshot.data?.data() as Map<String, dynamic>? ?? {};
+              final displayName = userData['displayName'] as String? ?? 'User';
+              final profileImage = userData['profileImage'] as String?;
+
+              return Row(
+                children: [
+                  // User image
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: hasDuplicates
+                            ? AppColors.warning
+                            : AppColors.success,
+                        width: 2,
+                      ),
+                      color: context.themePrimary.withValues(alpha: 0.1),
+                    ),
+                    child: ClipOval(
+                      child: profileImage != null &&
+                              (profileImage.startsWith('http://') ||
+                                  profileImage.startsWith('https://'))
+                          ? Image.network(
+                              profileImage,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Center(
+                                child: Icon(Icons.person_rounded,
+                                    color: context.themePrimary, size: 28),
+                              ),
+                              loadingBuilder: (_, child, progress) =>
+                                  progress == null
+                                      ? child
+                                      : Center(
+                                          child: SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child:
+                                                CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<
+                                                          Color>(
+                                                      context.themePrimary),
+                                            ),
+                                          ),
+                                        ),
+                            )
+                          : Center(
+                              child: Icon(Icons.person_rounded,
+                                  color: context.themePrimary, size: 28),
+                            ),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: AppColors.warning.withValues(alpha: 0.2),
-                    borderRadius: AppRadius.sm8,
+                  const SizedBox(width: 12),
+
+                  // User info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText.body(displayName,
+                            color: context.themeTextPrimary,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
+                        const SizedBox(height: 4),
+                        AppText.bodySmall(userId,
+                            color: context.themeTextSecondary,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
                   ),
-                  child: AppText.label('$duplicateCount duplicates',
-                      color: AppColors.warning),
-                ),
-            ],
+
+                  // Issue badge
+                  if (hasDuplicates)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.2),
+                        borderRadius: AppRadius.sm8,
+                      ),
+                      child: AppText.label('$duplicateCount dup',
+                          color: AppColors.warning),
+                    ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 12),
 
