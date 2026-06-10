@@ -6,6 +6,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/services/maintenance/points_sync_repair_service.dart';
+import 'points_repair_details_page.dart';
 
 class PointsRepairPage extends ConsumerStatefulWidget {
   const PointsRepairPage({super.key});
@@ -20,7 +21,7 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
   bool _isLoading = false;
   String? _error;
   String? _success;
-  Map<String, int?>? _repairResults;
+  Map<String, dynamic>? _repairResults;
 
   @override
   Widget build(BuildContext context) {
@@ -127,27 +128,23 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    for (final entry in _repairResults!.entries)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            AppText.body(entry.key,
-                                color: context.themeTextSecondary),
-                            AppText.body(
-                              entry.value != null
-                                  ? '${entry.value} pts'
-                                  : 'Failed',
-                              color: entry.value != null
-                                  ? AppColors.success
-                                  : AppColors.error,
-                            ),
-                          ],
-                        ),
-                      ),
+                    _buildRepairSummary(_repairResults!),
                   ],
                 ),
+              ),
+              const SizedBox(height: 20),
+              // View details button
+              AppButton(
+                label: 'View Detailed Results',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PointsRepairDetailsPage(
+                      repairReport: _report ?? {},
+                      repairResults: _repairResults!,
+                    ),
+                  ),
+                ),
+                variant: AppButtonVariant.primary,
               ),
               const SizedBox(height: 20),
             ],
@@ -238,6 +235,53 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
     );
   }
 
+  Widget _buildRepairSummary(Map<String, dynamic> results) {
+    final repaired = results['repaired'] as int? ?? 0;
+    final total = results['total'] as int? ?? 0;
+    final duplicatesRemoved = results['totalDuplicatesRemoved'] as int? ?? 0;
+    final pointsDiff = results['totalPointsDifference'] as num? ?? 0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildRepairSummaryRow(
+          'Successfully Repaired',
+          '$repaired/$total',
+          AppColors.success,
+        ),
+        const SizedBox(height: 8),
+        _buildRepairSummaryRow(
+          'Duplicates Removed',
+          '$duplicatesRemoved',
+          const Color(0xFFFF8A65),
+        ),
+        const SizedBox(height: 8),
+        _buildRepairSummaryRow(
+          'Points Adjusted',
+          '${pointsDiff.toInt()}',
+          const Color(0xFF42A5F5),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRepairSummaryRow(String label, String value, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        AppText.body(label, color: context.themeTextSecondary),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: AppRadius.sm8,
+          ),
+          child: AppText.body(value, color: color),
+        ),
+      ],
+    );
+  }
+
   Future<void> _scanForIssues() async {
     setState(() {
       _isLoading = true;
@@ -304,7 +348,7 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
       setState(() {
         _isLoading = false;
         if (result['success']) {
-          _repairResults = (result['results'] as Map).cast<String, int?>();
+          _repairResults = result;
           _success =
               'Repaired ${result['repaired']}/${result['total']} users successfully!';
         } else {

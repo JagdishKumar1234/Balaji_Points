@@ -105,8 +105,8 @@ class PointsSyncRepairService {
   }
 
   /// Repair a specific user's points data
-  /// Returns the new correct total points, or null if failed
-  Future<int?> repairUserPoints(String userId) async {
+  /// Returns detailed repair result with before/after comparison
+  Future<Map<String, dynamic>?> repairUserPoints(String userId) async {
     AppLogger.info('═══════════════════════════════════════════════════════════');
     AppLogger.info('🔧 REPAIRING POINTS FOR USER: $userId');
     AppLogger.info('═══════════════════════════════════════════════════════════');
@@ -121,11 +121,24 @@ class PointsSyncRepairService {
       }
 
       final data = userPointsDoc.data() ?? {};
+      final beforeTotalPoints = (data['totalPoints'] as num?)?.toInt() ?? 0;
+      final beforeTier = data['tier'] as String? ?? 'Bronze';
       final history = (data['pointsHistory'] as List<dynamic>? ?? []).toList();
 
       if (history.isEmpty) {
         AppLogger.info('No history for user $userId');
-        return 0;
+        return {
+          'success': true,
+          'userId': userId,
+          'beforeTotal': 0,
+          'beforeTier': beforeTier,
+          'afterTotal': 0,
+          'afterTier': 'Bronze',
+          'historyBefore': 0,
+          'historyAfter': 0,
+          'duplicatesRemoved': 0,
+          'pointsDifference': 0,
+        };
       }
 
       // Step 1: Remove duplicates (keep first occurrence of each billId)
@@ -200,10 +213,21 @@ class PointsSyncRepairService {
       AppLogger.info('═══════════════════════════════════════════════════════════');
       AppLogger.info('✅ REPAIR COMPLETE FOR USER: $userId');
       AppLogger.info('  History entries: ${history.length} → ${cleanedHistory.length}');
-      AppLogger.info('  Total points: ${data['totalPoints']} → $newTotal');
+      AppLogger.info('  Total points: $beforeTotalPoints → $newTotal');
       AppLogger.info('═══════════════════════════════════════════════════════════');
 
-      return newTotal;
+      return {
+        'success': true,
+        'userId': userId,
+        'beforeTotal': beforeTotalPoints,
+        'beforeTier': beforeTier,
+        'afterTotal': newTotal,
+        'afterTier': newTier,
+        'historyBefore': history.length,
+        'historyAfter': cleanedHistory.length,
+        'duplicatesRemoved': history.length - cleanedHistory.length,
+        'pointsDifference': (newTotal - beforeTotalPoints).abs(),
+      };
     } catch (e, st) {
       AppLogger.error('Error repairing user points', e, st);
       AppLogger.info('═══════════════════════════════════════════════════════════');
@@ -212,23 +236,28 @@ class PointsSyncRepairService {
   }
 
   /// Repair multiple users
-  Future<Map<String, int?>> repairMultipleUsers(List<String> userIds) async {
+  Future<Map<String, dynamic>> repairMultipleUsers(List<String> userIds) async {
     AppLogger.info('═══════════════════════════════════════════════════════════');
     AppLogger.info('🔧 REPAIRING ${userIds.length} USERS');
     AppLogger.info('═══════════════════════════════════════════════════════════');
 
-    final results = <String, int?>{};
+    final results = <String, Map<String, dynamic>?>{};
 
     for (final userId in userIds) {
-      final newTotal = await repairUserPoints(userId);
-      results[userId] = newTotal;
+      final result = await repairUserPoints(userId);
+      results[userId] = result;
     }
 
-    final successCount = results.values.where((v) => v != null).length;
+    final successCount = results.values.where((v) => v != null && v['success'] == true).length;
     AppLogger.info('✅ Repaired $successCount/${userIds.length} users');
     AppLogger.info('═══════════════════════════════════════════════════════════');
 
-    return results;
+    return {
+      'success': true,
+      'totalUsers': userIds.length,
+      'successCount': successCount,
+      'results': results,
+    };
   }
 
   /// Repair all users with issues
@@ -250,24 +279,35 @@ class PointsSyncRepairService {
         return {'success': true, 'repaired': 0, 'message': 'No issues found'};
       }
 
-      final results = <String, int?>{};
+      final results = <String, Map<String, dynamic>?>{};
+      double totalPointsDifference = 0;
+      int totalDuplicatesRemoved = 0;
+
       for (final userId in issues.keys) {
-        final newTotal = await repairUserPoints(userId);
-        results[userId] = newTotal;
+        final repairResult = await repairUserPoints(userId);
+        results[userId] = repairResult;
+        if (repairResult != null && repairResult['success'] == true) {
+          totalPointsDifference += (repairResult['pointsDifference'] as num?)?.toDouble() ?? 0;
+          totalDuplicatesRemoved += (repairResult['duplicatesRemoved'] as int?) ?? 0;
+        }
       }
 
-      final successCount = results.values.where((v) => v != null).length;
+      final successCount = results.values.where((v) => v != null && v['success'] == true).length;
 
       AppLogger.info('═══════════════════════════════════════════════════════════');
       AppLogger.info('✅ REPAIR SUMMARY');
       AppLogger.info('Total users with issues: ${issues.length}');
       AppLogger.info('Successfully repaired: $successCount');
+      AppLogger.info('Total duplicates removed: $totalDuplicatesRemoved');
+      AppLogger.info('Total points adjusted: $totalPointsDifference');
       AppLogger.info('═══════════════════════════════════════════════════════════');
 
       return {
         'success': true,
         'repaired': successCount,
         'total': issues.length,
+        'totalDuplicatesRemoved': totalDuplicatesRemoved,
+        'totalPointsDifference': totalPointsDifference,
         'results': results,
       };
     } catch (e, st) {
