@@ -227,14 +227,18 @@ class _UserScanCard extends StatelessWidget {
                 .get(),
             builder: (context, snapshot) {
               String displayName = 'Loading...';
-              String? profileImage;
+              String phoneNumber = '';
+              String? photoUrl;
+              bool isLoading = snapshot.connectionState == ConnectionState.waiting;
 
               if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData) {
+                  snapshot.hasData &&
+                  snapshot.data != null) {
                 final userData =
-                    snapshot.data?.data() as Map<String, dynamic>? ?? {};
+                    snapshot.data!.data() as Map<String, dynamic>? ?? {};
                 displayName = userData['displayName'] as String? ?? userId;
-                profileImage = userData['profileImage'] as String?;
+                phoneNumber = userData['phoneNumber'] as String? ?? '';
+                photoUrl = userData['photoUrl'] as String?;
               } else if (snapshot.hasError) {
                 displayName = userId;
               }
@@ -256,38 +260,34 @@ class _UserScanCard extends StatelessWidget {
                       color: context.themePrimary.withValues(alpha: 0.1),
                     ),
                     child: ClipOval(
-                      child: profileImage != null &&
-                              (profileImage.startsWith('http://') ||
-                                  profileImage.startsWith('https://'))
-                          ? Image.network(
-                              profileImage,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Center(
-                                child: Icon(Icons.person_rounded,
-                                    color: context.themePrimary, size: 28),
+                      child: isLoading
+                          ? Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      context.themePrimary),
+                                ),
                               ),
-                              loadingBuilder: (_, child, progress) =>
-                                  progress == null
-                                      ? child
-                                      : Center(
-                                          child: SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child:
-                                                CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<
-                                                          Color>(
-                                                      context.themePrimary),
-                                            ),
-                                          ),
-                                        ),
                             )
-                          : Center(
-                              child: Icon(Icons.person_rounded,
-                                  color: context.themePrimary, size: 28),
-                            ),
+                          : photoUrl != null &&
+                                  (photoUrl.startsWith('http://') ||
+                                      photoUrl.startsWith('https://'))
+                              ? Image.network(
+                                  photoUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Center(
+                                    child: Icon(Icons.person_rounded,
+                                        color: context.themePrimary,
+                                        size: 28),
+                                  ),
+                                )
+                              : Center(
+                                  child: Icon(Icons.person_rounded,
+                                      color: context.themePrimary, size: 28),
+                                ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -301,11 +301,17 @@ class _UserScanCard extends StatelessWidget {
                             color: context.themeTextPrimary,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 4),
-                        AppText.bodySmall(userId,
-                            color: context.themeTextSecondary,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
+                        const SizedBox(height: 2),
+                        if (phoneNumber.isNotEmpty)
+                          AppText.bodySmall(phoneNumber,
+                              color: context.themeTextSecondary,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis)
+                        else
+                          AppText.bodySmall(userId,
+                              color: context.themeTextSecondary,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
                       ],
                     ),
                   ),
