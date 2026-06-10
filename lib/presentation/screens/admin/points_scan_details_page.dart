@@ -225,7 +225,9 @@ class _UserScanCard extends StatelessWidget {
                 .doc(userId)
                 .get(),
             builder: (context, snapshot) {
-              String displayName = 'Loading...';
+              String firstName = '';
+              String lastName = '';
+              String username = '';
               String phoneNumber = '';
               String? profileImage;
               bool isLoading = snapshot.connectionState == ConnectionState.waiting;
@@ -236,31 +238,31 @@ class _UserScanCard extends StatelessWidget {
                 final userData =
                     snapshot.data!.data() as Map<String, dynamic>? ?? {};
 
-                // Build full name from firstName and lastName
-                final firstName = userData['firstName'] as String? ?? '';
-                final lastName = userData['lastName'] as String? ?? '';
-                final fullName = '$firstName $lastName'.trim();
-
-                displayName = fullName.isEmpty ? (userData['displayName'] as String? ?? userId) : fullName;
+                firstName = userData['firstName'] as String? ?? '';
+                lastName = userData['lastName'] as String? ?? '';
+                username = userData['displayName'] as String? ?? userId;
                 phoneNumber = userData['phoneNumber'] as String? ?? userData['phone'] as String? ?? '';
                 profileImage = userData['profileImage'] as String?;
               } else if (snapshot.hasError) {
-                displayName = userId;
+                username = userId;
               }
 
+              final fullName = '$firstName $lastName'.trim();
+
               return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // User image
+                  // User image - left side
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: 72,
+                    height: 72,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: hasDuplicates
                             ? AppColors.warning
                             : AppColors.success,
-                        width: 2,
+                        width: 2.5,
                       ),
                       color: context.themePrimary.withValues(alpha: 0.1),
                     ),
@@ -268,10 +270,10 @@ class _UserScanCard extends StatelessWidget {
                       child: isLoading
                           ? Center(
                               child: SizedBox(
-                                width: 24,
-                                height: 24,
+                                width: 32,
+                                height: 32,
                                 child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                                  strokeWidth: 2.5,
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                       context.themePrimary),
                                 ),
@@ -286,55 +288,85 @@ class _UserScanCard extends StatelessWidget {
                                   errorBuilder: (_, __, ___) => Center(
                                     child: Icon(Icons.person_rounded,
                                         color: context.themePrimary,
-                                        size: 28),
+                                        size: 36),
                                   ),
+                                  loadingBuilder: (_, child, progress) =>
+                                      progress == null
+                                          ? child
+                                          : Center(
+                                              child: SizedBox(
+                                                width: 28,
+                                                height: 28,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                              Color>(
+                                                          context.themePrimary),
+                                                ),
+                                              ),
+                                            ),
                                 )
                               : Center(
                                   child: Icon(Icons.person_rounded,
-                                      color: context.themePrimary, size: 28),
+                                      color: context.themePrimary, size: 36),
                                 ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
 
-                  // User info
+                  // User info - right side
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AppText.body(displayName,
-                            color: context.themeTextPrimary,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 2),
+                        // Row 1: Full Name (First Name + Last Name)
+                        AppText.h5(
+                          fullName.isEmpty ? username : fullName,
+                          color: context.themeTextPrimary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+
+                        // Row 2: Username
+                        AppText.body(
+                          username,
+                          color: context.themeTextSecondary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+
+                        // Row 3: Mobile Number
                         if (phoneNumber.isNotEmpty)
-                          AppText.bodySmall(phoneNumber,
-                              color: context.themeTextSecondary,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis)
-                        else
-                          AppText.bodySmall(userId,
-                              color: context.themeTextSecondary,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis),
+                          AppText.bodySmall(
+                            phoneNumber,
+                            color: context.themeTextSecondary,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                        const SizedBox(height: 8),
+
+                        // Issue badge
+                        if (hasDuplicates)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.warning.withValues(alpha: 0.2),
+                              borderRadius: AppRadius.sm8,
+                            ),
+                            child: AppText.label('$duplicateCount duplicates',
+                                color: AppColors.warning),
+                          ),
                       ],
                     ),
                   ),
-
-                  // Issue badge
-                  if (hasDuplicates)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.warning.withValues(alpha: 0.2),
-                        borderRadius: AppRadius.sm8,
-                      ),
-                      child: AppText.label('$duplicateCount dup',
-                          color: AppColors.warning),
-                    ),
                 ],
               );
             },
