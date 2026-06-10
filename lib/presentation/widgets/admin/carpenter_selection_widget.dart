@@ -221,8 +221,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                           final phone = user['phone'] ?? '';
                           final profileImage = user['profileImage'] as String?;
                           final tier = user['tier'] ?? 'Bronze';
-                          final rawPoints = user['totalPoints'];
-                          final points = rawPoints is num ? rawPoints.toInt() : 0;
+                          final points = user['totalPoints'] ?? 0;
 
                           final isSelected =
                               widget.selectedCarpenter != null &&

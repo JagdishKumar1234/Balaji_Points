@@ -449,8 +449,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         : 'Carpenter';
     final profileImageUrl = _carpenterData?['profileImage'] as String?;
     final carpenterTier = _carpenterData?['tier'] as String? ?? 'Bronze';
-    final rawPoints = _carpenterData?['totalPoints'];
-    final carpenterPoints = rawPoints is num ? rawPoints.toInt() : 0;
+    final carpenterPoints = _carpenterData?['totalPoints'] ?? 0;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

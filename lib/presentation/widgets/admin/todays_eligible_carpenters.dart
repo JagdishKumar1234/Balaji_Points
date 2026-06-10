@@ -99,10 +99,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       // Sort by total points descending
       eligibleCarpenters.sort(
         (a, b) {
-          final aRaw = a['totalPoints'];
-          final bRaw = b['totalPoints'];
-          final aPoints = aRaw is num ? aRaw.toInt() : 0;
-          final bPoints = bRaw is num ? bRaw.toInt() : 0;
+          final aPoints = (a['totalPoints'] as num?) ?? 0;
+          final bPoints = (b['totalPoints'] as num?) ?? 0;
           return bPoints.compareTo(aPoints);
         },
       );
@@ -311,8 +309,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     final name = carpenter['name'] as String;
     final phone = carpenter['phone'] as String? ?? 'N/A';
     final billsCount = carpenter['billsCount'] as int;
-    final rawPoints = carpenter['totalPoints'];
-    final totalPoints = rawPoints is num ? rawPoints.toInt() : 0;
+    final totalPoints = carpenter['totalPoints'] ?? 0;
     final profileImage = carpenter['profileImage'] as String?;
 
     return Container(

@@ -79,7 +79,7 @@ class PointsScanDetailsPage extends StatelessWidget {
 
                   return _UserScanCard(
                     userId: userId,
-                    totalPoints: (userData['totalPoints'] is num ? (userData['totalPoints'] as num).toInt() : 0),
+                    totalPoints: (userData['totalPoints'] as num?) ?? 0,
                     historySum: (userData['historySum'] as num?)?.toInt() ?? 0,
                     pointsDifference:
                         (userData['pointsDifference'] as num?)?.toInt() ?? 0,
@@ -181,7 +181,7 @@ class _SummaryRow extends StatelessWidget {
 // User scan card - detailed info with user profile
 class _UserScanCard extends StatelessWidget {
   final String userId;
-  final int totalPoints;
+  final num totalPoints;
   final int historySum;
   final int pointsDifference;
   final int historyLength;

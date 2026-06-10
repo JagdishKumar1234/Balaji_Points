@@ -248,8 +248,8 @@ class _UsersListState extends State<UsersList> {
                       ? 'Carpenter'
                       : '$firstName $lastName'.trim();
                   final phone = (data['phone'] ?? '').toString().trim();
-                  final rawPoints = data['totalPoints'];
-                  final points = (rawPoints is num ? rawPoints.toInt() : 0).toString();
+                  final totalPointsValue = data['totalPoints'] ?? 0;
+                  final points = totalPointsValue.toString();
                   final tier = (data['tier'] ?? 'Bronze').toString();
                   DateTime? joinedDate;
                   if (data['createdAt'] is Timestamp) {
@@ -789,18 +789,14 @@ class _UsersListState extends State<UsersList> {
                 switch (_selectedSort) {
                   case 'points':
                     // Sort by points (high to low)
-                    final aRaw = aData['totalPoints'];
-                    final bRaw = bData['totalPoints'];
-                    final aPoints = aRaw is num ? aRaw.toInt() : 0;
-                    final bPoints = bRaw is num ? bRaw.toInt() : 0;
+                    final aPoints = (aData['totalPoints'] as num?) ?? 0;
+                    final bPoints = (bData['totalPoints'] as num?) ?? 0;
                     return bPoints.compareTo(aPoints);
 
                   case 'pointsLowToHigh':
                     // Sort by points (low to high)
-                    final aRaw = aData['totalPoints'];
-                    final bRaw = bData['totalPoints'];
-                    final aPoints = aRaw is num ? aRaw.toInt() : 0;
-                    final bPoints = bRaw is num ? bRaw.toInt() : 0;
+                    final aPoints = (aData['totalPoints'] as num?) ?? 0;
+                    final bPoints = (bData['totalPoints'] as num?) ?? 0;
                     return aPoints.compareTo(bPoints);
 
                   case 'newest':
@@ -901,8 +897,7 @@ class _UsersListState extends State<UsersList> {
                   final firstName = user['firstName'] ?? '';
                   final lastName = user['lastName'] ?? '';
                   final phone = user['phone'] ?? '';
-                  final rawTotalPoints = user['totalPoints'];
-                  final totalPoints = rawTotalPoints is num ? rawTotalPoints.toInt() : 0;
+                  final totalPoints = user['totalPoints'] ?? 0;
                   final tier = user['tier'] ?? 'Bronze';
                   final profileImage = user['profileImage'] ?? '';
                   final createdAt = user['createdAt'] is Timestamp
@@ -2409,8 +2404,7 @@ class UserDetailsScreen extends StatelessWidget {
     final firstName = user['firstName'] ?? '';
     final lastName = user['lastName'] ?? '';
     final phone = user['phone'] ?? '';
-    final rawPoints = user['totalPoints'];
-    final totalPoints = rawPoints is num ? rawPoints.toInt() : 0;
+    final totalPoints = user['totalPoints'] ?? 0;
     final tier = user['tier'] ?? 'Bronze';
     final profileImage = user['profileImage'] ?? '';
 

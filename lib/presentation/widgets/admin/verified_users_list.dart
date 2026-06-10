@@ -68,8 +68,7 @@ class VerifiedUsersList extends StatelessWidget {
               final firstName = data['firstName'] ?? '';
               final lastName = data['lastName'] ?? '';
               final phone = data['phone'] ?? '';
-              final rawPoints = data['totalPoints'];
-              final totalPoints = rawPoints is num ? rawPoints.toInt() : 0;
+              final totalPoints = data['totalPoints'] ?? 0;
               final tier = data['tier'] ?? 'Bronze';
               final city = data['city'] ?? 'N/A';
               final skill = data['skill'] ?? 'N/A';
@@ -299,8 +298,7 @@ class CarpenterDetailPage extends StatelessWidget {
           }
 
           final data = snapshot.data!.data() as Map<String, dynamic>?;
-          final rawPoints = data?['totalPoints'];
-          final totalPoints = rawPoints is num ? rawPoints.toInt() : 0;
+          final totalPoints = data?['totalPoints'] ?? 0;
           final tier = data?['tier'] ?? 'Bronze';
 
           return Container(
