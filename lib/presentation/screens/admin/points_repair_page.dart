@@ -7,6 +7,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/services/maintenance/points_sync_repair_service.dart';
 import 'points_repair_details_page.dart';
+import 'points_scan_details_page.dart';
 
 class PointsRepairPage extends ConsumerStatefulWidget {
   const PointsRepairPage({super.key});
@@ -100,6 +101,17 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                         '${_report!['pointsMismatches']}'),
                   ],
                 ),
+              ),
+              const SizedBox(height: 12),
+              AppButton(
+                label: 'View Full Scan Details',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        PointsScanDetailsPage(report: _report!),
+                  ),
+                ),
+                variant: AppButtonVariant.secondary,
               ),
               const SizedBox(height: 20),
             ],
