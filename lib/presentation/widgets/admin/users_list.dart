@@ -1756,7 +1756,8 @@ class UserDetailsScreen extends StatelessWidget {
     final firstName = user['firstName'] ?? '';
     final lastName = user['lastName'] ?? '';
     final phone = user['phone'] ?? '';
-    final totalPoints = user['totalPoints'] ?? 0;
+    final rawPoints = user['totalPoints'];
+    final totalPoints = rawPoints is num ? rawPoints.toInt() : 0;
     final tier = user['tier'] ?? 'Bronze';
     final profileImage = user['profileImage'] ?? '';
 
