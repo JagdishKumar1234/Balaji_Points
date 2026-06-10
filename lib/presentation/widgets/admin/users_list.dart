@@ -583,109 +583,112 @@ class _UsersListState extends State<UsersList> {
               ),
               const SizedBox(height: 12),
               // Sort Dropdown + Tier Filter Row
-              Row(
-                children: [
-                  // Sort Dropdown
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.themeSoftSurface,
-                      borderRadius: AppRadius.md12,
-                      border: Border.all(
-                        color: context.themePrimary.withValues(alpha: 0.3),
-                        width: 1,
+              SizedBox(
+                height: 48,
+                child: Row(
+                  children: [
+                    // Sort Dropdown
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
                       ),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _selectedSort,
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          color: context.themeContentColor,
+                      decoration: BoxDecoration(
+                        color: context.themeSoftSurface,
+                        borderRadius: AppRadius.md12,
+                        border: Border.all(
+                          color: context.themePrimary.withValues(alpha: 0.3),
+                          width: 1,
                         ),
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 14,
-                          color: context.themeContentColor,
-                        ),
-                        items: [
-                          DropdownMenuItem(
-                            value: 'points',
-                            child: Text('Points (High to Low)'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'pointsLowToHigh',
-                            child: Text('Points (Low to High)'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'newest',
-                            child: Text('Newest First'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'oldest',
-                            child: Text('Oldest First'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'nameAZ',
-                            child: Text('Name (A-Z)'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'nameZA',
-                            child: Text('Name (Z-A)'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedSort = value!;
-                          });
-                        },
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Tier Filter
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: _tiers.map((tier) {
-                          final isSelected = _selectedTier == tier;
-                          final tierLabel = tier == 'All'
-                              ? l10n.all
-                              : tier == 'Platinum'
-                              ? l10n.platinum
-                              : tier == 'Gold'
-                              ? l10n.gold
-                              : tier == 'Silver'
-                              ? l10n.silver
-                              : l10n.bronze;
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: FilterChip(
-                              selected: isSelected,
-                              label: Text(tierLabel),
-                              labelStyle: AppTypography.labelLarge().copyWith(
-                                fontSize: 14,
-                                color: isSelected
-                                    ? AppColors.white
-                                    : context.themePrimary,
-                              ),
-                              backgroundColor: context.themeBorder,
-                              selectedColor: context.themePrimary,
-                              onSelected: (selected) {
-                                setState(() {
-                                  _selectedTier = tier;
-                                });
-                              },
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedSort,
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: context.themeContentColor,
+                          ),
+                          style: AppTypography.labelLarge().copyWith(
+                            fontSize: 14,
+                            color: context.themeContentColor,
+                          ),
+                          items: [
+                            DropdownMenuItem(
+                              value: 'points',
+                              child: Text('Points (High to Low)'),
                             ),
-                          );
-                        }).toList(),
+                            DropdownMenuItem(
+                              value: 'pointsLowToHigh',
+                              child: Text('Points (Low to High)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'newest',
+                              child: Text('Newest First'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'oldest',
+                              child: Text('Oldest First'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'nameAZ',
+                              child: Text('Name (A-Z)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'nameZA',
+                              child: Text('Name (Z-A)'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedSort = value!;
+                            });
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                    // Tier Filter
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _tiers.map((tier) {
+                            final isSelected = _selectedTier == tier;
+                            final tierLabel = tier == 'All'
+                                ? l10n.all
+                                : tier == 'Platinum'
+                                ? l10n.platinum
+                                : tier == 'Gold'
+                                ? l10n.gold
+                                : tier == 'Silver'
+                                ? l10n.silver
+                                : l10n.bronze;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                selected: isSelected,
+                                label: Text(tierLabel),
+                                labelStyle: AppTypography.labelLarge().copyWith(
+                                  fontSize: 14,
+                                  color: isSelected
+                                      ? AppColors.white
+                                      : context.themePrimary,
+                                ),
+                                backgroundColor: context.themeBorder,
+                                selectedColor: context.themePrimary,
+                                onSelected: (selected) {
+                                  setState(() {
+                                    _selectedTier = tier;
+                                  });
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -762,7 +765,7 @@ class _UsersListState extends State<UsersList> {
                 final lastName = (user['lastName'] ?? '')
                     .toString()
                     .toLowerCase();
-                final phone = (user['phone'] ?? '').toString().toLowerCase();
+                final phone = (user['phoneNumber'] ?? user['phone'] ?? '').toString().toLowerCase();
                 final tier = user['tier'] ?? 'Bronze';
 
                 final matchesSearch =
