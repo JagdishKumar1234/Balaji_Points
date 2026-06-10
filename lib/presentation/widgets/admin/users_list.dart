@@ -1369,6 +1369,617 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
 }
 
 /// ---------------------------
+/// Points History View Widget
+/// ---------------------------
+
+class _PointsHistoryView extends StatelessWidget {
+  final String userId;
+  final int totalPoints;
+  const _PointsHistoryView({required this.userId, required this.totalPoints});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('user_points')
+          .doc(userId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: CircularProgressIndicator(
+                color: context.themeContentColor,
+              ),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.themeError.withValues(alpha: 0.1),
+              borderRadius: AppRadius.md12,
+              border: Border.all(color: context.themeError.withValues(alpha: 0.3)),
+            ),
+            child: Text(
+              'Error loading history: ${snapshot.error}',
+              style: AppTypography.bodyMedium().copyWith(
+                fontSize: 14,
+                color: context.themeError,
+              ),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || !snapshot.data!.exists) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: context.themeSoftSurface,
+              borderRadius: AppRadius.md12,
+            ),
+            child: Text(
+              'No points history found',
+              style: AppTypography.bodyMedium().copyWith(
+                fontSize: 14,
+                color: context.themeTextSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
+        final userData = snapshot.data!.data() as Map<String, dynamic>;
+        final pointsHistory = (userData['pointsHistory'] as List<dynamic>?)
+                ?.cast<Map<String, dynamic>>() ??
+            [];
+
+        if (pointsHistory.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: context.themeSoftSurface,
+              borderRadius: AppRadius.md12,
+            ),
+            child: Text(
+              'No transactions yet',
+              style: AppTypography.bodyMedium().copyWith(
+                fontSize: 14,
+                color: context.themeTextSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
+        // Calculate sum of all history entries
+        int historySum = 0;
+        for (final entry in pointsHistory) {
+          final points = entry['points'] as num?;
+          if (points != null) {
+            historySum += points.toInt();
+          }
+        }
+
+        // Sort history by date (newest first)
+        final sortedHistory = List<Map<String, dynamic>>.from(pointsHistory);
+        sortedHistory.sort((a, b) {
+          final aTime = a['createdAt'] as Timestamp?;
+          final bTime = b['createdAt'] as Timestamp?;
+          if (aTime == null || bTime == null) return 0;
+          return bTime.compareTo(aTime);
+        });
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Summary cards
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: context.themeSoftSurface,
+                borderRadius: AppRadius.md12,
+                border: Border.all(color: context.themeBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total Transactions',
+                        style: AppTypography.bodyMedium().copyWith(
+                          fontSize: 14,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                      Text(
+                        '${pointsHistory.length}',
+                        style: AppTypography.labelLarge().copyWith(
+                          fontSize: 16,
+                          color: context.themeTextPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'History Sum',
+                        style: AppTypography.bodyMedium().copyWith(
+                          fontSize: 14,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.stars, size: 16, color: context.themePrimary),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$historySum',
+                            style: AppTypography.labelLarge().copyWith(
+                              fontSize: 16,
+                              color: context.themeTextPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Current Total',
+                        style: AppTypography.bodyMedium().copyWith(
+                          fontSize: 14,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.stars, size: 16, color: context.themePrimary),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$totalPoints',
+                            style: AppTypography.labelLarge().copyWith(
+                              fontSize: 16,
+                              color: context.themeTextPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  if (historySum != totalPoints) ...[
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.1),
+                        borderRadius: AppRadius.sm8,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.warning_amber,
+                              size: 16, color: AppColors.warning),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Difference: ${(historySum - totalPoints).abs()}',
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 12,
+                              color: AppColors.warning,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Table Header
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: context.themePrimary.withValues(alpha: 0.1),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      'Date & Time',
+                      style: AppTypography.labelLarge().copyWith(
+                        fontSize: 12,
+                        color: context.themePrimary,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      'Bill ID',
+                      style: AppTypography.labelLarge().copyWith(
+                        fontSize: 12,
+                        color: context.themePrimary,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'Points',
+                      style: AppTypography.labelLarge().copyWith(
+                        fontSize: 12,
+                        color: context.themePrimary,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Table Rows
+            ...sortedHistory.asMap().entries.map<Widget>((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              final timestamp = item['createdAt'] as Timestamp?;
+              final billId = item['billId'] as String? ?? 'N/A';
+              final points = (item['points'] as num?)?.toInt() ?? 0;
+
+              final dateStr = timestamp != null
+                  ? DateFormat('dd/MM/yyyy HH:mm').format(timestamp.toDate())
+                  : 'N/A';
+
+              final isLastRow = index == sortedHistory.length - 1;
+
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: index.isEven
+                      ? context.themeSurface
+                      : context.themeBackground,
+                  border: Border(
+                    bottom: BorderSide(
+                      color: context.themeBorder,
+                      width: isLastRow ? 0 : 0.5,
+                    ),
+                  ),
+                  borderRadius: isLastRow
+                      ? const BorderRadius.only(
+                          bottomLeft: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        )
+                      : BorderRadius.zero,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        dateStr,
+                        style: AppTypography.bodySmall().copyWith(
+                          fontSize: 12,
+                          color: context.themeTextPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        billId,
+                        style: AppTypography.bodySmall().copyWith(
+                          fontSize: 12,
+                          color: context.themeTextSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(Icons.stars, size: 14, color: context.themePrimary),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$points',
+                            style: AppTypography.labelLarge().copyWith(
+                              fontSize: 12,
+                              color: context.themePrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+
+            // Grand Total Footer
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: context.themePrimary.withValues(alpha: 0.08),
+                borderRadius: AppRadius.md12,
+                border: Border.all(
+                  color: context.themePrimary.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Grand Total Points',
+                    style: AppTypography.labelLarge().copyWith(
+                      fontSize: 14,
+                      color: context.themeTextPrimary,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.stars, size: 18, color: context.themePrimary),
+                      const SizedBox(width: 6),
+                      Text(
+                        '$totalPoints',
+                        style: AppTypography.labelLarge().copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: context.themePrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Withdrawal Section
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: context.themeError.withValues(alpha: 0.08),
+                borderRadius: AppRadius.md12,
+                border: Border.all(
+                  color: context.themeError.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.undo, color: context.themeError, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Withdraw Points',
+                        style: AppTypography.labelLarge().copyWith(
+                          fontSize: 14,
+                          color: context.themeError,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Select transactions below to withdraw points',
+                    style: AppTypography.bodySmall().copyWith(
+                      fontSize: 12,
+                      color: context.themeTextSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _WithdrawalList(
+                    userId: userId,
+                    history: sortedHistory,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// ---------------------------
+/// Withdrawal List Widget
+/// ---------------------------
+
+class _WithdrawalList extends StatefulWidget {
+  final String userId;
+  final List<Map<String, dynamic>> history;
+
+  const _WithdrawalList({
+    required this.userId,
+    required this.history,
+  });
+
+  @override
+  State<_WithdrawalList> createState() => _WithdrawalListState();
+}
+
+class _WithdrawalListState extends State<_WithdrawalList> {
+  final Set<String> _selectedBillIds = {};
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...widget.history.map<Widget>((item) {
+          final billId = item['billId'] as String? ?? '';
+          final points = (item['points'] as num?)?.toInt() ?? 0;
+          final timestamp = item['createdAt'] as Timestamp?;
+
+          final dateStr = timestamp != null
+              ? DateFormat('dd/MM/yyyy').format(timestamp.toDate())
+              : 'N/A';
+
+          final isSelected = _selectedBillIds.contains(billId);
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? context.themeError.withValues(alpha: 0.1)
+                  : context.themeSurface,
+              borderRadius: AppRadius.sm8,
+              border: Border.all(
+                color: isSelected
+                    ? context.themeError
+                    : context.themeBorder,
+              ),
+            ),
+            child: CheckboxListTile(
+              value: isSelected,
+              onChanged: (value) {
+                setState(() {
+                  if (value == true) {
+                    _selectedBillIds.add(billId);
+                  } else {
+                    _selectedBillIds.remove(billId);
+                  }
+                });
+              },
+              title: Text(
+                'Bill: $billId',
+                style: AppTypography.bodySmall().copyWith(
+                  fontSize: 13,
+                  color: context.themeTextPrimary,
+                ),
+              ),
+              subtitle: Text(
+                '$dateStr • $points points',
+                style: AppTypography.bodySmall().copyWith(
+                  fontSize: 12,
+                  color: context.themeTextSecondary,
+                ),
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              dense: true,
+            ),
+          );
+        }).toList(),
+        if (_selectedBillIds.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _confirmWithdrawal(context),
+              icon: const Icon(Icons.undo),
+              label: Text('Withdraw ${_selectedBillIds.length} Transaction(s)'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.themeError,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: AppRadius.sm8,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _confirmWithdrawal(BuildContext context) async {
+    final totalPoints = _selectedBillIds.fold<int>(0, (total, billId) {
+      final item = widget.history.firstWhere(
+        (item) => item['billId'] == billId,
+        orElse: () => {},
+      );
+      return total + ((item['points'] as num?)?.toInt() ?? 0);
+    });
+
+    if (!mounted) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Withdrawal'),
+        content: Text(
+          'Withdraw $totalPoints points from ${_selectedBillIds.length} transaction(s)?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+            ),
+            child: const Text('Withdraw'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      // Remove selected bills from pointsHistory
+      final userPointsRef =
+          FirebaseFirestore.instance.collection('user_points').doc(widget.userId);
+
+      await userPointsRef.update({
+        'pointsHistory': FieldValue.arrayRemove(
+          widget.history
+              .where((item) => _selectedBillIds.contains(item['billId']))
+              .toList(),
+        ),
+      });
+
+      if (!mounted) return;
+
+      setState(() {
+        _selectedBillIds.clear();
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Withdrew $totalPoints points'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: context.themeError,
+        ),
+      );
+    }
+  }
+}
+
+/// ---------------------------
 /// Approved Bills List Widget
 /// ---------------------------
 
@@ -2079,11 +2690,12 @@ class UserDetailsScreen extends StatelessWidget {
                     ),
                   ],
 
-                  // Approved Bills Section
+                  // Points History Section
                   const SizedBox(height: 24),
-                  AppText.label('Points History'),
+                  AppText.label('Points History & Transactions'),
+                  const SizedBox(height: 12),
 
-                  _ApprovedBillsList(carpenterId: user['userId']),
+                  _PointsHistoryView(userId: user['userId'], totalPoints: totalPoints),
                 ],
               ),
             ),
