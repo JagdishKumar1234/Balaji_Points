@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
-import 'package:intl/intl.dart';
 
 class PointsScanDetailsPage extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -228,7 +227,7 @@ class _UserScanCard extends StatelessWidget {
             builder: (context, snapshot) {
               String displayName = 'Loading...';
               String phoneNumber = '';
-              String? photoUrl;
+              String? profileImage;
               bool isLoading = snapshot.connectionState == ConnectionState.waiting;
 
               if (snapshot.connectionState == ConnectionState.done &&
@@ -236,9 +235,15 @@ class _UserScanCard extends StatelessWidget {
                   snapshot.data != null) {
                 final userData =
                     snapshot.data!.data() as Map<String, dynamic>? ?? {};
-                displayName = userData['displayName'] as String? ?? userId;
-                phoneNumber = userData['phoneNumber'] as String? ?? '';
-                photoUrl = userData['photoUrl'] as String?;
+
+                // Build full name from firstName and lastName
+                final firstName = userData['firstName'] as String? ?? '';
+                final lastName = userData['lastName'] as String? ?? '';
+                final fullName = '$firstName $lastName'.trim();
+
+                displayName = fullName.isEmpty ? (userData['displayName'] as String? ?? userId) : fullName;
+                phoneNumber = userData['phoneNumber'] as String? ?? userData['phone'] as String? ?? '';
+                profileImage = userData['profileImage'] as String?;
               } else if (snapshot.hasError) {
                 displayName = userId;
               }
@@ -272,11 +277,11 @@ class _UserScanCard extends StatelessWidget {
                                 ),
                               ),
                             )
-                          : photoUrl != null &&
-                                  (photoUrl.startsWith('http://') ||
-                                      photoUrl.startsWith('https://'))
+                          : profileImage != null &&
+                                  (profileImage.startsWith('http://') ||
+                                      profileImage.startsWith('https://'))
                               ? Image.network(
-                                  photoUrl,
+                                  profileImage,
                                   fit: BoxFit.cover,
                                   errorBuilder: (_, __, ___) => Center(
                                     child: Icon(Icons.person_rounded,
