@@ -80,7 +80,42 @@ class PinAuthService {
         AppLogger.info('PIN updated for existing user: $normalized');
         return true;
       } else {
-        // Create new user
+        // SAFETY CHECK: Ensure no duplicate exists before creating new user
+        // This prevents race conditions where multiple requests create users simultaneously
+        final duplicateCheck = await usersRef
+            .where('phone', isEqualTo: normalized)
+            .limit(1)
+            .get();
+
+        if (duplicateCheck.docs.isNotEmpty) {
+          AppLogger.warning(
+            '⚠️ [setPinForPhone] Phone $normalized already exists, using existing user',
+          );
+          // Use existing user instead of creating new one
+          final existingDocId = duplicateCheck.docs.first.id;
+          final existingRef = usersRef.doc(existingDocId);
+          final updateData = <String, dynamic>{
+            'pinHash': pinHash,
+            'pinSalt': salt,
+            'pinUpdatedAt': FieldValue.serverTimestamp(),
+          };
+
+          if (firstName != null && firstName.isNotEmpty) {
+            updateData['firstName'] = firstName;
+          }
+          if (lastName != null && lastName.isNotEmpty) {
+            updateData['lastName'] = lastName;
+          }
+          if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
+            updateData['profileImage'] = profileImageUrl;
+          }
+
+          await existingRef.set(updateData, SetOptions(merge: true));
+          AppLogger.info('PIN updated for existing user (duplicate check): $normalized');
+          return true;
+        }
+
+        // Create new user (phone truly does not exist)
         final docRef = usersRef.doc();
         final uid = docRef.id;
 
@@ -129,43 +164,67 @@ class PinAuthService {
   ) async {
     final usersRef = _firestore.collection('users');
 
-    DocumentSnapshot<Map<String, dynamic>>? legacy;
+    AppLogger.debug('🔍 [_resolveDocForAuth] Looking up user with phone: $normalized');
 
-    final phoneDoc = await usersRef.doc(normalized).get();
-    if (phoneDoc.exists) {
-      legacy = phoneDoc;
-    } else {
-      final query = await usersRef
-          .where('phone', isEqualTo: normalized)
-          .limit(5)
-          .get();
-      if (query.docs.isNotEmpty) {
-        legacy = query.docs.first;
-      }
-    }
-
-    if (legacy == null || !legacy.exists) {
-      return null;
-    }
-
-    final migratedTo = legacy.data()?['migratedToUid'] as String?;
-    if (migratedTo != null && migratedTo.isNotEmpty) {
-      final canonical = await usersRef.doc(migratedTo).get();
-      if (canonical.exists) {
-        return canonical;
-      }
-    }
-
-    final all = await usersRef
+    // Step 1: Query by phone field - most reliable lookup
+    final phoneQuery = await usersRef
         .where('phone', isEqualTo: normalized)
         .get();
-    for (final doc in all.docs) {
-      if (doc.id == normalized) continue;
-      if (doc.data()['legacyAccount'] == true) continue;
-      return doc;
+
+    AppLogger.debug('🔍 [_resolveDocForAuth] Found ${phoneQuery.docs.length} docs with phone field');
+
+    if (phoneQuery.docs.isNotEmpty) {
+      // Find the best candidate:
+      // Priority 1: Non-legacy active user
+      // Priority 2: Any existing user (even if marked legacy but has data)
+
+      DocumentSnapshot<Map<String, dynamic>>? activeUser;
+      DocumentSnapshot<Map<String, dynamic>>? fallback;
+
+      for (final doc in phoneQuery.docs) {
+        final data = doc.data();
+        final isLegacy = data['legacyAccount'] == true;
+        final isActive = data['active'] != false;
+
+        AppLogger.debug(
+          '🔍 [_resolveDocForAuth] Candidate: ${doc.id}, legacy=$isLegacy, active=$isActive',
+        );
+
+        // If not legacy, this is our user
+        if (!isLegacy) {
+          activeUser = doc;
+          break;
+        }
+
+        // Keep track of first doc as fallback
+        if (fallback == null) {
+          fallback = doc;
+        }
+      }
+
+      final foundUser = activeUser ?? fallback;
+      if (foundUser != null) {
+        AppLogger.info(
+          '✅ [_resolveDocForAuth] Found existing user: ${foundUser.id} with phone $normalized',
+        );
+        return foundUser;
+      }
     }
 
-    return legacy;
+    // Step 2: Check by document ID (phone as docId)
+    final phoneDoc = await usersRef.doc(normalized).get();
+    if (phoneDoc.exists) {
+      AppLogger.info(
+        '✅ [_resolveDocForAuth] Found user by docId: $normalized',
+      );
+      return phoneDoc;
+    }
+
+    // No user found
+    AppLogger.warning(
+      '❌ [_resolveDocForAuth] No existing user found for phone: $normalized',
+    );
+    return null;
   }
 
   /// Verify phone + PIN. Returns user data if valid, null otherwise.
@@ -175,30 +234,39 @@ class PinAuthService {
   }) async {
     try {
       final normalized = normalizePhone(phone);
+      AppLogger.debug('🔐 [verifyPin] Verifying PIN for phone: $normalized');
+
       final doc = await _resolveDocForAuth(normalized);
 
       if (doc == null || !doc.exists) {
+        AppLogger.warning('🔐 [verifyPin] No user found for phone: $normalized');
         return null;
       }
+
       final data = doc.data();
       if (data == null) {
+        AppLogger.warning('🔐 [verifyPin] User doc exists but has no data: ${doc.id}');
         return null;
       }
+
       final salt = data['pinSalt'] as String?;
       final storedHash = data['pinHash'] as String?;
 
       if (salt == null || storedHash == null) {
-        // PIN not setup
+        AppLogger.warning('🔐 [verifyPin] PIN not setup for user: ${doc.id}');
         return null;
       }
 
       final computedHash = _hashPin(pin, salt);
       if (computedHash == storedHash) {
-        AppLogger.info('PIN verified for $normalized');
+        AppLogger.info(
+          '✅ [verifyPin] PIN verified for $normalized (docId: ${doc.id})',
+        );
         // Include doc.id so session and FCM token are saved to the correct user doc
         return {...data, 'docId': doc.id, 'id': doc.id};
       }
 
+      AppLogger.warning('🔐 [verifyPin] PIN verification failed for: $normalized');
       return null;
     } catch (e, st) {
       AppLogger.error('Error verifying PIN for phone $phone', e, st);
