@@ -176,14 +176,19 @@ class HomeNotifier extends Notifier<HomeState> {
   }
 
   Future<void> _startPointsSync() async {
-    _pointsListener ??= () {
-      final data = _syncService.pointsData.value;
-      if (data == null) return;
-      state = state.copyWith(points: _asInt(data['totalPoints']));
-    };
-    _syncService.pointsData.removeListener(_pointsListener!);
-    _syncService.pointsData.addListener(_pointsListener!);
+    // Create listener only once
+    if (_pointsListener == null) {
+      _pointsListener = () {
+        final data = _syncService.pointsData.value;
+        if (data == null) return;
+        state = state.copyWith(points: _asInt(data['totalPoints']));
+      };
+      // Add listener only once (don't remove and re-add)
+      _syncService.pointsData.addListener(_pointsListener!);
+    }
+    // Start the service (it handles duplicate subscriptions internally)
     await _syncService.start();
+    // Call listener to sync current value
     _pointsListener?.call();
   }
 

@@ -500,9 +500,9 @@ class BillService {
         );
 
         if (existingUserId == null || existingUserId != finalCarpenterId) {
-          // If userId is missing or doesn't match, use set to fix it
+          // If userId is missing or doesn't match, use set with merge:true to preserve other fields
           // Merge existing history with new entry (avoid duplicates)
-          AppLogger.info('    Using batch.set() (userId missing or mismatch)');
+          AppLogger.info('    Using batch.set() with merge:true (userId missing or mismatch)');
           final historyToAdd = billAlreadyInHistory ? existingHistory : [...existingHistory, newHistoryEntry];
           final userPointsSetData = {
             'userId': finalCarpenterId, // Ensure userId matches document ID
@@ -514,8 +514,8 @@ class BillService {
           AppLogger.info('    User points set data: $userPointsSetData');
           final historyList = userPointsSetData['pointsHistory'] as List;
           AppLogger.info('    New history length: ${historyList.length}');
-          batch.set(userPointsRef, userPointsSetData, SetOptions(merge: false));
-          AppLogger.info('    ✓ User points set added to batch');
+          batch.set(userPointsRef, userPointsSetData, SetOptions(merge: true));
+          AppLogger.info('    ✓ User points set added to batch (merge: true)');
         } else {
           // userId exists and matches, can use update with arrayUnion (only if not already in history)
           AppLogger.info(

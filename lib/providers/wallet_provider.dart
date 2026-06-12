@@ -118,17 +118,22 @@ class WalletNotifier extends Notifier<WalletState> {
   }
 
   Future<void> _startPointsSync() async {
-    _pointsListener ??= () {
-      final data = _syncService.pointsData.value;
-      if (data == null) return;
-      state = state.copyWith(
-        totalPoints: _asDouble(data['totalPoints']),
-        tier: data['tier'] as String? ?? state.tier,
-      );
-    };
-    _syncService.pointsData.removeListener(_pointsListener!);
-    _syncService.pointsData.addListener(_pointsListener!);
+    // Create listener only once
+    if (_pointsListener == null) {
+      _pointsListener = () {
+        final data = _syncService.pointsData.value;
+        if (data == null) return;
+        state = state.copyWith(
+          totalPoints: _asDouble(data['totalPoints']),
+          tier: data['tier'] as String? ?? state.tier,
+        );
+      };
+      // Add listener only once (don't remove and re-add)
+      _syncService.pointsData.addListener(_pointsListener!);
+    }
+    // Start the service (it handles duplicate subscriptions internally)
     await _syncService.start();
+    // Call listener to sync current value
     _pointsListener?.call();
   }
 
