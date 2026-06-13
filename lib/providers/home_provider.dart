@@ -20,7 +20,7 @@ class HomeState {
 
   // User
   final Map<String, dynamic>? userData;
-  final int points;
+  final double points;
   final String? userDocId;
   final int? userRank;
   final int cartCount;
@@ -37,7 +37,7 @@ class HomeState {
     this.loading = true,
     this.error,
     this.userData,
-    this.points = 0,
+    this.points = 0.0,
     this.userDocId,
     this.userRank,
     this.cartCount = 0,
@@ -70,7 +70,7 @@ class HomeState {
     bool? loading,
     String? error,
     Map<String, dynamic>? userData,
-    int? points,
+    double? points,
     String? userDocId,
     int? userRank,
     bool clearUserRank = false,
@@ -127,7 +127,7 @@ class HomeNotifier extends Notifier<HomeState> {
     await _load();
   }
 
-  void updatePoints(int newPoints) {
+  void updatePoints(double newPoints) {
     state = state.copyWith(points: newPoints);
     _refreshRankings();
   }
@@ -151,7 +151,7 @@ class HomeNotifier extends Notifier<HomeState> {
       final docId = await _resolveDocId();
       final userId = await _session.getUserId();
 
-      final pts = _asInt(data?['totalPoints']);
+      final pts = _asDouble(data?['totalPoints']);
 
       state = state.copyWith(
         userData: data,
@@ -181,7 +181,7 @@ class HomeNotifier extends Notifier<HomeState> {
       _pointsListener = () {
         final data = _syncService.pointsData.value;
         if (data == null) return;
-        state = state.copyWith(points: _asInt(data['totalPoints']));
+        state = state.copyWith(points: _asDouble(data['totalPoints']));
       };
       // Add listener only once (don't remove and re-add)
       _syncService.pointsData.addListener(_pointsListener!);
@@ -315,6 +315,11 @@ class HomeNotifier extends Notifier<HomeState> {
   static int _asInt(dynamic v) {
     if (v is num) return v.toInt();
     return int.tryParse(v?.toString() ?? '') ?? 0;
+  }
+
+  static double _asDouble(dynamic v) {
+    if (v is num) return v.toDouble();
+    return double.tryParse(v?.toString() ?? '') ?? 0.0;
   }
 }
 

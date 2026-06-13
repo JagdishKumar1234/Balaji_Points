@@ -196,8 +196,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
     );
   }
 
-  int _calculatePoints(double amount) {
-    return (amount / 1000).floor();
+  double _calculatePoints(double amount) {
+    return amount / 1000;
   }
 
   Future<void> _submitBill() async {
@@ -435,7 +435,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             suffix: amount > 0
                                 ? Padding(
                                     padding: const EdgeInsets.only(right: 12),
-                                    child: AppText.labelSmall('$points pts', color: context.themeContentColor),
+                                    child: AppText.labelSmall('${points.toStringAsFixed(2)} pts', color: context.themeContentColor),
                                   )
                                 : null,
                             validator: (value) {

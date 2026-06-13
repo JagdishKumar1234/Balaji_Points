@@ -220,7 +220,8 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
   }
 
   Widget _buildHistoryItem(Map<String, dynamic> item) {
-    final points = item['points'] as int;
+    final pointsValue = item['points'];
+    final points = pointsValue is num ? pointsValue.toDouble() : 0.0;
     final reason = item['reason'] as String;
     final date = item['date'];
 
@@ -297,7 +298,7 @@ class _PointsHistoryCardState extends State<PointsHistoryCard> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '${points > 0 ? '+' : ''}$points',
+                  '${points > 0 ? '+' : ''}${points.toStringAsFixed(2)}',
                   style: AppTypography.buttonMedium().copyWith(
                     fontSize: 14,
                     color: points > 0 ? AppColors.success : context.themeError,

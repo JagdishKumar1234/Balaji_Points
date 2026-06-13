@@ -434,9 +434,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     final amount = _billData!['amount'] ?? 0;
     // For approved bills, use pointsEarned field; otherwise calculate from amount
     final points = status == 'approved'
-        ? (_billData!['pointsEarned'] as num?)?.toInt() ??
-              (amount / 1000).round()
-        : (amount / 1000).round();
+        ? (_billData!['pointsEarned'] as num?)?.toDouble() ??
+              (amount / 1000)
+        : (amount / 1000);
     final imageUrl = _billData!['imageUrl'] as String? ?? '';
     final carpenterPhone = _billData!['carpenterPhone'] as String? ?? '';
     final billDate = _billData!['billDate'] as Timestamp?;
@@ -449,7 +449,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         : 'Carpenter';
     final profileImageUrl = _carpenterData?['profileImage'] as String?;
     final carpenterTier = _carpenterData?['tier'] as String? ?? 'Bronze';
-    final carpenterPoints = _carpenterData?['totalPoints'] ?? 0;
+    final carpenterPoints = _carpenterData?['totalPoints'] is num
+        ? (_carpenterData?['totalPoints'] as num).toDouble()
+        : 0.0;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -649,7 +651,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                             ),
                                             const SizedBox(width: 4),
                                             AppText.label(
-                                              '$carpenterPoints pts',
+                                              '${(carpenterPoints as num).toStringAsFixed(2)} pts',
                                             ),
                                           ],
                                         ),
@@ -764,7 +766,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                                             color: context.themeContentColor,
                                           ),
                                           const SizedBox(height: 8),
-                                          AppText.label('$points'),
+                                          AppText.label('${points.toStringAsFixed(2)}'),
                                           const SizedBox(height: 4),
                                           Text(
                                             'Points Earned',

@@ -117,7 +117,7 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                         bills[index].data() as Map<String, dynamic>;
                     final billDate = bill['createdAt'] as Timestamp?;
                     final amount = (bill['amount'] as num?)?.toDouble() ?? 0;
-                    final points = (bill['points'] as num?)?.toInt() ?? 0;
+                    final points = (bill['points'] as num?)?.toDouble() ?? 0.0;
                     final description = bill['description'] as String? ?? '';
                     final status = bill['status'] as String? ?? 'unknown';
 

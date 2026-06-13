@@ -152,9 +152,11 @@ class BillService {
     String? notes,
   }) async {
     try {
-      AppLogger.info(
-        'BillService: === ADMIN SUBMITTING BILL FOR CARPENTER ===',
-      );
+      AppLogger.debug('═══════════════════════════════════════════════════════════');
+      AppLogger.debug('📝 ADMIN BILL SUBMISSION START');
+      AppLogger.debug('═══════════════════════════════════════════════════════════');
+      AppLogger.info('BillService: === ADMIN SUBMITTING BILL FOR CARPENTER ===');
+      AppLogger.info('=== INPUT PARAMETERS ===');
       AppLogger.info('  carpenterId: $carpenterId');
       AppLogger.info('  carpenterPhone: $carpenterPhone');
       AppLogger.info('  adminId: $adminId');
@@ -162,26 +164,38 @@ class BillService {
       AppLogger.info('  amount: $amount');
       AppLogger.info('  storeName: $storeName');
       AppLogger.info('  billNumber: $billNumber');
+      AppLogger.info('  billDate: $billDate');
+      AppLogger.info('  notes: $notes');
+      AppLogger.debug('   hasImage: ${imageFile != null}');
 
+      AppLogger.debug('📝 Step 1: Generating bill ID...');
       final billRef = _firestore.collection('bills').doc();
       final billId = billRef.id;
-      AppLogger.info('  Generated billId: $billId');
+      AppLogger.info('✅ Generated billId: $billId');
+      AppLogger.debug('   billRef path: bills/$billId');
 
+      AppLogger.debug('📝 Step 2: Handling bill image...');
       String? imageUrl;
       if (imageFile != null) {
         AppLogger.info('  Uploading bill image...');
+        AppLogger.debug('   Image file size: ${imageFile.lengthSync()} bytes');
         imageUrl = await uploadBillImage(imageFile, billId);
-        AppLogger.info('  Image uploaded: $imageUrl');
+        AppLogger.info('  ✅ Image uploaded: $imageUrl');
+        AppLogger.debug('   Image URL length: ${imageUrl?.length ?? 0} chars');
+      } else {
+        AppLogger.debug('   No image provided, skipping upload');
       }
 
-      // Use carpenter's branchId (looked up from their user doc) so the bill
-      // is always stamped with the correct branch — not the admin's session branch.
+      AppLogger.debug('📝 Step 3: Resolving carpenter branch...');
       String? carpenterBranchId;
       try {
         final carpenterDoc =
             await _firestore.collection('users').doc(carpenterId).get();
-        carpenterBranchId = carpenterDoc.data()?['branchId'] as String?;
-        if (carpenterBranchId == null) {
+        if (carpenterDoc.exists) {
+          carpenterBranchId = carpenterDoc.data()?['branchId'] as String?;
+          AppLogger.debug('   Found carpenter doc, branchId: $carpenterBranchId');
+        } else {
+          AppLogger.debug('   Carpenter doc by ID not found, searching by phone...');
           final q = await _firestore
               .collection('users')
               .where('phone', isEqualTo: carpenterPhone)
@@ -189,12 +203,20 @@ class BillService {
               .get();
           if (q.docs.isNotEmpty) {
             carpenterBranchId = q.docs.first.data()['branchId'] as String?;
+            AppLogger.debug('   Found by phone, branchId: $carpenterBranchId');
+          } else {
+            AppLogger.debug('   Carpenter not found by phone either');
           }
         }
-      } catch (_) {}
+      } catch (e) {
+        AppLogger.warning('Error looking up carpenter branch: $e');
+      }
       // Fallback to admin's session branch if carpenter doc lookup fails
-      carpenterBranchId ??= await _sessionService.getBranchId();
+      final adminSessionBranch = await _sessionService.getBranchId();
+      carpenterBranchId ??= adminSessionBranch;
+      AppLogger.info('✅ Final carpenterBranchId: $carpenterBranchId');
 
+      AppLogger.debug('📝 Step 4: Preparing bill data...');
       final billData = {
         'billId': billId,
         'carpenterId': carpenterId,
@@ -214,55 +236,82 @@ class BillService {
         if (adminName != null) 'adminName': adminName,
         'createdAt': FieldValue.serverTimestamp(),
       };
+      AppLogger.debug('   billData keys: ${billData.keys.join(", ")}');
+      AppLogger.debug('   billData ready for save');
 
-      AppLogger.info('  Saving to Firestore: bills/$billId');
+      AppLogger.debug('📝 Step 5: Saving to Firestore...');
+      AppLogger.info('  💾 Saving bill to Firestore: bills/$billId');
+      final startTime = DateTime.now();
       await billRef.set(billData);
+      final saveDuration = DateTime.now().difference(startTime);
+      AppLogger.info('  ✅ Bill saved in ${saveDuration.inMilliseconds}ms');
 
-      // Verify the save by reading back
+      AppLogger.debug('📝 Step 6: Verifying save by reading back...');
       final verifyDoc = await billRef.get();
       if (verifyDoc.exists) {
-        AppLogger.info(
-          'BillService: ✅ Admin bill saved and verified successfully!',
-        );
-        AppLogger.info(
-          '  Verified data: carpenterId=${verifyDoc.data()?['carpenterId']}, status=${verifyDoc.data()?['status']}, submittedBy=${verifyDoc.data()?['submittedBy']}',
-        );
+        final verifyData = verifyDoc.data();
+        AppLogger.info('BillService: ✅ Admin bill saved and verified successfully!');
+        AppLogger.info('=== VERIFICATION RESULTS ===');
+        AppLogger.info('  billId: ${verifyData?['billId']}');
+        AppLogger.info('  carpenterId: ${verifyData?['carpenterId']}');
+        AppLogger.info('  carpenterPhone: ${verifyData?['carpenterPhone']}');
+        AppLogger.info('  amount: ${verifyData?['amount']}');
+        AppLogger.info('  status: ${verifyData?['status']}');
+        AppLogger.info('  submittedBy: ${verifyData?['submittedBy']}');
+        AppLogger.info('  adminId: ${verifyData?['adminId']}');
+        AppLogger.info('  adminPhone: ${verifyData?['adminPhone']}');
+        AppLogger.info('  branchId: ${verifyData?['branchId']}');
+        AppLogger.info('  storeName: ${verifyData?['storeName']}');
+        AppLogger.info('  billNumber: ${verifyData?['billNumber']}');
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
+        AppLogger.debug('✅ ADMIN BILL SUBMISSION SUCCESS');
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
       } else {
         AppLogger.error(
           'BillService: ❌ Bill document not found after save!',
-          null,
+          'Bill $billId was not saved properly',
         );
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
+        AppLogger.debug('❌ ADMIN BILL SUBMISSION FAILED (VERIFICATION)');
+        AppLogger.debug('═══════════════════════════════════════════════════════════');
+        return false;
       }
 
       return true;
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.debug('═══════════════════════════════════════════════════════════');
+      AppLogger.debug('❌ ADMIN BILL SUBMISSION FAILED (EXCEPTION)');
+      AppLogger.debug('═══════════════════════════════════════════════════════════');
       AppLogger.error('BillService: ❌ Error submitting bill for carpenter', e);
+      AppLogger.debug('  Exception type: ${e.runtimeType}');
+      AppLogger.debug('  StackTrace:\n$st');
+      AppLogger.debug('═══════════════════════════════════════════════════════════');
       return false;
     }
   }
 
-  /// Approve bill (Admin)
+  /// Approve bill (Admin) - Uses Firestore transaction for atomic, race-condition-safe approval
   Future<bool> approveBill(
     String billId,
     String carpenterId,
     double amount,
   ) async {
+    final approveStartTime = DateTime.now();
     AppLogger.debug('═══════════════════════════════════════════════════════════');
-    AppLogger.debug('🚀 APPROVE BILL START');
+    AppLogger.debug('🚀 APPROVE BILL START (TRANSACTION-BASED)');
     AppLogger.debug('═══════════════════════════════════════════════════════════');
-    AppLogger.debug('📋 Input params:');
+    AppLogger.debug('📋 INPUT PARAMETERS:');
     AppLogger.debug('   billId: "$billId"');
     AppLogger.debug('   carpenterId: "$carpenterId"');
     AppLogger.debug('   amount: $amount');
+    AppLogger.debug('   timestamp: $approveStartTime');
     AppLogger.debug('═══════════════════════════════════════════════════════════');
 
-    AppLogger.info('=== APPROVE BILL START ===');
-    AppLogger.info(
-      'Input params: billId=$billId, carpenterId=$carpenterId, amount=$amount',
-    );
+    AppLogger.info('=== APPROVE BILL START (TRANSACTION) ===');
+    AppLogger.info('billId=$billId | carpenterId=$carpenterId | amount=$amount');
 
     try {
-      // Validate inputs
+      // Validate inputs BEFORE transaction
       AppLogger.debug('📝 Step 0: Validating inputs...');
       AppLogger.info('Step 0: Validating inputs...');
       if (billId.isEmpty) {
@@ -285,77 +334,8 @@ class BillService {
       AppLogger.debug('   ✓ pointsEarned calculated: $pointsEarned');
       AppLogger.info('  ✓ pointsEarned calculated: $pointsEarned');
 
-      // Verify bill exists
-      AppLogger.debug('📄 Step 1: Fetching bill document...');
-      AppLogger.info('Step 1: Fetching bill document...');
-      final billRef = _firestore.collection('bills').doc(billId);
-      AppLogger.debug('   Bill ref path: bills/$billId');
-      AppLogger.info('  Bill ref path: bills/$billId');
-
-      final billDoc = await billRef.get();
-      AppLogger.debug('   Bill doc exists: ${billDoc.exists}');
-      AppLogger.info('  Bill doc exists: ${billDoc.exists}');
-
-      if (!billDoc.exists) {
-        AppLogger.debug('❌ ERROR: Bill not found! billId: "$billId"');
-        AppLogger.error('approveBill: ❌ Bill not found', billId);
-        return false;
-      }
-
-      // Check if bill is already approved or rejected
-      AppLogger.debug('📊 Step 2: Checking bill status...');
-      AppLogger.info('Step 2: Checking bill status...');
-      final billData = billDoc.data();
-      AppLogger.debug('   Bill data keys: ${billData?.keys.toList()}');
-      AppLogger.info('  Bill data: $billData');
-
-      if (billData != null) {
-        final currentStatus = billData['status'] as String? ?? 'pending';
-        AppLogger.debug('   Current status: "$currentStatus"');
-        AppLogger.info('  Current status: $currentStatus');
-
-        if (currentStatus == 'approved') {
-          AppLogger.debug('❌ ERROR: Bill already approved!');
-          AppLogger.error('approveBill: ❌ Bill already approved', billId);
-          return false;
-        }
-        if (currentStatus == 'rejected') {
-          AppLogger.debug('❌ ERROR: Bill already rejected!');
-          AppLogger.error('approveBill: ❌ Bill already rejected', billId);
-          return false;
-        }
-        AppLogger.debug('   ✓ Bill status is pending, can proceed');
-        AppLogger.info('  ✓ Bill status is pending, can proceed');
-      } else {
-        AppLogger.debug('   ⚠️ Bill data is null, assuming pending status');
-        AppLogger.info('  ⚠️ Bill data is null, assuming pending status');
-      }
-
-      // If carpenterId passed is empty, try to read from bill doc
-      AppLogger.info('Step 3: Resolving carpenterId...');
-      String finalCarpenterId = carpenterId;
-      AppLogger.info(
-        '  Initial carpenterId: "$carpenterId" (isEmpty: ${carpenterId.isEmpty})',
-      );
-
-      if (finalCarpenterId.isEmpty && billData != null) {
-        finalCarpenterId = billData['carpenterId'] ?? '';
-        AppLogger.info('  Read carpenterId from bill: "$finalCarpenterId"');
-      }
-
-      // Validate carpenterId is not empty
-      if (finalCarpenterId.isEmpty) {
-        AppLogger.error(
-          'approveBill: ❌ Carpenter ID is empty after resolution',
-          billId,
-        );
-        AppLogger.error('  billData keys: ${billData?.keys.toList()}');
-        return false;
-      }
-      AppLogger.info('  ✓ Final carpenterId: $finalCarpenterId');
-
-      // Get admin info from session (phone+pin auth) or fallback to FirebaseAuth
-      AppLogger.info('Step 4: Getting admin info...');
+      // Get admin info BEFORE transaction
+      AppLogger.info('Step 1: Getting admin info...');
       final fbUser = FirebaseAuth.instance.currentUser;
       AppLogger.info('  FirebaseAuth currentUser: ${fbUser?.uid ?? "null"}');
 
@@ -370,207 +350,199 @@ class BillService {
       AppLogger.info('  ✓ Final adminPhone: $adminPhone');
       AppLogger.info('  ✓ Final adminUserId: $adminUserId');
 
-      AppLogger.info('Step 5: Fetching user document...');
-      final userRef = _firestore.collection('users').doc(finalCarpenterId);
-      AppLogger.info('  User ref path: users/$finalCarpenterId');
-
-      final userDoc = await userRef.get();
-      AppLogger.info('  User doc exists: ${userDoc.exists}');
-      if (userDoc.exists) {
-        AppLogger.info('  User data: ${userDoc.data()}');
-      }
-
-      // Determine current points (0 if user not found)
-      AppLogger.info('Step 6: Calculating points...');
-      final dynamic currentPointsRaw;
-      if (userDoc.exists) {
-        currentPointsRaw = userDoc.data()?['totalPoints'] ?? 0;
-        AppLogger.info(
-          '  Found totalPoints in user doc: $currentPointsRaw (type: ${currentPointsRaw.runtimeType})',
-        );
-      } else {
-        currentPointsRaw = 0;
-        AppLogger.info('  User not found, using 0 as current points');
-      }
-
-      final double currentPoints = (currentPointsRaw is num
-          ? currentPointsRaw.toDouble()
-          : double.tryParse(currentPointsRaw.toString())) ?? 0.0;
-      AppLogger.info('  ✓ Current points: $currentPoints');
-      AppLogger.info('  ✓ Points to add: $pointsEarned');
-
-      // Get old tier before calculating new tier (for tier upgrade notification)
-      final oldTier = userDoc.exists
-          ? (userDoc.data()?['tier'] as String? ?? 'Bronze')
-          : 'Bronze';
-
-      final double newTotalPoints = currentPoints + pointsEarned;
-      final newTier = _calculateTier(newTotalPoints.toInt());
-      AppLogger.info('  ✓ Old tier: $oldTier');
-      AppLogger.info('  ✓ New total points: $newTotalPoints');
-      AppLogger.info('  ✓ New tier: $newTier');
-
       // Points history entry
-      AppLogger.debug('📝 Step 7: Creating points history entry...');
-      AppLogger.info('Step 7: Creating points history entry...');
-      // Use Timestamp.now() instead of FieldValue.serverTimestamp() because
-      // FieldValue.serverTimestamp() cannot be used inside arrays when using batch.set()
+      AppLogger.debug('📝 Step 2: Creating points history entry...');
+      AppLogger.info('Step 2: Creating points history entry...');
       final newHistoryEntry = {
         'points': pointsEarned,
         'reason': 'Bill approval',
-        'date': Timestamp.now(), // Changed from FieldValue.serverTimestamp()
+        'date': Timestamp.now(),
         'billId': billId,
         'amount': amount,
       };
       AppLogger.debug('   History entry: $newHistoryEntry');
       AppLogger.info('  History entry: $newHistoryEntry');
 
-      AppLogger.info('Step 8: Fetching user_points document...');
-      final userPointsRef = _firestore
-          .collection('user_points')
-          .doc(finalCarpenterId);
-      AppLogger.info('  User points ref path: user_points/$finalCarpenterId');
+      // ATOMIC TRANSACTION - all-or-nothing approval
+      AppLogger.info('Step 3: Pre-transaction carpenter ID resolution...');
+      final billRef = _firestore.collection('bills').doc(billId);
 
-      final userPointsDoc = await userPointsRef.get();
-      AppLogger.info('  User points doc exists: ${userPointsDoc.exists}');
-      if (userPointsDoc.exists) {
-        AppLogger.info('  User points data: ${userPointsDoc.data()}');
-      }
-
-      AppLogger.info('Step 9: Creating batch operations...');
-      final batch = _firestore.batch();
-      AppLogger.info('  Batch created');
-
-      // 1. Update bill (always update)
-      AppLogger.info('  Batch Operation 1: Update bill doc');
-      final billUpdateData = {
-        'status': 'approved',
-        'pointsEarned': pointsEarned,
-        'approvedBy': adminUserId,
-        'approvedByPhone': adminPhone,
-        'approvedAt': FieldValue.serverTimestamp(),
-        'approvedDate': _getTodayDateString(),
-      };
-      AppLogger.info('    Bill update data: $billUpdateData');
-      batch.update(billRef, billUpdateData);
-      AppLogger.info('    ✓ Bill update added to batch');
-
-      // 2. Update or create user account with merged fields
-      AppLogger.info('  Batch Operation 2: Update/create users doc');
-      final userUpdateData = {
-        'totalPoints': newTotalPoints,
-        'tier': newTier,
-        'lastUpdated': FieldValue.serverTimestamp(),
-      };
-      AppLogger.info('    User update data: $userUpdateData');
-      batch.set(userRef, userUpdateData, SetOptions(merge: true));
-      AppLogger.info('    ✓ User update added to batch (merge: true)');
-
-      // 3. Update user_points
-      AppLogger.info('  Batch Operation 3: Update/create user_points doc');
-      if (userPointsDoc.exists) {
-        // Get existing history to merge with new entry
-        final existingData = userPointsDoc.data() ?? {};
-        AppLogger.info('    Existing user_points data: $existingData');
-
-        final existingHistory =
-            existingData['pointsHistory'] as List<dynamic>? ?? [];
-        AppLogger.info(
-          '    Existing history length: ${existingHistory.length}',
-        );
-
-        // Check if this bill was already added to history (deduplication)
-        final billAlreadyInHistory = existingHistory.any((entry) {
-          final entryMap = entry as Map<String, dynamic>;
-          return entryMap['billId'] == billId;
-        });
-
-        if (billAlreadyInHistory) {
-          AppLogger.warning(
-            '    ⚠️ Bill $billId already in points history - skipping duplicate entry',
-          );
+      // Resolve carpenter ID first (before transaction)
+      String finalCarpenterId = carpenterId;
+      AppLogger.debug('   Initial carpenterId param: "$carpenterId"');
+      if (finalCarpenterId.isEmpty) {
+        AppLogger.debug('   carpenterId param is empty, fetching from bill doc...');
+        // Need to fetch bill to get carpenter ID
+        final billDocSnap = await billRef.get();
+        if (!billDocSnap.exists) {
+          AppLogger.error('approveBill: ❌ Bill not found', billId);
+          AppLogger.debug('   Firestore path: bills/$billId');
+          return false;
         }
+        finalCarpenterId = billDocSnap.data()?['carpenterId'] ?? '';
+        AppLogger.debug('   Extracted carpenterId from bill: "$finalCarpenterId"');
+        if (finalCarpenterId.isEmpty) {
+          AppLogger.error('approveBill: ❌ Carpenter ID not found in bill', billId);
+          return false;
+        }
+      }
+      AppLogger.info('✅ Final carpenterId resolved: $finalCarpenterId');
 
-        // Check if userId exists in existing document (required by Firestore rules)
-        final existingUserId = existingData['userId'] as String?;
-        AppLogger.info('    Existing userId: "$existingUserId"');
-        AppLogger.info('    Expected userId: "$finalCarpenterId"');
-        AppLogger.info(
-          '    userId matches: ${existingUserId == finalCarpenterId}',
-        );
+      final userRef = _firestore.collection('users').doc(finalCarpenterId);
+      final userPointsRef = _firestore.collection('user_points').doc(finalCarpenterId);
+      AppLogger.debug('   Will update: users/$finalCarpenterId');
+      AppLogger.debug('   Will update: user_points/$finalCarpenterId');
 
-        if (existingUserId == null || existingUserId != finalCarpenterId) {
-          // If userId is missing or doesn't match, use set with merge:true to preserve other fields
-          // Merge existing history with new entry (avoid duplicates)
-          AppLogger.info('    Using batch.set() with merge:true (userId missing or mismatch)');
-          final historyToAdd = billAlreadyInHistory ? existingHistory : [...existingHistory, newHistoryEntry];
-          final userPointsSetData = {
-            'userId': finalCarpenterId, // Ensure userId matches document ID
-            'totalPoints': newTotalPoints,
-            'tier': newTier,
-            'lastUpdated': FieldValue.serverTimestamp(),
-            'pointsHistory': historyToAdd,
-          };
-          AppLogger.info('    User points set data: $userPointsSetData');
-          final historyList = userPointsSetData['pointsHistory'] as List;
-          AppLogger.info('    New history length: ${historyList.length}');
-          batch.set(userPointsRef, userPointsSetData, SetOptions(merge: true));
-          AppLogger.info('    ✓ User points set added to batch (merge: true)');
-        } else {
-          // userId exists and matches, can use update with arrayUnion (only if not already in history)
-          AppLogger.info(
-            '    Using batch.update() with arrayUnion (userId matches)',
-          );
-          final userPointsUpdateData = {
-            'totalPoints': newTotalPoints,
-            'tier': newTier,
-            'lastUpdated': FieldValue.serverTimestamp(),
-          };
+      late double newTotalPoints;
+      late String oldTier;
+      late String newTier;
 
-          // Only add to history if not already present
-          if (!billAlreadyInHistory) {
-            userPointsUpdateData['pointsHistory'] = FieldValue.arrayUnion([newHistoryEntry]);
+      try {
+        AppLogger.info('Step 4: Entering Firestore transaction...');
+        await _firestore.runTransaction((transaction) async {
+          AppLogger.debug('   🔄 TRANSACTION STARTED');
+
+          // Step 1: Fetch bill atomically
+          AppLogger.debug('   📖 Step T1: Reading bill doc from transaction...');
+          final billSnap = await transaction.get(billRef);
+          if (!billSnap.exists) {
+            AppLogger.error('   ❌ Bill not found in transaction', billId);
+            throw Exception('Bill not found');
           }
 
-          AppLogger.info('    User points update data: $userPointsUpdateData');
-          batch.update(userPointsRef, userPointsUpdateData);
-          AppLogger.info('    ✓ User points update added to batch');
-        }
-      } else {
-        AppLogger.info('    User points doc does not exist, creating new');
-        final userPointsCreateData = {
-          'userId': finalCarpenterId,
-          'totalPoints': newTotalPoints,
-          'tier': newTier,
-          'lastUpdated': FieldValue.serverTimestamp(),
-          'pointsHistory': [newHistoryEntry],
-        };
-        AppLogger.info('    User points create data: $userPointsCreateData');
-        batch.set(userPointsRef, userPointsCreateData);
-        AppLogger.info('    ✓ User points create added to batch');
-      }
+          final billData = billSnap.data() as Map<String, dynamic>;
+          final currentStatus = billData['status'] as String? ?? 'pending';
+          AppLogger.debug('   ✓ Bill status: $currentStatus');
+          AppLogger.debug('   ✓ Bill amount: ${billData['amount']}');
+          AppLogger.debug('   ✓ Bill carpenterId: ${billData['carpenterId']}');
 
-      AppLogger.debug('💾 Step 10: Committing batch...');
-      AppLogger.debug('   Total batch operations: 3');
-      AppLogger.info('Step 10: Committing batch...');
-      AppLogger.info('  Total batch operations: 3');
-      try {
-        AppLogger.debug('   Attempting batch.commit()...');
-        await batch.commit();
-        AppLogger.debug('✅✅✅ BATCH COMMITTED SUCCESSFULLY! ✅✅✅');
-        AppLogger.debug(
-          '✅ Bill approved: $billId (Points: $pointsEarned) for user $finalCarpenterId',
-        );
-        AppLogger.info('✅ Batch committed successfully!');
-        AppLogger.info(
-          '✅ Bill approved: $billId (Points: $pointsEarned) for user $finalCarpenterId',
-        );
+          // Step 2: Check if already processed (prevents double-approval)
+          if (currentStatus != 'pending') {
+            AppLogger.error(
+              '   ❌ Bill already processed (status: $currentStatus)',
+              billId,
+            );
+            throw Exception('Bill already processed (status: $currentStatus)');
+          }
+          AppLogger.debug('   ✓ Bill status check passed (status == pending)');
+
+          // Step 3: Get current points and tier from user_points (source of truth)
+          AppLogger.debug('   📖 Step T2: Reading user_points doc from transaction...');
+          final userPointsSnap = await transaction.get(userPointsRef);
+          final userSnap = await transaction.get(userRef);
+
+          final currentPointsValue = userPointsSnap.exists
+              ? (userPointsSnap.data()?['totalPoints'] ?? 0)
+              : 0;
+          final currentPointsDouble = (currentPointsValue as num? ?? 0).toDouble();
+
+          oldTier = userSnap.exists
+              ? (userSnap.data()?['tier'] as String? ?? 'Bronze')
+              : 'Bronze';
+
+          AppLogger.debug('   ✓ user_points exists: ${userPointsSnap.exists}');
+          AppLogger.debug('   ✓ Current totalPoints (source of truth): $currentPointsDouble');
+          AppLogger.debug('   ✓ Current tier: $oldTier');
+          if (userPointsSnap.exists) {
+            AppLogger.debug('   ✓ History entries: ${(userPointsSnap.data()?['pointsHistory'] as List?)?.length ?? 0}');
+          }
+
+          // Step 4: Calculate new total
+          newTotalPoints = currentPointsDouble + pointsEarned;
+          newTier = _calculateTier(newTotalPoints.toInt());
+
+          AppLogger.debug('   📊 CALCULATION:');
+          AppLogger.debug('     Current: $currentPointsDouble');
+          AppLogger.debug('     + Adding: $pointsEarned');
+          AppLogger.debug('     = New Total: $newTotalPoints');
+          AppLogger.debug('     Tier: $oldTier → $newTier');
+
+          AppLogger.info('  ✓ Current points: $currentPointsDouble');
+          AppLogger.info('  ✓ Points to add: $pointsEarned');
+          AppLogger.info('  ✓ New total: $newTotalPoints');
+          AppLogger.info('  ✓ Old tier: $oldTier -> New tier: $newTier');
+
+          // Step 5: Update bill with approval
+          AppLogger.debug('   ✍️  Step T3: Updating bill doc in transaction...');
+          transaction.update(billRef, {
+            'status': 'approved',
+            'pointsEarned': pointsEarned,
+            'approvedBy': adminUserId,
+            'approvedByPhone': adminPhone,
+            'approvedAt': FieldValue.serverTimestamp(),
+            'approvedDate': _getTodayDateString(),
+          });
+          AppLogger.debug('   ✓ Bill update enqueued');
+          AppLogger.debug('     - status: pending → approved');
+          AppLogger.debug('     - pointsEarned: $pointsEarned');
+          AppLogger.debug('     - approvedBy: $adminUserId');
+          AppLogger.info('  ✓ Bill updated in transaction');
+
+          // Step 6: Update tier in users doc
+          AppLogger.debug('   ✍️  Step T4: Updating users doc in transaction...');
+          transaction.set(
+            userRef,
+            {
+              'tier': newTier,
+              'lastUpdated': FieldValue.serverTimestamp(),
+            },
+            SetOptions(merge: true),
+          );
+          AppLogger.debug('   ✓ Users update enqueued');
+          AppLogger.debug('     - tier: $oldTier → $newTier (merge: true)');
+          AppLogger.info('  ✓ User tier updated in transaction');
+
+          // Step 7: Update/create user_points with new total
+          AppLogger.debug('   ✍️  Step T5: Updating user_points doc in transaction...');
+          if (userPointsSnap.exists) {
+            AppLogger.debug('     Document exists, using UPDATE');
+            transaction.update(userPointsRef, {
+              'totalPoints': newTotalPoints,
+              'tier': newTier,
+              'lastUpdated': FieldValue.serverTimestamp(),
+              'pointsHistory': FieldValue.arrayUnion([newHistoryEntry]),
+            });
+            AppLogger.debug('   ✓ user_points update enqueued');
+            AppLogger.debug('     - totalPoints: $currentPointsDouble → $newTotalPoints');
+            AppLogger.debug('     - tier: $oldTier → $newTier');
+            AppLogger.debug('     - adding history entry with billId: $billId');
+            AppLogger.info('  ✓ User points updated in transaction');
+          } else {
+            AppLogger.debug('     Document does not exist, using SET');
+            transaction.set(userPointsRef, {
+              'userId': finalCarpenterId,
+              'totalPoints': newTotalPoints,
+              'tier': newTier,
+              'lastUpdated': FieldValue.serverTimestamp(),
+              'pointsHistory': [newHistoryEntry],
+            });
+            AppLogger.debug('   ✓ user_points set enqueued (new document)');
+            AppLogger.debug('     - userId: $finalCarpenterId');
+            AppLogger.debug('     - totalPoints: $newTotalPoints');
+            AppLogger.debug('     - tier: $newTier');
+            AppLogger.debug('     - history entries: 1');
+            AppLogger.info('  ✓ User points created in transaction');
+          }
+        });
+
+        final transactionDuration = DateTime.now().difference(approveStartTime);
+        AppLogger.debug('✅✅✅ TRANSACTION COMMITTED SUCCESSFULLY! ✅✅✅');
+        AppLogger.debug('   Duration: ${transactionDuration.inMilliseconds}ms');
+        AppLogger.debug('   All 3 writes applied atomically');
+        AppLogger.info('✅ Transaction committed in ${transactionDuration.inMilliseconds}ms!');
+        AppLogger.info('=== TRANSACTION RESULT ===');
+        AppLogger.info('  Bill ID: $billId');
+        AppLogger.info('  Carpenter ID: $finalCarpenterId');
+        AppLogger.info('  Points Added: $pointsEarned');
+        AppLogger.info('  New Total: $newTotalPoints');
+        AppLogger.info('  Tier Change: $oldTier → $newTier');
         AppLogger.info('=== APPROVE BILL SUCCESS ===');
         AppLogger.debug('═══════════════════════════════════════════════════════════');
-        AppLogger.debug('✅ APPROVE BILL SUCCESS');
+        AppLogger.debug('✅ APPROVE BILL SUCCESS (TRANSACTION PHASE)');
         AppLogger.debug('═══════════════════════════════════════════════════════════');
         AppLogger.debug('🔔 NOTIFICATION SECTION STARTING...');
         AppLogger.debug('   Carpenter ID: $finalCarpenterId');
+        AppLogger.debug('   Will attempt to notify user of approval');
 
         // Send notification after successful approval
         try {
@@ -772,16 +744,17 @@ class BillService {
         '  Bill found: carpenterId=$carpenterId, points=$pointsEarned',
       );
 
-      // Step 2: Get user document
+      // Step 2: Get user_points document (source of truth for points)
       final userRef = _firestore.collection('users').doc(carpenterId);
-      final userDoc = await userRef.get();
+      final userPointsRef = _firestore.collection('user_points').doc(carpenterId);
+      final userPointsDoc = await userPointsRef.get();
 
-      final currentPointsRaw = userDoc.exists
-          ? (userDoc.data()?['totalPoints'] ?? 0)
+      final currentPointsRaw = userPointsDoc.exists
+          ? (userPointsDoc.data()?['totalPoints'] ?? 0)
           : 0;
-      final int currentPoints = currentPointsRaw is num
-          ? currentPointsRaw.toInt()
-          : int.tryParse(currentPointsRaw.toString()) ?? 0;
+      final double currentPoints = currentPointsRaw is num
+          ? currentPointsRaw.toDouble()
+          : double.tryParse(currentPointsRaw.toString()) ?? 0.0;
 
       if (currentPoints < pointsEarned) {
         AppLogger.error(
@@ -792,18 +765,12 @@ class BillService {
       }
 
       final newTotalPoints = currentPoints - pointsEarned;
-      final newTier = _calculateTier(newTotalPoints);
+      final newTier = _calculateTier(newTotalPoints.toInt());
 
       AppLogger.info('  Current points: $currentPoints');
       AppLogger.info('  Points to withdraw: $pointsEarned');
       AppLogger.info('  New total points: $newTotalPoints');
       AppLogger.info('  New tier: $newTier');
-
-      // Step 3: Get user_points document
-      final userPointsRef = _firestore
-          .collection('user_points')
-          .doc(carpenterId);
-      final userPointsDoc = await userPointsRef.get();
 
       // Step 4: Find and remove the history entry for this bill
       List<dynamic> updatedHistory = [];

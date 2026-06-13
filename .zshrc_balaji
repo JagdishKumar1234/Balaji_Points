@@ -1,0 +1,76 @@
+# BalajiPoints Project - Shell Configuration
+# Add this to your ~/.zshrc or ~/.bashrc to enable clean logging
+
+# ============================================================================
+# FLUTTER ALIASES FOR CLEAN LOGGING
+# ============================================================================
+
+# Clean Flutter Run (filters noisy logs)
+alias frun='flutter run 2>&1 | grep -vE "^W/m\.balaji\.points|^W/FlagStore|^W/FlagRegistrar|^E/GoogleApiManager|^D/nativeloader|^D/WindowOnBackDispatcher|^V/NativeCrypto|hiddenapi|Verification of|Suspending all|Background.*GC|Skipped.*frames"'
+
+# Clean Flutter Run with Device Selection
+alias frun-device='flutter run -d $(flutter devices | grep -oE "sdk.*|emulator.*" | head -1) 2>&1 | grep -vE "^W/m\.balaji\.points|^W/FlagStore|^W/FlagRegistrar|^E/GoogleApiManager|^D/nativeloader|hiddenapi|Verification of"'
+
+# Clean Flutter Run with Release Mode
+alias frun-release='flutter run --release 2>&1 | grep -vE "^W/m\.balaji\.points|^W/FlagStore|^W/FlagRegistrar|^E/GoogleApiManager|hiddenapi"'
+
+# Clean Flutter Run with Profile Mode
+alias frun-profile='flutter run --profile 2>&1 | grep -vE "^W/m\.balaji\.points|^W/FlagStore|^W/FlagRegistrar|hiddenapi"'
+
+# ============================================================================
+# FLUTTER LOG FILTERING FUNCTIONS
+# ============================================================================
+
+# Clean logs function - reusable
+flutter_clean() {
+  echo "🧹 Running Flutter with clean logs..."
+  flutter run "$@" 2>&1 | grep -vE \
+    "^W/m\.balaji\.points|
+^W/FlagStore|
+^W/FlagRegistrar|
+^E/GoogleApiManager|
+^D/nativeloader|
+^D/ApplicationLoaders|
+^D/WindowOnBackDispatcher|
+^D/WindowLayoutComponentImpl|
+^D/VRI\[MainActivity\]|
+^W/UiContextUtils|
+^W/HWUI|
+^V/NativeCrypto|
+hiddenapi|
+Verification of|
+Suspending all|
+Background.*GC|
+Skipped.*frames"
+}
+
+# Show only errors and important info
+flutter_errors_only() {
+  echo "❌ Showing only errors and important messages..."
+  flutter run "$@" 2>&1 | grep -E "^E/|^I/flutter|Exception|Error|FAILED|✗"
+}
+
+# Show Flutter console logs only (ignore Android)
+flutter_dart_only() {
+  echo "📱 Showing only Dart/Flutter logs..."
+  flutter run "$@" 2>&1 | grep "^I/flutter"
+}
+
+# ============================================================================
+# SETUP INSTRUCTIONS
+# ============================================================================
+# Add this line to your ~/.zshrc:
+# source /path/to/balaji_points/.zshrc_balaji
+#
+# Or manually copy the aliases to your ~/.zshrc
+#
+# Then reload your shell:
+# source ~/.zshrc
+#
+# Usage:
+#   frun              - Clean flutter run
+#   frun-release      - Clean flutter run in release mode
+#   flutter_clean     - Function version with arguments
+#   flutter_errors_only - Show only errors
+#   flutter_dart_only - Show only Dart logs
+# ============================================================================

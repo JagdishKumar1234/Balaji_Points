@@ -101,7 +101,9 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                     final userName = data['userName'] ?? 'Unknown';
                     final phone = data['carpenterPhone'] ?? data['phone'] ?? '';
                     final amount = data['amount'] ?? 0.0;
-                    final points = data['pointsEarned'] ?? data['points'] ?? 0;
+                    final points = (data['pointsEarned'] ?? data['points'] ?? 0) is num
+                        ? (data['pointsEarned'] ?? data['points'] ?? 0 as num).toDouble()
+                        : 0.0;
                     final status = data['status'] ?? 'pending';
                     final billImage =
                         data['imageUrl'] ?? data['billImage'] ?? '';
@@ -112,7 +114,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                     final notes = data['notes'] ?? '';
 
                     // compute points from amount and prepare both displays
-                    final int pointsFromAmount = (amount / 1000).round();
+                    final double pointsFromAmount = amount / 1000;
                     final String rupeeText = '₹${amount.toStringAsFixed(0)}';
 
                     return Container(
@@ -154,7 +156,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                AppText.label('$pointsFromAmount pts'),
+                                AppText.label('${pointsFromAmount.toStringAsFixed(2)} pts'),
                                 const SizedBox(width: 8),
                                 Text(
                                   rupeeText,
@@ -172,7 +174,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            'Points: $points',
+                            'Points: ${points.toStringAsFixed(2)}',
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 13,
                               color: context.themePrimary.withValues(
@@ -382,7 +384,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
     String billId,
     String userId,
     double amount,
-    int points,
+    double points,
   ) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -390,7 +392,7 @@ class _BillManagementWidgetState extends State<BillManagementWidget> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: AppText.label('Approve Bill'),
         content: AppText.body(
-          'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n$points points will be added to the user.',
+          'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${points.toStringAsFixed(2)} points will be added to the user.',
         ),
         actions: [
           TextButton(

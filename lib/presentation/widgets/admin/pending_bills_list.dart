@@ -117,7 +117,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: AppText.label('Approve Bill'),
         content: AppText.body(
-          'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${(amount / 1000).floor()} points will be added to the carpenter.',
+          'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${(amount / 1000).toStringAsFixed(2)} points will be added to the carpenter.',
         ),
         actions: [
           TextButton(
@@ -471,7 +471,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
       children: [
         // Compact iOS-style Filter Bar
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
           decoration: BoxDecoration(
             color: context.themeBackground,
             boxShadow: [
@@ -547,14 +547,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
+                          horizontal: 10,
+                          vertical: 6,
                         ),
                         isDense: true,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   // Filter toggle button
                   Container(
                     decoration: BoxDecoration(
@@ -588,7 +588,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
               // Collapsible date filters
               if (_showFilters) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Row(
                   children: [
                     Expanded(
@@ -1081,7 +1081,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                           width: 4,
                                                         ),
                                                         AppText.label(
-                                                          '${(amount / 1000).floor()} pts',
+                                                          '${(amount / 1000).toStringAsFixed(2)} pts',
                                                         ),
                                                       ],
                                                     ),
