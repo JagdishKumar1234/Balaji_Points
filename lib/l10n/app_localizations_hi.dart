@@ -119,8 +119,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get continueWithPin => 'PIN के साथ जारी रखें';
 
   @override
-  String get loginInfo =>
-      'अपने पंजीकृत फोन नंबर का उपयोग करके लॉगिन करें। सत्यापन के लिए आपको एक OTP प्राप्त होगा।';
+  String get loginInfo => 'अपने पंजीकृत फोन नंबर का उपयोग करके लॉगिन करें। सत्यापन के लिए आपको एक OTP प्राप्त होगा।';
 
   @override
   String get poweredBy => 'द्वारा संचालित';
@@ -189,38 +188,31 @@ class AppLocalizationsHi extends AppLocalizations {
   String get resetPinTitle => 'PIN रीसेट करें';
 
   @override
-  String get resetPinSubtitle =>
-      'अपना PIN रीसेट करने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें।';
+  String get resetPinSubtitle => 'अपना PIN रीसेट करने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें।';
 
   @override
-  String get mustBeLoggedInToResetPin =>
-      'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। कृपया पहले लॉगिन करें।';
+  String get mustBeLoggedInToResetPin => 'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। कृपया पहले लॉगिन करें।';
 
   @override
-  String get canOnlyResetOwnPin =>
-      'आप केवल अपना PIN रीसेट कर सकते हैं। फोन नंबर आपके लॉग इन खाते से मेल खाना चाहिए।';
+  String get canOnlyResetOwnPin => 'आप केवल अपना PIN रीसेट कर सकते हैं। फोन नंबर आपके लॉग इन खाते से मेल खाना चाहिए।';
 
   @override
-  String get enterCurrentPin =>
-      'कृपया स्वामित्व सत्यापित करने के लिए अपना वर्तमान PIN दर्ज करें।';
+  String get enterCurrentPin => 'कृपया स्वामित्व सत्यापित करने के लिए अपना वर्तमान PIN दर्ज करें।';
 
   @override
   String get currentPinLabel => 'वर्तमान PIN';
 
   @override
-  String get newPinMustBeDifferent =>
-      'नया PIN आपके वर्तमान PIN से अलग होना चाहिए।';
+  String get newPinMustBeDifferent => 'नया PIN आपके वर्तमान PIN से अलग होना चाहिए।';
 
   @override
-  String get contactAdminForPinReset =>
-      'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। यदि आप अपना PIN भूल गए हैं, तो कृपया सहायता के लिए व्यवस्थापक से संपर्क करें।';
+  String get contactAdminForPinReset => 'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। यदि आप अपना PIN भूल गए हैं, तो कृपया सहायता के लिए व्यवस्थापक से संपर्क करें।';
 
   @override
   String get forgotCurrentPin => 'अपना वर्तमान PIN भूल गए?';
 
   @override
-  String get forgotPinHelp =>
-      'यदि आपको अपना वर्तमान PIN याद नहीं है, तो कृपया सहायता के लिए हमारी सहायता टीम से संपर्क करें।';
+  String get forgotPinHelp => 'यदि आपको अपना वर्तमान PIN याद नहीं है, तो कृपया सहायता के लिए हमारी सहायता टीम से संपर्क करें।';
 
   @override
   String get adminSupportInfo => 'व्यवस्थापक सहायता';
@@ -237,8 +229,7 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get adminResetPinSubtitle =>
-      'इस बढ़ई के लिए एक नया 4 अंकों का PIN दर्ज करें।';
+  String get adminResetPinSubtitle => 'इस बढ़ई के लिए एक नया 4 अंकों का PIN दर्ज करें।';
 
   @override
   String adminResetPinConfirm(String carpenterName) {
@@ -251,12 +242,10 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get adminResetPinFailed =>
-      'PIN रीसेट करने में विफल। कृपया पुनः प्रयास करें।';
+  String get adminResetPinFailed => 'PIN रीसेट करने में विफल। कृपया पुनः प्रयास करें।';
 
   @override
-  String get adminNotAuthorized =>
-      'आप इस क्रिया को करने के लिए अधिकृत नहीं हैं।';
+  String get adminNotAuthorized => 'आप इस क्रिया को करने के लिए अधिकृत नहीं हैं।';
 
   @override
   String get enterNewPinForCarpenter => 'नया 4 अंकों का PIN दर्ज करें';
@@ -280,8 +269,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get noAccountFound => 'इस नंबर के लिए कोई खाता नहीं मिला';
 
   @override
-  String get pinResetSuccess =>
-      'PIN सफलतापूर्वक रीसेट किया गया। कृपया फिर से लॉगिन करें।';
+  String get pinResetSuccess => 'PIN सफलतापूर्वक रीसेट किया गया। कृपया फिर से लॉगिन करें।';
 
   @override
   String get failedToResetPin => 'PIN रीसेट करने में विफल। पुनः प्रयास करें।';
@@ -311,8 +299,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get rememberMe => 'मुझे याद रखें';
 
   @override
-  String get accountExistsUseReset =>
-      'खाता पहले से मौजूद है। कृपया अपना PIN बदलने के लिए Reset PIN का उपयोग करें।';
+  String get accountExistsUseReset => 'खाता पहले से मौजूद है। कृपया अपना PIN बदलने के लिए Reset PIN का उपयोग करें।';
 
   @override
   String get home => 'होम';
@@ -351,8 +338,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get homeRankingsSectionTitle => 'रैंकिंग और आज का विजेता';
 
   @override
-  String get homeRankingsSectionSubtitle =>
-      'लीडरबोर्ड, आपकी रैंक और आज का इनाम';
+  String get homeRankingsSectionSubtitle => 'लीडरबोर्ड, आपकी रैंक और आज का इनाम';
 
   @override
   String get drawerProductsTitle => 'उत्पाद';
@@ -442,12 +428,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileIncomplete => 'प्रोफाइल अधूरा';
 
   @override
-  String get completeProfileMessage =>
-      'बिल जोड़ना और पॉइंट्स अर्जित करना शुरू करने के लिए कृपया अपना प्रोफाइल पूरा करें';
+  String get completeProfileMessage => 'बिल जोड़ना और पॉइंट्स अर्जित करना शुरू करने के लिए कृपया अपना प्रोफाइल पूरा करें';
 
   @override
-  String get completeProfileDetails =>
-      'जारी रखने के लिए अपना पहला नाम, अंतिम नाम और प्रोफाइल फोटो जोड़ें';
+  String get completeProfileDetails => 'जारी रखने के लिए अपना पहला नाम, अंतिम नाम और प्रोफाइल फोटो जोड़ें';
 
   @override
   String get completeNow => 'अभी पूरा करें';
@@ -495,8 +479,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get needHelp => 'मदद चाहिए?';
 
   @override
-  String get contactSupport =>
-      'किसी भी प्रश्न या समस्या के लिए हमारी सहायता टीम से संपर्क करें।';
+  String get contactSupport => 'किसी भी प्रश्न या समस्या के लिए हमारी सहायता टीम से संपर्क करें।';
 
   @override
   String get supportPhone1 => '96006 - 09121';
@@ -658,8 +641,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get adminPanel => 'व्यवस्थापक पैनल';
 
   @override
-  String get adminSubtitle =>
-      'बिल, ऑफर्स, उपयोगकर्ता और दैनिक स्पिन प्रबंधित करें';
+  String get adminSubtitle => 'बिल, ऑफर्स, उपयोगकर्ता और दैनिक स्पिन प्रबंधित करें';
 
   @override
   String get dashboard => 'डैशबोर्ड';
@@ -731,8 +713,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get errorOccurred => 'एक त्रुटि हुई';
 
   @override
-  String get networkError =>
-      'नेटवर्क त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।';
+  String get networkError => 'नेटवर्क त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।';
 
   @override
   String get permissionDenied => 'अनुमति अस्वीकृत';
@@ -753,24 +734,19 @@ class AppLocalizationsHi extends AppLocalizations {
   String get configError => 'कॉन्फ़िगरेशन त्रुटि';
 
   @override
-  String get missingClientId =>
-      'Firebase में SHA-1 फ़िंगरप्रिंट गुम है। कृपया चलाएं: scripts/get_sha1.sh';
+  String get missingClientId => 'Firebase में SHA-1 फ़िंगरप्रिंट गुम है। कृपया चलाएं: scripts/get_sha1.sh';
 
   @override
-  String get tooManyRequests =>
-      'बहुत सारे अनुरोध। कृपया कुछ मिनट प्रतीक्षा करें।';
+  String get tooManyRequests => 'बहुत सारे अनुरोध। कृपया कुछ मिनट प्रतीक्षा करें।';
 
   @override
-  String get invalidVerificationCode =>
-      'अमान्य OTP कोड। कृपया जांचें और पुनः प्रयास करें।';
+  String get invalidVerificationCode => 'अमान्य OTP कोड। कृपया जांचें और पुनः प्रयास करें।';
 
   @override
-  String get verificationExpired =>
-      'सत्यापन समाप्त। कृपया नया OTP अनुरोध करें।';
+  String get verificationExpired => 'सत्यापन समाप्त। कृपया नया OTP अनुरोध करें।';
 
   @override
-  String get userDisabled =>
-      'यह खाता अक्षम कर दिया गया है। कृपया समर्थन से संपर्क करें।';
+  String get userDisabled => 'यह खाता अक्षम कर दिया गया है। कृपया समर्थन से संपर्क करें।';
 
   @override
   String get fieldRequired => 'यह फ़ील्ड आवश्यक है';
@@ -925,15 +901,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get billApprovedSuccess => 'बिल स्वीकृत हो गया!';
 
   @override
-  String get failedToApproveBill =>
-      'बिल स्वीकृत करने में विफल। पुनः प्रयास करें।';
+  String get failedToApproveBill => 'बिल स्वीकृत करने में विफल। पुनः प्रयास करें।';
 
   @override
   String get rejectBill => 'बिल अस्वीकार करें';
 
   @override
-  String get rejectBillConfirmation =>
-      'क्या आप वाकई इस बिल को अस्वीकार करना चाहते हैं?';
+  String get rejectBillConfirmation => 'क्या आप वाकई इस बिल को अस्वीकार करना चाहते हैं?';
 
   @override
   String get billRejectedSuccess => 'बिल अस्वीकृत';
@@ -963,8 +937,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteOffer => 'ऑफर मिटाएं';
 
   @override
-  String get deleteOfferConfirmation =>
-      'क्या आप वाकई इस ऑफर को मिटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।';
+  String get deleteOfferConfirmation => 'क्या आप वाकई इस ऑफर को मिटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।';
 
   @override
   String get offerDeletedSuccess => 'ऑफर सफलतापूर्वक मिटाया गया';
@@ -1100,12 +1073,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteCarpenter => 'बढ़ई हटाएं';
 
   @override
-  String get deleteCarpenterConfirmation =>
-      'क्या आप वाकई इस बढ़ई को हटाना चाहते हैं? यह स्थायी रूप से हटा देगा:\n\n• उपयोगकर्ता खाता\n• सभी पॉइंट्स और लेनदेन इतिहास\n• सभी जमा किए गए बिल\n• सभी ऑफर रिडेम्प्शन\n\nइस क्रिया को पूर्ववत नहीं किया जा सकता।';
+  String get deleteCarpenterConfirmation => 'क्या आप वाकई इस बढ़ई को हटाना चाहते हैं? यह स्थायी रूप से हटा देगा:\n\n• उपयोगकर्ता खाता\n• सभी पॉइंट्स और लेनदेन इतिहास\n• सभी जमा किए गए बिल\n• सभी ऑफर रिडेम्प्शन\n\nइस क्रिया को पूर्ववत नहीं किया जा सकता।';
 
   @override
-  String get deleteCarpenterWarning =>
-      'बढ़ई को हटाना सिस्टम से उनके सभी डेटा को स्थायी रूप से हटा देगा। इस क्रिया को पूर्ववत नहीं किया जा सकता।';
+  String get deleteCarpenterWarning => 'बढ़ई को हटाना सिस्टम से उनके सभी डेटा को स्थायी रूप से हटा देगा। इस क्रिया को पूर्ववत नहीं किया जा सकता।';
 
   @override
   String get carpenterDeletedSuccess => 'बढ़ई सफलतापूर्वक हटाया गया';
@@ -1129,15 +1100,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get verifyAndCreate => 'सत्यापित करें और बनाएं';
 
   @override
-  String get adminSignOutNote =>
-      'नोट: OTP सत्यापन के दौरान ऐप अस्थायी रूप से सत्यापित बढ़ई के रूप में साइन इन करेगा और फिर साइन आउट करेगा। व्यवस्थापक को फिर से साइन इन करना होगा।';
+  String get adminSignOutNote => 'नोट: OTP सत्यापन के दौरान ऐप अस्थायी रूप से सत्यापित बढ़ई के रूप में साइन इन करेगा और फिर साइन आउट करेगा। व्यवस्थापक को फिर से साइन इन करना होगा।';
 
   @override
   String get carpenterCreated => 'बढ़ई बनाया गया';
 
   @override
-  String get carpenterCreatedMessage =>
-      'बढ़ई खाता सफलतापूर्वक बनाया गया। सत्यापन के दौरान ऐप उस बढ़ई के रूप में साइन इन हो गया है और अब साइन आउट हो गया है। आपको व्यवस्थापक के रूप में फिर से साइन इन करना होगा।';
+  String get carpenterCreatedMessage => 'बढ़ई खाता सफलतापूर्वक बनाया गया। सत्यापन के दौरान ऐप उस बढ़ई के रूप में साइन इन हो गया है और अब साइन आउट हो गया है। आपको व्यवस्थापक के रूप में फिर से साइन इन करना होगा।';
 
   @override
   String get enterValidPhone => 'एक वैध फोन नंबर दर्ज करें';
@@ -1208,8 +1177,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get noBillsYet => 'अभी तक कोई बिल नहीं';
 
   @override
-  String get submitFirstBill =>
-      'पॉइंट्स अर्जित करने के लिए अपना पहला बिल जमा करें';
+  String get submitFirstBill => 'पॉइंट्स अर्जित करने के लिए अपना पहला बिल जमा करें';
 
   @override
   String get justNow => 'अभी-अभी';
@@ -1254,8 +1222,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get discardChanges => 'परिवर्तन छोड़ें?';
 
   @override
-  String get discardChangesMessage =>
-      'आपके पास असहेजित परिवर्तन हैं। क्या आप उन्हें छोड़ना चाहते हैं?';
+  String get discardChangesMessage => 'आपके पास असहेजित परिवर्तन हैं। क्या आप उन्हें छोड़ना चाहते हैं?';
 
   @override
   String get discard => 'छोड़ें';
@@ -1273,8 +1240,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get discardBill => 'बिल छोड़ें?';
 
   @override
-  String get discardBillMessage =>
-      'आपके पास असहेजित बिल डेटा है। क्या आप इसे छोड़ना चाहते हैं?';
+  String get discardBillMessage => 'आपके पास असहेजित बिल डेटा है। क्या आप इसे छोड़ना चाहते हैं?';
 
   @override
   String get pleaseCompleteProfile => 'कृपया अपना प्रोफाइल पूरा करें';
@@ -1304,12 +1270,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get selectBillDateOptional => 'बिल तारीख चुनें (वैकल्पिक)';
 
   @override
-  String get enterStoreOrVendorNameOptional =>
-      'स्टोर या विक्रेता नाम दर्ज करें (वैकल्पिक)';
+  String get enterStoreOrVendorNameOptional => 'स्टोर या विक्रेता नाम दर्ज करें (वैकल्पिक)';
 
   @override
-  String get enterBillOrInvoiceNumberOptional =>
-      'बिल या चालान नंबर दर्ज करें (वैकल्पिक)';
+  String get enterBillOrInvoiceNumberOptional => 'बिल या चालान नंबर दर्ज करें (वैकल्पिक)';
 
   @override
   String get addAnyAdditionalNotes => 'कोई अतिरिक्त नोट्स जोड़ें...';
@@ -1324,15 +1288,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get withdrawBill => 'बिल वापस लें';
 
   @override
-  String get withdrawBillConfirmation =>
-      'क्या आप वाकई इस स्वीकृत बिल को वापस लेना चाहते हैं? इससे बढ़ई को दिए गए अंक वापस हो जाएंगे।';
+  String get withdrawBillConfirmation => 'क्या आप वाकई इस स्वीकृत बिल को वापस लेना चाहते हैं? इससे बढ़ई को दिए गए अंक वापस हो जाएंगे।';
 
   @override
   String get withdraw => 'वापस लें';
 
   @override
-  String get billWithdrawnSuccess =>
-      'बिल सफलतापूर्वक वापस लिया गया। अंक वापस कर दिए गए हैं।';
+  String get billWithdrawnSuccess => 'बिल सफलतापूर्वक वापस लिया गया। अंक वापस कर दिए गए हैं।';
 
   @override
   String get failedToWithdrawBill => 'बिल वापस लेने में विफल';
@@ -1341,15 +1303,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get withdrawApproval => 'स्वीकृति वापस लें';
 
   @override
-  String get reversePointsAndUndoApproval =>
-      'अंक वापस करें और स्वीकृति रद्द करें';
+  String get reversePointsAndUndoApproval => 'अंक वापस करें और स्वीकृति रद्द करें';
 
   @override
   String get approveBillAction => 'बिल स्वीकृत करें';
 
   @override
-  String get awardPointsAndMarkAsApproved =>
-      'अंक दें और स्वीकृत के रूप में चिह्नित करें';
+  String get awardPointsAndMarkAsApproved => 'अंक दें और स्वीकृत के रूप में चिह्नित करें';
 
   @override
   String get selectCarpenter => 'बढ़ई चुनें';
@@ -1382,8 +1342,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get errorLoadingBillHistory => 'बिल लोड करने में त्रुटि';
 
   @override
-  String get noBillsFoundMatchingFilters =>
-      'फ़िल्टर से मेल खाने वाले कोई बिल नहीं मिले';
+  String get noBillsFoundMatchingFilters => 'फ़िल्टर से मेल खाने वाले कोई बिल नहीं मिले';
 
   @override
   String get noBillsFoundHistory => 'कोई बिल नहीं मिला';
@@ -1425,40 +1384,34 @@ class AppLocalizationsHi extends AppLocalizations {
   String get aboutUsOverviewTitle => 'बालाजी पॉइंट्स क्या है?';
 
   @override
-  String get aboutUsOverviewBody =>
-      'बालाजी पॉइंट्स बढ़ई और हार्डवेयर स्टोर्स के लिए एक डिजिटल लॉयल्टी प्लेटफ़ॉर्म है। यह योग्य सामग्री खरीद को अंक, पुरस्कार और पहचान में बदलने में मदद करता है। आप ऐप से बिल जमा करते हैं; जिस स्टोर में आप जुड़े हैं वह उन्हें जाँचकर स्वीकार करता है; आपका वॉलेट और इतिहास अपडेट होता रहता है ताकि आप हमेशा अपनी स्थिति जान सकें।';
+  String get aboutUsOverviewBody => 'बालाजी पॉइंट्स बढ़ई और हार्डवेयर स्टोर्स के लिए एक डिजिटल लॉयल्टी प्लेटफ़ॉर्म है। यह योग्य सामग्री खरीद को अंक, पुरस्कार और पहचान में बदलने में मदद करता है। आप ऐप से बिल जमा करते हैं; जिस स्टोर में आप जुड़े हैं वह उन्हें जाँचकर स्वीकार करता है; आपका वॉलेट और इतिहास अपडेट होता रहता है ताकि आप हमेशा अपनी स्थिति जान सकें।';
 
   @override
   String get aboutUsEarningTitle => 'अंक कैसे कमाएँ';
 
   @override
-  String get aboutUsEarningBody =>
-      'साफ़ फ़ोटो, सही राशि और जो विवरण स्टोर माँगे उसके साथ खरीद के बिल अपलोड करें। स्टोर एडमिन जमा की जाँच करता है ताकि प्रोग्राम निष्पक्ष रहे और गलती या दुरुपयोग कम हो। स्वीकृति के बाद अंक उसी स्टोर के नियमों से जुड़ते हैं (जैसे रुपये से अंक)। ऐप में कभी भी बैलेंस, लेन-देन इतिहास और टियर प्रगति देख सकते हैं।';
+  String get aboutUsEarningBody => 'साफ़ फ़ोटो, सही राशि और जो विवरण स्टोर माँगे उसके साथ खरीद के बिल अपलोड करें। स्टोर एडमिन जमा की जाँच करता है ताकि प्रोग्राम निष्पक्ष रहे और गलती या दुरुपयोग कम हो। स्वीकृति के बाद अंक उसी स्टोर के नियमों से जुड़ते हैं (जैसे रुपये से अंक)। ऐप में कभी भी बैलेंस, लेन-देन इतिहास और टियर प्रगति देख सकते हैं।';
 
   @override
   String get aboutUsOffersTitle => 'लीडरबोर्ड, ऑफ़र और अपडेट';
 
   @override
-  String get aboutUsOffersBody =>
-      'कई स्टोर लीडरबोर्ड चलाते हैं ताकि आप अपने प्रोग्राम में दूसरे बढ़ई के बीच अपनी रैंक देख सकें। आपको बैनर, ऑफ़र और घोषणाएँ भी मिलेंगी—मौसमी डील, बोनस अंक या विशेष प्रचार—ताकि स्टोर जो सुविधाएँ देता है वे छूटें नहीं।';
+  String get aboutUsOffersBody => 'कई स्टोर लीडरबोर्ड चलाते हैं ताकि आप अपने प्रोग्राम में दूसरे बढ़ई के बीच अपनी रैंक देख सकें। आपको बैनर, ऑफ़र और घोषणाएँ भी मिलेंगी—मौसमी डील, बोनस अंक या विशेष प्रचार—ताकि स्टोर जो सुविधाएँ देता है वे छूटें नहीं।';
 
   @override
   String get aboutUsFairnessTitle => 'स्वीकृति, पारदर्शिता और सहायता';
 
   @override
-  String get aboutUsFairnessBody =>
-      'हर बिल की जाँच होती है इसलिए समय लग सकता है। अस्वीकृति पर ऐप में कारण दिखना चाहिए या स्टोर टीम मार्गदर्शन देगी। लॉगिन, पिन, प्रोफ़ाइल या सूचना की समस्या हो तो ऐप के विकल्प और ज़रूरत पड़ने पर स्टोर से संपर्क करें। हम स्पष्ट नियम और लंबित, स्वीकृत व अस्वीकृत बिलों की स्पष्ट स्थिति पर ध्यान देते हैं।';
+  String get aboutUsFairnessBody => 'हर बिल की जाँच होती है इसलिए समय लग सकता है। अस्वीकृति पर ऐप में कारण दिखना चाहिए या स्टोर टीम मार्गदर्शन देगी। लॉगिन, पिन, प्रोफ़ाइल या सूचना की समस्या हो तो ऐप के विकल्प और ज़रूरत पड़ने पर स्टोर से संपर्क करें। हम स्पष्ट नियम और लंबित, स्वीकृत व अस्वीकृत बिलों की स्पष्ट स्थिति पर ध्यान देते हैं।';
 
   @override
   String get aboutUsStoresTitle => 'आपका स्टोर, आपका प्रोग्राम';
 
   @override
-  String get aboutUsStoresBody =>
-      'अंक, टियर और ऑफ़र उस हार्डवेयर स्टोर से जुड़े होते हैं जिसमें आप इस ऐप से जुड़े हैं। अलग-अलग स्टोर अलग नियम, रूपांतरण दर और लाभ रख सकते हैं। यदि आप एक से ज़्यादा स्टोर से खरीदते हैं तो हर संबंध आमतौर पर अलग होता है जब तक स्टोर अन्यथा न बताए—विवरण के लिए जिस स्टोर ने आपको जोड़ा है उससे पुष्टि करें।';
+  String get aboutUsStoresBody => 'अंक, टियर और ऑफ़र उस हार्डवेयर स्टोर से जुड़े होते हैं जिसमें आप इस ऐप से जुड़े हैं। अलग-अलग स्टोर अलग नियम, रूपांतरण दर और लाभ रख सकते हैं। यदि आप एक से ज़्यादा स्टोर से खरीदते हैं तो हर संबंध आमतौर पर अलग होता है जब तक स्टोर अन्यथा न बताए—विवरण के लिए जिस स्टोर ने आपको जोड़ा है उससे पुष्टि करें।';
 
   @override
-  String get aboutUsClosing =>
-      'बालाजी पॉइंट्स उपयोग करने के लिए धन्यवाद—हमें बढ़ई और उन स्टोर्स का साथ देने पर गर्व है जो आपके साथ भागीदार हैं।';
+  String get aboutUsClosing => 'बालाजी पॉइंट्स उपयोग करने के लिए धन्यवाद—हमें बढ़ई और उन स्टोर्स का साथ देने पर गर्व है जो आपके साथ भागीदार हैं।';
 
   @override
   String get aboutUsCreditsHeading => 'डिज़ाइन और विकास';
@@ -1476,20 +1429,17 @@ class AppLocalizationsHi extends AppLocalizations {
   String get onboardingSlide1Title => 'बिल जमा करें, अंक कमाएँ';
 
   @override
-  String get onboardingSlide1Body =>
-      'अपने हार्डवेयर खरीद के बिल अपलोड करें। जब आपका स्टोर उन्हें स्वीकार करता है, अंक आपके वॉलेट में जुड़ जाते हैं।';
+  String get onboardingSlide1Body => 'अपने हार्डवेयर खरीद के बिल अपलोड करें। जब आपका स्टोर उन्हें स्वीकार करता है, अंक आपके वॉलेट में जुड़ जाते हैं।';
 
   @override
   String get onboardingSlide2Title => 'अपने पुरस्कार देखें';
 
   @override
-  String get onboardingSlide2Body =>
-      'अपना बैलेंस, टियर और लीडरबोर्ड रैंक देखें। आप जैसे बढ़ई के लिए बनाए गए ऑफ़र देखें।';
+  String get onboardingSlide2Body => 'अपना बैलेंस, टियर और लीडरबोर्ड रैंक देखें। आप जैसे बढ़ई के लिए बनाए गए ऑफ़र देखें।';
 
   @override
   String get onboardingSlide3Title => 'अपडेट रहें';
 
   @override
-  String get onboardingSlide3Body =>
-      'बिल स्वीकृत या अस्वीकृत होने पर सूचना पाएं। कभी भी प्रोफ़ाइल और पसंद प्रबंधित करें।';
+  String get onboardingSlide3Body => 'बिल स्वीकृत या अस्वीकृत होने पर सूचना पाएं। कभी भी प्रोफ़ाइल और पसंद प्रबंधित करें।';
 }

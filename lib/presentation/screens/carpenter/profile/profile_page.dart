@@ -14,8 +14,10 @@ import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
-import 'package:balaji_points/services/user/user_points_sync_service.dart';
+import 'package:balaji_points/providers/home_provider.dart';
+import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/services/user/user_service.dart';
+import 'package:balaji_points/services/user/user_points_sync_service.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   final bool showBottomNav;
@@ -31,12 +33,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   final UserService _userService = UserService();
   final SessionService _sessionService = SessionService();
   final FCMService _fcmService = FCMService();
-  final UserPointsSyncService _userPointsSyncService = UserPointsSyncService();
 
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
   String _appVersion = '';
-  VoidCallback? _userPointsListener;
 
   @override
   void initState() {
@@ -44,7 +44,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     WidgetsBinding.instance.addObserver(this);
     _loadUserData();
     _loadAppVersion();
-    _subscribeUserPoints();
   }
 
   @override
@@ -52,22 +51,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
       _loadUserData();
-      _subscribeUserPoints();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if (_userPointsListener != null) {
-      _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
-    }
     super.dispose();
   }
 
   Future<void> _handleRefresh() async {
-    await _loadUserData();
-    await _subscribeUserPoints();
+    await ref.read(carpenterPointsProvider.notifier).refresh();
+    await _loadUserData(forceRefresh: true);
   }
 
   Future<void> _loadAppVersion() async {
@@ -97,29 +92,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         );
       }
       if (mounted) {
+        final profileData = data != null ? Map<String, dynamic>.from(data) : null;
+        profileData?.remove('totalPoints');
+        profileData?.remove('tier');
+
         setState(() {
-          _userData = data;
+          _userData = profileData;
           _isLoading = false;
         });
       }
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  Future<void> _subscribeUserPoints() async {
-    if (_userPointsListener != null) {
-      _userPointsSyncService.pointsData.removeListener(_userPointsListener!);
-    }
-    _userPointsListener = () {
-      if (!mounted) return;
-      final data = _userPointsSyncService.pointsData.value;
-      if (data == null) return;
-      setState(() => _userData = {...?_userData, ...data});
-    };
-    _userPointsSyncService.pointsData.addListener(_userPointsListener!);
-    await _userPointsSyncService.start();
-    _userPointsListener?.call();
   }
 
   String _displayName() {
@@ -129,9 +113,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     final full = '$first $last'.trim();
     return full.isEmpty ? 'User' : full;
   }
-
-  String _tier() => _userData?['tier'] as String? ?? 'Bronze';
-  num _points() => _userData?['totalPoints'] ?? 0;
 
   Future<void> _handleLogout(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -169,6 +150,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     if (shouldLogout == true && context.mounted) {
       try {
         await _fcmService.deleteToken();
+        ref.read(carpenterPointsProvider.notifier).resetForLogout();
+        ref.invalidate(homeProvider);
+        ref.invalidate(walletProvider);
         await _sessionService.clearSession();
         if (context.mounted) context.go('/login');
       } catch (e) {
@@ -617,6 +601,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final carpenterPoints = ref.watch(carpenterPointsProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -783,7 +768,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           size: 18),
                                       const SizedBox(width: 4),
                                       Text(
-                                        '${_points()}',
+                                        carpenterPoints.formattedPoints,
                                         style: AppTypography.labelLarge(
                                           color: context.themePrimary,
                                         ).copyWith(fontWeight: FontWeight.w600),
@@ -799,7 +784,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                               AppRadius.md12,
                                         ),
                                         child: Text(
-                                          _tier(),
+                                          carpenterPoints.tier,
                                           style: AppTypography.labelSmall(
                                             color: context.themeSecondary,
                                           ).copyWith(fontWeight: FontWeight.w600),

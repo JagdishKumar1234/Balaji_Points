@@ -143,22 +143,34 @@ class PointsSyncRepairService {
         };
       }
 
-      // Step 1: Remove duplicates (keep first occurrence of each billId)
+      // Step 1: Remove duplicates (keep highest points per billId)
       AppLogger.info('Step 1: Removing duplicate entries...');
-      final seenBills = <String>{};
+      final bestByBillId = <String, Map<String, dynamic>>{};
       final cleanedHistory = <Map<String, dynamic>>[];
 
       for (final entry in history) {
         final entryMap = Map<String, dynamic>.from(entry as Map);
         final billId = entryMap['billId'] as String? ?? '';
 
-        if (billId.isEmpty || !seenBills.contains(billId)) {
+        if (billId.isEmpty) {
           cleanedHistory.add(entryMap);
-          if (billId.isNotEmpty) {
-            seenBills.add(billId);
-          }
+          continue;
+        }
+
+        final points = (entryMap['points'] as num?)?.toDouble() ?? 0;
+        final existing = bestByBillId[billId];
+        if (existing == null) {
+          bestByBillId[billId] = entryMap;
+          continue;
+        }
+
+        final existingPoints = (existing['points'] as num?)?.toDouble() ?? 0;
+        if (points > existingPoints) {
+          bestByBillId[billId] = entryMap;
         }
       }
+
+      cleanedHistory.addAll(bestByBillId.values);
 
       AppLogger.info('  Removed ${history.length - cleanedHistory.length} duplicates');
       AppLogger.info('  Kept ${cleanedHistory.length} unique entries');
@@ -171,11 +183,11 @@ class PointsSyncRepairService {
         correctTotal += points;
       }
 
-      final newTotal = correctTotal.toInt();
+      final newTotal = correctTotal;
       AppLogger.info('  Calculated total: $newTotal');
 
       // Step 3: Calculate new tier
-      final newTier = _calculateTier(newTotal);
+      final newTier = _calculateTier(newTotal.round());
       AppLogger.info('  New tier: $newTier');
 
       // Step 4: Update both collections atomically

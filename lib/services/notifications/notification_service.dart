@@ -321,7 +321,7 @@ class NotificationService {
   /// Send points withdrawn notification
   Future<bool> sendPointsWithdrawnNotification({
     required String userId,
-    required int points,
+    required num points,
     required double amount,
     required String billId,
   }) async {
@@ -330,7 +330,7 @@ class NotificationService {
       type: NotificationType.pointsWithdrawn,
       title: 'Points Withdrawn',
       body:
-          '$points points have been withdrawn from your account for bill ₹${amount.toStringAsFixed(0)}.',
+          '${points.toStringAsFixed(2)} points have been withdrawn from your account for bill ₹${amount.toStringAsFixed(0)}.',
       data: {
         'billId': billId,
         'points': points,

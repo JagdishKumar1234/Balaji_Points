@@ -99,7 +99,7 @@ class _Bootstrap extends StatelessWidget {
     }
   }
 
-  static late final Future<void> _initFuture = _init();
+  static final Future<void> _initFuture = _init();
 
   @override
   Widget build(BuildContext context) {

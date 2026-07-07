@@ -119,8 +119,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithPin => 'Continue with PIN';
 
   @override
-  String get loginInfo =>
-      'Login using your registered phone number. You will receive an OTP to verify.';
+  String get loginInfo => 'Login using your registered phone number. You will receive an OTP to verify.';
 
   @override
   String get poweredBy => 'Powered by';
@@ -189,38 +188,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPinTitle => 'Reset PIN';
 
   @override
-  String get resetPinSubtitle =>
-      'Enter your registered mobile number to reset your PIN.';
+  String get resetPinSubtitle => 'Enter your registered mobile number to reset your PIN.';
 
   @override
-  String get mustBeLoggedInToResetPin =>
-      'You must be logged in to reset your PIN. Please login first.';
+  String get mustBeLoggedInToResetPin => 'You must be logged in to reset your PIN. Please login first.';
 
   @override
-  String get canOnlyResetOwnPin =>
-      'You can only reset your own PIN. Phone number must match your logged-in account.';
+  String get canOnlyResetOwnPin => 'You can only reset your own PIN. Phone number must match your logged-in account.';
 
   @override
-  String get enterCurrentPin =>
-      'Please enter your current PIN to verify ownership.';
+  String get enterCurrentPin => 'Please enter your current PIN to verify ownership.';
 
   @override
   String get currentPinLabel => 'Current PIN';
 
   @override
-  String get newPinMustBeDifferent =>
-      'New PIN must be different from your current PIN.';
+  String get newPinMustBeDifferent => 'New PIN must be different from your current PIN.';
 
   @override
-  String get contactAdminForPinReset =>
-      'You must be logged in to reset your PIN. If you forgot your PIN, please contact admin for assistance.';
+  String get contactAdminForPinReset => 'You must be logged in to reset your PIN. If you forgot your PIN, please contact admin for assistance.';
 
   @override
   String get forgotCurrentPin => 'Forgot your current PIN?';
 
   @override
-  String get forgotPinHelp =>
-      'If you don\'t remember your current PIN, please contact our support team for assistance.';
+  String get forgotPinHelp => 'If you don\'t remember your current PIN, please contact our support team for assistance.';
 
   @override
   String get adminSupportInfo => 'Admin Support';
@@ -237,8 +229,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get adminResetPinSubtitle =>
-      'Enter a new 4-digit PIN for this carpenter.';
+  String get adminResetPinSubtitle => 'Enter a new 4-digit PIN for this carpenter.';
 
   @override
   String adminResetPinConfirm(String carpenterName) {
@@ -254,8 +245,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminResetPinFailed => 'Failed to reset PIN. Please try again.';
 
   @override
-  String get adminNotAuthorized =>
-      'You are not authorized to perform this action.';
+  String get adminNotAuthorized => 'You are not authorized to perform this action.';
 
   @override
   String get enterNewPinForCarpenter => 'Enter new 4-digit PIN';
@@ -309,8 +299,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rememberMe => 'Remember Me';
 
   @override
-  String get accountExistsUseReset =>
-      'Account already exists. Please use Reset PIN to change your PIN.';
+  String get accountExistsUseReset => 'Account already exists. Please use Reset PIN to change your PIN.';
 
   @override
   String get home => 'Home';
@@ -349,8 +338,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeRankingsSectionTitle => 'Rankings & daily winner';
 
   @override
-  String get homeRankingsSectionSubtitle =>
-      'Leaderboard, your rank, and today’s prize';
+  String get homeRankingsSectionSubtitle => 'Leaderboard, your rank, and today’s prize';
 
   @override
   String get drawerProductsTitle => 'Products';
@@ -386,8 +374,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get routeErrorTitle => 'Page not found';
 
   @override
-  String get routeErrorNotFound =>
-      'This link is invalid or the page was removed.';
+  String get routeErrorNotFound => 'This link is invalid or the page was removed.';
 
   @override
   String get routeErrorGoHome => 'Go home';
@@ -441,12 +428,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileIncomplete => 'Profile Incomplete';
 
   @override
-  String get completeProfileMessage =>
-      'Please complete your profile to start adding bills and earning points';
+  String get completeProfileMessage => 'Please complete your profile to start adding bills and earning points';
 
   @override
-  String get completeProfileDetails =>
-      'Add your first name, last name, and profile picture to continue';
+  String get completeProfileDetails => 'Add your first name, last name, and profile picture to continue';
 
   @override
   String get completeNow => 'Complete Now';
@@ -494,8 +479,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get needHelp => 'Need Help?';
 
   @override
-  String get contactSupport =>
-      'Contact our support team for any queries or issues.';
+  String get contactSupport => 'Contact our support team for any queries or issues.';
 
   @override
   String get supportPhone1 => '96006 - 09121';
@@ -636,8 +620,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailySpinCompleted => 'You have already spun today';
 
   @override
-  String get comeBackTomorrow =>
-      'Come back tomorrow for another chance to win!';
+  String get comeBackTomorrow => 'Come back tomorrow for another chance to win!';
 
   @override
   String nextSpinIn(int hours, int minutes) {
@@ -730,8 +713,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorOccurred => 'An error occurred';
 
   @override
-  String get networkError =>
-      'Network error. Please check your internet connection.';
+  String get networkError => 'Network error. Please check your internet connection.';
 
   @override
   String get permissionDenied => 'Permission denied';
@@ -752,23 +734,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configError => 'Configuration error';
 
   @override
-  String get missingClientId =>
-      'SHA-1 fingerprint missing in Firebase. Please run: scripts/get_sha1.sh';
+  String get missingClientId => 'SHA-1 fingerprint missing in Firebase. Please run: scripts/get_sha1.sh';
 
   @override
   String get tooManyRequests => 'Too many requests. Please wait a few minutes.';
 
   @override
-  String get invalidVerificationCode =>
-      'Invalid OTP code. Please check and try again.';
+  String get invalidVerificationCode => 'Invalid OTP code. Please check and try again.';
 
   @override
-  String get verificationExpired =>
-      'Verification expired. Please request a new OTP.';
+  String get verificationExpired => 'Verification expired. Please request a new OTP.';
 
   @override
-  String get userDisabled =>
-      'This account has been disabled. Please contact support.';
+  String get userDisabled => 'This account has been disabled. Please contact support.';
 
   @override
   String get fieldRequired => 'This field is required';
@@ -929,8 +907,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rejectBill => 'Reject Bill';
 
   @override
-  String get rejectBillConfirmation =>
-      'Are you sure you want to reject this bill?';
+  String get rejectBillConfirmation => 'Are you sure you want to reject this bill?';
 
   @override
   String get billRejectedSuccess => 'Bill Rejected';
@@ -960,8 +937,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteOffer => 'Delete Offer';
 
   @override
-  String get deleteOfferConfirmation =>
-      'Are you sure you want to delete this offer? This action cannot be undone.';
+  String get deleteOfferConfirmation => 'Are you sure you want to delete this offer? This action cannot be undone.';
 
   @override
   String get offerDeletedSuccess => 'Offer deleted successfully';
@@ -976,8 +952,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noOffersCreated => 'No Offers Created';
 
   @override
-  String get createFirstOffer =>
-      'Create your first offer with points and banner';
+  String get createFirstOffer => 'Create your first offer with points and banner';
 
   @override
   String get active => 'Active';
@@ -1098,12 +1073,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteCarpenter => 'Delete Carpenter';
 
   @override
-  String get deleteCarpenterConfirmation =>
-      'Are you sure you want to delete this carpenter? This will permanently delete:\n\n• User account\n• All points and transaction history\n• All submitted bills\n• All offer redemptions\n\nThis action cannot be undone.';
+  String get deleteCarpenterConfirmation => 'Are you sure you want to delete this carpenter? This will permanently delete:\n\n• User account\n• All points and transaction history\n• All submitted bills\n• All offer redemptions\n\nThis action cannot be undone.';
 
   @override
-  String get deleteCarpenterWarning =>
-      'Deleting a carpenter will permanently remove all their data from the system. This action cannot be undone.';
+  String get deleteCarpenterWarning => 'Deleting a carpenter will permanently remove all their data from the system. This action cannot be undone.';
 
   @override
   String get carpenterDeletedSuccess => 'Carpenter deleted successfully';
@@ -1127,15 +1100,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifyAndCreate => 'Verify & Create';
 
   @override
-  String get adminSignOutNote =>
-      'Note: The app will sign in as the verified carpenter temporarily during OTP verification and then sign out. The admin must sign in again.';
+  String get adminSignOutNote => 'Note: The app will sign in as the verified carpenter temporarily during OTP verification and then sign out. The admin must sign in again.';
 
   @override
   String get carpenterCreated => 'Carpenter created';
 
   @override
-  String get carpenterCreatedMessage =>
-      'Carpenter account created successfully. The app has signed in as that carpenter during verification and has now signed out. You will need to sign in again as admin.';
+  String get carpenterCreatedMessage => 'Carpenter account created successfully. The app has signed in as that carpenter during verification and has now signed out. You will need to sign in again as admin.';
 
   @override
   String get enterValidPhone => 'Enter a valid phone number';
@@ -1251,8 +1222,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discardChanges => 'Discard Changes?';
 
   @override
-  String get discardChangesMessage =>
-      'You have unsaved changes. Do you want to discard them?';
+  String get discardChangesMessage => 'You have unsaved changes. Do you want to discard them?';
 
   @override
   String get discard => 'Discard';
@@ -1270,8 +1240,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discardBill => 'Discard Bill?';
 
   @override
-  String get discardBillMessage =>
-      'You have unsaved bill data. Do you want to discard it?';
+  String get discardBillMessage => 'You have unsaved bill data. Do you want to discard it?';
 
   @override
   String get pleaseCompleteProfile => 'Please complete your profile';
@@ -1301,12 +1270,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectBillDateOptional => 'Select bill date (optional)';
 
   @override
-  String get enterStoreOrVendorNameOptional =>
-      'Enter store or vendor name (optional)';
+  String get enterStoreOrVendorNameOptional => 'Enter store or vendor name (optional)';
 
   @override
-  String get enterBillOrInvoiceNumberOptional =>
-      'Enter bill or invoice number (optional)';
+  String get enterBillOrInvoiceNumberOptional => 'Enter bill or invoice number (optional)';
 
   @override
   String get addAnyAdditionalNotes => 'Add any additional notes...';
@@ -1321,15 +1288,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withdrawBill => 'Withdraw Bill';
 
   @override
-  String get withdrawBillConfirmation =>
-      'Are you sure you want to withdraw this approved bill? This will reverse the points awarded to the carpenter.';
+  String get withdrawBillConfirmation => 'Are you sure you want to withdraw this approved bill? This will reverse the points awarded to the carpenter.';
 
   @override
   String get withdraw => 'Withdraw';
 
   @override
-  String get billWithdrawnSuccess =>
-      'Bill withdrawn successfully. Points have been reversed.';
+  String get billWithdrawnSuccess => 'Bill withdrawn successfully. Points have been reversed.';
 
   @override
   String get failedToWithdrawBill => 'Failed to withdraw bill';
@@ -1419,40 +1384,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutUsOverviewTitle => 'What is Balaji Points?';
 
   @override
-  String get aboutUsOverviewBody =>
-      'Balaji Points is a digital loyalty platform for carpenters and hardware stores. It helps you turn eligible material purchases into points, rewards, and recognition. You use the app to submit bills; the hardware store you are enrolled with reviews and approves them; your wallet and history update automatically so you always know where you stand.';
+  String get aboutUsOverviewBody => 'Balaji Points is a digital loyalty platform for carpenters and hardware stores. It helps you turn eligible material purchases into points, rewards, and recognition. You use the app to submit bills; the hardware store you are enrolled with reviews and approves them; your wallet and history update automatically so you always know where you stand.';
 
   @override
   String get aboutUsEarningTitle => 'How you earn points';
 
   @override
-  String get aboutUsEarningBody =>
-      'Upload purchase bills with clear photos, correct amounts, and any details your store asks for. Store admins review submissions to keep the program fair and prevent errors or misuse. After approval, points are credited using that store’s rules (for example, how rupees convert to points). You can track your balance, transaction history, and tier progress anytime in the app.';
+  String get aboutUsEarningBody => 'Upload purchase bills with clear photos, correct amounts, and any details your store asks for. Store admins review submissions to keep the program fair and prevent errors or misuse. After approval, points are credited using that store’s rules (for example, how rupees convert to points). You can track your balance, transaction history, and tier progress anytime in the app.';
 
   @override
   String get aboutUsOffersTitle => 'Leaderboards, offers, and updates';
 
   @override
-  String get aboutUsOffersBody =>
-      'Many stores run a leaderboard so you can see how you rank among carpenters in their program. You will also see offers, banners, and announcements—seasonal deals, bonus point events, or special promotions—so you do not miss opportunities that your store enables for you.';
+  String get aboutUsOffersBody => 'Many stores run a leaderboard so you can see how you rank among carpenters in their program. You will also see offers, banners, and announcements—seasonal deals, bonus point events, or special promotions—so you do not miss opportunities that your store enables for you.';
 
   @override
   String get aboutUsFairnessTitle => 'Approvals, transparency, and support';
 
   @override
-  String get aboutUsFairnessBody =>
-      'Reviews can take a short time because each bill is checked carefully. If something is rejected, you should see a reason or get guidance from your store’s team. For login, PIN, profile, or notification issues, use the options inside the app and contact your store when needed. We focus on clear rules and visible status for pending, approved, and rejected bills.';
+  String get aboutUsFairnessBody => 'Reviews can take a short time because each bill is checked carefully. If something is rejected, you should see a reason or get guidance from your store’s team. For login, PIN, profile, or notification issues, use the options inside the app and contact your store when needed. We focus on clear rules and visible status for pending, approved, and rejected bills.';
 
   @override
   String get aboutUsStoresTitle => 'Your store, your program';
 
   @override
-  String get aboutUsStoresBody =>
-      'Points, tiers, and offers are tied to the hardware store you joined in this app. Different stores may use different rules, conversion rates, and benefits. If you buy from more than one participating store, each relationship is usually separate unless the stores tell you otherwise—always confirm details with the store that enrolled you.';
+  String get aboutUsStoresBody => 'Points, tiers, and offers are tied to the hardware store you joined in this app. Different stores may use different rules, conversion rates, and benefits. If you buy from more than one participating store, each relationship is usually separate unless the stores tell you otherwise—always confirm details with the store that enrolled you.';
 
   @override
-  String get aboutUsClosing =>
-      'Thank you for using Balaji Points—we are proud to support carpenters and the stores that partner with you.';
+  String get aboutUsClosing => 'Thank you for using Balaji Points—we are proud to support carpenters and the stores that partner with you.';
 
   @override
   String get aboutUsCreditsHeading => 'Designed and developed by';
@@ -1470,20 +1429,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSlide1Title => 'Submit bills, earn points';
 
   @override
-  String get onboardingSlide1Body =>
-      'Upload your hardware purchase bills. When your store approves them, points are added to your wallet.';
+  String get onboardingSlide1Body => 'Upload your hardware purchase bills. When your store approves them, points are added to your wallet.';
 
   @override
   String get onboardingSlide2Title => 'Track your rewards';
 
   @override
-  String get onboardingSlide2Body =>
-      'See your balance, tier, and leaderboard rank. Browse offers made for carpenters like you.';
+  String get onboardingSlide2Body => 'See your balance, tier, and leaderboard rank. Browse offers made for carpenters like you.';
 
   @override
   String get onboardingSlide3Title => 'Stay in the loop';
 
   @override
-  String get onboardingSlide3Body =>
-      'Get notified when bills are approved or rejected. Manage your profile and preferences anytime.';
+  String get onboardingSlide3Body => 'Get notified when bills are approved or rejected. Manage your profile and preferences anytime.';
 }

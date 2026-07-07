@@ -14,6 +14,7 @@ import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/platform/app_startup_service.dart';
 import 'package:balaji_points/services/platform/onboarding_prefs.dart';
+import 'package:balaji_points/services/user/user_points_sync_service.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -75,6 +76,8 @@ class _SplashPageState extends State<SplashPage> {
         } else if (normalizedRole == 'admin') {
           context.go('/admin');
         } else {
+          await UserPointsSyncService().syncNow(force: true);
+          if (!mounted) return;
           context.go('/');
         }
       } else {

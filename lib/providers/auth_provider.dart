@@ -4,6 +4,9 @@ import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
+import 'package:balaji_points/services/user/user_points_sync_service.dart';
+import 'package:balaji_points/providers/home_provider.dart';
+import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/core/logger.dart';
 
 // ─── Service providers ────────────────────────────────────────────────────────
@@ -207,6 +210,12 @@ class AuthNotifier extends Notifier<AuthState> {
         createdAt: DateTime.now(),
       );
 
+      if (role == 'carpenter') {
+        ref.invalidate(homeProvider);
+        ref.invalidate(walletProvider);
+        await ref.read(carpenterPointsProvider.notifier).prepareForSession();
+      }
+
       AppLogger.auth('Login: ${user.displayName} · $role');
       state = AuthAuthenticated(user, role: role);
     } catch (e) {
@@ -349,6 +358,9 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> logout() async {
     try {
+      ref.read(carpenterPointsProvider.notifier).resetForLogout();
+      ref.invalidate(homeProvider);
+      ref.invalidate(walletProvider);
       await _session.clearSession();
       state = const AuthUnauthenticated();
     } catch (e) {

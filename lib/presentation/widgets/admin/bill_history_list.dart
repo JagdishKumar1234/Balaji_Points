@@ -304,7 +304,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         final amount = (bill['amount'] ?? 0) as num;
         final amountDouble = amount.toDouble();
         final points =
-            (bill['pointsEarned'] ?? (amountDouble / 1000).floor()) as num;
+            (bill['pointsEarned'] ?? (amountDouble / 1000)) as num;
         final status = (bill['status'] ?? '') as String;
         final phone = (bill['carpenterPhone'] ?? '') as String;
         final billDate = bill['billDate'] as Timestamp?;
@@ -322,7 +322,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
           'carpenterName': carpenterName,
           'phone': phone,
           'amount': amountDouble,
-          'points': points.toInt(),
+          'points': points.toDouble(),
           'status': status == 'approved' ? 'Approved' : 'Rejected',
         });
       }
@@ -945,7 +945,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
 
                   // Extract points earned (for approved bills)
                   final points =
-                      bill['pointsEarned'] ?? (amount / 1000).floor();
+                      bill['pointsEarned'] ?? (amount / 1000);
 
                   return FutureBuilder<Map<String, dynamic>?>(
                     future: _fetchCarpenterData(carpenterId),

@@ -40,7 +40,8 @@
       "Bash(firebase deploy *)",
       "Bash(perl -0777 -i -pe ' *)",
       "Bash(python3 - lib/presentation/widgets/carpenter/daily_spin_scanner.dart lib/presentation/widgets/carpenter/daily_spin_wheel.dart)",
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "Bash(git remote *)"
     ]
   }
 }

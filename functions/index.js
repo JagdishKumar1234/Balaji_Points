@@ -162,6 +162,16 @@ exports.onBillStatusChanged = onDocumentWritten(
           return null;
         }
 
+        // Client-side BillService.approveBill() already credits points, writes
+        // history, and queues notifications in one Firestore transaction.
+        // Skip server-side credit to avoid duplicate history / wrong totals.
+        if (after.approvedBy) {
+          console.log(
+              `[bill/${billId}] approved – client handled points/notifications, skipping`,
+          );
+          return null;
+        }
+
         const user = await resolveUserDoc(carpenterId);
         if (!user) {
           console.error(`[bill/${billId}] user not found for carpenter ${carpenterId}`);
@@ -179,12 +189,29 @@ exports.onBillStatusChanged = onDocumentWritten(
           return null;
         }
 
-        const pointsEarned = Math.floor(amount / 1000);
-        const currentPoints = user.data.totalPoints || 0;
+        const uid = user.ref.id;
+        const pointsRef = db.collection("user_points").doc(uid);
+        const pointsSnap = await pointsRef.get();
+
+        // Idempotency: bill may already be credited via another path.
+        if (pointsSnap.exists) {
+          const history = pointsSnap.data().pointsHistory || [];
+          if (history.some((entry) => entry.billId === billId)) {
+            console.log(`[bill/${billId}] already in pointsHistory – skipping`);
+            return null;
+          }
+        }
+
+        // 1 point per ₹1000 (supports decimals, e.g. ₹2500 → 2.5 pts).
+        const pointsEarned = after.pointsEarned != null ?
+          Number(after.pointsEarned) :
+          amount / 1000;
+        const currentPoints = pointsSnap.exists ?
+          (pointsSnap.data().totalPoints || 0) :
+          (user.data.totalPoints || 0);
         const newTotalPoints = currentPoints + pointsEarned;
         const oldTier = user.data.tier || "Bronze";
         const newTier = calculateTier(newTotalPoints);
-        const uid = user.ref.id;
 
         const batch = db.batch();
 
@@ -196,8 +223,6 @@ exports.onBillStatusChanged = onDocumentWritten(
         }, {merge: true});
 
         // 2. Update user_points doc
-        const pointsRef = db.collection("user_points").doc(uid);
-        const pointsSnap = await pointsRef.get();
         const historyEntry = {
           points: pointsEarned,
           reason: "Bill approval",

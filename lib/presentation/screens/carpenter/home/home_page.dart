@@ -15,7 +15,9 @@ import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/home_provider.dart';
+import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
+import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_drawer.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_feature_highlights.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_hero_card.dart';
@@ -150,6 +152,9 @@ class _HomePageState extends ConsumerState<HomePage>
     if (shouldLogout == true && context.mounted) {
       try {
         await _fcmService.deleteToken();
+        ref.read(carpenterPointsProvider.notifier).resetForLogout();
+        ref.invalidate(homeProvider);
+        ref.invalidate(walletProvider);
         await _sessionService.clearSession();
         if (context.mounted) context.go('/login');
       } catch (e) {
@@ -170,6 +175,17 @@ class _HomePageState extends ConsumerState<HomePage>
     super.build(context);
 
     final homeState = ref.watch(homeProvider);
+    final carpenterPoints = ref.watch(carpenterPointsProvider);
+    final pointsReady = carpenterPoints.loaded;
+    final displayHomeState = pointsReady
+        ? homeState.copyWith(
+            points: carpenterPoints.totalPoints,
+            userData: homeState.userData != null
+                ? {...homeState.userData!, 'tier': carpenterPoints.tier}
+                : homeState.userData,
+          )
+        : homeState;
+    final showHeroLoading = homeState.loading || !pointsReady;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final mq = MediaQuery.of(context);
@@ -293,9 +309,9 @@ class _HomePageState extends ConsumerState<HomePage>
                 children: [
                   // Hero card
                   RepaintBoundary(
-                    child: homeState.loading
+                    child: showHeroLoading
                         ? const HomeHeroCardShimmer()
-                        : HomeHeroCard(homeState: homeState),
+                        : HomeHeroCard(homeState: displayHomeState),
                   ).fadeIn(),
 
                   const SizedBox(height: AppSpacing.md),
@@ -341,7 +357,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
                   // Your Position — standalone card
                   RepaintBoundary(
-                    child: HomeYourPositionCard(homeState: homeState),
+                    child: HomeYourPositionCard(homeState: displayHomeState),
                   ).enterCard(delay: AppAnimations.stagger(5)),
 
                   if (homeState.userRank != null)

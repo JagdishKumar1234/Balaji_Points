@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:balaji_points/services/auth/session_service.dart';
@@ -103,27 +102,28 @@ class HomeNotifier extends Notifier<HomeState> {
   final _firestore = FirebaseFirestore.instance;
   final _session = SessionService();
   final _userService = UserService();
-  final _syncService = UserPointsSyncService();
   final _cartService = CartService();
-  VoidCallback? _pointsListener;
 
   @override
   HomeState build() {
-    ref.onDispose(_dispose);
+    ref.listen(carpenterPointsProvider, (prev, next) {
+      if (!next.loaded) return;
+      state = state.copyWith(
+        points: next.totalPoints,
+        userData: state.userData != null
+            ? {...state.userData!, 'tier': next.tier}
+            : state.userData,
+      );
+    });
     _load();
     return const HomeState();
-  }
-
-  void _dispose() {
-    if (_pointsListener != null) {
-      _syncService.pointsData.removeListener(_pointsListener!);
-    }
   }
 
   // ── Public API ──────────────────────────────────────────────────────────────
 
   Future<void> refresh() async {
     state = state.copyWith(loading: true);
+    await ref.read(carpenterPointsProvider.notifier).refresh();
     await _load();
   }
 
@@ -136,6 +136,7 @@ class HomeNotifier extends Notifier<HomeState> {
 
   Future<void> _load() async {
     try {
+      await ref.read(carpenterPointsProvider.notifier).ensureLoaded();
       await _loadUser();
       await Future.wait([_loadOffers(), _refreshRankings()]);
       state = state.copyWith(loading: false);
@@ -150,17 +151,22 @@ class HomeNotifier extends Notifier<HomeState> {
       final data = await _userService.getCurrentUserData();
       final docId = await _resolveDocId();
       final userId = await _session.getUserId();
+      final carpenterPoints = ref.read(carpenterPointsProvider);
 
-      final pts = _asDouble(data?['totalPoints']);
+      // Profile fields from users; points/tier always from user_points.
+      final profileData = data != null ? Map<String, dynamic>.from(data) : null;
+      profileData?.remove('totalPoints');
 
       state = state.copyWith(
-        userData: data,
-        points: pts,
+        userData: profileData != null
+            ? {
+                ...profileData,
+                if (carpenterPoints.loaded) 'tier': carpenterPoints.tier,
+              }
+            : profileData,
+        points: carpenterPoints.loaded ? carpenterPoints.totalPoints : state.points,
         userDocId: docId,
       );
-
-      // Subscribe to real-time points updates
-      _startPointsSync();
 
       // Subscribe cart count
       if (userId != null) {
@@ -173,23 +179,6 @@ class HomeNotifier extends Notifier<HomeState> {
     } catch (e) {
       AppLogger.error('HomeNotifier _loadUser failed', e);
     }
-  }
-
-  Future<void> _startPointsSync() async {
-    // Create listener only once
-    if (_pointsListener == null) {
-      _pointsListener = () {
-        final data = _syncService.pointsData.value;
-        if (data == null) return;
-        state = state.copyWith(points: _asDouble(data['totalPoints']));
-      };
-      // Add listener only once (don't remove and re-add)
-      _syncService.pointsData.addListener(_pointsListener!);
-    }
-    // Start the service (it handles duplicate subscriptions internally)
-    await _syncService.start();
-    // Call listener to sync current value
-    _pointsListener?.call();
   }
 
   Future<void> _loadOffers() async {
@@ -315,11 +304,6 @@ class HomeNotifier extends Notifier<HomeState> {
   static int _asInt(dynamic v) {
     if (v is num) return v.toInt();
     return int.tryParse(v?.toString() ?? '') ?? 0;
-  }
-
-  static double _asDouble(dynamic v) {
-    if (v is num) return v.toDouble();
-    return double.tryParse(v?.toString() ?? '') ?? 0.0;
   }
 }
 

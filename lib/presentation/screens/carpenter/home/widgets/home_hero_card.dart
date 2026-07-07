@@ -1,12 +1,12 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:intl/intl.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/providers/home_provider.dart';
 
 // ---------------------------------------------------------------------------
@@ -77,7 +77,6 @@ class HomeHeroCard extends StatelessWidget {
     final hasValidImage = profileImage != null &&
         (profileImage.startsWith('http://') ||
             profileImage.startsWith('https://'));
-    final nf = NumberFormat.decimalPattern();
     final tier = homeState.tier;
     final tierColor = _tierColor(tier);
     final currentThreshold = _tierCurrentThreshold(tier);
@@ -267,7 +266,7 @@ class HomeHeroCard extends StatelessWidget {
                             children: [
                               _HeroStat(
                                 label: 'Total Points',
-                                value: nf.format(homeState.points),
+                                value: PointsUtils.formatPoints(homeState.points),
                                 valueColor: tierColor,
                                 textSecondary: textSecondary,
                               ),
@@ -277,7 +276,7 @@ class HomeHeroCard extends StatelessWidget {
                                 label: isPlatinum ? 'Status' : 'To $nextLabel',
                                 value: isPlatinum
                                     ? 'Max'
-                                    : nf.format(pointsToNext),
+                                    : PointsUtils.formatPoints(pointsToNext),
                                 valueColor: textPrimary,
                                 textSecondary: textSecondary,
                               ),

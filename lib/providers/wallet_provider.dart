@@ -1,12 +1,8 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:balaji_points/services/auth/session_service.dart';
-import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/core/logger.dart';
+import 'package:balaji_points/services/auth/session_service.dart';
 
 // ---------------------------------------------------------------------------
 // State
@@ -15,10 +11,6 @@ import 'package:balaji_points/core/logger.dart';
 class WalletState {
   final bool loading;
   final String? error;
-
-  // Points / tier
-  final double totalPoints;
-  final String tier;
 
   // Carpenter query IDs (userId + phone, for Firestore whereIn)
   final List<String> carpenterIds;
@@ -31,8 +23,6 @@ class WalletState {
   const WalletState({
     this.loading = true,
     this.error,
-    this.totalPoints = 0.0,
-    this.tier = 'Bronze',
     this.carpenterIds = const [],
     this.idsLoaded = false,
     this.pendingCount = 0,
@@ -42,8 +32,6 @@ class WalletState {
   WalletState copyWith({
     bool? loading,
     String? error,
-    double? totalPoints,
-    String? tier,
     List<String>? carpenterIds,
     bool? idsLoaded,
     int? pendingCount,
@@ -52,8 +40,6 @@ class WalletState {
       WalletState(
         loading: loading ?? this.loading,
         error: error ?? this.error,
-        totalPoints: totalPoints ?? this.totalPoints,
-        tier: tier ?? this.tier,
         carpenterIds: carpenterIds ?? this.carpenterIds,
         idsLoaded: idsLoaded ?? this.idsLoaded,
         pendingCount: pendingCount ?? this.pendingCount,
@@ -67,27 +53,15 @@ class WalletState {
 
 class WalletNotifier extends Notifier<WalletState> {
   final _session = SessionService();
-  final _syncService = UserPointsSyncService();
-  VoidCallback? _pointsListener;
 
   @override
   WalletState build() {
-    ref.onDispose(_dispose);
     _load();
     return const WalletState();
   }
 
-  void _dispose() {
-    if (_pointsListener != null) {
-      _syncService.pointsData.removeListener(_pointsListener!);
-    }
-  }
-
-  // ── Public API ──────────────────────────────────────────────────────────────
-
   Future<void> refresh() async {
     state = state.copyWith(loading: true);
-    await _syncService.refresh();
     await _loadCarpenterIds();
     state = state.copyWith(loading: false);
   }
@@ -95,11 +69,9 @@ class WalletNotifier extends Notifier<WalletState> {
   void updatePendingCount(int n) => state = state.copyWith(pendingCount: n);
   void updateApprovedCount(int n) => state = state.copyWith(approvedCount: n);
 
-  // ── Internal ────────────────────────────────────────────────────────────────
-
   Future<void> _load() async {
     try {
-      await Future.wait([_loadCarpenterIds(), _startPointsSync()]);
+      await _loadCarpenterIds();
       state = state.copyWith(loading: false);
     } catch (e, st) {
       AppLogger.error('WalletNotifier load failed', e, st);
@@ -115,31 +87,6 @@ class WalletNotifier extends Notifier<WalletState> {
       AppLogger.error('WalletNotifier ids load failed', e);
       state = state.copyWith(idsLoaded: true);
     }
-  }
-
-  Future<void> _startPointsSync() async {
-    // Create listener only once
-    if (_pointsListener == null) {
-      _pointsListener = () {
-        final data = _syncService.pointsData.value;
-        if (data == null) return;
-        state = state.copyWith(
-          totalPoints: _asDouble(data['totalPoints']),
-          tier: data['tier'] as String? ?? state.tier,
-        );
-      };
-      // Add listener only once (don't remove and re-add)
-      _syncService.pointsData.addListener(_pointsListener!);
-    }
-    // Start the service (it handles duplicate subscriptions internally)
-    await _syncService.start();
-    // Call listener to sync current value
-    _pointsListener?.call();
-  }
-
-  static double _asDouble(dynamic v) {
-    if (v is num) return v.toDouble();
-    return double.tryParse(v?.toString() ?? '') ?? 0.0;
   }
 }
 

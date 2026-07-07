@@ -10,10 +10,18 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/providers/wallet_provider.dart';
+import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+
+/// Collapse duplicate bill-approval rows (legacy cloud-function double credit).
+List<Map<String, dynamic>> _dedupePointsHistory(
+  List<Map<String, dynamic>> entries,
+) =>
+    PointsUtils.dedupeHistory(entries);
 
 class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
@@ -21,6 +29,8 @@ class WalletPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final walletState = ref.watch(walletProvider);
+    final carpenterPoints = ref.watch(carpenterPointsProvider);
+    final pointsLoading = !carpenterPoints.loaded;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final mq = MediaQuery.of(context);
@@ -42,7 +52,10 @@ class WalletPage extends ConsumerWidget {
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () => ref.read(walletProvider.notifier).refresh(),
+              onRefresh: () async {
+                await ref.read(carpenterPointsProvider.notifier).refresh();
+                await ref.read(walletProvider.notifier).refresh();
+              },
               color: context.themePrimary,
               backgroundColor: canvas,
               child: SingleChildScrollView(
@@ -57,11 +70,11 @@ class WalletPage extends ConsumerWidget {
                     const SizedBox(height: 14),
 
                     // Total points card
-                    walletState.loading
+                    walletState.loading || pointsLoading
                         ? _ShimmerPointsCard()
                         : _PointsCard(
-                            points: walletState.totalPoints,
-                            tier: walletState.tier,
+                            points: carpenterPoints.totalPoints,
+                            tier: carpenterPoints.tier,
                           ).enterCard(delay: AppAnimations.stagger(1)),
                     const SizedBox(height: 14),
 
@@ -205,7 +218,7 @@ class _PointsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final pointsDisplay = points.toStringAsFixed(2);
+    final pointsDisplay = PointsUtils.formatPoints(points);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -527,20 +540,22 @@ class _PointsHistoryTableState extends ConsumerState<_PointsHistoryTable> {
         }
 
         // Collect all history entries from all user_points docs
-        final allHistory = <Map<String, dynamic>>[];
-        double grandTotal = 0;
+        final rawHistory = <Map<String, dynamic>>[];
 
         if (snap.hasData) {
           for (final doc in snap.data!.docs) {
             final data = doc.data() as Map<String, dynamic>;
             final history = (data['pointsHistory'] as List<dynamic>?) ?? [];
             for (final entry in history) {
-              final entryMap = Map<String, dynamic>.from(entry as Map);
-              allHistory.add(entryMap);
-              final points = (entryMap['points'] as num?)?.toDouble() ?? 0;
-              grandTotal += points;
+              rawHistory.add(Map<String, dynamic>.from(entry as Map));
             }
           }
+        }
+
+        final allHistory = _dedupePointsHistory(rawHistory);
+        double grandTotal = 0;
+        for (final entry in allHistory) {
+          grandTotal += (entry['points'] as num?)?.toDouble() ?? 0;
         }
 
         if (allHistory.isEmpty) {

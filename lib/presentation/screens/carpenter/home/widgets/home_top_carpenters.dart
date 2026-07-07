@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/providers/home_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/shimmer_loading.dart';
@@ -492,7 +493,7 @@ class HomeYourPositionCard extends StatelessWidget {
                           color: AppColors.warning, size: 14),
                       const SizedBox(width: 4),
                       Text(
-                        '$pts pts',
+                        '${PointsUtils.formatPoints(pts)} pts',
                         style: AppTypography.labelMedium(color: AppColors.white),
                       ),
                     ],

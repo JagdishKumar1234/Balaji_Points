@@ -431,6 +431,18 @@ class BillService {
           final userPointsSnap = await transaction.get(userPointsRef);
           final userSnap = await transaction.get(userRef);
 
+          // Prevent duplicate credit for the same bill
+          if (userPointsSnap.exists) {
+            final existingHistory =
+                (userPointsSnap.data()?['pointsHistory'] as List?) ?? [];
+            for (final entry in existingHistory) {
+              final entryMap = Map<String, dynamic>.from(entry as Map);
+              if (entryMap['billId'] == billId) {
+                throw Exception('Bill already credited in points history');
+              }
+            }
+          }
+
           final currentPointsValue = userPointsSnap.exists
               ? (userPointsSnap.data()?['totalPoints'] ?? 0)
               : 0;
@@ -478,19 +490,21 @@ class BillService {
           AppLogger.debug('     - approvedBy: $adminUserId');
           AppLogger.info('  ✓ Bill updated in transaction');
 
-          // Step 6: Update tier in users doc
+          // Step 6: Keep users doc in sync with user_points (source of truth)
           AppLogger.debug('   ✍️  Step T4: Updating users doc in transaction...');
           transaction.set(
             userRef,
             {
+              'totalPoints': newTotalPoints,
               'tier': newTier,
               'lastUpdated': FieldValue.serverTimestamp(),
             },
             SetOptions(merge: true),
           );
           AppLogger.debug('   ✓ Users update enqueued');
+          AppLogger.debug('     - totalPoints: $currentPointsDouble → $newTotalPoints');
           AppLogger.debug('     - tier: $oldTier → $newTier (merge: true)');
-          AppLogger.info('  ✓ User tier updated in transaction');
+          AppLogger.info('  ✓ User doc synced in transaction');
 
           // Step 7: Update/create user_points with new total
           AppLogger.debug('   ✍️  Step T5: Updating user_points doc in transaction...');
@@ -730,7 +744,8 @@ class BillService {
         return false;
       }
 
-      final pointsEarned = (billData['pointsEarned'] as num?)?.toInt() ?? 0;
+      final pointsEarned =
+          (billData['pointsEarned'] as num?)?.toDouble() ?? 0.0;
 
       if (pointsEarned <= 0) {
         AppLogger.error(
