@@ -1103,6 +1103,37 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                     ),
                                               ),
                                             ],
+                                            // Site Name (NEW)
+                                            if ((bill['siteName'] as String?)?.isNotEmpty ?? false) ...[
+                                              const SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.location_on,
+                                                    size: 10,
+                                                    color: context
+                                                        .themeContentColor,
+                                                  ),
+                                                  const SizedBox(width: 3),
+                                                  Flexible(
+                                                    child: Text(
+                                                      bill['siteName'] as String? ??
+                                                          'N/A',
+                                                      style: AppTypography.bodySmall()
+                                                          .copyWith(
+                                                            fontSize: 10,
+                                                            color: context
+                                                                .themeContentColor,
+                                                            height: 1.2,
+                                                          ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ],
                                         ),
                                       ),

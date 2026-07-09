@@ -26,9 +26,8 @@ class AddBillPage extends StatefulWidget {
 class _AddBillPageState extends State<AddBillPage> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
-  final _storeNameController = TextEditingController();
-  final _billNumberController = TextEditingController();
-  final _notesController = TextEditingController();
+  final _siteNameController = TextEditingController();
+  final _vendorNameController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final BillService _billService = BillService();
   final UserService _userService = UserService();
@@ -40,9 +39,8 @@ class _AddBillPageState extends State<AddBillPage> {
 
   bool _hasFormData() {
     return _amountController.text.trim().isNotEmpty ||
-        _storeNameController.text.trim().isNotEmpty ||
-        _billNumberController.text.trim().isNotEmpty ||
-        _notesController.text.trim().isNotEmpty ||
+        _siteNameController.text.trim().isNotEmpty ||
+        _vendorNameController.text.trim().isNotEmpty ||
         _selectedImage != null ||
         _billDate != null;
   }
@@ -50,6 +48,7 @@ class _AddBillPageState extends State<AddBillPage> {
   @override
   void initState() {
     super.initState();
+    _billDate = DateTime.now();
     _checkProfileCompletion();
   }
 
@@ -132,9 +131,8 @@ class _AddBillPageState extends State<AddBillPage> {
   @override
   void dispose() {
     _amountController.dispose();
-    _storeNameController.dispose();
-    _billNumberController.dispose();
-    _notesController.dispose();
+    _siteNameController.dispose();
+    _vendorNameController.dispose();
     super.dispose();
   }
 
@@ -248,6 +246,17 @@ class _AddBillPageState extends State<AddBillPage> {
   Future<void> _submitBill() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final siteName = _siteNameController.text.trim();
+    if (siteName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Site name is required'),
+          backgroundColor: context.themeError,
+        ),
+      );
+      return;
+    }
+
     final billDate = _billDate ?? DateTime.now();
     final l10n = AppLocalizations.of(context);
     final amount = double.tryParse(_amountController.text.trim());
@@ -282,49 +291,74 @@ class _AddBillPageState extends State<AddBillPage> {
       }
 
       final carpenterId = await _sessionService.getUserId() ?? phoneNumber;
-      final success = await _billService.submitBill(
+
+      // Check for duplicate bill
+      final vendorName = _vendorNameController.text.trim().isEmpty
+          ? null
+          : _vendorNameController.text.trim();
+
+      final duplicateBill = await _billService.checkDuplicateBill(
         carpenterId: carpenterId,
-        carpenterPhone: phoneNumber,
-        amount: amount,
-        imageFile: _selectedImage,
+        vendorName: vendorName,
+        siteName: siteName,
+        billAmount: amount,
         billDate: billDate,
-        storeName: _storeNameController.text.trim().isEmpty
-            ? null
-            : _storeNameController.text.trim(),
-        billNumber: _billNumberController.text.trim().isEmpty
-            ? null
-            : _billNumberController.text.trim(),
-        notes: _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
       );
 
       if (mounted) {
-        setState(() => _isSubmitting = false);
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n?.billSubmitted ??
-                    'Bill submitted successfully! Admin will review it.',
-              ),
-              backgroundColor: AppColors.success,
-              duration: const Duration(seconds: 3),
-            ),
+        if (duplicateBill != null) {
+          setState(() => _isSubmitting = false);
+          // Show duplicate warning dialog
+          _showDuplicateWarningDialog(
+            duplicateBill,
+            carpenterId,
+            phoneNumber,
+            amount,
+            billDate,
+            siteName,
+            vendorName,
           );
-          Future.delayed(const Duration(seconds: 1), () {
-            if (mounted) context.pop();
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n?.billSubmitError ??
-                    'Failed to submit bill. Please try again.',
+          return;
+        }
+
+        // No duplicate, proceed with submission
+        final success = await _billService.submitBill(
+          carpenterId: carpenterId,
+          carpenterPhone: phoneNumber,
+          amount: amount,
+          imageFile: _selectedImage,
+          billDate: billDate,
+          storeName: siteName,
+          vendorName: vendorName,
+        );
+
+        if (mounted) {
+          setState(() => _isSubmitting = false);
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  l10n?.billSubmitted ??
+                      'Bill submitted successfully! Admin will review it.',
+                ),
+                backgroundColor: AppColors.success,
+                duration: const Duration(seconds: 3),
               ),
-              backgroundColor: context.themeError,
-            ),
-          );
+            );
+            Future.delayed(const Duration(seconds: 1), () {
+              if (mounted) context.pop();
+            });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  l10n?.billSubmitError ??
+                      'Failed to submit bill. Please try again.',
+                ),
+                backgroundColor: context.themeError,
+              ),
+            );
+          }
         }
       }
     } catch (e) {
@@ -339,6 +373,160 @@ class _AddBillPageState extends State<AddBillPage> {
         );
       }
     }
+  }
+
+  void _showDuplicateWarningDialog(
+    Map<String, dynamic> duplicateBill,
+    String carpenterId,
+    String phoneNumber,
+    double amount,
+    DateTime billDate,
+    String siteName,
+    String? vendorName,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final duplicateAmount = (duplicateBill['amount'] ?? 0).toDouble();
+    final duplicatePoints = duplicateAmount / 1000;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning,
+              color: context.themeError,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Duplicate Bill Detected',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'A bill with the same site, amount, and date already exists:',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.themeSoftSurface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Site: $siteName',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Amount: ₹${duplicateAmount.toStringAsFixed(0)}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Points: ${duplicatePoints.toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Do you want to add this bill anyway?',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: context.themePrimary),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              setState(() => _isSubmitting = true);
+
+              try {
+                final success = await _billService.submitBill(
+                  carpenterId: carpenterId,
+                  carpenterPhone: phoneNumber,
+                  amount: amount,
+                  imageFile: _selectedImage,
+                  billDate: billDate,
+                  storeName: siteName,
+                  vendorName: vendorName,
+                );
+
+                if (mounted) {
+                  setState(() => _isSubmitting = false);
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          l10n?.billSubmitted ??
+                              'Bill submitted successfully! Admin will review it.',
+                        ),
+                        backgroundColor: AppColors.success,
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                    Future.delayed(const Duration(seconds: 1), () {
+                      if (mounted) context.pop();
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          l10n?.billSubmitError ??
+                              'Failed to submit bill. Please try again.',
+                        ),
+                        backgroundColor: context.themeError,
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
+                AppLogger.error('Error submitting bill', e);
+                if (mounted) {
+                  setState(() => _isSubmitting = false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ${e.toString()}'),
+                      backgroundColor: context.themeError,
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.themeSecondary,
+            ),
+            child: const Text('Add Anyway'),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _sectionLabel(String label) => AppText.label(
@@ -517,9 +705,9 @@ class _AddBillPageState extends State<AddBillPage> {
 
                       const SizedBox(height: 32),
 
-                      // Bill Date
+                      // Bill Date (Required)
                       _sectionLabel(
-                        l10n?.billDateOptional ?? 'Bill Date (Optional)',
+                        l10n?.billDate ?? 'Bill Date *',
                       ),
                       const SizedBox(height: 12),
                       GestureDetector(
@@ -550,8 +738,8 @@ class _AddBillPageState extends State<AddBillPage> {
                                 child: AppText.body(
                                   _billDate != null
                                       ? '${_billDate!.day}/${_billDate!.month}/${_billDate!.year}'
-                                      : (l10n?.selectBillDateOptional ??
-                                            'Select bill date (optional)'),
+                                      : (l10n?.selectBillDate ??
+                                            'Select bill date'),
                                   color: _billDate != null
                                       ? context.themeTextPrimary
                                       : context.themeTextMuted,
@@ -571,49 +759,36 @@ class _AddBillPageState extends State<AddBillPage> {
 
                       const SizedBox(height: 24),
 
-                      // Store Name
+                      // Site Name (Required)
                       _sectionLabel(
-                        l10n?.storeVendorNameOptional ??
-                            'Store/Vendor Name (Optional)',
+                        'Site Name *',
                       ),
                       const SizedBox(height: 12),
                       AppTextField(
-                        controller: _storeNameController,
-                        label: l10n?.enterStoreOrVendorNameOptional ??
-                            'Store/Vendor Name',
-                        hint: l10n?.enterStoreOrVendorNameOptional ??
-                            'Enter store or vendor name (optional)',
+                        controller: _siteNameController,
+                        label: 'Site Name',
+                        hint: 'Enter site/location name',
+                        prefixIcon: Icons.location_on,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Site name is required';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Vendor Name (Optional)
+                      _sectionLabel(
+                        'Vendor Name (Optional)',
+                      ),
+                      const SizedBox(height: 12),
+                      AppTextField(
+                        controller: _vendorNameController,
+                        label: 'Vendor Name',
+                        hint: 'Enter vendor/store name (optional)',
                         prefixIcon: Icons.store,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Bill Number
-                      _sectionLabel(
-                        l10n?.billInvoiceNumberOptional ??
-                            'Bill/Invoice Number (Optional)',
-                      ),
-                      const SizedBox(height: 12),
-                      AppTextField(
-                        controller: _billNumberController,
-                        label: l10n?.enterBillOrInvoiceNumberOptional ??
-                            'Bill/Invoice Number',
-                        hint: l10n?.enterBillOrInvoiceNumberOptional ??
-                            'Enter bill or invoice number (optional)',
-                        prefixIcon: Icons.receipt,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Notes
-                      _sectionLabel(l10n?.notesOptional ?? 'Notes (Optional)'),
-                      const SizedBox(height: 12),
-                      AppTextField(
-                        controller: _notesController,
-                        label: l10n?.addAnyAdditionalNotes ?? 'Notes',
-                        hint: l10n?.addAnyAdditionalNotes ??
-                            'Add any additional notes...',
-                        prefixIcon: Icons.note,
                       ),
 
                       const SizedBox(height: 24),

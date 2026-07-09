@@ -1132,6 +1132,37 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
                                       const SizedBox(height: 10),
 
+                                      // ------------ SITE NAME ROW (NEW) -------------
+                                      if ((bill['siteName'] as String?)?.isNotEmpty ?? false)
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                              size: 14,
+                                              color: context.themeContentColor,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            AppText.caption(
+                                              'Site: ',
+                                              color:
+                                                  context.themeTextSecondary,
+                                            ),
+                                            Expanded(
+                                              child: AppText.labelSmall(
+                                                bill['siteName'] as String? ??
+                                                    'N/A',
+                                                color:
+                                                    context.themeContentColor,
+                                                maxLines: 1,
+                                                overflow:
+                                                    TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                      const SizedBox(height: 6),
+
                                       // ------------ DATE ROW -------------
                                       Column(
                                         crossAxisAlignment:

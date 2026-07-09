@@ -49,8 +49,7 @@ class BillService {
     File? imageFile,
     DateTime? billDate,
     String? storeName,
-    String? billNumber,
-    String? notes,
+    String? vendorName,
   }) async {
     try {
       AppLogger.info('BillService: === SUBMITTING BILL ===');
@@ -58,7 +57,7 @@ class BillService {
       AppLogger.info('  carpenterPhone: $carpenterPhone');
       AppLogger.info('  amount: $amount');
       AppLogger.info('  storeName: $storeName');
-      AppLogger.info('  billNumber: $billNumber');
+      AppLogger.info('  vendorName: $vendorName');
 
       final billRef = _firestore.collection('bills').doc();
       final billId = billRef.id;
@@ -83,9 +82,8 @@ class BillService {
         'pointsEarned': 0,
         'branchId': branchId,
         'billDate': Timestamp.fromDate(billDate ?? DateTime.now()),
-        'storeName': storeName ?? '',
-        'billNumber': billNumber ?? '',
-        'notes': notes ?? '',
+        'siteName': storeName ?? '',
+        'vendorName': vendorName ?? '',
         'createdAt': FieldValue.serverTimestamp(),
       };
 
@@ -148,8 +146,7 @@ class BillService {
     File? imageFile,
     DateTime? billDate,
     String? storeName,
-    String? billNumber,
-    String? notes,
+    String? vendorName,
   }) async {
     try {
       AppLogger.debug('═══════════════════════════════════════════════════════════');
@@ -163,9 +160,8 @@ class BillService {
       AppLogger.info('  adminPhone: $adminPhone');
       AppLogger.info('  amount: $amount');
       AppLogger.info('  storeName: $storeName');
-      AppLogger.info('  billNumber: $billNumber');
+      AppLogger.info('  vendorName: $vendorName');
       AppLogger.info('  billDate: $billDate');
-      AppLogger.info('  notes: $notes');
       AppLogger.debug('   hasImage: ${imageFile != null}');
 
       AppLogger.debug('📝 Step 1: Generating bill ID...');
@@ -227,9 +223,8 @@ class BillService {
         'pointsEarned': 0,
         'branchId': carpenterBranchId,
         'billDate': Timestamp.fromDate(billDate ?? DateTime.now()),
-        'storeName': storeName ?? '',
-        'billNumber': billNumber ?? '',
-        'notes': notes ?? '',
+        'siteName': storeName ?? '',
+        'vendorName': vendorName ?? '',
         'submittedBy': 'admin',
         'adminId': adminId,
         'adminPhone': adminPhone,
@@ -261,8 +256,8 @@ class BillService {
         AppLogger.info('  adminId: ${verifyData?['adminId']}');
         AppLogger.info('  adminPhone: ${verifyData?['adminPhone']}');
         AppLogger.info('  branchId: ${verifyData?['branchId']}');
-        AppLogger.info('  storeName: ${verifyData?['storeName']}');
-        AppLogger.info('  billNumber: ${verifyData?['billNumber']}');
+        AppLogger.info('  siteName: ${verifyData?['siteName']}');
+        AppLogger.info('  vendorName: ${verifyData?['vendorName']}');
         AppLogger.debug('═══════════════════════════════════════════════════════════');
         AppLogger.debug('✅ ADMIN BILL SUBMISSION SUCCESS');
         AppLogger.debug('═══════════════════════════════════════════════════════════');
@@ -890,6 +885,59 @@ class BillService {
   String _getTodayDateString() {
     final now = DateTime.now();
     return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Check for duplicate bill with same (vendorName, siteName, amount, billDate)
+  Future<Map<String, dynamic>?> checkDuplicateBill({
+    required String carpenterId,
+    String? vendorName,
+    required String siteName,
+    required double billAmount,
+    required DateTime billDate,
+  }) async {
+    try {
+      AppLogger.info('🔍 Checking for duplicate bill:');
+      AppLogger.info('   carpenterId: $carpenterId');
+      AppLogger.info('   vendorName: $vendorName');
+      AppLogger.info('   siteName: $siteName');
+      AppLogger.info('   amount: $billAmount');
+      AppLogger.info('   billDate: ${billDate.toIso8601String()}');
+
+      // Normalize billDate to date-only (ignore time)
+      final billDateOnly = DateTime(billDate.year, billDate.month, billDate.day);
+      final billDateStartOfDay = Timestamp.fromDate(billDateOnly);
+      final billDateEndOfDay = Timestamp.fromDate(
+        billDateOnly.add(const Duration(days: 1)),
+      );
+
+      // Query for bills with exact match: carpenterId, siteName, amount, billDate (date only), not withdrawn
+      final query = await _firestore
+          .collection('bills')
+          .where('carpenterId', isEqualTo: carpenterId)
+          .where('siteName', isEqualTo: siteName)
+          .where('amount', isEqualTo: billAmount)
+          .where('billDate', isGreaterThanOrEqualTo: billDateStartOfDay)
+          .where('billDate', isLessThan: billDateEndOfDay)
+          .where('status', isNotEqualTo: 'withdrawn')
+          .limit(1)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        final duplicateBill = query.docs.first.data();
+        AppLogger.info('❌ DUPLICATE FOUND!');
+        AppLogger.info('   Existing bill ID: ${duplicateBill['billId']}');
+        AppLogger.info('   Status: ${duplicateBill['status']}');
+
+        return duplicateBill;
+      }
+
+      AppLogger.info('✅ No duplicate found');
+      return null;
+    } catch (e) {
+      AppLogger.error('Error checking duplicate bill', e);
+      // Don't throw - return null and let user retry
+      return null;
+    }
   }
 
   /// User bills

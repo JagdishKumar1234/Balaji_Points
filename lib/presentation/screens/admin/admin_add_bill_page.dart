@@ -26,9 +26,8 @@ class AdminAddBillPage extends StatefulWidget {
 class _AdminAddBillPageState extends State<AdminAddBillPage> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
-  final _storeNameController = TextEditingController();
-  final _billNumberController = TextEditingController();
-  final _notesController = TextEditingController();
+  final _siteNameController = TextEditingController();
+  final _vendorNameController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final BillService _billService = BillService();
   final SessionService _sessionService = SessionService();
@@ -43,9 +42,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
   bool _hasFormData() {
     return _selectedCarpenter != null ||
         _amountController.text.trim().isNotEmpty ||
-        _storeNameController.text.trim().isNotEmpty ||
-        _billNumberController.text.trim().isNotEmpty ||
-        _notesController.text.trim().isNotEmpty ||
+        _siteNameController.text.trim().isNotEmpty ||
+        _vendorNameController.text.trim().isNotEmpty ||
         _selectedImage != null;
   }
 
@@ -66,9 +64,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
   @override
   void dispose() {
     _amountController.dispose();
-    _storeNameController.dispose();
-    _billNumberController.dispose();
-    _notesController.dispose();
+    _siteNameController.dispose();
+    _vendorNameController.dispose();
     super.dispose();
   }
 
@@ -215,6 +212,17 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       return;
     }
 
+    final siteName = _siteNameController.text.trim();
+    if (siteName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Site name is required'),
+          backgroundColor: context.themeError,
+        ),
+      );
+      return;
+    }
+
     final l10n = AppLocalizations.of(context);
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
@@ -269,6 +277,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         }
       }
 
+      final vendorName = _vendorNameController.text.trim().isEmpty
+          ? null
+          : _vendorNameController.text.trim();
+
       final success = await _billService.submitBillForCarpenter(
         carpenterId: carpenterId,
         carpenterPhone: carpenterPhone,
@@ -278,15 +290,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         adminName: adminName,
         imageFile: _selectedImage,
         billDate: _billDate,
-        storeName: _storeNameController.text.trim().isEmpty
-            ? null
-            : _storeNameController.text.trim(),
-        billNumber: _billNumberController.text.trim().isEmpty
-            ? null
-            : _billNumberController.text.trim(),
-        notes: _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
+        storeName: siteName,
+        vendorName: vendorName,
       );
 
       if (mounted) {
@@ -561,55 +566,40 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
 
                           const SizedBox(height: 32),
 
-                          // Store Name Field
+                          // Site Name Field (Required)
                           AppText.label(
-                            l10n?.storeVendorNameOptional ??
-                                'Store/Vendor Name (Optional)',
+                            'Site Name *',
                             color: context.themeContentColor,
                           ),
                           const SizedBox(height: 12),
 
                           AppTextField(
-                            controller: _storeNameController,
-                            label:
-                                l10n?.enterStoreOrVendorNameOptional ??
-                                'Enter store or vendor name (optional)',
+                            controller: _siteNameController,
+                            label: 'Site Name',
+                            hint: 'Enter site/location name',
+                            prefixIcon: Icons.location_on,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Site name is required';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Vendor Name Field (Optional)
+                          AppText.label(
+                            'Vendor Name (Optional)',
+                            color: context.themeContentColor,
+                          ),
+                          const SizedBox(height: 12),
+
+                          AppTextField(
+                            controller: _vendorNameController,
+                            label: 'Vendor Name',
+                            hint: 'Enter vendor/store name (optional)',
                             prefixIcon: Icons.store,
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Bill Number Field
-                          AppText.label(
-                            l10n?.billInvoiceNumberOptional ??
-                                'Bill/Invoice Number (Optional)',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
-
-                          AppTextField(
-                            controller: _billNumberController,
-                            label:
-                                l10n?.enterBillOrInvoiceNumberOptional ??
-                                'Enter bill or invoice number (optional)',
-                            prefixIcon: Icons.receipt,
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Notes Field (Optional)
-                          AppText.label(
-                            l10n?.notesOptional ?? 'Notes (Optional)',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
-
-                          AppTextField(
-                            controller: _notesController,
-                            label:
-                                l10n?.addAnyAdditionalNotes ??
-                                'Add any additional notes...',
-                            prefixIcon: Icons.note,
                           ),
 
                           const SizedBox(height: 24),
