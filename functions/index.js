@@ -3,6 +3,7 @@
  *
  * Triggers:
  *  1. processNotificationQueue   – FCM push on notification_queue create
+ *  1b. onBillCreated             – validate bill (siteName, amount, date) + detect duplicates
  *  2. onBillStatusChanged        – points + tier + history on bill approval/rejection
  *  3. onPointsChanged            – tier recalculation safety-net on user_points write
  *  4. onUserDeleted              – cascade-delete user_points / bills / points_history
@@ -128,6 +129,112 @@ exports.processNotificationQueue = onDocumentCreated(
           error: err.message || String(err),
           failedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
+        return null;
+      }
+    },
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1b. onBillCreated  –  validate bill on creation (siteName, amount, date)
+//                     –  check for duplicates
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.onBillCreated = onDocumentCreated(
+    "bills/{billId}",
+    async (event) => {
+      const billId = event.params.billId;
+      const bill = event.data.data();
+
+      console.log(`[bill/${billId}] created – validating...`);
+
+      try {
+        // 1. Validate required fields
+        if (!bill.siteName || typeof bill.siteName !== "string" || bill.siteName.trim() === "") {
+          console.error(`[bill/${billId}] validation failed: siteName is required`);
+          await event.data.ref.update({
+            validationError: "Site name is required",
+            validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          return null;
+        }
+
+        if (!bill.amount || typeof bill.amount !== "number" || bill.amount <= 0) {
+          console.error(`[bill/${billId}] validation failed: invalid amount`);
+          await event.data.ref.update({
+            validationError: "Bill amount must be greater than 0",
+            validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          return null;
+        }
+
+        // 2. Validate bill date not in future
+        if (bill.billDate) {
+          const billDate = bill.billDate.toDate ? bill.billDate.toDate() : new Date(bill.billDate);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          if (billDate > today) {
+            console.error(`[bill/${billId}] validation failed: bill date is in future`);
+            await event.data.ref.update({
+              validationError: "Bill date cannot be in the future",
+              validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            return null;
+          }
+        }
+
+        // 3. Check for duplicate bill
+        const billDateOnly = bill.billDate ?
+          new Date(bill.billDate.toDate ? bill.billDate.toDate() : bill.billDate) :
+          new Date();
+        billDateOnly.setHours(0, 0, 0, 0);
+
+        const billDateEndOfDay = new Date(billDateOnly);
+        billDateEndOfDay.setDate(billDateEndOfDay.getDate() + 1);
+
+        const carpenterId = bill.carpenterId || bill.carpenterPhone;
+        const siteName = bill.siteName.trim();
+        const amount = bill.amount;
+
+        const duplicateQuery = await db.collection("bills")
+            .where("carpenterId", "==", carpenterId)
+            .where("siteName", "==", siteName)
+            .where("amount", "==", amount)
+            .where("billDate", ">=", admin.firestore.Timestamp.fromDate(billDateOnly))
+            .where("billDate", "<", admin.firestore.Timestamp.fromDate(billDateEndOfDay))
+            .where("status", "!=", "withdrawn")
+            .get();
+
+        if (!duplicateQuery.empty) {
+          // Found a duplicate
+          const duplicateBill = duplicateQuery.docs[0];
+          console.warn(
+              `[bill/${billId}] duplicate detected: matches bill ${duplicateBill.id} ` +
+              `(site: ${siteName}, amount: ${amount})`,
+          );
+
+          // Mark bill as having a duplicate (but still allow it)
+          await event.data.ref.update({
+            isDuplicate: true,
+            duplicateOf: duplicateBill.id,
+            duplicateDetectedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          return null;
+        }
+
+        // 4. All validations passed
+        console.log(`[bill/${billId}] validation passed ✓`);
+        await event.data.ref.update({
+          validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        return null;
+      } catch (err) {
+        console.error(`[bill/${billId}] validation error:`, err.message);
+        await event.data.ref.update({
+          validationError: err.message || "Validation failed",
+          validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }).catch(() => {});
         return null;
       }
     },
