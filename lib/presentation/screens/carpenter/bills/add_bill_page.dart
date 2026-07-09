@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -244,29 +245,57 @@ class _AddBillPageState extends State<AddBillPage> {
   }
 
   Future<void> _submitBill() async {
+    // Validate form fields
     if (!_formKey.currentState!.validate()) return;
 
+    // Validate site name (compulsory)
     final siteName = _siteNameController.text.trim();
     if (siteName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Site name is required'),
+          content: const Text('❌ Site name is required'),
           backgroundColor: context.themeError,
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
     }
 
-    final billDate = _billDate ?? DateTime.now();
+    // Validate bill date
+    final billDate = _billDate;
+    if (billDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('❌ Please select a bill date'),
+          backgroundColor: context.themeError,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    // Validate date is not in future
+    if (billDate.isAfter(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('❌ Bill date cannot be in the future'),
+          backgroundColor: context.themeError,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     final l10n = AppLocalizations.of(context);
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            l10n?.enterValidAmount ?? 'Please enter a valid amount',
+            '❌ ${l10n?.enterValidAmount ?? 'Please enter a valid amount'}',
           ),
           backgroundColor: context.themeError,
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
@@ -278,12 +307,14 @@ class _AddBillPageState extends State<AddBillPage> {
       final phoneNumber = await _sessionService.getPhoneNumber();
       if (phoneNumber == null) {
         if (mounted) {
+          setState(() => _isSubmitting = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
                 l10n?.sessionExpired ?? 'Please login to submit bills',
               ),
               backgroundColor: context.themeError,
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -292,10 +323,14 @@ class _AddBillPageState extends State<AddBillPage> {
 
       final carpenterId = await _sessionService.getUserId() ?? phoneNumber;
 
-      // Check for duplicate bill
+      // Get vendor name (optional)
       final vendorName = _vendorNameController.text.trim().isEmpty
           ? null
           : _vendorNameController.text.trim();
+
+      // CHECK FOR DUPLICATE BILL - FRONTEND VALIDATION
+      AppLogger.info('🔍 Checking for duplicate bill...');
+      AppLogger.info('   Site: $siteName, Amount: $amount, Date: ${billDate.toIso8601String()}');
 
       final duplicateBill = await _billService.checkDuplicateBill(
         carpenterId: carpenterId,
@@ -307,6 +342,7 @@ class _AddBillPageState extends State<AddBillPage> {
 
       if (mounted) {
         if (duplicateBill != null) {
+          AppLogger.warning('⚠️ Duplicate bill detected! Showing warning dialog...');
           setState(() => _isSubmitting = false);
           // Show duplicate warning dialog
           _showDuplicateWarningDialog(
@@ -320,6 +356,8 @@ class _AddBillPageState extends State<AddBillPage> {
           );
           return;
         }
+
+        AppLogger.info('✅ No duplicate found, proceeding with submission...');
 
         // No duplicate, proceed with submission
         final success = await _billService.submitBill(
@@ -335,6 +373,7 @@ class _AddBillPageState extends State<AddBillPage> {
         if (mounted) {
           setState(() => _isSubmitting = false);
           if (success) {
+            AppLogger.info('✅ Bill submitted successfully!');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -349,6 +388,7 @@ class _AddBillPageState extends State<AddBillPage> {
               if (mounted) context.pop();
             });
           } else {
+            AppLogger.error('Failed to submit bill', 'Unknown error');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -356,6 +396,7 @@ class _AddBillPageState extends State<AddBillPage> {
                       'Failed to submit bill. Please try again.',
                 ),
                 backgroundColor: context.themeError,
+                duration: const Duration(seconds: 3),
               ),
             );
           }
@@ -367,8 +408,9 @@ class _AddBillPageState extends State<AddBillPage> {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('❌ Error: ${e.toString()}'),
             backgroundColor: context.themeError,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -387,83 +429,251 @@ class _AddBillPageState extends State<AddBillPage> {
     final l10n = AppLocalizations.of(context);
     final duplicateAmount = (duplicateBill['amount'] ?? 0).toDouble();
     final duplicatePoints = duplicateAmount / 1000;
+    final duplicateDate = duplicateBill['billDate'] as Timestamp?;
+    final duplicateDateStr = duplicateDate != null
+        ? '${duplicateDate.toDate().day}/${duplicateDate.toDate().month}/${duplicateDate.toDate().year}'
+        : 'N/A';
+
+    AppLogger.warning('⚠️ Duplicate Warning Dialog shown to user');
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         title: Row(
           children: [
-            Icon(
-              Icons.warning,
-              color: context.themeError,
-              size: 28,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.themeError.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.warning_amber,
+                color: context.themeError,
+                size: 28,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Duplicate Bill Detected',
-                style: Theme.of(context).textTheme.titleLarge,
+                '⚠️ Duplicate Bill Detected',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: context.themeError,
+                ),
               ),
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'A bill with the same site, amount, and date already exists:',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: context.themeSoftSurface,
-                borderRadius: BorderRadius.circular(8),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'A bill with the SAME site, amount, and date already exists:',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Site: $siteName',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
+              const SizedBox(height: 16),
+
+              // Existing Bill Details
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: context.themeSoftSurface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: context.themeError.withValues(alpha: 0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: context.themeError,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Site Name',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: context.themeTextSecondary,
+                                ),
+                              ),
+                              Text(
+                                siteName,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Amount: ₹${duplicateAmount.toStringAsFixed(0)}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Points: ${duplicatePoints.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.currency_rupee,
+                          size: 16,
+                          color: AppColors.success,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Amount',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: context.themeTextSecondary,
+                                ),
+                              ),
+                              Text(
+                                '₹${duplicateAmount.toStringAsFixed(0)}',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.success,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.stars,
+                          size: 16,
+                          color: context.themePrimary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Points',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: context.themeTextSecondary,
+                                ),
+                              ),
+                              Text(
+                                '${duplicatePoints.toStringAsFixed(2)} pts',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: context.themePrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 16,
+                          color: context.themeTextSecondary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Date',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: context.themeTextSecondary,
+                                ),
+                              ),
+                              Text(
+                                duplicateDateStr,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Do you want to add this bill anyway?',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info,
+                      size: 18,
+                      color: AppColors.warning,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'This might be a duplicate entry. Please verify before adding.',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.warning,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+              Text(
+                'Do you want to add this bill anyway?',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              AppLogger.info('User cancelled duplicate bill submission');
+              Navigator.pop(context);
+            },
             child: Text(
               'Cancel',
-              style: TextStyle(color: context.themePrimary),
+              style: TextStyle(
+                color: context.themePrimary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           ElevatedButton(
             onPressed: () async {
+              AppLogger.warning('User chose to add duplicate bill anyway');
               Navigator.pop(context);
               setState(() => _isSubmitting = true);
 
@@ -481,6 +691,7 @@ class _AddBillPageState extends State<AddBillPage> {
                 if (mounted) {
                   setState(() => _isSubmitting = false);
                   if (success) {
+                    AppLogger.info('✅ Duplicate bill submitted successfully');
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -502,18 +713,20 @@ class _AddBillPageState extends State<AddBillPage> {
                               'Failed to submit bill. Please try again.',
                         ),
                         backgroundColor: context.themeError,
+                        duration: const Duration(seconds: 3),
                       ),
                     );
                   }
                 }
               } catch (e) {
-                AppLogger.error('Error submitting bill', e);
+                AppLogger.error('Error submitting duplicate bill', e);
                 if (mounted) {
                   setState(() => _isSubmitting = false);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error: ${e.toString()}'),
+                      content: Text('❌ Error: ${e.toString()}'),
                       backgroundColor: context.themeError,
+                      duration: const Duration(seconds: 3),
                     ),
                   );
                 }
@@ -521,8 +734,15 @@ class _AddBillPageState extends State<AddBillPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeSecondary,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
-            child: const Text('Add Anyway'),
+            child: Text(
+              'Add Anyway',
+              style: TextStyle(
+                color: AppColors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
