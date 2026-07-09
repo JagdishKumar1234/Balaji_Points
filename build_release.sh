@@ -3,11 +3,12 @@
 # BalajiPoints Release Build Script
 # Usage: ./build_release.sh
 # Output: build/app/outputs/bundle/release/app-release.aab
+# Version: 1.0.17 (Build 26)
 
 set -e  # Exit on error
 
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║         🚀 BalajiPoints Release Build v1.0.15                 ║"
+echo "║      🚀 BalajiPoints Release Build v1.0.17 (Build 26)         ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -19,19 +20,19 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Step 1: Clean
-echo -e "${BLUE}[1/4]${NC} 🧹 Cleaning build artifacts..."
+echo -e "${BLUE}[1/5]${NC} 🧹 Cleaning build artifacts..."
 flutter clean
 echo -e "${GREEN}✓ Clean complete${NC}"
 echo ""
 
 # Step 2: Get dependencies
-echo -e "${BLUE}[2/4]${NC} 📦 Getting dependencies..."
+echo -e "${BLUE}[2/5]${NC} 📦 Getting dependencies..."
 flutter pub get
 echo -e "${GREEN}✓ Dependencies updated${NC}"
 echo ""
 
 # Step 3: Verify signing config
-echo -e "${BLUE}[3/4]${NC} 🔐 Verifying signing configuration..."
+echo -e "${BLUE}[3/5]${NC} 🔐 Verifying signing configuration..."
 if [ ! -f "android/app/key.properties" ]; then
     echo -e "${RED}✗ Error: android/app/key.properties not found!${NC}"
     echo ""
@@ -46,12 +47,26 @@ fi
 echo -e "${GREEN}✓ Signing configuration found${NC}"
 echo ""
 
-# Step 4: Build AAB
-echo -e "${BLUE}[4/4]${NC} 🔨 Building Android App Bundle (Release)..."
-echo "This may take a few minutes..."
+# Step 4: Check for uncommitted changes
+echo -e "${BLUE}[4/5]${NC} 📋 Checking git status..."
+if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+    echo -e "${YELLOW}⚠️  Warning: Uncommitted changes found${NC}"
+    echo "It's recommended to commit all changes before building"
+else
+    echo -e "${GREEN}✓ All changes committed${NC}"
+fi
 echo ""
 
-flutter build appbundle --release
+# Step 5: Build AAB
+echo -e "${BLUE}[5/5]${NC} 🔨 Building Android App Bundle (Release)..."
+echo "This may take 2-5 minutes..."
+echo ""
+
+flutter build appbundle \
+    --release \
+    --target-platform=android-arm64 \
+    --obfuscate \
+    --split-debug-info=build/app/outputs/symbols
 
 echo ""
 echo ""
@@ -59,7 +74,7 @@ echo ""
 # Check if build succeeded
 if [ -f "build/app/outputs/bundle/release/app-release.aab" ]; then
     echo "╔════════════════════════════════════════════════════════════════╗"
-    echo -e "║${GREEN}         ✅ BUILD SUCCESSFUL!${NC}                               ║"
+    echo -e "║${GREEN}         ✅ BUILD SUCCESSFUL! v1.0.17 (26)${NC}                ║"
     echo "╚════════════════════════════════════════════════════════════════╝"
     echo ""
 
@@ -80,18 +95,19 @@ if [ -f "build/app/outputs/bundle/release/app-release.aab" ]; then
     echo "  4. Click 'Create new release'"
     echo "  5. Upload: build/app/outputs/bundle/release/app-release.aab"
     echo ""
-    echo "  Release notes for v1.0.15:"
-    echo "  • Fixed decimal points display in bill approval"
-    echo "  • Fixed pending bills list formatting"
-    echo "  • Refactored users list into modular widgets"
-    echo "  • Added clean logging configuration"
-    echo "  • Improved search with keyboard handling"
+    echo "  📝 Release notes for v1.0.17:"
+    echo "  • Bill form enhancements - mandatory site name field"
+    echo "  • Duplicate bill prevention (frontend + backend validation)"
+    echo "  • 5-layer validation architecture"
+    echo "  • Enhanced admin display with site name context"
+    echo "  • Comprehensive logging for monitoring"
     echo ""
 
     echo -e "${YELLOW}⚠️  IMPORTANT:${NC}"
-    echo "  • Ensure version code (23) is higher than previous (22)"
+    echo "  • Version: 1.0.17 (Build Code: 26)"
     echo "  • Test on real device first before uploading to production"
     echo "  • Save SHA256 hash for verification"
+    echo "  • Enable on Play Store when ready"
     echo ""
 
 else
