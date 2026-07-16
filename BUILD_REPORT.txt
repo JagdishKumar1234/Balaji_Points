@@ -1,0 +1,95 @@
+================================================================================
+                    BALAJI POINTS - BUILD REPORT
+================================================================================
+
+Build Date & Time: 2026-07-13 09:15:58
+App Version:       1.0.17+28
+
+================================================================================
+                              BUILD ARTIFACTS
+================================================================================
+
+1. APK (Universal)
+   Location: /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/build/app/outputs/flutter-apk/app-release.apk
+   Size:     38M
+   Type:     Release (Production Ready)
+   Signing:  Enabled
+
+2. AAB (App Bundle - for Play Store)
+   Location: /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/build/app/outputs/bundle/release/app-release.aab
+   Size:     57M
+   Type:     Release (Optimized for Play Store)
+   Signing:  Enabled
+
+================================================================================
+                            INSTALLATION OPTIONS
+================================================================================
+
+1. APK Installation (Direct):
+   adb install -r /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/build/app/outputs/flutter-apk/app-release.apk
+
+2. AAB Upload (Google Play Store):
+   - Go to Google Play Console
+   - Create new release
+   - Upload: /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/build/app/outputs/bundle/release/app-release.aab
+   - Add release notes
+   - Submit for review
+
+3. Firebase App Distribution (Testing):
+   - Upload: /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/build/app/outputs/flutter-apk/app-release.apk
+   - Send to testers via link
+
+================================================================================
+                              FEATURES INCLUDED
+================================================================================
+
+✓ Carpenter summary with expand/collapse
+✓ Numbered bill history (#1, #2, #3...)
+✓ Site filter dropdown
+✓ Date range filtering
+✓ 12-hour time format (hh:mm a)
+✓ Empty site handling (dash "-")
+✓ Bill number display (BP-SBH-20260710-384721)
+✓ Wallet tier status
+✓ Professional UI improvements
+
+================================================================================
+                              OPTIMIZATIONS
+================================================================================
+
+✓ CupertinoIcons tree-shaked: 257 KB → 0.8 KB (99.7%)
+✓ MaterialIcons tree-shaked: 1.6 MB → 23.5 KB (98.6%)
+✓ Code minified & obfuscated
+✓ Resources shrunk
+✓ Production signing enabled
+
+================================================================================
+                              NEXT STEPS
+================================================================================
+
+1. Test APK on Android device:
+   adb install -r /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/build/app/outputs/flutter-apk/app-release.apk
+
+2. Verify all features work correctly
+
+3. Upload AAB to Google Play Console
+
+4. Add release notes
+
+5. Submit for review
+
+================================================================================
+                            GIT COMMIT READY
+================================================================================
+
+The following files have been changed:
+- pubspec.yaml (version updated to 1.0.17+28)
+
+To commit:
+  cd /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points
+  git add pubspec.yaml
+  git commit -m "chore: bump version to 1.0.17+28 for release"
+  git tag v1.0.17+28
+  git push origin main
+
+================================================================================

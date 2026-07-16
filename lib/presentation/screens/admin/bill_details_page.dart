@@ -1,16 +1,13 @@
 import 'package:balaji_points/core/design/app_radius.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/services/platform/bill_service.dart';
-import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 
-/// Bill Details Screen - Shows comprehensive bill information for admin
-/// Displays carpenter details, bill images, dates, status, and actions
 class BillDetailsPage extends StatefulWidget {
   final String billId;
   final Map<String, dynamic>? initialBillData;
@@ -44,16 +41,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     setState(() => _isLoading = true);
 
     try {
-      // Load bill data
-      final billDoc = await _firestore
-          .collection('bills')
-          .doc(widget.billId)
-          .get();
+      final billDoc = await _firestore.collection('bills').doc(widget.billId).get();
       if (billDoc.exists) {
         _billData = billDoc.data();
         _billData!['billId'] = billDoc.id;
 
-        // Load carpenter data
         final carpenterId = _billData!['carpenterId'] as String?;
         if (carpenterId != null) {
           await _loadCarpenterData(carpenterId);
@@ -68,14 +60,12 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
 
   Future<void> _loadCarpenterData(String carpenterId) async {
     try {
-      // Try direct document lookup
       final doc = await _firestore.collection('users').doc(carpenterId).get();
       if (doc.exists) {
         _carpenterData = doc.data();
         return;
       }
 
-      // Try query by phone
       final query = await _firestore
           .collection('users')
           .where('phone', isEqualTo: carpenterId)
@@ -90,8 +80,155 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     }
   }
 
-  void _viewBillImage(String imageUrl) {
-    final l10n = AppLocalizations.of(context)!;
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return AppColors.success;
+      case 'rejected':
+        return AppColors.error;
+      case 'pending':
+        return const Color(0xFFFFA500);
+      default:
+        return AppColors.textSecondary;
+    }
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'APPROVED';
+      case 'rejected':
+        return 'REJECTED';
+      case 'pending':
+        return 'PENDING APPROVAL';
+      default:
+        return status.toUpperCase();
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+      case 'rejected':
+        return Icons.check_circle;
+      default:
+        return Icons.schedule;
+    }
+  }
+
+  Future<void> _approveBill() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        title: const Text('Approve Bill'),
+        content: Text(
+          'Are you sure you want to approve this bill?\n\n₹${_billData!['amount']?.toString() ?? '0'} will be processed.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.success,
+            ),
+            child: const Text('Approve'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _isProcessing = true);
+
+    try {
+      await _billService.approveBill(
+        widget.billId,
+        _billData!['carpenterId'],
+        _billData!['amount'],
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Bill approved successfully'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      setState(() => _isProcessing = false);
+    }
+  }
+
+  Future<void> _rejectBill() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        title: const Text('Reject Bill'),
+        content: const Text('Are you sure you want to reject this bill?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: const Text('Reject'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _isProcessing = true);
+
+    try {
+      await _billService.rejectBill(widget.billId);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Bill rejected'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      setState(() => _isProcessing = false);
+    }
+  }
+
+  void _viewFullImage() {
+    final imageUrl = _billData!['imageUrl'] as String?;
+    if (imageUrl == null || imageUrl.isEmpty) return;
 
     showDialog(
       context: context,
@@ -101,41 +238,17 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           children: [
             Center(
               child: InteractiveViewer(
-                child: imageUrl.isNotEmpty
-                    ? Image.network(
-                        imageUrl,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.error,
-                              color: context.themeError,
-                              size: 60,
-                            ),
-                            const SizedBox(height: 8),
-                            AppText.body(
-                              l10n.failedToLoadImage,
-                              color: AppColors.white,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.image_not_supported,
-                            size: 60,
-                            color: context.themeTextSecondary,
-                          ),
-                          const SizedBox(height: 8),
-                          AppText.body(
-                            l10n.noImageAvailable,
-                            color: AppColors.white,
-                          ),
-                        ],
-                      ),
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => Center(
+                    child: Icon(
+                      Icons.error,
+                      color: context.themeError,
+                      size: 60,
+                    ),
+                  ),
+                ),
               ),
             ),
             Positioned(
@@ -152,1154 +265,829 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     );
   }
 
-  Future<void> _approveBill() async {
-    final l10n = AppLocalizations.of(context)!;
-    final amountText = _billData!['amount'].toString();
-    final phone = _billData!['carpenterPhone'] ?? '';
-    final confirmed = await _showConfirmDialog(
-      title: l10n.approveBill,
-      message: l10n.approveBillConfirmation(amountText, phone),
-      confirmText: l10n.approve,
-      confirmColor: AppColors.success,
-    );
-
-    if (confirmed != true) return;
-
-    setState(() => _isProcessing = true);
-
-    try {
-      final carpenterId = _billData!['carpenterId'] as String;
-      final rawAmount = _billData!['amount'];
-      final amount = rawAmount is num
-          ? rawAmount.toDouble()
-          : double.tryParse(rawAmount.toString()) ?? 0.0;
-
-      if (amount <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid bill amount'),
-            backgroundColor: context.themeError,
-          ),
-        );
-        setState(() => _isProcessing = false);
-        return;
-      }
-
-      final success = await _billService.approveBill(
-        widget.billId,
-        carpenterId,
-        amount,
-      );
-
-      if (!mounted) return;
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Bill approved successfully'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-        Navigator.pop(context, true); // Return true to indicate action taken
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to approve bill'),
-            backgroundColor: context.themeError,
-          ),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: context.themeError,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.themeBackground,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isProcessing = false);
-      }
-    }
-  }
-
-  Future<void> _rejectBill() async {
-    final confirmed = await _showConfirmDialog(
-      title: 'Reject Bill',
-      message: 'Are you sure you want to reject this bill?',
-      confirmText: 'Reject',
-      confirmColor: context.themeError,
-    );
-
-    if (confirmed != true) return;
-
-    setState(() => _isProcessing = true);
-
-    try {
-      final success = await _billService.rejectBill(widget.billId);
-
-      if (!mounted) return;
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Bill rejected successfully'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-        Navigator.pop(context, true); // Return true to indicate action taken
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to reject bill'),
-            backgroundColor: context.themeError,
-          ),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: context.themeError,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isProcessing = false);
-      }
-    }
-  }
-
-  Future<void> _withdrawBill() async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await _showConfirmDialog(
-      title: l10n.withdrawBill,
-      message: l10n.withdrawBillConfirmation,
-      confirmText: l10n.withdraw,
-      confirmColor: AppColors.warning,
-    );
-
-    if (confirmed != true) return;
-
-    setState(() => _isProcessing = true);
-
-    try {
-      final success = await _billService.withdrawBill(widget.billId);
-
-      if (!mounted) return;
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Bill withdrawn successfully. Points have been reversed.',
-            ),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-        Navigator.pop(context, true); // Return true to indicate action taken
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to withdraw bill'),
-            backgroundColor: context.themeError,
-          ),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: context.themeError,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isProcessing = false);
-      }
-    }
-  }
-
-  Future<bool?> _showConfirmDialog({
-    required String title,
-    required String message,
-    required String confirmText,
-    required Color confirmColor,
-  }) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(
-          title,
+          'Bill Details',
           style: AppTypography.labelLarge().copyWith(
-            fontSize: 20,
-            color: confirmColor,
+            fontSize: 18,
+            color: AppColors.textPrimary,
           ),
         ),
-        content: Text(
-          message,
-          style: AppTypography.bodyMedium().copyWith(fontSize: 16),
-        ),
+        centerTitle: false,
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
+          IconButton(
+            icon: const Icon(Icons.share, color: AppColors.textPrimary),
+            onPressed: () {},
+            tooltip: 'Share',
+          ),
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf, color: AppColors.textPrimary),
+            onPressed: () {},
+            tooltip: 'PDF',
+          ),
+          IconButton(
+            icon: const Icon(Icons.more_vert, color: AppColors.textPrimary),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: context.themePrimary),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: _billData == null
+                  ? Center(
+                      child: Text(
+                        'Bill not found',
+                        style: AppTypography.bodyMedium().copyWith(
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Status Card
+                        _buildStatusCard(context),
+                        const SizedBox(height: 12),
+
+                        // Carpenter Information
+                        _buildCarpenterCard(context),
+                        const SizedBox(height: 12),
+
+                        // Bill Summary
+                        _buildBillSummaryCard(context),
+                        const SizedBox(height: 12),
+
+                        // Bill Attachment
+                        if (_billData!['imageUrl'] != null && (_billData!['imageUrl'] as String).isNotEmpty)
+                          _buildAttachmentCard(context),
+                        const SizedBox(height: 12),
+
+                        // Timeline
+                        _buildTimelineCard(context),
+                        const SizedBox(height: 16),
+
+                        // Action Buttons (if pending)
+                        if (_billData!['status'] == 'pending')
+                          _buildActionButtons(context),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+            ),
+    );
+  }
+
+  Widget _buildStatusCard(BuildContext context) {
+    final status = _billData!['status'] as String? ?? 'pending';
+    final billNumber = _billData!['billNumber'] as String? ?? 'N/A';
+    final createdAt = _billData!['createdAt'] as Timestamp?;
+    final storeName = (_billData!['siteName'] as String? ?? '').isNotEmpty
+        ? (_billData!['siteName'] as String)
+        : '-';
+
+    final statusColor = _getStatusColor(status);
+    final statusLabel = _getStatusLabel(status);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: statusColor.withValues(alpha: 0.15),
+        borderRadius: AppRadius.all16,
+        border: Border(
+          left: BorderSide(color: statusColor, width: 4),
+        ),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _getStatusIcon(status),
+                  color: AppColors.white,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  statusLabel,
+                  style: AppTypography.labelLarge().copyWith(
+                    fontSize: 13,
+                    color: statusColor,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Bill ID',
+            style: AppTypography.bodySmall().copyWith(
+              fontSize: 10,
+              color: context.themeTextSecondary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            billNumber,
+            style: AppTypography.labelLarge().copyWith(
+              fontSize: 12,
+              color: context.themeTextPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(4),
+            ),
             child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themeTextSecondary,
+              'Submitted ${_getTimeAgo(createdAt)}',
+              style: AppTypography.bodySmall().copyWith(
+                fontSize: 10,
+                color: statusColor,
               ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: confirmColor,
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-            ),
-            child: Text(
-              confirmText,
-              style: AppTypography.labelLarge().copyWith(
-                color: confirmColor == context.themeError
-                    ? context.themeOnError
-                    : AppColors.white,
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.calendar_today, size: 14, color: context.themeTextSecondary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Submitted On',
+                      style: AppTypography.bodySmall().copyWith(
+                        fontSize: 10,
+                        color: context.themeTextSecondary,
+                      ),
+                    ),
+                    Text(
+                      createdAt != null
+                          ? DateFormat('dd MMM yyyy, hh:mm a').format(createdAt.toDate())
+                          : '-',
+                      style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.store, size: 14, color: context.themeTextSecondary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Store',
+                      style: AppTypography.bodySmall().copyWith(
+                        fontSize: 10,
+                        color: context.themeTextSecondary,
+                      ),
+                    ),
+                    Text(
+                      storeName,
+                      style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: context.themeBackground,
-          foregroundColor: context.themePrimary,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: AppText.label('Bill Details'),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: CircularProgressIndicator(color: context.themeContentColor),
-        ),
-      );
+  Widget _buildCarpenterCard(BuildContext context) {
+    if (_carpenterData == null) {
+      return Container();
     }
 
-    if (_billData == null) {
-      return Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: context.themeBackground,
-          foregroundColor: context.themePrimary,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: AppText.label('Bill Details'),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+    final firstName = _carpenterData!['firstName'] as String? ?? '';
+    final lastName = _carpenterData!['lastName'] as String? ?? '';
+    final phone = _carpenterData!['phone'] as String? ?? '';
+    final tier = _carpenterData!['tier'] as String? ?? 'Bronze';
+    final totalPoints = (_carpenterData!['totalPoints'] ?? 0) as num;
+    final profileImage = _carpenterData!['profileImage'] as String? ?? '';
+
+    Color getTierColor(String tierName) {
+      switch (tierName.toLowerCase()) {
+        case 'platinum':
+          return const Color(0xFFE5E4E2);
+        case 'gold':
+          return const Color(0xFFFFD700);
+        case 'silver':
+          return const Color(0xFFC0C0C0);
+        case 'bronze':
+          return const Color(0xFFCD7F32);
+        default:
+          return AppColors.textSecondary;
+      }
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.themeSoftSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(color: context.themeBorder),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: context.themeTextSecondary,
+              Row(
+                children: [
+                  Icon(Icons.person, size: 18, color: context.themeContentColor),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Carpenter Info',
+                    style: AppTypography.labelLarge().copyWith(fontSize: 13),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              AppText.label('Bill not found'),
+              ElevatedButton.icon(
+                onPressed: () {
+                  context.push('/admin/carpenter-profile/${_billData!['carpenterId']}');
+                },
+                icon: const Icon(Icons.person, size: 14),
+                label: const Text('View Profile'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  backgroundColor: context.themePrimary,
+                ),
+              ),
             ],
           ),
-        ),
-      );
-    }
-
-    final status = _billData!['status'] as String? ?? 'pending';
-    final amount = _billData!['amount'] ?? 0;
-    // For approved bills, use pointsEarned field; otherwise calculate from amount
-    final points = status == 'approved'
-        ? (_billData!['pointsEarned'] as num?)?.toDouble() ??
-              (amount / 1000)
-        : (amount / 1000);
-    final imageUrl = _billData!['imageUrl'] as String? ?? '';
-    final carpenterPhone = _billData!['carpenterPhone'] as String? ?? '';
-    final billDate = _billData!['billDate'] as Timestamp?;
-    final createdAt = _billData!['createdAt'] as Timestamp?;
-    final approvedAt = _billData!['approvedAt'] as Timestamp?;
-
-    final carpenterName = _carpenterData != null
-        ? '${_carpenterData!['firstName'] ?? ''} ${_carpenterData!['lastName'] ?? ''}'
-              .trim()
-        : 'Carpenter';
-    final profileImageUrl = _carpenterData?['profileImage'] as String?;
-    final carpenterTier = _carpenterData?['tier'] as String? ?? 'Bronze';
-    final carpenterPoints = _carpenterData?['totalPoints'] is num
-        ? (_carpenterData?['totalPoints'] as num).toDouble()
-        : 0.0;
-
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: context.themeBackground,
-        foregroundColor: context.themePrimary,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: AppText.label('Bill Details'),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            height: 1,
-            color: AppColors.black.withValues(alpha: 0.08),
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              color: context.themeSoftSurface,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipOval(
+                child: profileImage.isNotEmpty
+                    ? Image.network(
+                        profileImage,
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 48,
+                          height: 48,
+                          color: context.themeBackground,
+                          child: Icon(Icons.person, size: 26, color: context.themeTextSecondary),
+                        ),
+                      )
+                    : Container(
+                        width: 48,
+                        height: 48,
+                        color: context.themeBackground,
+                        child: Icon(Icons.person, size: 26, color: context.themeTextSecondary),
+                      ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Status Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: status == 'approved'
-                            ? AppColors.success
-                            : status == 'rejected'
-                            ? context.themeError
-                            : AppColors.warning,
-                        borderRadius: AppRadius.md12,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            status == 'approved'
-                                ? Icons.check_circle
-                                : status == 'rejected'
-                                ? Icons.cancel
-                                : Icons.pending,
-                            color: AppColors.white,
-                            size: 20,
+                    Text(
+                      '$firstName $lastName',
+                      style: AppTypography.labelLarge().copyWith(fontSize: 12),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(Icons.phone, size: 10, color: context.themeTextSecondary),
+                        const SizedBox(width: 3),
+                        Text(
+                          phone,
+                          style: AppTypography.bodySmall().copyWith(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: getTierColor(tier),
+                            borderRadius: BorderRadius.circular(3),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            status == 'approved'
-                                ? 'APPROVED'
-                                : status == 'rejected'
-                                ? 'REJECTED'
-                                : 'PENDING APPROVAL',
-                            style: AppTypography.labelLarge().copyWith(
-                              fontSize: 14,
+                          child: Text(
+                            tier,
+                            style: AppTypography.labelSmall().copyWith(
+                              fontSize: 9,
                               color: AppColors.white,
-                              letterSpacing: 1.2,
                             ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(Icons.star, size: 10, color: context.themeContentColor),
+                        const SizedBox(width: 2),
+                        Text(
+                          '${totalPoints.toStringAsFixed(0)} pts',
+                          style: AppTypography.bodySmall().copyWith(fontSize: 9),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBillSummaryCard(BuildContext context) {
+    final amount = (_billData!['amount'] ?? 0) as num;
+    final points = (amount / 1000).toStringAsFixed(2);
+    final billDate = _billData!['billDate'] as Timestamp?;
+    final billNumber = _billData!['billNumber'] as String? ?? 'N/A';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.themeSoftSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(color: context.themeBorder),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.receipt, size: 20, color: context.themeContentColor),
+              const SizedBox(width: 8),
+              Text(
+                'Bill Summary',
+                style: AppTypography.labelLarge().copyWith(fontSize: 14),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withValues(alpha: 0.1),
+                    borderRadius: AppRadius.md12,
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.currency_rupee, size: 24, color: AppColors.success),
+                      const SizedBox(height: 4),
+                      Text(
+                        '₹${amount.toStringAsFixed(0)}',
+                        style: AppTypography.labelLarge().copyWith(
+                          fontSize: 16,
+                          color: AppColors.success,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Bill Amount',
+                        style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: context.themeContentColor.withValues(alpha: 0.1),
+                    borderRadius: AppRadius.md12,
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.card_giftcard, size: 24, color: context.themeContentColor),
+                      const SizedBox(height: 4),
+                      Text(
+                        points,
+                        style: AppTypography.labelLarge().copyWith(
+                          fontSize: 16,
+                          color: context.themeContentColor,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Points to Credit',
+                        style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today, size: 14, color: context.themeContentColor),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bill Date',
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 10,
+                              color: context.themeTextSecondary,
+                            ),
+                          ),
+                          Text(
+                            billDate != null
+                                ? DateFormat('dd MMM yyyy').format(billDate.toDate())
+                                : '-',
+                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
                           ),
                         ],
                       ),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Carpenter Information Card
-                    Card(
-                      elevation: 4,
-                      shadowColor: context.themePrimary.withValues(alpha: 0.3),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.all16,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: AppRadius.all16,
-                          color: context.themeSurface,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.person_outline,
-                                    size: 20,
-                                    color: context.themeContentColor,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  AppText.label('Carpenter Information'),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  // Profile Image
-                                  Container(
-                                    width: 70,
-                                    height: 70,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: context.themePrimary.withValues(
-                                        alpha: 0.1,
-                                      ),
-                                      border: Border.all(
-                                        color: context.themePrimary.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        width: 3,
-                                      ),
-                                    ),
-                                    child:
-                                        profileImageUrl != null &&
-                                            profileImageUrl.isNotEmpty
-                                        ? ClipOval(
-                                            child: Image.network(
-                                              profileImageUrl,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) =>
-                                                  Icon(
-                                                    Icons.person,
-                                                    color: context
-                                                        .themeContentColor,
-                                                    size: 36,
-                                                  ),
-                                            ),
-                                          )
-                                        : Icon(
-                                            Icons.person,
-                                            color: context.themeContentColor,
-                                            size: 36,
-                                          ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        AppText.label(carpenterName),
-                                        const SizedBox(height: 4),
-                                        if (carpenterPhone.isNotEmpty)
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.phone,
-                                                size: 14,
-                                                color:
-                                                    context.themeTextSecondary,
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                carpenterPhone,
-                                                style: AppTypography.bodyMedium()
-                                                    .copyWith(
-                                                      fontSize: 14,
-                                                      color: context
-                                                          .themeTextSecondary,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.workspace_premium,
-                                              size: 14,
-                                              color: AppColors.warning,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '$carpenterTier Tier',
-                                              style: AppTypography.labelLarge()
-                                                  .copyWith(
-                                                    fontSize: 13,
-                                                    color: AppColors.warning,
-                                                  ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Icon(
-                                              Icons.stars,
-                                              size: 14,
-                                              color: context.themeContentColor,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            AppText.label(
-                                              '${(carpenterPoints as num).toStringAsFixed(2)} pts',
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Bill Amount & Points Card
-                    Card(
-                      elevation: 4,
-                      shadowColor: context.themeSecondary.withValues(
-                        alpha: 0.3,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.all16,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: AppRadius.all16,
-                          color: context.themeSurface,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.receipt_long,
-                                    size: 20,
-                                    color: context.themeContentColor,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  AppText.label('Bill Summary'),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.success.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        borderRadius: AppRadius.md12,
-                                        border: Border.all(
-                                          color: AppColors.success,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Icon(
-                                            Icons.currency_rupee,
-                                            size: 32,
-                                            color: AppColors.success,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            '₹${amount.toStringAsFixed(0)}',
-                                            style: AppTypography.labelLarge()
-                                                .copyWith(
-                                                  fontSize: 24,
-                                                  color: AppColors.success,
-                                                ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'Bill Amount',
-                                            style: AppTypography.bodyMedium()
-                                                .copyWith(
-                                                  fontSize: 12,
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: context.themeSecondary
-                                            .withValues(alpha: 0.1),
-                                        borderRadius: AppRadius.md12,
-                                        border: Border.all(
-                                          color: context.themeSecondary
-                                              .withValues(alpha: 0.5),
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Icon(
-                                            Icons.monetization_on,
-                                            size: 32,
-                                            color: context.themeContentColor,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          AppText.label('${points.toStringAsFixed(2)}'),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'Points Earned',
-                                            style: AppTypography.bodyMedium()
-                                                .copyWith(
-                                                  fontSize: 12,
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Dates Information Card
-                    Card(
-                      elevation: 4,
-                      shadowColor: context.themePrimary.withValues(alpha: 0.2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.all16,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: AppRadius.all16,
-                          color: context.themeSurface,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.timeline,
-                                    size: 20,
-                                    color: context.themeContentColor,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  AppText.label('Timeline'),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              if (billDate != null) ...[
-                                _buildDateRow(
-                                  icon: Icons.receipt_long,
-                                  label: 'Bill Date',
-                                  date: billDate.toDate(),
-                                  color: context.themeContentColor,
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                              if (createdAt != null) ...[
-                                _buildDateRow(
-                                  icon: Icons.upload_file,
-                                  label: 'Submitted',
-                                  date: createdAt.toDate(),
-                                  color: context.themeTextSecondary,
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                              if (approvedAt != null)
-                                _buildDateRow(
-                                  icon: status == 'approved'
-                                      ? Icons.check_circle
-                                      : Icons.cancel,
-                                  label: status == 'approved'
-                                      ? 'Approved'
-                                      : 'Rejected',
-                                  date: approvedAt.toDate(),
-                                  color: status == 'approved'
-                                      ? AppColors.success
-                                      : context.themeError,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Bill Image Card
-                    if (imageUrl.isNotEmpty) ...[
-                      Card(
-                        elevation: 4,
-                        shadowColor: context.themePrimary.withValues(
-                          alpha: 0.2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: AppRadius.all16,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: AppRadius.all16,
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                context.themeSurface,
-                                context.themePrimary.withValues(alpha: 0.02),
-                              ],
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.image_outlined,
-                                          size: 20,
-                                          color: context.themeContentColor,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        AppText.label('Bill Image'),
-                                      ],
-                                    ),
-                                    TextButton.icon(
-                                      onPressed: () => _viewBillImage(imageUrl),
-                                      icon: const Icon(Icons.zoom_in, size: 18),
-                                      label: const Text('View Full Size'),
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: context.themePrimary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                GestureDetector(
-                                  onTap: () => _viewBillImage(imageUrl),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: AppRadius.md12,
-                                      border: Border.all(
-                                        color: context.themePrimary.withValues(
-                                          alpha: 0.2,
-                                        ),
-                                        width: 2,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: context.themePrimary
-                                              .withValues(alpha: 0.1),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: AppRadius.sm8,
-                                      child: Image.network(
-                                        imageUrl,
-                                        width: double.infinity,
-                                        height: 250,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Container(
-                                          height: 250,
-                                          color: context.themeBorder,
-                                          child: Center(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.error_outline,
-                                                  color: context.themeTextMuted,
-                                                  size: 48,
-                                                ),
-                                                const SizedBox(height: 8),
-                                                AppText.body(
-                                                  l10n.failedToLoadImage,
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 80), // Space for action buttons
-                    ],
                   ],
                 ),
               ),
-            ),
-          ),
-
-          // Action Buttons (for pending and approved bills)
-          if (status == 'pending')
-            Container(
-              color: context.themeBackground,
-              padding: const EdgeInsets.all(16),
-              child: SafeArea(
-                top: false,
+              Expanded(
                 child: Row(
                   children: [
+                    Icon(Icons.tag, size: 14, color: context.themeContentColor),
+                    const SizedBox(width: 6),
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _isProcessing ? null : _rejectBill,
-                        icon: _isProcessing
-                            ? SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    context.themeOnError,
-                                  ),
-                                ),
-                              )
-                            : const Icon(Icons.close, size: 20),
-                        label: Text(
-                          l10n.reject,
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bill No.',
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 10,
+                              color: context.themeTextSecondary,
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.themeError,
-                          foregroundColor: context.themeOnError,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppRadius.md12,
+                          Text(
+                            billNumber,
+                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 2,
-                      child: ElevatedButton.icon(
-                        onPressed: _isProcessing ? null : _approveBill,
-                        icon: _isProcessing
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                                ),
-                              )
-                            : const Icon(Icons.check_circle, size: 20),
-                        label: Text(
-                          l10n.approveBill,
-                          style: AppTypography.labelLarge().copyWith(
-                            fontSize: 16,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.success,
-                          foregroundColor: AppColors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppRadius.md12,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-
-          // Withdraw Button (only for approved bills)
-          if (status == 'approved')
-            Container(
-              decoration: BoxDecoration(
-                color: context.themeBackground,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.warning.withValues(alpha: 0.15),
-                    blurRadius: 12,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(16),
-              child: SafeArea(
-                top: false,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [AppColors.warning, AppColors.warning],
-                    ),
-                    borderRadius: AppRadius.all16,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.warning.withValues(alpha: 0.4),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: AppColors.transparent,
-                    child: InkWell(
-                      onTap: _isProcessing ? null : _withdrawBill,
-                      borderRadius: AppRadius.all16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (_isProcessing)
-                              const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                                ),
-                              )
-                            else
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.white.withValues(alpha: 0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.restore,
-                                  color: AppColors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  l10n.withdrawApproval,
-                                  style: AppTypography.labelLarge().copyWith(
-                                    fontSize: 17,
-                                    color: AppColors.white,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  l10n.reversePointsAndUndoApproval,
-                                  style: AppTypography.bodyMedium().copyWith(
-                                    fontSize: 12,
-                                    color: AppColors.white.withValues(
-                                      alpha: 0.9,
-                                    ),
-                                  ),
-                                ),
-                              ],
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.percent, size: 14, color: context.themeContentColor),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Points Rate',
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 10,
+                              color: context.themeTextSecondary,
                             ),
-                          ],
-                        ),
+                          ),
+                          Text(
+                            '1 pt / ₹1000',
+                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ),
-
-          // Approve Button (only for rejected bills)
-          if (status == 'rejected')
-            Container(
-              decoration: BoxDecoration(
-                color: context.themeBackground,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.success.withValues(alpha: 0.15),
-                    blurRadius: 12,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(16),
-              child: SafeArea(
-                top: false,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [AppColors.success, AppColors.success],
-                    ),
-                    borderRadius: AppRadius.all16,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.success.withValues(alpha: 0.4),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: AppColors.transparent,
-                    child: InkWell(
-                      onTap: _isProcessing ? null : _approveBill,
-                      borderRadius: AppRadius.all16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (_isProcessing)
-                              const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                                ),
-                              )
-                            else
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.white.withValues(alpha: 0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.check_circle,
-                                  color: AppColors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  l10n.approveBillAction,
-                                  style: AppTypography.labelLarge().copyWith(
-                                    fontSize: 17,
-                                    color: AppColors.white,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  l10n.awardPointsAndMarkAsApproved,
-                                  style: AppTypography.bodyMedium().copyWith(
-                                    fontSize: 12,
-                                    color: AppColors.white.withValues(
-                                      alpha: 0.9,
-                                    ),
-                                  ),
-                                ),
-                              ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.category, size: 14, color: context.themeContentColor),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bill Type',
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 10,
+                              color: context.themeTextSecondary,
                             ),
-                          ],
-                        ),
+                          ),
+                          Text(
+                            'Purchase',
+                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildDateRow({
-    required IconData icon,
-    required String label,
-    required DateTime date,
-    required Color color,
-  }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: AppRadius.sm8,
+  Widget _buildAttachmentCard(BuildContext context) {
+    final imageUrl = _billData!['imageUrl'] as String? ?? '';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.themeSoftSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(color: context.themeBorder),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.attach_file, size: 20, color: context.themeContentColor),
+              const SizedBox(width: 8),
+              Text(
+                'Bill Attachment',
+                style: AppTypography.labelLarge().copyWith(fontSize: 14),
+              ),
+            ],
           ),
-          child: Icon(icon, size: 18, color: color),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: _viewFullImage,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imageUrl,
+                height: 140,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  height: 140,
+                  decoration: BoxDecoration(
+                    color: context.themeBackground,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Icon(Icons.image_not_supported, color: context.themeTextSecondary),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.search, color: context.themeContentColor),
+            title: Text('View Full Size', style: AppTypography.bodySmall()),
+            trailing: Icon(Icons.chevron_right, color: context.themeTextSecondary, size: 18),
+            onTap: _viewFullImage,
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.download, color: context.themeContentColor),
+            title: Text('Download Image', style: AppTypography.bodySmall()),
+            trailing: Icon(Icons.chevron_right, color: context.themeTextSecondary, size: 18),
+            onTap: () {},
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.picture_as_pdf, color: context.themeContentColor),
+            title: Text('Generate PDF', style: AppTypography.bodySmall()),
+            trailing: Icon(Icons.chevron_right, color: context.themeTextSecondary, size: 18),
+            onTap: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineCard(BuildContext context) {
+    final status = _billData!['status'] as String? ?? 'pending';
+    final createdAt = _billData!['createdAt'] as Timestamp?;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.themeSoftSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(color: context.themeBorder),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.history, size: 20, color: context.themeContentColor),
+              const SizedBox(width: 8),
+              Text(
+                'Timeline',
+                style: AppTypography.labelLarge().copyWith(fontSize: 14),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildTimelineItem(
+            context,
+            'Bill Created',
+            createdAt != null
+                ? DateFormat('dd MMM yyyy, hh:mm a').format(createdAt.toDate())
+                : '-',
+            true,
+            true,
+          ),
+          _buildTimelineItem(
+            context,
+            'Submitted',
+            createdAt != null
+                ? DateFormat('dd MMM yyyy, hh:mm a').format(createdAt.toDate())
+                : '-',
+            true,
+            true,
+          ),
+          _buildTimelineItem(
+            context,
+            'Waiting for Approval',
+            'Pending action from admin',
+            status == 'pending',
+            status == 'pending',
+          ),
+          _buildTimelineItem(
+            context,
+            'Approved',
+            '--',
+            status == 'approved',
+            false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineItem(
+    BuildContext context,
+    String title,
+    String subtitle,
+    bool isActive,
+    bool isCompleted,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isCompleted ? AppColors.success : (isActive ? const Color(0xFFFFA500) : context.themeBackground),
+                border: Border.all(
+                  color: isCompleted ? AppColors.success : (isActive ? const Color(0xFFFFA500) : context.themeBorder),
+                  width: 2,
+                ),
+              ),
+              child: isCompleted
+                  ? const Icon(Icons.check, size: 12, color: AppColors.white)
+                  : (isActive ? const Icon(Icons.schedule, size: 12, color: AppColors.white) : null),
+            ),
+            if (title != 'Approved')
+              Container(
+                width: 2,
+                height: 40,
+                color: isCompleted ? AppColors.success : (isActive ? const Color(0xFFFFA500) : context.themeBorder),
+              ),
+          ],
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: AppTypography.bodyMedium().copyWith(
-                  fontSize: 12,
-                  color: context.themeTextSecondary,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTypography.labelMedium().copyWith(fontSize: 12),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                DateFormat('dd MMM yyyy, hh:mm a').format(date),
-                style: AppTypography.labelLarge().copyWith(
-                  fontSize: 14,
-                  color: context.themeContentColor,
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppTypography.bodySmall().copyWith(
+                    fontSize: 11,
+                    color: context.themeTextSecondary,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+              ],
+            ),
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _isProcessing ? null : _rejectBill,
+            icon: const Icon(Icons.close, size: 18),
+            label: const Text('Reject Bill'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.white,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _isProcessing ? null : _approveBill,
+            icon: const Icon(Icons.check_circle, size: 18),
+            label: const Text('Approve Bill'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.success,
+              foregroundColor: AppColors.white,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getTimeAgo(Timestamp? timestamp) {
+    if (timestamp == null) return '';
+    final now = DateTime.now();
+    final date = timestamp.toDate();
+    final diff = now.difference(date);
+
+    if (diff.inMinutes < 1) {
+      return 'just now';
+    } else if (diff.inMinutes < 60) {
+      return '${diff.inMinutes} min ago';
+    } else if (diff.inHours < 24) {
+      return '${diff.inHours} hour${diff.inHours > 1 ? 's' : ''} ago';
+    } else {
+      return '${diff.inDays} day${diff.inDays > 1 ? 's' : ''} ago';
+    }
   }
 }

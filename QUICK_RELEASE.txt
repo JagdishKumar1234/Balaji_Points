@@ -1,0 +1,235 @@
+================================================================================
+                   BALAJI POINTS - QUICK RELEASE GUIDE
+================================================================================
+
+LOCATION: /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/
+
+================================================================================
+                            QUICK START (3 STEPS)
+================================================================================
+
+1. Navigate to project directory:
+   cd /Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points
+
+2. Run the build script:
+   ./build_release.sh
+
+3. Answer 'y' when prompted
+
+Done! APK and AAB are ready.
+
+================================================================================
+                             WHAT IT DOES
+================================================================================
+
+✓ Increments version (1.0.17+26 → 1.0.17+27)
+✓ Cleans build directory
+✓ Builds Release APK (38 MB)
+✓ Builds Release AAB (15-20 MB)
+✓ Generates BUILD_REPORT.txt
+✓ Commits version bump to git
+
+Total Time: ~5-7 minutes
+
+================================================================================
+                            OUTPUT FILES
+================================================================================
+
+APK (Install on device):
+  build/app/outputs/flutter-apk/app-release.apk
+
+AAB (Upload to Play Store):
+  build/app/outputs/bundle/release/app-release.aab
+
+Report (Documentation):
+  BUILD_REPORT.txt
+
+================================================================================
+                        INSTALLATION AFTER BUILD
+================================================================================
+
+On Android Device:
+  adb install -r build/app/outputs/flutter-apk/app-release.apk
+
+On Google Play Store:
+  1. Go to Google Play Console
+  2. Create new release
+  3. Upload: build/app/outputs/bundle/release/app-release.aab
+  4. Add release notes
+  5. Submit for review
+
+Firebase (Testing):
+  1. Upload: build/app/outputs/flutter-apk/app-release.apk
+  2. Send link to testers
+
+================================================================================
+                           VERSION NUMBERS
+================================================================================
+
+Format: X.Y.Z+B
+  X = Major (1 = current)
+  Y = Minor (0 = current)
+  Z = Patch (17 = current)
+  B = Build (26 = current, auto-incremented)
+
+Examples:
+  1.0.17+26  (current)
+  1.0.17+27  (after one build)
+  1.0.17+28  (after another build)
+
+To change manually:
+  nano pubspec.yaml
+  Change: version: 1.0.17+27
+
+================================================================================
+                          TROUBLESHOOTING
+================================================================================
+
+Problem: Command not found
+Solution: chmod +x build_release.sh
+
+Problem: Flutter not found
+Solution: flutter --version (or check PATH)
+
+Problem: Build failed
+Solution: flutter clean && flutter pub get && ./build_release.sh
+
+Problem: Signing failed
+Solution: Check android/key.properties exists
+
+Problem: APK built but AAB failed
+Solution: Use APK for testing, AAB is optional
+
+================================================================================
+                         GIT INTEGRATION
+================================================================================
+
+Script automatically:
+  ✓ Commits version bump
+  ✓ Updates pubspec.yaml
+  ✓ Commits to current branch
+
+Manual git operations:
+  git tag v1.0.17+27
+  git push origin main
+  git push origin v1.0.17+27
+
+View commit:
+  git log --oneline -1
+
+================================================================================
+                        FEATURES IN THIS BUILD
+================================================================================
+
+✓ Carpenter summary with expand/collapse
+✓ Numbered bill history (#1, #2, #3...)
+✓ Site filter dropdown
+✓ Date range filtering (From/To)
+✓ 12-hour time format (2:30 PM, not 14:30)
+✓ Empty site handling (dash "-", not "Unknown Site")
+✓ Bill number display (BP-SBH-20260710-384721)
+✓ Professional tier status on wallet
+✓ UI improvements and optimizations
+
+================================================================================
+                       BUILD REPORT CONTENTS
+================================================================================
+
+BUILD_REPORT.txt includes:
+  ✓ Build date and time
+  ✓ App version
+  ✓ APK location and size
+  ✓ AAB location and size
+  ✓ Features included
+  ✓ Optimizations applied
+  ✓ Installation instructions
+  ✓ Next steps
+
+Open after build:
+  cat BUILD_REPORT.txt
+
+================================================================================
+                          NEXT STEPS
+================================================================================
+
+After running build_release.sh:
+
+1. Test APK on device:
+   adb install -r build/app/outputs/flutter-apk/app-release.apk
+   (Test all features)
+
+2. Upload AAB to Play Store:
+   - Go to Google Play Console
+   - Create new release
+   - Upload AAB file
+   - Add release notes (use features list above)
+   - Submit for review
+
+3. Commit and push:
+   git push origin main
+
+================================================================================
+                            MULTIPLE RELEASES
+================================================================================
+
+Build again next time:
+  ./build_release.sh
+  (Version auto-increments: +27 → +28 → +29...)
+
+Each run:
+  - Creates new APK
+  - Creates new AAB
+  - Updates version
+  - Commits to git
+  - Generates report
+
+================================================================================
+                          NEED HELP?
+================================================================================
+
+Read detailed guide:
+  cat BUILD_RELEASE_GUIDE.md
+
+Check recent build:
+  cat BUILD_REPORT.txt
+
+Verify version:
+  grep "version:" pubspec.yaml
+
+See last commit:
+  git log --oneline -1
+
+Check Flutter setup:
+  flutter doctor
+
+================================================================================
+                      SCRIPT LOCATION
+================================================================================
+
+/Users/jagdishkumar/Documents/Development/ReactNative/Project/BalajiPoints/balaji_points/build_release.sh
+
+Make executable (first time only):
+  chmod +x build_release.sh
+
+Run anytime:
+  ./build_release.sh
+
+================================================================================
+                         CHEAT SHEET
+================================================================================
+
+Run:                           ./build_release.sh
+Cancel:                        Press 'n' when prompted
+Check version:                 grep "version:" pubspec.yaml
+View report:                   cat BUILD_REPORT.txt
+Install on device:             adb install -r build/app/outputs/flutter-apk/app-release.apk
+View APK:                      open build/app/outputs/flutter-apk/
+View AAB:                       open build/app/outputs/bundle/release/
+Tag release:                    git tag v1.0.17+27
+Push:                           git push origin main --tags
+Check Flutter:                 flutter doctor
+
+================================================================================
+
+✅ READY TO BUILD! Run: ./build_release.sh
+

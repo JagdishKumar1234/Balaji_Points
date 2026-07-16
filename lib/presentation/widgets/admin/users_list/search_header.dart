@@ -117,7 +117,7 @@ class _SearchHeaderState extends State<SearchHeader> {
             ),
             pw.SizedBox(height: 20),
             pw.Text(
-              'Generated on: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}',
+              'Generated on: ${DateFormat('dd/MM/yyyy, hh:mm a').format(DateTime.now())}',
               style: pw.TextStyle(fontSize: 10, font: ttf),
             ),
             pw.SizedBox(height: 20),

@@ -17,12 +17,6 @@ import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 
-/// Collapse duplicate bill-approval rows (legacy cloud-function double credit).
-List<Map<String, dynamic>> _dedupePointsHistory(
-  List<Map<String, dynamic>> entries,
-) =>
-    PointsUtils.dedupeHistory(entries);
-
 class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
 
@@ -49,6 +43,27 @@ class WalletPage extends ConsumerWidget {
             title: l10n.wallet,
             showLogo: false,
             showProfileButton: false,
+            subtitle: 'Track your points and manage your bills',
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IconButton(
+                  onPressed: () => context.push('/add-bill'),
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: context.themePrimary,
+                      borderRadius: AppRadius.md12,
+                    ),
+                    child: const Icon(
+                      Icons.add,
+                      color: AppColors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           Expanded(
             child: RefreshIndicator(
@@ -60,30 +75,25 @@ class WalletPage extends ConsumerWidget {
               backgroundColor: canvas,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.fromLTRB(16, 14, 16, bottomPadding),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, bottomPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Intro banner
-                    _WalletIntroBanner(isDark: isDark, theme: theme)
-                        .fadeIn(),
-                    const SizedBox(height: 14),
-
-                    // Total points card
+                    // Total points card with tier progress
                     walletState.loading || pointsLoading
                         ? _ShimmerPointsCard()
-                        : _PointsCard(
+                        : _DesignPointsCard(
                             points: carpenterPoints.totalPoints,
                             tier: carpenterPoints.tier,
                           ).enterCard(delay: AppAnimations.stagger(1)),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
 
-                    // Stats row
+                    // Status pills row (Pending, Approved, Rejected)
                     Row(
                       children: [
                         Expanded(
-                          child: _StatCard(
-                            icon: Icons.pending_actions,
+                          child: _StatusPill(
+                            icon: Icons.schedule,
                             label: l10n.pending,
                             color: AppColors.warning,
                             child: walletState.loading || !idsReady
@@ -93,7 +103,7 @@ class WalletPage extends ConsumerWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: _StatCard(
+                          child: _StatusPill(
                             icon: Icons.check_circle,
                             label: l10n.approved,
                             color: AppColors.success,
@@ -102,30 +112,34 @@ class WalletPage extends ConsumerWidget {
                                 : _ApprovedCount(ids: ids),
                           ).fadeIn(delay: AppAnimations.stagger(2)),
                         ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _StatusPill(
+                            icon: Icons.cancel,
+                            label: 'Rejected',
+                            color: AppColors.error,
+                            child: walletState.loading || !idsReady
+                                ? _statLoading(context)
+                                : _RejectedCount(ids: ids),
+                          ).fadeIn(delay: AppAnimations.stagger(2)),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 20),
 
-                    // Add bill CTA
-                    _AddBillButton(l10n: l10n)
-                        .enterCard(delay: AppAnimations.stagger(3)),
-                    const SizedBox(height: 16),
+                    // Bill History section with filter tabs
+                    _BillHistorySectionHeader().fadeIn(
+                      delay: AppAnimations.stagger(3),
+                    ),
+                    const SizedBox(height: 12),
 
-                    // Points history header
-                    _SectionHeader(
-                      icon: Icons.history,
-                      title: 'Points History',
-                      subtitle: 'All transactions',
-                    ).fadeIn(delay: AppAnimations.stagger(3)),
-                    const SizedBox(height: 8),
-
-                    // Points history table
+                    // Bill history with filter
                     if (!idsReady)
                       const _BillsLoading()
                     else
-                      _PointsHistoryTable(ids: ids),
+                      _BillHistoryTableWithFilter(ids: ids),
 
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -152,7 +166,7 @@ class _ShimmerPointsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      height: 110,
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
         borderRadius: AppRadius.all16,
@@ -162,72 +176,81 @@ class _ShimmerPointsCard extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Wallet intro banner
+// Design Points Card - With tier progress
 // ---------------------------------------------------------------------------
 
-class _WalletIntroBanner extends StatelessWidget {
-  final bool isDark;
-  final ThemeData theme;
-  const _WalletIntroBanner({required this.isDark, required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      borderRadius: 14,
-      color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.8) : AppColors.white,
-      child: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: context.themePrimary.withValues(alpha: 0.12),
-              borderRadius: AppRadius.sm8,
-            ),
-            child: Icon(
-              Icons.account_balance_wallet_outlined,
-              size: 18,
-              color: context.themePrimary,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Track your points and bill rewards in one place',
-              style: AppTypography.bodySmall(
-                color: context.themeTextPrimary.withValues(alpha: 0.75),
-              ).copyWith(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
+// Tier threshold helpers - same as home screen
+int _tierNextThreshold(String tier) {
+  switch (tier) {
+    case 'Silver':
+      return 5000;
+    case 'Gold':
+      return 10000;
+    case 'Platinum':
+      return 10000;
+    default:
+      return 2000;
   }
 }
 
-// ---------------------------------------------------------------------------
-// Points card
-// ---------------------------------------------------------------------------
+int _tierCurrentThreshold(String tier) {
+  switch (tier) {
+    case 'Silver':
+      return 2000;
+    case 'Gold':
+      return 5000;
+    case 'Platinum':
+      return 10000;
+    default:
+      return 0;
+  }
+}
 
-class _PointsCard extends StatelessWidget {
+String _tierNextLabel(String tier) {
+  switch (tier) {
+    case 'Bronze':
+      return 'Silver';
+    case 'Silver':
+      return 'Gold';
+    case 'Gold':
+      return 'Platinum';
+    default:
+      return 'Max';
+  }
+}
+
+class _DesignPointsCard extends StatelessWidget {
   final double points;
   final String tier;
-  const _PointsCard({required this.points, required this.tier});
+  const _DesignPointsCard({required this.points, required this.tier});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final pointsDisplay = PointsUtils.formatPoints(points);
 
+    // Calculate tier progress using home screen logic
+    final currentThreshold = _tierCurrentThreshold(tier);
+    final nextThreshold = _tierNextThreshold(tier);
+    final nextLabel = _tierNextLabel(tier);
+    final isPlatinum = tier == 'Platinum';
+
+    final progress = isPlatinum
+        ? 1.0
+        : ((points - currentThreshold) / (nextThreshold - currentThreshold))
+              .clamp(0.0, 1.0);
+    final pointsToNext = isPlatinum
+        ? 0
+        : (nextThreshold - points).clamp(0, nextThreshold).toInt();
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             context.themePrimary,
-            context.themePrimary.withValues(alpha: 0.85),
-            context.themePrimary.withValues(alpha: 0.70),
+            context.themePrimary.withValues(alpha: 0.88),
+            context.themePrimary.withValues(alpha: 0.75),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -235,44 +258,122 @@ class _PointsCard extends StatelessWidget {
         borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
-            color: context.themePrimary.withValues(alpha: 0.35),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
+            color: context.themePrimary.withValues(alpha: 0.30),
+            blurRadius: 12,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          // Top row: Points and tier badge
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.totalPoints,
-                style: AppTypography.bodySmall(
-                  color: AppColors.white.withValues(alpha: 0.9),
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.totalPoints,
+                    style: AppTypography.bodySmall(
+                      color: AppColors.white.withValues(alpha: 0.85),
+                    ).copyWith(fontWeight: FontWeight.w600, fontSize: 11),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    pointsDisplay,
+                    style: AppTypography.pointsHero(
+                      color: AppColors.white,
+                    ).copyWith(fontWeight: FontWeight.w900, fontSize: 36),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                pointsDisplay,
-                style: AppTypography.pointsHero(color: AppColors.white),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.15),
+                  borderRadius: AppRadius.all16,
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      tier,
+                      style: AppTypography.bodySmall(
+                        color: AppColors.white,
+                      ).copyWith(fontWeight: FontWeight.w800, fontSize: 12),
+                    ),
+                    const SizedBox(height: 1),
+                    const Icon(Icons.shield, size: 14, color: AppColors.white),
+                  ],
+                ),
               ),
             ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: AppColors.white.withValues(alpha: 0.2),
-              borderRadius: AppRadius.all16,
+          const SizedBox(height: 12),
+
+          // Next tier progress section - dynamic based on tier
+          if (!isPlatinum)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Next Tier: $nextLabel',
+                  style: AppTypography.bodySmall(
+                    color: AppColors.white,
+                  ).copyWith(fontWeight: FontWeight.w700, fontSize: 12),
+                ),
+                const SizedBox(height: 6),
+                // Progress bar
+                ClipRRect(
+                  borderRadius: AppRadius.sm8,
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 5,
+                    backgroundColor: AppColors.white.withValues(alpha: 0.2),
+                    valueColor: AlwaysStoppedAnimation(
+                      AppColors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$pointsToNext pts to next tier',
+                  style: AppTypography.labelSmall(
+                    color: AppColors.white,
+                  ).copyWith(fontWeight: FontWeight.w500, fontSize: 10),
+                ),
+              ],
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.star, size: 14, color: AppColors.white),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Platinum Tier - Maximum Level',
+                      style: AppTypography.bodySmall(
+                        color: AppColors.white,
+                      ).copyWith(fontWeight: FontWeight.w700, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            child: Text(
-              tier,
-              style: AppTypography.bodySmall(color: AppColors.white)
-                  .copyWith(fontWeight: FontWeight.w600),
-            ),
-          ),
         ],
       ),
     );
@@ -280,16 +381,16 @@ class _PointsCard extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Stat card
+// Status Pill Card
 // ---------------------------------------------------------------------------
 
-class _StatCard extends StatelessWidget {
+class _StatusPill extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
   final Widget child;
 
-  const _StatCard({
+  const _StatusPill({
     required this.icon,
     required this.label,
     required this.color,
@@ -302,33 +403,48 @@ class _StatCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? theme.colorScheme.surface : AppColors.white;
 
-    return AppCard(
-      padding: const EdgeInsets.all(14),
-      borderRadius: 18,
-      color: bg,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: AppRadius.all16,
+        border: Border.all(
+          color: context.themeTextPrimary.withValues(alpha: 0.06),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.themeTextPrimary.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(9),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: color.withValues(alpha: 0.15),
               borderRadius: AppRadius.md12,
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon, color: color, size: 18),
           ),
-          const SizedBox(height: 14),
-          child,
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
+          DefaultTextStyle(
+            style: AppTypography.h4(
+              color: context.themeTextPrimary,
+            ).copyWith(fontWeight: FontWeight.w800, fontSize: 22),
+            child: child,
+          ),
+          const SizedBox(height: 4),
           Text(
             label,
-            style: AppTypography.labelSmall(
-              color: context.themeTextPrimary.withValues(alpha: 0.7),
-            ),
+            style: AppTypography.bodySmall(
+              color: color,
+            ).copyWith(fontWeight: FontWeight.w700, fontSize: 11),
           ),
         ],
       ),
@@ -356,7 +472,9 @@ class _PendingCount extends StatelessWidget {
         final count = snap.hasData ? snap.data!.docs.length : 0;
         return Text(
           '$count',
-          style: AppTypography.h4(color: context.themeTextPrimary),
+          style: AppTypography.h4(
+            color: context.themeTextPrimary,
+          ).copyWith(fontWeight: FontWeight.w800),
         );
       },
     );
@@ -379,7 +497,34 @@ class _ApprovedCount extends StatelessWidget {
         final count = snap.hasData ? snap.data!.docs.length : 0;
         return Text(
           '$count',
-          style: AppTypography.h4(color: context.themeTextPrimary),
+          style: AppTypography.h4(
+            color: context.themeTextPrimary,
+          ).copyWith(fontWeight: FontWeight.w800),
+        );
+      },
+    );
+  }
+}
+
+class _RejectedCount extends StatelessWidget {
+  final List<String> ids;
+  const _RejectedCount({required this.ids});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('bills')
+          .where('carpenterId', whereIn: ids)
+          .where('status', isEqualTo: 'rejected')
+          .snapshots(),
+      builder: (context, snap) {
+        final count = snap.hasData ? snap.data!.docs.length : 0;
+        return Text(
+          '$count',
+          style: AppTypography.h4(
+            color: context.themeTextPrimary,
+          ).copyWith(fontWeight: FontWeight.w800),
         );
       },
     );
@@ -387,104 +532,59 @@ class _ApprovedCount extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Add bill button
+// Bill History Section Header with Filter
 // ---------------------------------------------------------------------------
 
-class _AddBillButton extends StatelessWidget {
-  final AppLocalizations l10n;
-  const _AddBillButton({required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [context.themeSecondary, Color(0xFF7C3AED), Color(0xFF2563EB)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: AppRadius.all16,
-        boxShadow: [
-          BoxShadow(
-            color: context.themeSecondary.withValues(alpha: 0.28),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Material(
-        color: AppColors.transparent,
-        child: InkWell(
-          onTap: () => context.push('/add-bill'),
-          borderRadius: AppRadius.all16,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.add_circle_outline, color: AppColors.white, size: 24),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  l10n.addNewBill,
-                  style: AppTypography.bodyLarge(color: AppColors.white)
-                      .copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.2),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Section header
-// ---------------------------------------------------------------------------
-
-class _SectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  const _SectionHeader({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
+class _BillHistorySectionHeader extends StatelessWidget {
+  const _BillHistorySectionHeader();
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.themePrimary.withValues(alpha: 0.1),
-            borderRadius: AppRadius.sm8,
-          ),
-          child: Icon(icon, color: context.themePrimary, size: 18),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: AppTypography.h5(color: context.themeTextPrimary),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.themePrimary.withValues(alpha: 0.1),
+                borderRadius: AppRadius.sm8,
               ),
+              child: Icon(
+                Icons.receipt_long_outlined,
+                color: context.themePrimary,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Bill History',
+              style: AppTypography.h5(
+                color: context.themeTextPrimary,
+              ).copyWith(fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: context.themeTextPrimary.withValues(alpha: 0.05),
+            borderRadius: AppRadius.all16,
+            border: Border.all(
+              color: context.themeTextPrimary.withValues(alpha: 0.1),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.filter_list, size: 14, color: context.themePrimary),
+              const SizedBox(width: 4),
               Text(
-                subtitle,
+                'Filter',
                 style: AppTypography.labelSmall(
-                  color: context.themeTextPrimary.withValues(alpha: 0.6),
-                ),
+                  color: context.themePrimary,
+                ).copyWith(fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -511,25 +611,336 @@ class _BillsLoading extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Points History Table - Shows all transactions in tabular form
+// Bill History Table with Filter Tabs
 // ---------------------------------------------------------------------------
 
-class _PointsHistoryTable extends ConsumerStatefulWidget {
+class _BillHistoryTableWithFilter extends ConsumerStatefulWidget {
   final List<String> ids;
-  const _PointsHistoryTable({required this.ids});
+  const _BillHistoryTableWithFilter({required this.ids});
 
   @override
-  ConsumerState<_PointsHistoryTable> createState() => _PointsHistoryTableState();
+  ConsumerState<_BillHistoryTableWithFilter> createState() =>
+      _BillHistoryTableWithFilterState();
 }
 
-class _PointsHistoryTableState extends ConsumerState<_PointsHistoryTable> {
+class _BillHistoryTableWithFilterState
+    extends ConsumerState<_BillHistoryTableWithFilter> {
+  String selectedFilter = 'all';
+
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Filter tabs
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _FilterTab(
+                label: 'All',
+                isSelected: selectedFilter == 'all',
+                onTap: () => setState(() => selectedFilter = 'all'),
+              ),
+              const SizedBox(width: 8),
+              _FilterTab(
+                label: 'Approved',
+                isSelected: selectedFilter == 'approved',
+                onTap: () => setState(() => selectedFilter = 'approved'),
+                color: AppColors.success,
+              ),
+              const SizedBox(width: 8),
+              _FilterTab(
+                label: 'Pending',
+                isSelected: selectedFilter == 'pending',
+                onTap: () => setState(() => selectedFilter = 'pending'),
+                color: AppColors.warning,
+              ),
+              const SizedBox(width: 8),
+              _FilterTab(
+                label: 'Rejected',
+                isSelected: selectedFilter == 'rejected',
+                onTap: () => setState(() => selectedFilter = 'rejected'),
+                color: AppColors.error,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Bill list based on filter
+        _BillListByFilter(ids: widget.ids, filter: selectedFilter),
+      ],
+    );
+  }
+}
 
+// ---------------------------------------------------------------------------
+// Filter Tab Button
+// ---------------------------------------------------------------------------
+
+class _FilterTab extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final Color? color;
+
+  const _FilterTab({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tabColor = color ?? context.themePrimary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? tabColor : context.themeSurface,
+          borderRadius: AppRadius.all16,
+          border: isSelected
+              ? null
+              : Border.all(
+                  color: context.themeTextPrimary.withValues(alpha: 0.1),
+                ),
+        ),
+        child: Text(
+          label,
+          style: AppTypography.bodySmall(
+            color: isSelected ? AppColors.white : tabColor,
+          ).copyWith(fontWeight: FontWeight.w700),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Bill List by Filter
+// ---------------------------------------------------------------------------
+
+class _BillListByFilter extends StatelessWidget {
+  final List<String> ids;
+  final String filter;
+
+  const _BillListByFilter({required this.ids, required this.filter});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _buildStream(),
+      builder: (context, snap) {
+        if (snap.hasError) {
+          return _errorCard(context, snap.error.toString());
+        }
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const _BillsLoading();
+        }
+
+        if (!snap.hasData || snap.data!.docs.isEmpty) {
+          return _emptyCard(context);
+        }
+
+        final bills = snap.data!.docs;
+        double approvedTotal = 0;
+        int approvedCount = 0;
+
+        for (final doc in bills) {
+          final bill = doc.data() as Map<String, dynamic>;
+          if ((bill['status'] as String?) == 'approved') {
+            approvedTotal += (bill['pointsEarned'] as num?)?.toDouble() ?? 0;
+            approvedCount++;
+          }
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Bill list
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: bills.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final billData = bills[index].data() as Map<String, dynamic>;
+                return _DesignBillCard(bill: billData);
+              },
+            ),
+            const SizedBox(height: 12),
+            // Summary card
+            _SummaryCard(
+              approvedCount: approvedCount,
+              approvedTotal: approvedTotal,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Stream<QuerySnapshot> _buildStream() {
+    if (filter == 'all') {
+      return FirebaseFirestore.instance
+          .collection('bills')
+          .where('carpenterId', whereIn: ids)
+          .orderBy('createdAt', descending: true)
+          .snapshots();
+    } else {
+      return FirebaseFirestore.instance
+          .collection('bills')
+          .where('carpenterId', whereIn: ids)
+          .where('status', isEqualTo: filter)
+          .orderBy('createdAt', descending: true)
+          .snapshots();
+    }
+  }
+
+  Widget _errorCard(BuildContext context, String error) {
+    return AppCard(
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        children: [
+          Icon(Icons.error_outline, size: 48, color: context.themeError),
+          const SizedBox(height: 12),
+          Text(
+            'Error loading bills',
+            style: AppTypography.bodyLarge(
+              color: context.themeError,
+            ).copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            style: AppTypography.labelSmall(
+              color: context.themeTextPrimary.withValues(alpha: 0.5),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyCard(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        children: [
+          Icon(
+            Icons.receipt_long_outlined,
+            size: 48,
+            color: context.themeTextPrimary.withValues(alpha: 0.3),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'No bills yet',
+            style: AppTypography.bodyLarge(
+              color: context.themeTextPrimary.withValues(alpha: 0.6),
+            ).copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Submit your first bill to get started',
+            style: AppTypography.bodySmall(
+              color: context.themeTextPrimary.withValues(alpha: 0.5),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Summary Card
+// ---------------------------------------------------------------------------
+
+class _SummaryCard extends StatelessWidget {
+  final int approvedCount;
+  final double approvedTotal;
+
+  const _SummaryCard({
+    required this.approvedCount,
+    required this.approvedTotal,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.themeSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(
+          color: context.themeTextPrimary.withValues(alpha: 0.08),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Total Approved Points',
+                style: AppTypography.bodySmall(
+                  color: context.themeTextPrimary.withValues(alpha: 0.7),
+                ).copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                approvedTotal.toStringAsFixed(2),
+                style: AppTypography.h4(
+                  color: context.themeTextPrimary,
+                ).copyWith(fontWeight: FontWeight.w800, fontSize: 22),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: context.themePrimary,
+              borderRadius: AppRadius.md12,
+            ),
+            child: Icon(
+              Icons.account_balance_wallet,
+              color: AppColors.white,
+              size: 20,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Old Bill History Table (Deprecated)
+// ---------------------------------------------------------------------------
+
+class _BillHistoryTable extends ConsumerStatefulWidget {
+  final List<String> ids;
+  const _BillHistoryTable({required this.ids});
+
+  @override
+  ConsumerState<_BillHistoryTable> createState() => _BillHistoryTableState();
+}
+
+class _BillHistoryTableState extends ConsumerState<_BillHistoryTable> {
+  @override
+  Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('user_points')
-          .where('userId', whereIn: widget.ids)
+          .collection('bills')
+          .where('carpenterId', whereIn: widget.ids)
+          .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snap) {
         if (snap.hasError) {
@@ -539,186 +950,70 @@ class _PointsHistoryTableState extends ConsumerState<_PointsHistoryTable> {
           return const _BillsLoading();
         }
 
-        // Collect all history entries from all user_points docs
-        final rawHistory = <Map<String, dynamic>>[];
-
-        if (snap.hasData) {
-          for (final doc in snap.data!.docs) {
-            final data = doc.data() as Map<String, dynamic>;
-            final history = (data['pointsHistory'] as List<dynamic>?) ?? [];
-            for (final entry in history) {
-              rawHistory.add(Map<String, dynamic>.from(entry as Map));
-            }
-          }
-        }
-
-        final allHistory = _dedupePointsHistory(rawHistory);
-        double grandTotal = 0;
-        for (final entry in allHistory) {
-          grandTotal += (entry['points'] as num?)?.toDouble() ?? 0;
-        }
-
-        if (allHistory.isEmpty) {
+        if (!snap.hasData || snap.data!.docs.isEmpty) {
           return _emptyCard(context);
         }
 
-        // Sort by date descending
-        allHistory.sort((a, b) {
-          final aDate = (a['date'] as Timestamp?)?.toDate() ?? DateTime.now();
-          final bDate = (b['date'] as Timestamp?)?.toDate() ?? DateTime.now();
-          return bDate.compareTo(aDate);
-        });
+        final bills = snap.data!.docs;
+        double approvedTotal = 0;
+        int approvedCount = 0;
+
+        for (final doc in bills) {
+          final bill = doc.data() as Map<String, dynamic>;
+          if ((bill['status'] as String?) == 'approved') {
+            approvedTotal += (bill['pointsEarned'] as num?)?.toDouble() ?? 0;
+            approvedCount++;
+          }
+        }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Points history list (card-based, no scroll)
+            // Bill list
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: allHistory.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemCount: bills.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
-                final entry = allHistory[index];
-                final date =
-                    (entry['date'] as Timestamp?)?.toDate() ??
-                    DateTime.now();
-                final reason = (entry['reason'] as String?) ?? 'Transaction';
-                final points = (entry['points'] as num?)?.toDouble() ?? 0;
-
-                final timeStr =
-                    '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-                final dateStr =
-                    '${date.day}/${date.month}/${date.year}';
-
-                return Container(
-                  decoration: BoxDecoration(
-                    color: context.themeSurface,
-                    borderRadius: AppRadius.md12,
-                    border: Border.all(
-                      color: context.themeTextPrimary.withValues(alpha: 0.08),
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      // Date & Time (left)
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              dateStr,
-                              style: AppTypography.labelSmall(
-                                color: context.themeTextPrimary
-                                    .withValues(alpha: 0.6),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              timeStr,
-                              style: AppTypography.bodySmall(
-                                color: context.themeTextPrimary,
-                              ).copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Reason (middle - flexible)
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Reason',
-                              style: AppTypography.labelSmall(
-                                color: context.themeTextPrimary
-                                    .withValues(alpha: 0.6),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              reason,
-                              style: AppTypography.bodySmall(
-                                color: context.themeTextPrimary,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Points (right)
-                      Container(
-                        decoration: BoxDecoration(
-                          color: context.themePrimary.withValues(alpha: 0.08),
-                          borderRadius: AppRadius.sm8,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Points',
-                              style: AppTypography.labelSmall(
-                                color: context.themeTextPrimary
-                                    .withValues(alpha: 0.6),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              points.toStringAsFixed(2),
-                              style: AppTypography.h5(
-                                color: context.themePrimary,
-                              ).copyWith(fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                final billData = bills[index].data() as Map<String, dynamic>;
+                return _DesignBillCard(bill: billData);
               },
             ),
-            const SizedBox(height: 16),
-            // Grand total card
+            const SizedBox(height: 12),
+            // Summary card - Compact
             Container(
               decoration: BoxDecoration(
                 color: context.themePrimary.withValues(alpha: 0.08),
                 borderRadius: AppRadius.md12,
                 border: Border.all(
-                  color: context.themePrimary.withValues(alpha: 0.15),
-                  width: 2,
+                  color: context.themePrimary.withValues(alpha: 0.12),
                 ),
               ),
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Total Points Earned',
+                        'Approved',
                         style: AppTypography.labelSmall(
-                          color: context.themeTextPrimary
-                              .withValues(alpha: 0.7),
-                        ),
+                          color: context.themeTextPrimary.withValues(
+                            alpha: 0.7,
+                          ),
+                        ).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
-                        '${allHistory.length} transactions',
+                        '$approvedCount bills',
                         style: AppTypography.bodySmall(
-                          color: context.themeTextPrimary
-                              .withValues(alpha: 0.5),
-                        ),
+                          color: context.themeTextPrimary.withValues(
+                            alpha: 0.5,
+                          ),
+                        ).copyWith(fontSize: 11),
                       ),
                     ],
                   ),
@@ -728,14 +1023,14 @@ class _PointsHistoryTableState extends ConsumerState<_PointsHistoryTable> {
                       borderRadius: AppRadius.sm8,
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                      horizontal: 12,
+                      vertical: 6,
                     ),
                     child: Text(
-                      grandTotal.toStringAsFixed(2),
-                      style: AppTypography.h5(
+                      approvedTotal.toStringAsFixed(0),
+                      style: AppTypography.bodySmall(
                         color: AppColors.white,
-                      ).copyWith(fontWeight: FontWeight.w700),
+                      ).copyWith(fontWeight: FontWeight.w800, fontSize: 13),
                     ),
                   ),
                 ],
@@ -755,15 +1050,17 @@ class _PointsHistoryTableState extends ConsumerState<_PointsHistoryTable> {
           Icon(Icons.error_outline, size: 48, color: context.themeError),
           const SizedBox(height: 12),
           Text(
-            'Error loading history',
-            style: AppTypography.bodyLarge(color: context.themeError)
-                .copyWith(fontWeight: FontWeight.w600),
+            'Error loading bills',
+            style: AppTypography.bodyLarge(
+              color: context.themeError,
+            ).copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
             error,
             style: AppTypography.labelSmall(
-                color: context.themeTextPrimary.withValues(alpha: 0.5)),
+              color: context.themeTextPrimary.withValues(alpha: 0.5),
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -777,27 +1074,423 @@ class _PointsHistoryTableState extends ConsumerState<_PointsHistoryTable> {
       child: Column(
         children: [
           Icon(
-            Icons.history,
+            Icons.receipt_long_outlined,
             size: 48,
             color: context.themeTextPrimary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           Text(
-            'No transactions yet',
+            'No bills yet',
             style: AppTypography.bodyLarge(
-                color: context.themeTextPrimary.withValues(alpha: 0.6))
-                .copyWith(fontWeight: FontWeight.w600),
+              color: context.themeTextPrimary.withValues(alpha: 0.6),
+            ).copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
-            'Your points history will appear here',
+            'Submit your first bill to get started',
             style: AppTypography.bodySmall(
-                color: context.themeTextPrimary.withValues(alpha: 0.5)),
+              color: context.themeTextPrimary.withValues(alpha: 0.5),
+            ),
             textAlign: TextAlign.center,
           ),
         ],
       ),
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Design Bill Card - With thumbnail and full details
+// ---------------------------------------------------------------------------
+
+class _DesignBillCard extends StatelessWidget {
+  final Map<String, dynamic> bill;
+  const _DesignBillCard({required this.bill});
+
+  @override
+  Widget build(BuildContext context) {
+    final status = (bill['status'] as String?) ?? 'pending';
+    final points = (bill['pointsEarned'] as num?)?.toDouble() ?? 0;
+    final createdAt = bill['createdAt'] as Timestamp?;
+    final siteName = (bill['siteName'] as String?) ?? '';
+    final company = (bill['storeName'] as String?) ?? '';
+    final attachment =
+        (bill['imageUrl'] as String?) ?? (bill['billImage'] as String?);
+    final billNumber =
+        (bill['billNumber'] as String?) ??
+        (bill['invoiceId'] as String?) ??
+        'BLP-0000-0000';
+
+    final date = createdAt?.toDate() ?? DateTime.now();
+    final dateStr = '${date.day} ${_monthName(date.month)} ${date.year}';
+    final timeStr =
+        '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} ${date.hour >= 12 ? 'PM' : 'AM'}';
+
+    final statusColor = _getStatusColor(status);
+    final statusLabel = _getStatusLabel(status);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.themeSurface,
+        borderRadius: AppRadius.all16,
+        border: Border.all(
+          color: context.themeTextPrimary.withValues(alpha: 0.06),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.themeTextPrimary.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Bill thumbnail
+          GestureDetector(
+            onTap: attachment != null && attachment.isNotEmpty
+                ? () => _viewAttachmentModal(context, attachment)
+                : null,
+            child: Stack(
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: AppRadius.md12,
+                  ),
+                  child: attachment != null && attachment.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: AppRadius.md12,
+                          child: Image.network(
+                            attachment,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                _billPlaceholder(statusColor),
+                          ),
+                        )
+                      : _billPlaceholder(statusColor),
+                ),
+                // Attachment badge
+                if (attachment != null && attachment.isNotEmpty)
+                  Positioned(
+                    bottom: 4,
+                    right: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: context.themePrimary,
+                        borderRadius: AppRadius.sm8,
+                      ),
+                      child: const Icon(
+                        Icons.image,
+                        size: 12,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Bill details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Site name
+                Text(
+                  siteName,
+                  style: AppTypography.bodySmall(
+                    color: context.themeTextPrimary,
+                  ).copyWith(fontWeight: FontWeight.w800, fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                // Company and details
+                Row(
+                  children: [
+                    Icon(
+                      Icons.business,
+                      size: 12,
+                      color: context.themeTextPrimary.withValues(alpha: 0.6),
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        company,
+                        style: AppTypography.labelSmall(
+                          color: context.themeTextPrimary.withValues(
+                            alpha: 0.7,
+                          ),
+                        ).copyWith(fontSize: 10),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                // Date and time
+                Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 12,
+                      color: context.themeTextPrimary.withValues(alpha: 0.6),
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        '$dateStr • $timeStr',
+                        style: AppTypography.labelSmall(
+                          color: context.themeTextPrimary.withValues(
+                            alpha: 0.6,
+                          ),
+                        ).copyWith(fontSize: 10),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                // Bill Number
+                Text(
+                  billNumber,
+                  style: AppTypography.labelSmall(
+                    color: context.themeTextPrimary.withValues(alpha: 0.5),
+                  ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Status and points column
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Status badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: AppRadius.sm8,
+                ),
+                child: Text(
+                  statusLabel,
+                  style: AppTypography.labelSmall(
+                    color: statusColor,
+                  ).copyWith(fontWeight: FontWeight.w700, fontSize: 10),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Points
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '+${points.toStringAsFixed(2)}',
+                    style: AppTypography.bodySmall(
+                      color: context.themePrimary,
+                    ).copyWith(fontWeight: FontWeight.w900, fontSize: 14),
+                  ),
+                  Text(
+                    'Points',
+                    style: AppTypography.labelSmall(
+                      color: context.themeTextPrimary.withValues(alpha: 0.6),
+                    ).copyWith(fontSize: 9),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              // Arrow icon
+              Icon(
+                Icons.chevron_right,
+                color: context.themeTextPrimary.withValues(alpha: 0.3),
+                size: 16,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _billPlaceholder(Color color) {
+    return Container(
+      color: color.withValues(alpha: 0.12),
+      child: Icon(Icons.receipt_long, color: color, size: 32),
+    );
+  }
+
+  String _monthName(int month) {
+    const months = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return months[month];
+  }
+
+  void _viewAttachmentModal(BuildContext context, String url) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        backgroundColor: context.themeSurface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Bill Attachment',
+                    style: AppTypography.h5(
+                      color: context.themeTextPrimary,
+                    ).copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: context.themeTextPrimary.withValues(alpha: 0.1),
+                        borderRadius: AppRadius.sm8,
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        size: 20,
+                        color: context.themeTextPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                            : null,
+                        color: context.themePrimary,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: context.themeError,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Failed to load image',
+                            style: AppTypography.bodySmall(
+                              color: context.themeError,
+                            ).copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            error.toString(),
+                            style: AppTypography.labelSmall(
+                              color: context.themeError.withValues(alpha: 0.7),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: context.themePrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+                  ),
+                  child: Text(
+                    'Close',
+                    style: AppTypography.bodySmall(
+                      color: AppColors.white,
+                    ).copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return AppColors.success;
+      case 'pending':
+        return AppColors.warning;
+      case 'rejected':
+        return AppColors.error;
+      default:
+        return AppColors.textSecondary;
+    }
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'Approved';
+      case 'pending':
+        return 'Pending';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return status.toUpperCase();
+    }
   }
 }
 
@@ -835,8 +1528,9 @@ class _BillsList extends StatelessWidget {
           separatorBuilder: (_, __) => const SizedBox(height: 6),
           itemBuilder: (context, index) {
             final bill = bills[index].data() as Map<String, dynamic>;
-            return _BillCard(bill: bill)
-                .fadeIn(delay: AppAnimations.stagger(index));
+            return _BillCard(
+              bill: bill,
+            ).fadeIn(delay: AppAnimations.stagger(index));
           },
         );
       },
@@ -852,14 +1546,16 @@ class _BillsList extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'Error loading bills',
-            style: AppTypography.bodyLarge(color: context.themeError)
-                .copyWith(fontWeight: FontWeight.w600),
+            style: AppTypography.bodyLarge(
+              color: context.themeError,
+            ).copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
             error,
             style: AppTypography.labelSmall(
-                color: context.themeTextPrimary.withValues(alpha: 0.5)),
+              color: context.themeTextPrimary.withValues(alpha: 0.5),
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -882,14 +1578,15 @@ class _BillsList extends StatelessWidget {
           Text(
             l10n.noBillsYet,
             style: AppTypography.bodyLarge(
-                color: context.themeTextPrimary.withValues(alpha: 0.6))
-                .copyWith(fontWeight: FontWeight.w600),
+              color: context.themeTextPrimary.withValues(alpha: 0.6),
+            ).copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.submitFirstBill,
             style: AppTypography.bodySmall(
-                color: context.themeTextPrimary.withValues(alpha: 0.5)),
+              color: context.themeTextPrimary.withValues(alpha: 0.5),
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -940,21 +1637,24 @@ class _BillCard extends StatelessWidget {
               children: [
                 Text(
                   storeName.isNotEmpty ? storeName : l10n.billLabel,
-                  style: AppTypography.bodyMedium(color: context.themeTextPrimary)
-                      .copyWith(fontWeight: FontWeight.w700),
+                  style: AppTypography.bodyMedium(
+                    color: context.themeTextPrimary,
+                  ).copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
                 if (status == 'approved' && (pointsEarned as num) > 0) ...[
                   Text(
                     '${(pointsEarned).toString().contains('.') ? pointsEarned : '$pointsEarned.00'} pts',
-                    style: AppTypography.bodySmall(color: context.themePrimary)
-                        .copyWith(fontWeight: FontWeight.w600),
+                    style: AppTypography.bodySmall(
+                      color: context.themePrimary,
+                    ).copyWith(fontWeight: FontWeight.w600),
                   ),
                 ] else ...[
                   Text(
                     'Pending approval',
-                    style: AppTypography.bodySmall(color: context.themeTextPrimary.withValues(alpha: 0.6))
-                        .copyWith(fontWeight: FontWeight.w500),
+                    style: AppTypography.bodySmall(
+                      color: context.themeTextPrimary.withValues(alpha: 0.6),
+                    ).copyWith(fontWeight: FontWeight.w500),
                   ),
                 ],
                 if (createdAt != null) ...[
@@ -978,8 +1678,9 @@ class _BillCard extends StatelessWidget {
             ),
             child: Text(
               _statusLabel(status, l10n),
-              style: AppTypography.labelSmall(color: statusColor)
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: AppTypography.labelSmall(
+                color: statusColor,
+              ).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -989,28 +1690,40 @@ class _BillCard extends StatelessWidget {
 
   static Color _statusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'approved': return AppColors.success;
-      case 'pending':  return AppColors.warning;
-      case 'rejected': return AppColors.error;
-      default:         return AppColors.textSecondary;
+      case 'approved':
+        return AppColors.success;
+      case 'pending':
+        return AppColors.warning;
+      case 'rejected':
+        return AppColors.error;
+      default:
+        return AppColors.textSecondary;
     }
   }
 
   static IconData _statusIcon(String status) {
     switch (status.toLowerCase()) {
-      case 'approved': return Icons.check_circle;
-      case 'pending':  return Icons.pending;
-      case 'rejected': return Icons.cancel;
-      default:         return Icons.receipt;
+      case 'approved':
+        return Icons.check_circle;
+      case 'pending':
+        return Icons.pending;
+      case 'rejected':
+        return Icons.cancel;
+      default:
+        return Icons.receipt;
     }
   }
 
   static String _statusLabel(String status, AppLocalizations l10n) {
     switch (status.toLowerCase()) {
-      case 'approved': return l10n.statusApproved;
-      case 'pending':  return l10n.statusPending;
-      case 'rejected': return l10n.statusRejected;
-      default:         return status.toUpperCase();
+      case 'approved':
+        return l10n.statusApproved;
+      case 'pending':
+        return l10n.statusPending;
+      case 'rejected':
+        return l10n.statusRejected;
+      default:
+        return status.toUpperCase();
     }
   }
 

@@ -10,6 +10,7 @@ import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
 import 'package:balaji_points/core/utils/bill_query_utils.dart';
+import 'package:balaji_points/presentation/widgets/admin/bill_number_chip.dart';
 import 'package:intl/intl.dart';
 
 class PendingBillsList extends StatefulWidget {
@@ -25,13 +26,17 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
   final Map<String, bool> _expanded = {};
   final Map<String, Map<String, dynamic>?> _carpenterCache = {};
+  final Map<String, String> _summaryFilters = {}; // carpenterId -> "site,startDate,endDate"
 
   // Filter state
   DateTime? _startDate;
   DateTime? _endDate;
   final TextEditingController _carpenterNameController =
       TextEditingController();
+  final TextEditingController _billNumberController =
+      TextEditingController();
   String _carpenterNameFilter = '';
+  String _billNumberFilter = '';
   bool _showFilters = false;
 
   // ---------------- IMAGE VIEWER ----------------
@@ -329,6 +334,117 @@ class _PendingBillsListState extends State<PendingBillsList> {
     }
   }
 
+  // Fetch all bills for a carpenter with summary info
+  Future<Map<String, dynamic>> _fetchCarpenterBillsSummary(String carpenterId) async {
+    try {
+      final bills = await _firestore
+          .collection('bills')
+          .where('carpenterId', isEqualTo: carpenterId)
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      double totalPoints = 0;
+      int totalBills = 0;
+      int approvedBills = 0;
+      int pendingBills = 0;
+      int rejectedBills = 0;
+      final Map<String, double> pointsBySite = {};
+      final List<Map<String, dynamic>> billsList = [];
+
+      for (final billDoc in bills.docs) {
+        final billData = billDoc.data();
+        final amount = (billData['amount'] as num?)?.toDouble() ?? 0.0;
+        final status = billData['status'] as String? ?? 'pending';
+        final siteName = (billData['siteName'] as String?)?.trim();
+        final billDate = billData['billDate'] as Timestamp?;
+        final createdAt = billData['createdAt'] as Timestamp?;
+        final billNumber = billData['billNumber'] as String? ?? '';
+        final points = amount / 1000;
+
+        totalBills++;
+        totalPoints += points;
+
+        if (status == 'approved') {
+          approvedBills++;
+        } else if (status == 'pending') {
+          pendingBills++;
+        } else if (status == 'rejected') {
+          rejectedBills++;
+        }
+
+        // Only add to points by site if site is not empty
+        if (siteName != null && siteName.isNotEmpty) {
+          pointsBySite[siteName] = (pointsBySite[siteName] ?? 0) + points;
+        }
+
+        billsList.add({
+          'billNumber': billNumber,
+          'siteName': siteName ?? '', // Empty string if no site
+          'amount': amount,
+          'points': points,
+          'status': status,
+          'billDate': billDate,
+          'createdAt': createdAt,
+          'billId': billDoc.id,
+        });
+      }
+
+      return {
+        'totalPoints': totalPoints,
+        'totalBills': totalBills,
+        'approvedBills': approvedBills,
+        'pendingBills': pendingBills,
+        'rejectedBills': rejectedBills,
+        'pointsBySite': pointsBySite,
+        'billsList': billsList,
+        'allSites': pointsBySite.keys.toList(),
+      };
+    } catch (e) {
+      AppLogger.debug('Error fetching carpenter bills summary: $e');
+      return {
+        'totalPoints': 0,
+        'totalBills': 0,
+        'approvedBills': 0,
+        'pendingBills': 0,
+        'rejectedBills': 0,
+        'pointsBySite': {},
+        'billsList': [],
+        'allSites': [],
+      };
+    }
+  }
+
+  // Filter bills by site and date
+  List<Map<String, dynamic>> _filterBillsList(
+    List<Map<String, dynamic>> bills,
+    String? selectedSite,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+  ) {
+    return bills.where((bill) {
+      // Site filter
+      if (selectedSite != null && selectedSite.isNotEmpty) {
+        if (bill['siteName'] != selectedSite) return false;
+      }
+
+      // Date range filter
+      final billDate = bill['billDate'] as Timestamp?;
+      if (billDate != null) {
+        final date = billDate.toDate();
+        if (dateFrom != null &&
+            date.isBefore(DateTime(dateFrom.year, dateFrom.month, dateFrom.day))) {
+          return false;
+        }
+        if (dateTo != null &&
+            date.isAfter(DateTime(dateTo.year, dateTo.month, dateTo.day, 23, 59, 59))) {
+          return false;
+        }
+      }
+
+      return true;
+    }).toList();
+  }
+
   // ---------------- DATE PICKER ----------------
   Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -395,12 +511,15 @@ class _PendingBillsListState extends State<PendingBillsList> {
       _endDate = null;
       _carpenterNameController.clear();
       _carpenterNameFilter = '';
+      _billNumberController.clear();
+      _billNumberFilter = '';
     });
   }
 
   // ---------------- HELPER: CHECK IF FILTERS ARE ACTIVE ----------------
   bool _hasActiveFilters() {
     return _carpenterNameFilter.isNotEmpty ||
+        _billNumberFilter.isNotEmpty ||
         _startDate != null ||
         _endDate != null;
   }
@@ -408,6 +527,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
   @override
   void dispose() {
     _carpenterNameController.dispose();
+    _billNumberController.dispose();
     super.dispose();
   }
 
@@ -415,6 +535,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
   List<QueryDocumentSnapshot> _filterBills(List<QueryDocumentSnapshot> bills) {
     return bills.where((billDoc) {
       final bill = billDoc.data() as Map<String, dynamic>;
+
+      // Bill number filter
+      if (_billNumberFilter.isNotEmpty) {
+        final billNumber = (bill['billNumber'] as String? ?? '').toUpperCase();
+        if (!billNumber.contains(_billNumberFilter.toUpperCase())) {
+          return false;
+        }
+      }
 
       // Date range filter
       if (_startDate != null || _endDate != null) {
@@ -872,263 +1000,508 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // ------------ CARPENTER PROFILE ROW -------------
-                                      Row(
-                                        children: [
-                                          // Profile Image
-                                          Container(
-                                            width: 50,
-                                            height: 50,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: context.themeContentColor
-                                                  .withValues(alpha: 0.1),
-                                              border: Border.all(
+                                      // ------------ CARPENTER PROFILE ROW (Header - CLICKABLE) -------------
+                                      InkWell(
+                                        onTap: () {
+                                          // Navigate to carpenter profile
+                                          context.push(
+                                            '/admin/carpenter-profile/$carpenterId',
+                                          );
+                                        },
+                                        child: Row(
+                                          children: [
+                                            // Profile Image
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
                                                 color: context.themeContentColor
-                                                    .withValues(alpha: 0.3),
-                                                width: 2,
+                                                    .withValues(alpha: 0.1),
+                                                border: Border.all(
+                                                  color: context.themeContentColor
+                                                      .withValues(alpha: 0.3),
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child:
+                                                  profileImageUrl != null &&
+                                                      profileImageUrl.isNotEmpty
+                                                  ? ClipOval(
+                                                      child: Image.network(
+                                                        profileImageUrl,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder:
+                                                            (_, __, ___) => Icon(
+                                                              Icons.person,
+                                                              color: context
+                                                                  .themeContentColor,
+                                                              size: 28,
+                                                            ),
+                                                      ),
+                                                    )
+                                                  : Icon(
+                                                      Icons.person,
+                                                      color: context
+                                                          .themeContentColor,
+                                                      size: 28,
+                                                    ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            // Name
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    carpenterName,
+                                                    style:
+                                                        AppTypography.labelLarge()
+                                                            .copyWith(
+                                                              fontSize: 16,
+                                                              color: context
+                                                                  .themePrimary,
+                                                            ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  if (phone.isNotEmpty)
+                                                    Text(
+                                                      phone,
+                                                      style: AppTypography
+                                                          .bodyMedium()
+                                                          .copyWith(
+                                                            fontSize: 12,
+                                                            color: context
+                                                                .themeTextSecondary,
+                                                          ),
+                                                    ),
+                                                ],
                                               ),
                                             ),
-                                            child:
-                                                profileImageUrl != null &&
-                                                    profileImageUrl.isNotEmpty
-                                                ? ClipOval(
-                                                    child: Image.network(
-                                                      profileImageUrl,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder:
-                                                          (_, __, ___) => Icon(
-                                                            Icons.person,
-                                                            color: context
-                                                                .themeContentColor,
-                                                            size: 28,
-                                                          ),
-                                                    ),
-                                                  )
-                                                : Icon(
-                                                    Icons.person,
-                                                    color: context
-                                                        .themeContentColor,
-                                                    size: 28,
-                                                  ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          // Name
-                                          Expanded(
-                                            child: Column(
+                                            // Points and Amount Column
+                                            Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.end,
                                               children: [
-                                                Text(
-                                                  carpenterName,
-                                                  style:
-                                                      AppTypography.labelLarge()
-                                                          .copyWith(
-                                                            fontSize: 16,
-                                                            color: context
-                                                                .themePrimary,
-                                                          ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                if (phone.isNotEmpty)
-                                                  Text(
-                                                    phone,
-                                                    style: AppTypography.bodyMedium()
-                                                        .copyWith(
-                                                          fontSize: 12,
-                                                          color: context
-                                                              .themeTextSecondary,
-                                                        ),
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                          // Points, Amount, and Image Thumbnail
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              // Image Thumbnail (if available)
-                                              if (imageUrl.isNotEmpty) ...[
-                                                GestureDetector(
-                                                  onTap: () =>
-                                                      _viewBillImage(imageUrl),
-                                                  child: Container(
-                                                    width: 50,
-                                                    height: 50,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                      border: Border.all(
-                                                        color: context
-                                                            .themePrimary
-                                                            .withValues(
-                                                              alpha: 0.3,
-                                                            ),
-                                                        width: 2,
+                                                // Points Container
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 6,
                                                       ),
-                                                    ),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            6,
-                                                          ),
-                                                      child: Stack(
-                                                        children: [
-                                                          Image.network(
-                                                            imageUrl,
-                                                            fit: BoxFit.cover,
-                                                            width: 50,
-                                                            height: 50,
-                                                            errorBuilder:
-                                                                (
-                                                                  _,
-                                                                  __,
-                                                                  ___,
-                                                                ) => Container(
-                                                                  color: context
-                                                                      .themeBorder,
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .broken_image,
-                                                                    size: 20,
-                                                                    color: context
-                                                                        .themeTextSecondary,
-                                                                  ),
-                                                                ),
-                                                          ),
-                                                          // Overlay icon to indicate it's clickable
-                                                          Container(
-                                                            decoration: BoxDecoration(
-                                                              gradient: LinearGradient(
-                                                                begin: Alignment
-                                                                    .topCenter,
-                                                                end: Alignment
-                                                                    .bottomCenter,
-                                                                colors: [
-                                                                  AppColors
-                                                                      .black
-                                                                      .withValues(
-                                                                        alpha:
-                                                                            0.3,
-                                                                      ),
-                                                                  AppColors
-                                                                      .transparent,
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            child: Center(
-                                                              child: Icon(
-                                                                Icons.zoom_in,
-                                                                color: AppColors
-                                                                    .white,
-                                                                size: 16,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 8),
-                                              ],
-                                              // Points and Amount Column
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  // Points Container
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 6,
+                                                  decoration: BoxDecoration(
+                                                    color: context
+                                                        .themeContentColor
+                                                        .withValues(
+                                                          alpha: 0.2,
                                                         ),
-                                                    decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                    border: Border.all(
                                                       color: context
                                                           .themeContentColor
                                                           .withValues(
-                                                            alpha: 0.2,
+                                                            alpha: 0.3,
                                                           ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                      border: Border.all(
-                                                        color: context
-                                                            .themeContentColor
-                                                            .withValues(
-                                                              alpha: 0.3,
-                                                            ),
-                                                        width: 1.5,
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.monetization_on,
-                                                          size: 18,
-                                                          color: context
-                                                              .themeSecondary,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 4,
-                                                        ),
-                                                        AppText.label(
-                                                          '${(amount / 1000).toStringAsFixed(2)} pts',
-                                                        ),
-                                                      ],
+                                                      width: 1.5,
                                                     ),
                                                   ),
-                                                  const SizedBox(height: 6),
-                                                  // Amount Container
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 6,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color: AppColors.success
-                                                          .withValues(
-                                                            alpha: 0.15,
-                                                          ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                      border: Border.all(
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.monetization_on,
+                                                        size: 18,
                                                         color: context
-                                                            .themeContentColor
-                                                            .withValues(
-                                                              alpha: 0.3,
-                                                            ),
-                                                        width: 1.5,
+                                                            .themeSecondary,
                                                       ),
+                                                      const SizedBox(
+                                                        width: 4,
+                                                      ),
+                                                      AppText.label(
+                                                        '${(amount / 1000).toStringAsFixed(2)} pts',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 6),
+                                                // Amount Container
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 6,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors.success
+                                                        .withValues(
+                                                          alpha: 0.15,
+                                                        ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: context
+                                                          .themeContentColor
+                                                          .withValues(
+                                                            alpha: 0.3,
+                                                          ),
+                                                      width: 1.5,
                                                     ),
-                                                    child: Text(
-                                                      '₹${amount.toStringAsFixed(0)}',
-                                                      style:
-                                                          AppTypography.labelLarge()
-                                                              .copyWith(
-                                                                fontSize: 13,
+                                                  ),
+                                                  child: Text(
+                                                    '₹${amount.toStringAsFixed(0)}',
+                                                    style: AppTypography
+                                                        .labelLarge()
+                                                        .copyWith(
+                                                          fontSize: 13,
+                                                          color:
+                                                              AppColors.success,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      // ------------ CARPENTER HISTORY (if expanded) -------------
+                                      if (isExpanded)
+                                        FutureBuilder<Map<String, dynamic>>(
+                                          future: _fetchCarpenterBillsSummary(
+                                              carpenterId),
+                                          builder: (context, historySnapshot) {
+                                            if (historySnapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color:
+                                                      context.themePrimary,
+                                                ),
+                                              );
+                                            }
+
+                                            if (!historySnapshot.hasData) {
+                                              return Container(
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                  color: context.themeSoftSurface,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: AppText.caption(
+                                                  'No history available',
+                                                  color: context
+                                                      .themeTextSecondary,
+                                                ),
+                                              );
+                                            }
+
+                                            final summary =
+                                                historySnapshot.data!;
+                                            final totalPoints = summary[
+                                                    'totalPoints']
+                                                as double? ??
+                                                0;
+                                            final totalBills =
+                                                summary['totalBills']
+                                                    as int? ??
+                                                0;
+                                            final approvedBills =
+                                                summary['approvedBills']
+                                                    as int? ??
+                                                0;
+                                            final pendingBills =
+                                                summary['pendingBills']
+                                                    as int? ??
+                                                0;
+                                            final pointsBySite = summary[
+                                                    'pointsBySite']
+                                                as Map<String, dynamic>? ??
+                                                {};
+
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                color: context.themeSoftSurface,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: context.themePrimary
+                                                      .withValues(alpha: 0.2),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.all(12),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  // Header
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      AppText.labelSmall(
+                                                        'Carpenter Summary',
+                                                        color: context
+                                                            .themePrimary,
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                              horizontal: 8,
+                                                              vertical: 4,
+                                                            ),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                              color: context
+                                                                  .themePrimary
+                                                                  .withValues(
+                                                                    alpha: 0.1,
+                                                                  ),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                        4,
+                                                                      ),
+                                                            ),
+                                                        child: AppText.caption(
+                                                          'Total: ${totalPoints.toStringAsFixed(0)} pts',
+                                                          color: context
+                                                              .themePrimary,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 10),
+
+                                                  // Stats Grid
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                color: context
+                                                                    .themeSurface,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                          6,
+                                                                        ),
+                                                              ),
+                                                          child: Column(
+                                                            children: [
+                                                              AppText.caption(
+                                                                'Total Bills',
+                                                                color: context
+                                                                    .themeTextSecondary,
+                                                              ),
+                                                              AppText.label(
+                                                                '$totalBills',
+                                                                color: context
+                                                                    .themePrimary,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                color: AppColors
+                                                                    .success
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.1,
+                                                                    ),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                          6,
+                                                                        ),
+                                                              ),
+                                                          child: Column(
+                                                            children: [
+                                                              AppText.caption(
+                                                                'Approved',
                                                                 color: AppColors
                                                                     .success,
                                                               ),
-                                                    ),
+                                                              AppText.label(
+                                                                '$approvedBills',
+                                                                color: AppColors
+                                                                    .success,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                color: context
+                                                                    .themeError
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.1,
+                                                                    ),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                          6,
+                                                                        ),
+                                                              ),
+                                                          child: Column(
+                                                            children: [
+                                                              AppText.caption(
+                                                                'Pending',
+                                                                color: context
+                                                                    .themeError,
+                                                              ),
+                                                              AppText.label(
+                                                                '$pendingBills',
+                                                                color: context
+                                                                    .themeError,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
+                                                  const SizedBox(height: 10),
+
+                                                  // Points by Site
+                                                  if (pointsBySite
+                                                      .isNotEmpty) ...[
+                                                    AppText.labelSmall(
+                                                      'Points by Site',
+                                                      color: context
+                                                          .themeTextSecondary,
+                                                    ),
+                                                    const SizedBox(height: 6),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: pointsBySite
+                                                          .entries
+                                                          .map(
+                                                            (entry) => Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                    bottom: 4,
+                                                                  ),
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Expanded(
+                                                                    child: AppText
+                                                                        .caption(
+                                                                      entry.key,
+                                                                      maxLines: 1,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      color: context
+                                                                          .themeTextPrimary,
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .symmetric(
+                                                                          horizontal:
+                                                                              6,
+                                                                          vertical:
+                                                                              2,
+                                                                        ),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                          color: context
+                                                                              .themeContentColor
+                                                                              .withValues(
+                                                                                alpha:
+                                                                                    0.1,
+                                                                              ),
+                                                                          borderRadius:
+                                                                              BorderRadius
+                                                                                  .circular(
+                                                                                    3,
+                                                                                  ),
+                                                                        ),
+                                                                    child: AppText
+                                                                        .caption(
+                                                                      '${(entry.value as num).toStringAsFixed(0)} pts',
+                                                                      color: context
+                                                                          .themeContentColor,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          )
+                                                          .toList(),
+                                                    ),
+                                                    const SizedBox(height: 12),
+                                                  ],
+
+                                                  // ----------- BILL HISTORY TABLE -----------
+                                                  _BillHistoryFilteredList(
+                                                    carpenterId: carpenterId,
+                                                    billsList: (summary[
+                                                            'billsList'] as List?)
+                                                        ?.cast<
+                                                            Map<String, dynamic>>()
+                                                        .toList() ??
+                                                        [],
+                                                    allSites: (summary[
+                                                            'allSites'] as List?)
+                                                        ?.cast<String>()
+                                                        .toList() ??
+                                                        [],
+                                                  ),
+
                                                 ],
                                               ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                            );
+                                          },
+                                        ),
 
                                       const SizedBox(height: 10),
 
@@ -1396,6 +1769,374 @@ class _PendingBillsListState extends State<PendingBillsList> {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ============= BILL HISTORY FILTERED LIST WIDGET =============
+class _BillHistoryFilteredList extends StatefulWidget {
+  final String carpenterId;
+  final List<Map<String, dynamic>> billsList;
+  final List<String> allSites;
+
+  const _BillHistoryFilteredList({
+    required this.carpenterId,
+    required this.billsList,
+    required this.allSites,
+  });
+
+  @override
+  State<_BillHistoryFilteredList> createState() => _BillHistoryFilteredListState();
+}
+
+class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
+  String? _selectedSite;
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
+
+  List<Map<String, dynamic>> get _filteredBills {
+    return widget.billsList.where((bill) {
+      // Site filter
+      if (_selectedSite != null && _selectedSite!.isNotEmpty) {
+        if (bill['siteName'] != _selectedSite) return false;
+      }
+
+      // Date range filter
+      final billDate = bill['billDate'] as Timestamp?;
+      if (billDate != null) {
+        final date = billDate.toDate();
+        if (_dateFrom != null &&
+            date.isBefore(DateTime(_dateFrom!.year, _dateFrom!.month, _dateFrom!.day))) {
+          return false;
+        }
+        if (_dateTo != null &&
+            date.isAfter(DateTime(_dateTo!.year, _dateTo!.month, _dateTo!.day, 23, 59, 59))) {
+          return false;
+        }
+      }
+
+      return true;
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = _filteredBills;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.themeSoftSurface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: context.themePrimary.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AppText.labelSmall(
+                'All Bills History',
+                color: context.themePrimary,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: context.themePrimary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: AppText.caption(
+                  '${filtered.length}/${widget.billsList.length} bills',
+                  color: context.themePrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Filters Row
+          Row(
+            children: [
+              // Site Filter
+              Expanded(
+                child: DropdownButton<String?>(
+                  value: _selectedSite,
+                  isExpanded: true,
+                  hint: AppText.caption('Filter by Site', color: context.themeTextSecondary),
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: AppText.caption('All Sites', color: context.themeTextPrimary),
+                    ),
+                    ...widget.allSites.map(
+                      (site) => DropdownMenuItem<String?>(
+                        value: site,
+                        child: AppText.caption(site, color: context.themeTextPrimary),
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) => setState(() => _selectedSite = value),
+                  underline: Container(
+                    height: 1,
+                    color: context.themePrimary.withValues(alpha: 0.2),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // Date From
+              Expanded(
+                child: InkWell(
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _dateFrom ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) setState(() => _dateFrom = picked);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: context.themeSurface,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: context.themePrimary.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: AppText.caption(
+                      _dateFrom == null ? 'From' : '${_dateFrom!.day}/${_dateFrom!.month}',
+                      color: _dateFrom == null
+                          ? context.themeTextSecondary
+                          : context.themePrimary,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+
+              // Date To
+              Expanded(
+                child: InkWell(
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _dateTo ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) setState(() => _dateTo = picked);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: context.themeSurface,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: context.themePrimary.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: AppText.caption(
+                      _dateTo == null ? 'To' : '${_dateTo!.day}/${_dateTo!.month}',
+                      color: _dateTo == null ? context.themeTextSecondary : context.themePrimary,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+
+              // Clear button
+              if (_selectedSite != null || _dateFrom != null || _dateTo != null)
+                InkWell(
+                  onTap: () => setState(() {
+                    _selectedSite = null;
+                    _dateFrom = null;
+                    _dateTo = null;
+                  }),
+                  child: Icon(
+                    Icons.close,
+                    size: 18,
+                    color: context.themeError,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Bills List
+          if (filtered.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: AppText.caption(
+                  'No bills found',
+                  color: context.themeTextSecondary,
+                ),
+              ),
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Bill Rows - Numbered List
+                ...filtered.asMap().entries.map((entry) {
+                  final index = entry.key + 1;
+                  final bill = entry.value;
+
+                  final billNum = bill['billNumber'] as String? ?? 'N/A';
+                  final site = bill['siteName'] as String? ?? 'N/A';
+                  final amount = bill['amount'] as num? ?? 0;
+                  final pts = (bill['points'] as num?)?.toStringAsFixed(1) ?? '0';
+                  final status = bill['status'] as String? ?? 'pending';
+                  final billDate = bill['billDate'] as Timestamp?;
+                  final createdAt = bill['createdAt'] as Timestamp?;
+
+                  // Use billDate if available, otherwise use createdAt
+                  final displayDate = billDate?.toDate() ?? createdAt?.toDate();
+                  final dateStr = displayDate != null
+                      ? DateFormat('dd MMM yyyy, hh:mm a').format(displayDate)
+                      : 'N/A';
+
+                  Color statusColor = context.themeTextSecondary;
+                  String statusLabel = 'N/A';
+                  if (status == 'approved') {
+                    statusColor = AppColors.success;
+                    statusLabel = 'Approved';
+                  } else if (status == 'pending') {
+                    statusColor = context.themeError;
+                    statusLabel = 'Pending';
+                  } else if (status == 'rejected') {
+                    statusColor = context.themeError.withValues(alpha: 0.6);
+                    statusLabel = 'Rejected';
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: context.themeSurface,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: statusColor.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header with number and status
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              AppText.label(
+                                '#$index - Bill ID: $billNum',
+                                color: context.themePrimary,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: AppText.caption(
+                                  statusLabel,
+                                  color: statusColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Bill details in rows
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppText.caption(
+                                      'Site',
+                                      color: context.themeTextSecondary,
+                                    ),
+                                    AppText.bodyLarge(
+                                      site.isEmpty ? '-' : site,
+                                      color: context.themeTextPrimary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppText.caption(
+                                      'Amount',
+                                      color: context.themeTextSecondary,
+                                    ),
+                                    AppText.label(
+                                      '₹${amount.toInt()}',
+                                      color: AppColors.success,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppText.caption(
+                                      'Points',
+                                      color: context.themeTextSecondary,
+                                    ),
+                                    AppText.label(
+                                      '$pts pts',
+                                      color: context.themePrimary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Date row
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                size: 14,
+                                color: context.themeTextSecondary,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: AppText.caption(
+                                  dateStr,
+                                  color: context.themeTextSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

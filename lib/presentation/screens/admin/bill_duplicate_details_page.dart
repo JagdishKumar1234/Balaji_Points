@@ -126,7 +126,7 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                         ? DateFormat('dd/MM/yyyy').format(dateTime)
                         : 'N/A';
                     final timeStr = dateTime != null
-                        ? DateFormat('HH:mm:ss').format(dateTime)
+                        ? DateFormat('hh:mm:ss a').format(dateTime)
                         : 'N/A';
 
                     return Container(

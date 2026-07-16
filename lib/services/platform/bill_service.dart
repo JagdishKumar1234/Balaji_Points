@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/logger.dart';
 import '../auth/session_service.dart';
@@ -10,6 +11,38 @@ class BillService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final SessionService _sessionService = SessionService();
+
+  /// Store code mapping for bill ID generation
+  static const Map<String, String> storeCodeMap = {
+    'Shree Balaji Hardware': 'SBH',
+    'Balaji Plywood': 'BPL',
+    'Balaji Decor': 'BDC',
+    'Balaji Tiles': 'BTL',
+  };
+
+  /// Get store code from store name, default to first 3 letters uppercase
+  String _getStoreCode(String? storeName) {
+    if (storeName == null || storeName.isEmpty) return 'GEN'; // Generic
+    final code = storeCodeMap[storeName];
+    if (code != null) return code;
+    // Default: use first 3 letters uppercase
+    return storeName.substring(0, min(3, storeName.length)).toUpperCase();
+  }
+
+  /// Generate random 6-digit number
+  String _generateRandomCode() {
+    final random = Random();
+    return (random.nextInt(900000) + 100000).toString();
+  }
+
+  /// Generate professional bill number: BP-{STORE_CODE}-{YYYYMMDD}-{RANDOM_6_DIGITS}
+  String _generateBillNumber(String? storeName) {
+    final storeCode = _getStoreCode(storeName);
+    final now = DateTime.now();
+    final dateStr = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    final randomCode = _generateRandomCode();
+    return 'BP-$storeCode-$dateStr-$randomCode';
+  }
 
   /// Upload bill image to Firebase Storage
   Future<String?> uploadBillImage(File imageFile, String billId) async {
@@ -72,8 +105,13 @@ class BillService {
 
       final branchId = await _sessionService.getBranchId();
 
+      // Generate professional bill number: BP-{STORE_CODE}-{YYYYMMDD}-{RANDOM_6_DIGITS}
+      final billNumber = _generateBillNumber(storeName);
+      AppLogger.info('  Generated billNumber: $billNumber');
+
       final billData = {
         'billId': billId,
+        'billNumber': billNumber,
         'carpenterId': carpenterId,
         'carpenterPhone': carpenterPhone,
         'amount': amount,
@@ -213,8 +251,13 @@ class BillService {
       AppLogger.info('✅ Final carpenterBranchId: $carpenterBranchId');
 
       AppLogger.debug('📝 Step 4: Preparing bill data...');
+      // Generate professional bill number: BP-{STORE_CODE}-{YYYYMMDD}-{RANDOM_6_DIGITS}
+      final billNumber = _generateBillNumber(storeName);
+      AppLogger.info('✅ Generated billNumber: $billNumber');
+
       final billData = {
         'billId': billId,
+        'billNumber': billNumber,
         'carpenterId': carpenterId,
         'carpenterPhone': carpenterPhone,
         'amount': amount,

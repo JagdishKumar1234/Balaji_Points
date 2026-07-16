@@ -462,7 +462,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
                   'Created At',
                   bill['createdAt'] != null
                       ? DateFormat(
-                          'dd MMM yyyy HH:mm',
+                          'dd MMM yyyy, hh:mm a',
                         ).format(bill['createdAt'])
                       : 'N/A',
                 ),
