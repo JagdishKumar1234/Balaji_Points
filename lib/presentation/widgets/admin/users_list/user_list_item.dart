@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
-import 'user_details_screen.dart';
 
 class UserListItem extends StatelessWidget {
   final String userId;
@@ -122,16 +122,7 @@ class UserListItem extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          userData['userId'] = userId;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UserDetailsScreen(
-                user: userData,
-                onDelete: onDeleted,
-              ),
-            ),
-          );
+          context.push('/admin/carpenter-profile/$userId');
         },
         borderRadius: AppRadius.all16,
         child: Padding(
