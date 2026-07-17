@@ -250,10 +250,10 @@ class _CarpenterProfileDetailScreenState
           ),
         ],
       ),
-    );
-
-    pinController.dispose();
-    confirmPinController.dispose();
+    ).then((_) {
+      pinController.dispose();
+      confirmPinController.dispose();
+    });
   }
 
   Future<void> _deleteCarpenterUser(
