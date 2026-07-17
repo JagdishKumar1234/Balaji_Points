@@ -6,6 +6,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
+import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,6 +43,217 @@ class _CarpenterProfileDetailScreenState
       default:
         return AppColors.textSecondary;
     }
+  }
+
+  Future<void> _handleResetPin(
+    BuildContext dialogContext,
+    String pin,
+    String confirmPin,
+    String carpenterPhone,
+  ) async {
+    if (pin.isEmpty || confirmPin.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(dialogContext).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter PIN in both fields'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (pin != confirmPin) {
+      if (mounted) {
+        ScaffoldMessenger.of(dialogContext).showSnackBar(
+          const SnackBar(
+            content: Text('PINs do not match'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (pin.length < 4 || pin.length > 6) {
+      if (mounted) {
+        ScaffoldMessenger.of(dialogContext).showSnackBar(
+          const SnackBar(
+            content: Text('PIN must be 4-6 digits'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(pin)) {
+      if (mounted) {
+        ScaffoldMessenger.of(dialogContext).showSnackBar(
+          const SnackBar(
+            content: Text('PIN must contain only numbers'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      final pinAuthService = PinAuthService();
+      final success = await pinAuthService.resetPin(
+        phone: carpenterPhone,
+        newPin: pin,
+        isAdmin: true,
+      );
+
+      if (!mounted) return;
+
+      if (success) {
+        if (Navigator.canPop(dialogContext)) {
+          Navigator.pop(dialogContext);
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PIN reset successfully'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(dialogContext).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to reset PIN. Please try again.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(dialogContext).showSnackBar(
+        SnackBar(
+          content: Text('Error resetting PIN: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _resetPinDialog(
+    BuildContext context,
+    String carpenterId,
+    String carpenterPhone,
+    String carpenterName,
+  ) async {
+    final pinController = TextEditingController();
+    final confirmPinController = TextEditingController();
+
+    if (!mounted) return;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+        title: const Row(
+          children: [
+            Icon(Icons.lock_reset, color: AppColors.warning, size: 28),
+            SizedBox(width: 12),
+            Text('Reset PIN'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Reset PIN for: $carpenterName',
+                style: AppTypography.bodyMedium().copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Phone: $carpenterPhone',
+                style: AppTypography.bodySmall().copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.1),
+                  borderRadius: AppRadius.md12,
+                  border: Border.all(
+                    color: AppColors.warning.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: const Text(
+                  '⚠️ Carpenter will need to use this new PIN to login. Make sure to communicate it securely.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.warning,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: pinController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'New PIN (4-6 digits)',
+                  hintText: '0000',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: confirmPinController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Confirm PIN',
+                  hintText: '0000',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => _handleResetPin(
+              dialogContext,
+              pinController.text.trim(),
+              confirmPinController.text.trim(),
+              carpenterPhone,
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.warning,
+            ),
+            child: const Text(
+              'Reset PIN',
+              style: TextStyle(color: AppColors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    pinController.dispose();
+    confirmPinController.dispose();
   }
 
   Future<void> _deleteCarpenterUser(
@@ -225,6 +437,16 @@ class _CarpenterProfileDetailScreenState
               title: const AppText.title('Carpenter Details'),
               centerTitle: false,
               actions: [
+                IconButton(
+                  icon: Icon(Icons.lock_reset, color: context.themePrimary),
+                  onPressed: () => _resetPinDialog(
+                    context,
+                    widget.carpenterId,
+                    phone,
+                    carpenterName,
+                  ),
+                  tooltip: 'Reset PIN',
+                ),
                 IconButton(
                   icon: Icon(Icons.edit, color: context.themePrimary),
                   onPressed: () => _showEditDialog(context, widget.carpenterId, userData),
@@ -745,7 +967,9 @@ class _CarpenterProfileDetailScreenState
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  helperText: 'Changing phone number will update login credentials',
                 ),
+                keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 12),
               TextField(
@@ -767,6 +991,19 @@ class _CarpenterProfileDetailScreenState
           ),
           ElevatedButton(
             onPressed: () async {
+              final newPhone = phoneController.text.trim();
+              if (newPhone.isEmpty) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Phone number cannot be empty'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+                return;
+              }
+
               try {
                 await FirebaseFirestore.instance
                     .collection('users')
@@ -774,7 +1011,7 @@ class _CarpenterProfileDetailScreenState
                     .update({
                   'firstName': firstNameController.text,
                   'lastName': lastNameController.text,
-                  'phone': phoneController.text,
+                  'phone': newPhone,
                   'branchId': branchIdController.text,
                 });
 
