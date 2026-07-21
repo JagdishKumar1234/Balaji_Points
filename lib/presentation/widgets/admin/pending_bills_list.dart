@@ -10,6 +10,7 @@ import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
 import 'package:balaji_points/core/utils/bill_query_utils.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
 
 class PendingBillsList extends StatefulWidget {
@@ -36,6 +37,10 @@ class _PendingBillsListState extends State<PendingBillsList> {
   String _carpenterNameFilter = '';
   String _billNumberFilter = '';
   bool _showFilters = false;
+
+  // DataTable sort state
+  String _sortColumn = 'billNumber'; // column to sort by
+  bool _sortAscending = false; // sort direction
 
   // ---------------- IMAGE VIEWER ----------------
   void _viewBillImage(String imageUrl) {
@@ -558,6 +563,267 @@ class _PendingBillsListState extends State<PendingBillsList> {
     }).toList();
   }
 
+  // ---------------- DESKTOP DATA TABLE VIEW ----------------
+  Widget _buildDesktopDataTable(List<QueryDocumentSnapshot> bills) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        child: DataTable(
+          sortColumnIndex: _sortColumnIndex(),
+          sortAscending: _sortAscending,
+          headingRowColor: WidgetStatePropertyAll(
+            context.themeSurface.withValues(alpha: 0.5),
+          ),
+          columns: [
+            DataColumn(
+              label: Text(
+                'Bill #',
+                style: AppTypography.labelSmall()
+                    .copyWith(color: context.themePrimary),
+              ),
+              onSort: (index, ascending) {
+                setState(() {
+                  _sortColumn = 'billNumber';
+                  _sortAscending = ascending;
+                });
+              },
+            ),
+            DataColumn(
+              label: Text(
+                'Carpenter',
+                style: AppTypography.labelSmall()
+                    .copyWith(color: context.themePrimary),
+              ),
+              onSort: (index, ascending) {
+                setState(() {
+                  _sortColumn = 'carpenter';
+                  _sortAscending = ascending;
+                });
+              },
+            ),
+            DataColumn(
+              label: Text(
+                'Amount (₹)',
+                style: AppTypography.labelSmall()
+                    .copyWith(color: context.themePrimary),
+              ),
+              numeric: true,
+              onSort: (index, ascending) {
+                setState(() {
+                  _sortColumn = 'amount';
+                  _sortAscending = ascending;
+                });
+              },
+            ),
+            DataColumn(
+              label: Text(
+                'Points',
+                style: AppTypography.labelSmall()
+                    .copyWith(color: context.themePrimary),
+              ),
+              numeric: true,
+              onSort: (index, ascending) {
+                setState(() {
+                  _sortColumn = 'points';
+                  _sortAscending = ascending;
+                });
+              },
+            ),
+            DataColumn(
+              label: Text(
+                'Date',
+                style: AppTypography.labelSmall()
+                    .copyWith(color: context.themePrimary),
+              ),
+              onSort: (index, ascending) {
+                setState(() {
+                  _sortColumn = 'date';
+                  _sortAscending = ascending;
+                });
+              },
+            ),
+            DataColumn(
+              label: Text(
+                'Status',
+                style: AppTypography.labelSmall()
+                    .copyWith(color: context.themePrimary),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Actions',
+                style: AppTypography.labelSmall()
+                    .copyWith(color: context.themePrimary),
+              ),
+            ),
+          ],
+          rows: _buildDataTableRows(bills),
+        ),
+      ),
+    );
+  }
+
+  int _sortColumnIndex() {
+    switch (_sortColumn) {
+      case 'billNumber':
+        return 0;
+      case 'carpenter':
+        return 1;
+      case 'amount':
+        return 2;
+      case 'points':
+        return 3;
+      case 'date':
+        return 4;
+      default:
+        return 0;
+    }
+  }
+
+  List<DataRow> _buildDataTableRows(List<QueryDocumentSnapshot> bills) {
+    return bills.map((billDoc) {
+      final bill = billDoc.data() as Map<String, dynamic>;
+      final billId = billDoc.id;
+      final amount = (bill['amount'] ?? 0).toDouble();
+      final points = amount / 1000;
+      final status = bill['status'] ?? 'pending';
+      final billDate = bill['billDate'] as Timestamp?;
+      final createdAt = bill['createdAt'] as Timestamp?;
+      final displayDate = billDate?.toDate() ?? createdAt?.toDate();
+      final dateStr = displayDate != null
+          ? DateFormat('dd MMM yyyy').format(displayDate)
+          : 'N/A';
+      final carpenterId = bill['carpenterId'] ?? '';
+
+      Color statusColor = context.themeTextSecondary;
+      String statusLabel = 'N/A';
+      if (status == 'approved') {
+        statusColor = AppColors.success;
+        statusLabel = 'Approved';
+      } else if (status == 'pending') {
+        statusColor = context.themeError;
+        statusLabel = 'Pending';
+      } else if (status == 'rejected') {
+        statusColor = context.themeError.withValues(alpha: 0.6);
+        statusLabel = 'Rejected';
+      }
+
+      return DataRow(
+        cells: [
+          DataCell(
+            Text(
+              bill['billNumber'] ?? 'N/A',
+              style: AppTypography.bodySmall(),
+            ),
+          ),
+          DataCell(
+            FutureBuilder<Map<String, dynamic>?>(
+              future: _fetchCarpenterData(carpenterId),
+              builder: (context, snap) {
+                String carpenterName = 'Carpenter';
+                if (snap.hasData && snap.data != null) {
+                  final first = snap.data!['firstName'] ?? '';
+                  final last = snap.data!['lastName'] ?? '';
+                  carpenterName = '$first $last'.trim();
+                  if (carpenterName.isEmpty) carpenterName = 'Carpenter';
+                }
+                return Text(
+                  carpenterName,
+                  style: AppTypography.bodySmall(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                );
+              },
+            ),
+          ),
+          DataCell(
+            Text(
+              '₹${amount.toStringAsFixed(0)}',
+              style: AppTypography.bodySmall(),
+            ),
+          ),
+          DataCell(
+            Text(
+              points.toStringAsFixed(2),
+              style: AppTypography.bodySmall(),
+            ),
+          ),
+          DataCell(
+            Text(
+              dateStr,
+              style: AppTypography.bodySmall(),
+            ),
+          ),
+          DataCell(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                statusLabel,
+                style: AppTypography.labelSmall().copyWith(
+                  color: statusColor,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+          DataCell(
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.visibility,
+                    size: 16,
+                    color: context.themePrimary,
+                  ),
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BillDetailsPage(
+                          billId: billId,
+                          initialBillData: bill,
+                        ),
+                      ),
+                    );
+                    if (result == true && mounted) {
+                      setState(() {});
+                    }
+                  },
+                  tooltip: 'View Details',
+                ),
+                if (status == 'pending') ...[
+                  IconButton(
+                    icon: Icon(
+                      Icons.check_circle,
+                      size: 16,
+                      color: AppColors.success,
+                    ),
+                    onPressed: () => _approveBill(bill),
+                    tooltip: 'Approve',
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.cancel,
+                      size: 16,
+                      color: context.themeError,
+                    ),
+                    onPressed: () => _rejectBill(billId),
+                    tooltip: 'Reject',
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      );
+    }).toList();
+  }
+
   // ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
@@ -876,6 +1142,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         ],
                       ),
                     );
+                  }
+
+                  // Show DataTable on desktop, ListView on mobile
+                  if (context.isDesktop) {
+                    return _buildDesktopDataTable(bills);
                   }
 
                   return ListView.builder(
