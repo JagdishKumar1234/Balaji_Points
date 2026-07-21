@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 
 // Accent palette — [iconColor, lightCardBg]
 // In dark mode the card bg is always the same dark surface; only the icon
@@ -106,9 +107,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             final notificationCount =
                                 notifSnap.hasError ? 0 : notifSnap.data?.docs.length ?? 0;
 
+                            // Responsive grid: 2 columns on mobile, 3 on tablet, 4 on large desktop
+                            final crossAxisCount = switch (context.deviceType) {
+                              DeviceType.mobile => 2,
+                              DeviceType.tablet => 3,
+                              DeviceType.desktop => 3,
+                              DeviceType.largeDesktop => 4,
+                            };
+
                             return GridView.count(
                               padding: EdgeInsets.zero,
-                              crossAxisCount: 2,
+                              crossAxisCount: crossAxisCount,
                               mainAxisSpacing: 12,
                               crossAxisSpacing: 12,
                               childAspectRatio: 1.0,
