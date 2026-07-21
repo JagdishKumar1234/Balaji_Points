@@ -9,6 +9,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
@@ -98,10 +99,10 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
             // ── Scrollable content ──
             SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                topInset + kToolbarHeight + AppSpacing.sm,
-                AppSpacing.xl,
-                bottomInset + AppSpacing.xl,
+                AuthDesign.horizontalScreenPadding,
+                topInset + kToolbarHeight + AuthDesign.topContentPadding,
+                AuthDesign.horizontalScreenPadding,
+                bottomInset + AuthDesign.bottomKeyboardPadding,
               ),
               child: Form(
                 key: _formKey,
@@ -113,13 +114,13 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                       borderRadius: AppRadius.all16,
                       child: Image.asset(
                         'assets/images/balaji_point_logo.png',
-                        width: 88,
-                        height: 88,
+                        width: AuthDesign.logoSize.width,
+                        height: AuthDesign.logoSize.height,
                         fit: BoxFit.cover,
                       ),
                     ).enterHero(),
 
-                    const SizedBox(height: AppSpacing.md),
+                    SizedBox(height: AuthDesign.logoToTitleSpacing),
 
                     // ── App name ──
                     AppText.h2(
@@ -141,7 +142,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                       color: context.themeTextSecondary,
                     ).fadeIn(delay: AppAnimations.stagger(3)),
 
-                    const SizedBox(height: AppSpacing.xl3),
+                    SizedBox(height: AuthDesign.sectionSpacing),
 
                     // ── Glass card ──
                     _GlassCard(
@@ -149,30 +150,33 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // PIN field
-                          AppTextField(
-                            controller: _pinController,
-                            label: l10n.fourDigitPin,
-                            keyboardType: TextInputType.number,
-                            obscureText: _obscure,
-                            maxLength: 4,
-                            textAlign: TextAlign.center,
-                            letterSpacing: 14,
-                            suffix: IconButton(
-                              icon: Icon(
-                                _obscure
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: context.themeTextSecondary,
+                          SizedBox(
+                            height: AuthDesign.pinFieldHeight,
+                            child: AppTextField(
+                              controller: _pinController,
+                              label: l10n.fourDigitPin,
+                              keyboardType: TextInputType.number,
+                              obscureText: _obscure,
+                              maxLength: 4,
+                              textAlign: TextAlign.center,
+                              letterSpacing: 14,
+                              suffix: IconButton(
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: context.themeTextSecondary,
+                                ),
+                                onPressed: () =>
+                                    setState(() => _obscure = !_obscure),
                               ),
-                              onPressed: () =>
-                                  setState(() => _obscure = !_obscure),
+                              validator: (v) => (v == null || v.length != 4)
+                                  ? l10n.enter4Digits
+                                  : null,
                             ),
-                            validator: (v) => (v == null || v.length != 4)
-                                ? l10n.enter4Digits
-                                : null,
                           ),
 
-                          const SizedBox(height: AppSpacing.md),
+                          SizedBox(height: AuthDesign.fieldSpacing),
 
                           // Remember me
                           Row(
@@ -199,32 +203,41 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                             ],
                           ),
 
-                          const SizedBox(height: AppSpacing.lg),
+                          SizedBox(height: AuthDesign.largeSpacing),
 
                           // Login button
-                          AppButton.secondary(
-                            label: l10n.login,
-                            onPressed: isLoggingIn ? null : _login,
-                            isLoading: isLoggingIn,
-                          ),
-
-                          const SizedBox(height: AppSpacing.md),
-
-                          // Forgot PIN
-                          AppButton.outline(
-                            label: l10n.forgotPin,
-                            onPressed: () => context.push(
-                              '/pin-reset?phone=${widget.phoneNumber}',
+                          SizedBox(
+                            height: AuthDesign.buttonHeight,
+                            child: AppButton.secondary(
+                              label: l10n.login,
+                              onPressed: isLoggingIn ? null : _login,
+                              isLoading: isLoggingIn,
                             ),
                           ),
 
-                          const SizedBox(height: AppSpacing.sm),
+                          SizedBox(height: AuthDesign.fieldSpacing),
+
+                          // Forgot PIN
+                          SizedBox(
+                            height: AuthDesign.buttonHeight,
+                            child: AppButton.outline(
+                              label: l10n.forgotPin,
+                              onPressed: () => context.push(
+                                '/pin-reset?phone=${widget.phoneNumber}',
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: AuthDesign.fieldSpacing),
 
                           // New user
-                          AppButton.outline(
-                            label: l10n.newUserSetPin,
-                            onPressed: () => context.push(
-                              '/pin-setup?phone=${widget.phoneNumber}',
+                          SizedBox(
+                            height: AuthDesign.buttonHeight,
+                            child: AppButton.outline(
+                              label: l10n.newUserSetPin,
+                              onPressed: () => context.push(
+                                '/pin-setup?phone=${widget.phoneNumber}',
+                              ),
                             ),
                           ),
                         ],
@@ -253,37 +266,48 @@ class _GlassCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: AppRadius.forCard,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        filter: ImageFilter.blur(
+          sigmaX: AuthDesign.cardBlurSigma,
+          sigmaY: AuthDesign.cardBlurSigma,
+        ),
         child: Container(
-          padding: const EdgeInsets.all(AppSpacing.xl3),
+          padding: AuthDesign.cardPadding,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: isDark
                   ? [
-                      AppColors.darkSurface.withValues(alpha: 0.82),
-                      AppColors.darkBackground.withValues(alpha: 0.72),
+                      AppColors.darkSurface
+                          .withValues(alpha: AuthDesign.darkCardMainOpacity),
+                      AppColors.darkBackground.withValues(
+                          alpha: AuthDesign.darkCardSecondaryOpacity),
                     ]
                   : [
-                      AppColors.white.withValues(alpha: 0.92),
-                      AppColors.white.withValues(alpha: 0.72),
+                      AppColors.white.withValues(
+                          alpha: AuthDesign.lightCardMainOpacity),
+                      AppColors.white.withValues(
+                          alpha: AuthDesign.lightCardSecondaryOpacity),
                     ],
             ),
             borderRadius: AppRadius.forCard,
             border: Border.all(
               color: isDark
-                  ? AppColors.darkBorder.withValues(alpha: 0.55)
-                  : AppColors.white.withValues(alpha: 0.50),
-              width: 1.5,
+                  ? AppColors.darkBorder
+                      .withValues(alpha: AuthDesign.darkCardBorderOpacity)
+                  : AppColors.white
+                      .withValues(alpha: AuthDesign.lightCardBorderOpacity),
+              width: AuthDesign.cardBorderWidth,
             ),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? AppColors.black.withValues(alpha: 0.40)
-                    : context.themePrimary.withValues(alpha: 0.10),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+                    ? AppColors.black
+                        .withValues(alpha: AuthDesign.darkCardShadowOpacity)
+                    : context.themePrimary.withValues(
+                        alpha: AuthDesign.lightCardShadowOpacity),
+                blurRadius: AuthDesign.cardShadowBlurRadius,
+                offset: AuthDesign.cardShadowOffset,
               ),
             ],
           ),
