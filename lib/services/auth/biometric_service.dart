@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:local_auth/local_auth.dart';
 import 'package:balaji_points/core/logger.dart';
 
@@ -14,7 +15,10 @@ class BiometricService {
 
   /// Returns true if the device has biometric hardware AND at least one
   /// enrolled biometric credential (fingerprint, face, etc.).
+  /// Always returns false on web (no biometric support).
   Future<bool> isAvailable() async {
+    if (kIsWeb) return false;
+
     try {
       final canCheck = await _auth.canCheckBiometrics;
       if (!canCheck) return false;
@@ -30,9 +34,12 @@ class BiometricService {
   ///
   /// Returns `true` on success, `false` on failure / cancellation / error.
   /// [localizedReason] is shown in the system biometric dialog.
+  /// Always returns false on web (no biometric support).
   Future<bool> authenticate({
     String localizedReason = 'Verify your identity to continue',
   }) async {
+    if (kIsWeb) return false;
+
     try {
       return await _auth.authenticate(
         localizedReason: localizedReason,

@@ -1,6 +1,7 @@
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -224,6 +225,7 @@ class AppUpdateService {
   }
 
   Uri? _playStoreFallbackUri(Uri uri) {
+    if (kIsWeb) return null;
     if (!Platform.isAndroid) return null;
     if (uri.scheme != 'https' || uri.host != 'play.google.com') return null;
     final id = uri.queryParameters['id'];
@@ -273,6 +275,7 @@ class AppUpdateInfo {
   final AppPlatformUpdate ios;
 
   AppPlatformUpdate? get forCurrentPlatform {
+    if (kIsWeb) return null;
     if (Platform.isAndroid) {
       return android;
     }

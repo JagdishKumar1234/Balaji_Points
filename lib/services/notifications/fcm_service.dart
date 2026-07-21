@@ -32,20 +32,23 @@ class FCMService {
 
   /// Initialize FCM and permissions.
   /// Token fetch and Firestore save run in background so app shows faster.
+  /// On web, FCM is initialized but requires VAPID key and service worker setup.
   Future<void> initialize() async {
     try {
       await _localNotificationService.initialize();
 
       // 🔔 Permissions
-      if (Platform.isAndroid) {
-        final status = await Permission.notification.request();
-        AppLogger.info('Android notification permission: $status');
-      } else {
-        await _messaging.requestPermission(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+      if (!kIsWeb) {
+        if (Platform.isAndroid) {
+          final status = await Permission.notification.request();
+          AppLogger.info('Android notification permission: $status');
+        } else {
+          await _messaging.requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+        }
       }
 
       await _messaging.setForegroundNotificationPresentationOptions(
