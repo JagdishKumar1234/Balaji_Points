@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'user_list_item.dart';
 
 class UsersListView extends StatelessWidget {
@@ -125,6 +126,30 @@ class UsersListView extends StatelessWidget {
                 ),
               ],
             ),
+          );
+        }
+
+        // Use grid layout on desktop, list on mobile
+        if (context.isDesktop) {
+          return GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1.2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              final data = user.data() as Map<String, dynamic>;
+
+              return UserListItem(
+                userId: user.id,
+                userData: data,
+                onDeleted: onCarpenterDeleted,
+              );
+            },
           );
         }
 

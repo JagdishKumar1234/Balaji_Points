@@ -12,6 +12,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/home_provider.dart';
@@ -303,9 +304,12 @@ class _HomePageState extends ConsumerState<HomePage>
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.only(bottom: bottomPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              child: ResponsiveContainer(
+                maxWidth: 600,
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   // Hero card
                   RepaintBoundary(
                     child: showHeroLoading
@@ -375,7 +379,8 @@ class _HomePageState extends ConsumerState<HomePage>
                   ).enterCard(delay: AppAnimations.stagger(7)),
 
                   const SizedBox(height: AppSpacing.sectionGap),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
