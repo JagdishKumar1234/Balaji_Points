@@ -7,6 +7,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 
 import 'package:balaji_points/services/platform/cart_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
@@ -194,8 +195,14 @@ class ProductListPage extends StatelessWidget {
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    // Responsive columns: 2 (mobile) → 3 (tablet) → 4 (desktop) → 5 (large desktop)
+                    crossAxisCount: switch (context.deviceType) {
+                      DeviceType.mobile => 2,
+                      DeviceType.tablet => 3,
+                      DeviceType.desktop => 4,
+                      DeviceType.largeDesktop => 5,
+                    },
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
                     childAspectRatio: 3 / 4,
