@@ -9,6 +9,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/services/auth/biometric_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
@@ -102,15 +103,8 @@ class _SplashPageState extends State<SplashPage> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // Background
-            Image.asset(
-              'assets/images/background_image.png',
-              fit: BoxFit.cover,
-            ),
-
-            // Dark overlay for readability (light on dark bg)
-            if (isDark)
-              Container(color: AppColors.black.withValues(alpha: 0.4)),
+            // Modern gradient background
+            AuthBackground(isDark: isDark),
 
             // Content
             SafeArea(

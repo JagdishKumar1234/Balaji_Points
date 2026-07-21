@@ -12,6 +12,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
@@ -187,10 +188,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     final isChecking = ref.watch(authProvider) is AuthCheckingUser;
 
-    // In dark mode the bg image is still shown but with a dark scrim for
-    // contrast — matching the banner_dark_color hero card approach.
-    final bgImage = 'assets/images/background_image.png';
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -208,8 +205,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // ── Background image ──
-            Image.asset(bgImage, fit: BoxFit.cover),
+            // ── Modern gradient background ──
+            AuthBackground(isDark: isDark),
 
             // ── Content ──
             SafeArea(

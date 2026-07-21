@@ -9,7 +9,6 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/auth_design.dart';
-import 'package:balaji_points/core/design/app_theme_palette.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
