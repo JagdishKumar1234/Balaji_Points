@@ -7,6 +7,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
@@ -436,28 +437,63 @@ class _CarpenterProfileDetailScreenState
               ),
               title: const AppText.title('Carpenter Details'),
               centerTitle: false,
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.lock_reset, color: context.themePrimary),
-                  onPressed: () => _resetPinDialog(
-                    context,
-                    widget.carpenterId,
-                    phone,
-                    carpenterName,
-                  ),
-                  tooltip: 'Reset PIN',
-                ),
-                IconButton(
-                  icon: Icon(Icons.edit, color: context.themePrimary),
-                  onPressed: () => _showEditDialog(context, widget.carpenterId, userData),
-                  tooltip: 'Edit',
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: AppColors.error),
-                  onPressed: () => _deleteCarpenterUser(context, widget.carpenterId, carpenterName),
-                  tooltip: 'Delete',
-                ),
-              ],
+              actions: context.isDesktop
+                  ? [
+                      // Desktop: Show as button group
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            OutlinedButton.icon(
+                              icon: Icon(Icons.lock_reset, color: context.themePrimary),
+                              label: const Text('Reset PIN'),
+                              onPressed: () => _resetPinDialog(
+                                context,
+                                widget.carpenterId,
+                                phone,
+                                carpenterName,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            OutlinedButton.icon(
+                              icon: Icon(Icons.edit, color: context.themePrimary),
+                              label: const Text('Edit'),
+                              onPressed: () => _showEditDialog(context, widget.carpenterId, userData),
+                            ),
+                            const SizedBox(width: 8),
+                            OutlinedButton.icon(
+                              icon: const Icon(Icons.delete, color: AppColors.error),
+                              label: const Text('Delete'),
+                              onPressed: () => _deleteCarpenterUser(context, widget.carpenterId, carpenterName),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]
+                  : [
+                      // Mobile: Show as icons
+                      IconButton(
+                        icon: Icon(Icons.lock_reset, color: context.themePrimary),
+                        onPressed: () => _resetPinDialog(
+                          context,
+                          widget.carpenterId,
+                          phone,
+                          carpenterName,
+                        ),
+                        tooltip: 'Reset PIN',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.edit, color: context.themePrimary),
+                        onPressed: () => _showEditDialog(context, widget.carpenterId, userData),
+                        tooltip: 'Edit',
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: AppColors.error),
+                        onPressed: () => _deleteCarpenterUser(context, widget.carpenterId, carpenterName),
+                        tooltip: 'Delete',
+                      ),
+                    ],
             ),
             body: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
