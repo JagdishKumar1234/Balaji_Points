@@ -10,10 +10,12 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/auth_design.dart';
+import 'package:balaji_points/core/design/app_theme_palette.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
+import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import '../../../../providers/auth_provider.dart';
 
 class PINLoginPage extends ConsumerStatefulWidget {
@@ -90,11 +92,8 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // ── Background ──
-            Image.asset(
-              'assets/images/background_image.png',
-              fit: BoxFit.cover,
-            ),
+            // ── Attractive gradient background ──
+            AuthBackground(isDark: Theme.of(context).brightness == Brightness.dark),
 
             // ── Scrollable content ──
             SingleChildScrollView(
