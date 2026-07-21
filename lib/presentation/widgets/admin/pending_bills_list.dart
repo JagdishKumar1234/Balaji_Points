@@ -10,7 +10,6 @@ import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
 import 'package:balaji_points/core/utils/bill_query_utils.dart';
-import 'package:balaji_points/presentation/widgets/admin/bill_number_chip.dart';
 import 'package:intl/intl.dart';
 
 class PendingBillsList extends StatefulWidget {
@@ -26,7 +25,6 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
   final Map<String, bool> _expanded = {};
   final Map<String, Map<String, dynamic>?> _carpenterCache = {};
-  final Map<String, String> _summaryFilters = {}; // carpenterId -> "site,startDate,endDate"
 
   // Filter state
   DateTime? _startDate;
@@ -415,36 +413,6 @@ class _PendingBillsListState extends State<PendingBillsList> {
   }
 
   // Filter bills by site and date
-  List<Map<String, dynamic>> _filterBillsList(
-    List<Map<String, dynamic>> bills,
-    String? selectedSite,
-    DateTime? dateFrom,
-    DateTime? dateTo,
-  ) {
-    return bills.where((bill) {
-      // Site filter
-      if (selectedSite != null && selectedSite.isNotEmpty) {
-        if (bill['siteName'] != selectedSite) return false;
-      }
-
-      // Date range filter
-      final billDate = bill['billDate'] as Timestamp?;
-      if (billDate != null) {
-        final date = billDate.toDate();
-        if (dateFrom != null &&
-            date.isBefore(DateTime(dateFrom.year, dateFrom.month, dateFrom.day))) {
-          return false;
-        }
-        if (dateTo != null &&
-            date.isAfter(DateTime(dateTo.year, dateTo.month, dateTo.day, 23, 59, 59))) {
-          return false;
-        }
-      }
-
-      return true;
-    }).toList();
-  }
-
   // ---------------- DATE PICKER ----------------
   Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(

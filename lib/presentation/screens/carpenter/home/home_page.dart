@@ -22,7 +22,6 @@ import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_d
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_feature_highlights.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_hero_card.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_product_categories.dart';
-import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_quick_actions.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_top_carpenters.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_top_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/offers_carousel.dart';

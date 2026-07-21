@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/services/user/user_service.dart';
 import 'search_header.dart';
 import 'users_list_view.dart';
 import 'add_carpenter_dialog.dart';
@@ -19,7 +16,6 @@ class _UsersListState extends State<UsersList> {
   String _selectedTier = 'All';
   String _selectedSort = 'points';
   final List<String> _tiers = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
-  final _userService = UserService();
   bool _isExporting = false;
   late TextEditingController _searchController;
 
@@ -48,8 +44,6 @@ class _UsersListState extends State<UsersList> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       backgroundColor: context.themeBackground,
       resizeToAvoidBottomInset: true,
