@@ -1,5 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
@@ -34,7 +34,7 @@ class _AddBillPageState extends State<AddBillPage> {
   final UserService _userService = UserService();
   final SessionService _sessionService = SessionService();
 
-  File? _selectedImage;
+  Uint8List? _selectedImageBytes;
   DateTime? _billDate;
   bool _isSubmitting = false;
 
@@ -42,7 +42,7 @@ class _AddBillPageState extends State<AddBillPage> {
     return _amountController.text.trim().isNotEmpty ||
         _siteNameController.text.trim().isNotEmpty ||
         _vendorNameController.text.trim().isNotEmpty ||
-        _selectedImage != null ||
+        _selectedImageBytes != null ||
         _billDate != null;
   }
 
@@ -170,7 +170,10 @@ class _AddBillPageState extends State<AddBillPage> {
         maxHeight: 1920,
         imageQuality: 85,
       );
-      if (image != null) setState(() => _selectedImage = File(image.path));
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        setState(() => _selectedImageBytes = bytes);
+      }
     } catch (e) {
       AppLogger.error('Error picking image', e);
       if (mounted) {
@@ -192,7 +195,10 @@ class _AddBillPageState extends State<AddBillPage> {
         maxHeight: 1920,
         imageQuality: 85,
       );
-      if (image != null) setState(() => _selectedImage = File(image.path));
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        setState(() => _selectedImageBytes = bytes);
+      }
     } catch (e) {
       AppLogger.error('Error taking photo', e);
       if (mounted) {
@@ -364,7 +370,7 @@ class _AddBillPageState extends State<AddBillPage> {
           carpenterId: carpenterId,
           carpenterPhone: phoneNumber,
           amount: amount,
-          imageFile: _selectedImage,
+          imageBytes: _selectedImageBytes,
           billDate: billDate,
           storeName: siteName,
           vendorName: vendorName,
@@ -682,7 +688,7 @@ class _AddBillPageState extends State<AddBillPage> {
                   carpenterId: carpenterId,
                   carpenterPhone: phoneNumber,
                   amount: amount,
-                  imageFile: _selectedImage,
+                  imageBytes: _selectedImageBytes,
                   billDate: billDate,
                   storeName: siteName,
                   vendorName: vendorName,
@@ -830,11 +836,11 @@ class _AddBillPageState extends State<AddBillPage> {
                               width: 2,
                             ),
                           ),
-                          child: _selectedImage != null
+                          child: _selectedImageBytes != null
                               ? ClipRRect(
                                   borderRadius: AppRadius.all16,
-                                  child: Image.file(
-                                    _selectedImage!,
+                                  child: Image.memory(
+                                    _selectedImageBytes!,
                                     fit: BoxFit.cover,
                                   ),
                                 )

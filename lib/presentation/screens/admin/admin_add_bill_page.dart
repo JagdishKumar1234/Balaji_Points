@@ -1,5 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
@@ -34,7 +34,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
   final UserService _userService = UserService();
 
   Map<String, dynamic>? _selectedCarpenter;
-  File? _selectedImage;
+  Uint8List? _selectedImageBytes;
   DateTime _billDate = DateTime.now();
   bool _isSubmitting = false;
   Map<String, dynamic>? _adminData;
@@ -44,7 +44,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
         _amountController.text.trim().isNotEmpty ||
         _siteNameController.text.trim().isNotEmpty ||
         _vendorNameController.text.trim().isNotEmpty ||
-        _selectedImage != null;
+        _selectedImageBytes != null;
   }
 
   @override
@@ -106,8 +106,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       );
 
       if (image != null) {
+        final bytes = await image.readAsBytes();
         setState(() {
-          _selectedImage = File(image.path);
+          _selectedImageBytes = bytes;
         });
       }
     } catch (e) {
@@ -134,8 +135,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       );
 
       if (image != null) {
+        final bytes = await image.readAsBytes();
         setState(() {
-          _selectedImage = File(image.path);
+          _selectedImageBytes = bytes;
         });
       }
     } catch (e) {
@@ -324,7 +326,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           adminId: adminPhone,
           adminPhone: adminPhone,
           adminName: adminName,
-          imageFile: _selectedImage,
+          imageBytes: _selectedImageBytes,
           billDate: _billDate,
           storeName: siteName,
           vendorName: vendorName,
@@ -620,7 +622,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                   adminId: adminPhone,
                   adminPhone: adminPhone,
                   adminName: adminName,
-                  imageFile: _selectedImage,
+                  imageBytes: _selectedImageBytes,
                   billDate: _billDate,
                   storeName: siteName,
                   vendorName: vendorName,
@@ -876,11 +878,11 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                   style: BorderStyle.solid,
                                 ),
                               ),
-                              child: _selectedImage != null
+                              child: _selectedImageBytes != null
                                   ? ClipRRect(
                                       borderRadius: AppRadius.all16,
-                                      child: Image.file(
-                                        _selectedImage!,
+                                      child: Image.memory(
+                                        _selectedImageBytes!,
                                         fit: BoxFit.cover,
                                       ),
                                     )

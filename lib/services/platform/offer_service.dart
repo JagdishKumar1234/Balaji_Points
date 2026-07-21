@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
+import 'dart:typed_data';
 import '../../core/logger.dart';
 import '../auth/session_service.dart';
 import '../notifications/notification_service.dart';
@@ -11,15 +11,16 @@ class OfferService {
   final SessionService _sessionService = SessionService();
 
   /// Upload offer banner to Firebase Storage
-  Future<String?> uploadOfferBanner(File imageFile) async {
+  /// [imageBytes] - Image bytes (works on mobile and web)
+  Future<String?> uploadOfferBanner(Uint8List imageBytes) async {
     try {
       final offerId = _firestore.collection('offers').doc().id;
       final ref = _storage.ref().child('offer_banners/$offerId.jpg');
 
       AppLogger.info('Uploading offer banner: offer_banners/$offerId.jpg');
 
-      final uploadTask = await ref.putFile(
-        imageFile,
+      final uploadTask = await ref.putData(
+        imageBytes,
         SettableMetadata(
           contentType: 'image/jpeg',
           customMetadata: {

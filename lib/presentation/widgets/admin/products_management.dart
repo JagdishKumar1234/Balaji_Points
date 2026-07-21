@@ -1,7 +1,7 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -473,14 +473,14 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
 
   final ProductService _productService = ProductService();
 
-  final List<File> _newImageFiles = [];
+  final List<Uint8List> _newImageBytes = [];
   List<String> _existingImageUrls = [];
   String _selectedMainCategory = _ProductsManagementState._mainCategories.first;
   String _selectedSubCategory = '';
   bool _isActive = true;
   bool _isSaving = false;
   bool _isUploadingImage = false;
-  File? _newCatalogPdfFile;
+  Uint8List? _newCatalogPdfBytes;
   String _existingCatalogPdfUrl = '';
   String? _selectedCatalogPdfName;
   bool _isUploadingCatalogPdf = false;
@@ -547,8 +547,11 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
         imageQuality: 85,
       );
       if (images.isNotEmpty) {
-        setState(() {
-          _newImageFiles.addAll(images.map((x) => File(x.path)));
+        setState(() async {
+          for (final image in images) {
+            final bytes = await image.readAsBytes();
+            _newImageBytes.add(bytes);
+          }
         });
       }
     } catch (e) {
@@ -576,7 +579,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       if (path == null || path.isEmpty) return;
 
       setState(() {
-        _newCatalogPdfFile = File(path);
+        _newCatalogPdfBytes = picked.bytes;
         _selectedCatalogPdfName = picked.name;
       });
     } catch (e) {
@@ -614,7 +617,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       }
 
       if (!_isEditMode &&
-          _newImageFiles.isEmpty &&
+          _newImageBytes.isEmpty &&
           _existingImageUrls.isEmpty) {
         throw Exception('Please upload at least one product image');
       }
@@ -622,12 +625,12 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       // Upload any newly added images
       final allImageUrls = <String>[..._existingImageUrls];
 
-      if (_newImageFiles.isNotEmpty) {
+      if (_newImageBytes.isNotEmpty) {
         setState(() {
           _isUploadingImage = true;
         });
 
-        for (final file in _newImageFiles) {
+        for (final file in _newImageBytes) {
           final uploadedUrl = await _productService.uploadProductImage(file);
           if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
             allImageUrls.add(uploadedUrl);
@@ -640,12 +643,12 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
       }
 
       String? finalCatalogPdfUrl = _existingCatalogPdfUrl;
-      if (_newCatalogPdfFile != null) {
+      if (_newCatalogPdfBytes != null) {
         setState(() {
           _isUploadingCatalogPdf = true;
         });
         finalCatalogPdfUrl = await _productService.uploadProductCatalogPdf(
-          _newCatalogPdfFile!,
+          _newCatalogPdfBytes!,
         );
         setState(() {
           _isUploadingCatalogPdf = false;
@@ -803,11 +806,11 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           ),
                           child: Builder(
                             builder: (context) {
-                              if (_newImageFiles.isNotEmpty) {
+                              if (_newImageBytes.isNotEmpty) {
                                 return ClipRRect(
                                   borderRadius: AppRadius.all16,
-                                  child: Image.file(
-                                    _newImageFiles.first,
+                                  child: Image.memory(
+                                    _newImageBytes.first,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                   ),
@@ -841,11 +844,11 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                           ),
                         ),
                       ),
-                      if (_existingImageUrls.length + _newImageFiles.length > 1)
+                      if (_existingImageUrls.length + _newImageBytes.length > 1)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            'Total photos: ${_existingImageUrls.length + _newImageFiles.length}',
+                            'Total photos: ${_existingImageUrls.length + _newImageBytes.length}',
                             style: AppTypography.bodyMedium().copyWith(
                               fontSize: 12,
                               color: context.themeTextSecondary,
@@ -875,7 +878,7 @@ class _CreateEditProductDialogState extends State<_CreateEditProductDialog> {
                                   ),
                                 ),
                                 if (_existingCatalogPdfUrl.isNotEmpty &&
-                                    _newCatalogPdfFile == null)
+                                    _newCatalogPdfBytes == null)
                                   const Icon(
                                     Icons.check_circle,
                                     color: AppColors.success,

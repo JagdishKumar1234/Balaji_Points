@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,7 +12,8 @@ class ProductService {
   final SessionService _sessionService = SessionService();
 
   /// Upload product catalog PDF to Firebase Storage
-  Future<String?> uploadProductCatalogPdf(File pdfFile) async {
+  /// [pdfBytes] - PDF file bytes (works on mobile and web)
+  Future<String?> uploadProductCatalogPdf(Uint8List pdfBytes) async {
     try {
       final productCatalogId = _firestore.collection('product_catalogs').doc().id;
       final ref = _storage.ref().child('product_catalogs/$productCatalogId.pdf');
@@ -21,8 +22,8 @@ class ProductService {
         'Uploading product catalog PDF: product_catalogs/$productCatalogId.pdf',
       );
 
-      final uploadTask = await ref.putFile(
-        pdfFile,
+      final uploadTask = await ref.putData(
+        pdfBytes,
         SettableMetadata(
           contentType: 'application/pdf',
           customMetadata: {
@@ -53,15 +54,16 @@ class ProductService {
   }
 
   /// Upload product image to Firebase Storage
-  Future<String?> uploadProductImage(File imageFile) async {
+  /// [imageBytes] - Image bytes (works on mobile and web)
+  Future<String?> uploadProductImage(Uint8List imageBytes) async {
     try {
       final productImageId = _firestore.collection('products').doc().id;
       final ref = _storage.ref().child('product_images/$productImageId.jpg');
 
       AppLogger.info('Uploading product image: product_images/$productImageId.jpg');
 
-      final uploadTask = await ref.putFile(
-        imageFile,
+      final uploadTask = await ref.putData(
+        imageBytes,
         SettableMetadata(
           contentType: 'image/jpeg',
           customMetadata: {

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
+import 'dart:typed_data';
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/logger.dart';
@@ -45,14 +45,16 @@ class BillService {
   }
 
   /// Upload bill image to Firebase Storage
-  Future<String?> uploadBillImage(File imageFile, String billId) async {
+  /// [imageBytes] - Image bytes (works on mobile and web)
+  /// [billId] - Bill ID for storage path
+  Future<String?> uploadBillImage(Uint8List imageBytes, String billId) async {
     try {
       final ref = _storage.ref().child('bill_images/$billId.jpg');
 
       AppLogger.info('Uploading bill image: bill_images/$billId.jpg');
 
-      final uploadTask = await ref.putFile(
-        imageFile,
+      final uploadTask = await ref.putData(
+        imageBytes,
         SettableMetadata(
           contentType: 'image/jpeg',
           customMetadata: {
@@ -75,11 +77,12 @@ class BillService {
   }
 
   /// Submit bill
+  /// [imageBytes] - Bill image bytes (optional, works on mobile and web)
   Future<bool> submitBill({
     required String carpenterId,
     required String carpenterPhone,
     required double amount,
-    File? imageFile,
+    Uint8List? imageBytes,
     DateTime? billDate,
     String? storeName,
     String? vendorName,
@@ -97,9 +100,9 @@ class BillService {
       AppLogger.info('  Generated billId: $billId');
 
       String? imageUrl;
-      if (imageFile != null) {
+      if (imageBytes != null) {
         AppLogger.info('  Uploading bill image...');
-        imageUrl = await uploadBillImage(imageFile, billId);
+        imageUrl = await uploadBillImage(imageBytes, billId);
         AppLogger.info('  Image uploaded: $imageUrl');
       }
 
@@ -174,6 +177,7 @@ class BillService {
   }
 
   /// Submit bill for carpenter by admin
+  /// [imageBytes] - Bill image bytes (optional, works on mobile and web)
   Future<bool> submitBillForCarpenter({
     required String carpenterId,
     required String carpenterPhone,
@@ -181,7 +185,7 @@ class BillService {
     required String adminId,
     required String adminPhone,
     String? adminName,
-    File? imageFile,
+    Uint8List? imageBytes,
     DateTime? billDate,
     String? storeName,
     String? vendorName,
@@ -200,7 +204,7 @@ class BillService {
       AppLogger.info('  storeName: $storeName');
       AppLogger.info('  vendorName: $vendorName');
       AppLogger.info('  billDate: $billDate');
-      AppLogger.debug('   hasImage: ${imageFile != null}');
+      AppLogger.debug('   hasImage: ${imageBytes != null}');
 
       AppLogger.debug('📝 Step 1: Generating bill ID...');
       final billRef = _firestore.collection('bills').doc();
@@ -210,10 +214,10 @@ class BillService {
 
       AppLogger.debug('📝 Step 2: Handling bill image...');
       String? imageUrl;
-      if (imageFile != null) {
+      if (imageBytes != null) {
         AppLogger.info('  Uploading bill image...');
-        AppLogger.debug('   Image file size: ${imageFile.lengthSync()} bytes');
-        imageUrl = await uploadBillImage(imageFile, billId);
+        AppLogger.debug('   Image size: ${imageBytes.length} bytes');
+        imageUrl = await uploadBillImage(imageBytes, billId);
         AppLogger.info('  ✅ Image uploaded: $imageUrl');
         AppLogger.debug('   Image URL length: ${imageUrl?.length ?? 0} chars');
       } else {

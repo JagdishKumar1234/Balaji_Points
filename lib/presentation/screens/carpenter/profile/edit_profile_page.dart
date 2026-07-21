@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,7 +36,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final SessionService _sessionService = SessionService();
   final UserMigrationService _userMigrationService = UserMigrationService();
 
-  File? _imageFile;
+  Uint8List? _imageBytes;
   String? _existingImageUrl;
   bool _isLoading = true;
   bool _isSaving = false;
@@ -82,7 +82,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         maxHeight: 512,
         imageQuality: 75,
       );
-      if (image != null) setState(() => _imageFile = File(image.path));
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        setState(() => _imageBytes = bytes);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -97,7 +100,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     if (_isLoading || _isSaving) return false;
     return _firstNameController.text.trim().isNotEmpty ||
         _lastNameController.text.trim().isNotEmpty ||
-        _imageFile != null;
+        _imageBytes != null;
   }
 
   String _sanitizeInput(String input) =>
@@ -131,7 +134,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       final sanitizedLast = _sanitizeInput(lastName);
 
       // Require a profile image
-      final hasImage = _imageFile != null ||
+      final hasImage = _imageBytes != null ||
           (_existingImageUrl != null && _existingImageUrl!.isNotEmpty);
       if (!hasImage) {
         setState(() => _isSaving = false);
@@ -147,12 +150,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       String? profileImageUrl = _existingImageUrl;
       String? oldImageUrlToDelete;
 
-      if (_imageFile != null) {
+      if (_imageBytes != null) {
         setState(() => _isUploadingImage = true);
         try {
           final newUrl = await _storageService.uploadProfileImage(
             phoneNumber: phoneNumber,
-            imageFile: _imageFile!,
+            imageBytes: _imageBytes!,
           );
           if (newUrl == null || newUrl.isEmpty) {
             throw Exception('Failed to upload profile image');
@@ -338,8 +341,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                         ],
                                       ),
                                       child: ClipOval(
-                                        child: _imageFile != null
-                                            ? Image.file(_imageFile!,
+                                        child: _imageBytes != null
+                                            ? Image.memory(_imageBytes!,
                                                 fit: BoxFit.cover)
                                             : _existingImageUrl != null &&
                                                     _existingImageUrl!.isNotEmpty

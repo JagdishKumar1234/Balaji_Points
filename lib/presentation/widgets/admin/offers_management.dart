@@ -1,6 +1,6 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -498,7 +498,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
 
   final OfferService _offerService = OfferService();
 
-  File? _bannerFile;
+  Uint8List? _bannerBytes;
   String? _existingBannerUrl;
   bool _isActive = true;
   DateTime? _validUntil;
@@ -532,8 +532,9 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       );
 
       if (image != null) {
+        final bytes = await image.readAsBytes();
         setState(() {
-          _bannerFile = File(image.path);
+          _bannerBytes = bytes;
         });
       }
     } catch (e) {
@@ -604,17 +605,17 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       String? bannerUrl = _existingBannerUrl;
 
       // Banner is mandatory for new offers - check if we have one
-      if (!isEditMode && _bannerFile == null && bannerUrl == null) {
+      if (!isEditMode && _bannerBytes == null && bannerUrl == null) {
         throw Exception('Please upload a banner image');
       }
 
       // Upload new banner if selected
-      if (_bannerFile != null) {
+      if (_bannerBytes != null) {
         setState(() {
           _isUploadingBanner = true;
         });
 
-        final uploadedUrl = await _offerService.uploadOfferBanner(_bannerFile!);
+        final uploadedUrl = await _offerService.uploadOfferBanner(_bannerBytes!);
         if (uploadedUrl != null) {
           bannerUrl = uploadedUrl;
         } else {
@@ -757,11 +758,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                           borderRadius: AppRadius.md12,
                           border: Border.all(color: context.themeBorder),
                         ),
-                        child: _bannerFile != null
+                        child: _bannerBytes != null
                             ? ClipRRect(
                                 borderRadius: AppRadius.md12,
-                                child: Image.file(
-                                  _bannerFile!,
+                                child: Image.memory(
+                                  _bannerBytes!,
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                 ),

@@ -113,7 +113,6 @@ app.*.map.json
 !**/ios/**/default.perspectivev3
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Firebase (optional - uncomment if you want to exclude these)
 # **/google-services.json

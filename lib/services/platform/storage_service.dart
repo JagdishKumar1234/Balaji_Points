@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../../core/logger.dart';
 
@@ -7,9 +7,11 @@ class StorageService {
 
   /// Upload user profile image to Firebase Storage
   /// Returns the download URL of the uploaded image
+  /// [imageBytes] - Image bytes (works on mobile and web)
+  /// [phoneNumber] - User's phone number for storage path
   Future<String?> uploadProfileImage({
     required String phoneNumber,
-    required File imageFile,
+    required Uint8List imageBytes,
   }) async {
     try {
       // Create a unique filename using phone number and timestamp
@@ -23,9 +25,9 @@ class StorageService {
       // Create reference to storage location
       final Reference ref = _storage.ref().child(filePath);
 
-      // Upload file with metadata
-      final UploadTask uploadTask = ref.putFile(
-        imageFile,
+      // Upload bytes with metadata (works on mobile and web)
+      final UploadTask uploadTask = ref.putData(
+        imageBytes,
         SettableMetadata(
           contentType: 'image/jpeg',
           customMetadata: {
