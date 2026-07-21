@@ -1051,12 +1051,12 @@ class _CarpenterProfileDetailScreenState
           ),
         ],
       ),
-    );
-
-    firstNameController.dispose();
-    lastNameController.dispose();
-    phoneController.dispose();
-    branchIdController.dispose();
+    ).then((_) {
+      firstNameController.dispose();
+      lastNameController.dispose();
+      phoneController.dispose();
+      branchIdController.dispose();
+    });
   }
 
   Widget _buildStatColumn(
