@@ -8,6 +8,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
@@ -374,37 +375,48 @@ class _GlassCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: AppRadius.forCard,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        filter: ImageFilter.blur(
+          sigmaX: AuthDesign.cardBlurSigma,
+          sigmaY: AuthDesign.cardBlurSigma,
+        ),
         child: Container(
-          padding: const EdgeInsets.all(AppSpacing.xl3),
+          padding: AuthDesign.cardPadding,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: isDark
                   ? [
-                      AppColors.darkSurface.withValues(alpha: 0.82),
-                      AppColors.darkBackground.withValues(alpha: 0.72),
+                      AppColors.darkSurface
+                          .withValues(alpha: AuthDesign.darkCardMainOpacity),
+                      AppColors.darkBackground.withValues(
+                          alpha: AuthDesign.darkCardSecondaryOpacity),
                     ]
                   : [
-                      AppColors.white.withValues(alpha: 0.92),
-                      AppColors.white.withValues(alpha: 0.72),
+                      AppColors.white.withValues(
+                          alpha: AuthDesign.lightCardMainOpacity),
+                      AppColors.white.withValues(
+                          alpha: AuthDesign.lightCardSecondaryOpacity),
                     ],
             ),
             borderRadius: AppRadius.forCard,
             border: Border.all(
               color: isDark
-                  ? AppColors.darkBorder.withValues(alpha: 0.55)
-                  : AppColors.white.withValues(alpha: 0.50),
-              width: 1.5,
+                  ? AppColors.darkBorder
+                      .withValues(alpha: AuthDesign.darkCardBorderOpacity)
+                  : AppColors.white
+                      .withValues(alpha: AuthDesign.lightCardBorderOpacity),
+              width: AuthDesign.cardBorderWidth,
             ),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? AppColors.black.withValues(alpha: 0.40)
-                    : context.themePrimary.withValues(alpha: 0.10),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+                    ? AppColors.black
+                        .withValues(alpha: AuthDesign.darkCardShadowOpacity)
+                    : context.themePrimary.withValues(
+                        alpha: AuthDesign.lightCardShadowOpacity),
+                blurRadius: AuthDesign.cardShadowBlurRadius,
+                offset: AuthDesign.cardShadowOffset,
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
+import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
@@ -286,25 +287,31 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                     ClipRRect(
                       borderRadius: AppRadius.all24,
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                        filter: ImageFilter.blur(
+                          sigmaX: AuthDesign.cardBlurSigma,
+                          sigmaY: AuthDesign.cardBlurSigma,
+                        ),
                         child: AppCard(
-                          padding: const EdgeInsets.all(24),
+                          padding: EdgeInsets.all(AuthDesign.cardSpacing),
                           showBorder: false,
                           showShadow: false,
                           color: context.themeSurface.withValues(alpha: isDark ? 0.92 : 0.88),
                           child: Column(
                             children: [
                               // ── Phone field ──────────────────────────────
-                              AppTextField.phone(
-                                controller: _phoneController,
-                                label: l10n.mobileNumber,
-                                enabled: !_isLoggedIn,
-                                suffix: _phoneController.text.isNotEmpty && _isLoggedIn
-                                    ? null
-                                    : null,
+                              SizedBox(
+                                height: AuthDesign.phoneFieldHeight,
+                                child: AppTextField.phone(
+                                  controller: _phoneController,
+                                  label: l10n.mobileNumber,
+                                  enabled: !_isLoggedIn,
+                                  suffix: _phoneController.text.isNotEmpty && _isLoggedIn
+                                      ? null
+                                      : null,
+                                ),
                               ),
 
-                              const SizedBox(height: 12),
+                              SizedBox(height: AuthDesign.fieldSpacing),
 
                               // Check number button (only for non-logged-in)
                               if (!_isLoggedIn)

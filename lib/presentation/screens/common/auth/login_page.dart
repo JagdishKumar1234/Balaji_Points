@@ -9,6 +9,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
@@ -120,8 +121,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Widget _buildDeviceAuthCard(BuildContext context, bool isDark) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.xl3),
-      padding: const EdgeInsets.all(AppSpacing.md),
+      margin: EdgeInsets.only(bottom: AuthDesign.largeSpacing),
+      padding: EdgeInsets.all(AuthDesign.cardSpacing),
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.darkSurface.withValues(alpha: 0.88)
@@ -131,6 +132,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           color: isDark
               ? AppColors.darkBorder.withValues(alpha: 0.5)
               : context.themePrimary.withValues(alpha: 0.18),
+          width: AuthDesign.textFieldBorderWidth,
         ),
       ),
       child: Column(
