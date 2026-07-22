@@ -230,6 +230,7 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
         ),
         center: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 36,
@@ -259,7 +260,7 @@ class _HomePageState extends ConsumerState<HomePage>
             const SizedBox(width: 10),
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(

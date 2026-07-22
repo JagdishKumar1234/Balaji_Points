@@ -106,9 +106,8 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
                 ),
               ),
             ),
-            Divider(
+            Container(
               height: 1,
-              thickness: 1,
               color: isDark
                   ? AppColors.white.withValues(alpha: 0.08)
                   : AppColors.black.withValues(alpha: 0.08),
@@ -135,7 +134,7 @@ class _DefaultCenter extends StatelessWidget {
   Widget build(BuildContext context) {
     final fgMuted = fg.withValues(alpha: 0.55);
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
