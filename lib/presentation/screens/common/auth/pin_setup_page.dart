@@ -1,20 +1,20 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:balaji_points/core/design/app_animations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
-import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
+import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
+import 'package:balaji_points/providers/locale_provider.dart';
+import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import '../../../../providers/auth_provider.dart';
 
@@ -108,8 +108,8 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final topInset = MediaQuery.of(context).padding.top;
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is PinSetupSuccess) {
@@ -166,124 +166,159 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
 
     return Scaffold(
       backgroundColor: AppColors.transparent,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppColors.transparent,
-        elevation: 0,
-        leading: BackButton(
-          color: context.themePrimary,
-          onPressed: () => context.pop(),
-        ),
-      ),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          AuthBackground(
-            isDark: Theme.of(context).brightness == Brightness.dark,
-          ),
-          SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              topInset + kToolbarHeight + AppSpacing.sm,
-              AppSpacing.xl,
-              bottomInset + AppSpacing.xl,
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const SizedBox(height: AppSpacing.sm),
-                  ClipRRect(
-                    borderRadius: AppRadius.all16,
-                    child: Image.asset(
-                      'assets/images/balaji_point_logo.png',
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
+          AuthBackground(isDark: isDark),
+          SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(bottom: bottomInset + AppSpacing.xl),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // ── Top Controls ──
+                    AuthTopControls(
+                      themeToggle: _ThemeToggleButton(isDark: isDark)
+                          .fadeIn(delay: AppAnimations.stagger(0)),
+                      languagePicker: _LanguagePicker()
+                          .fadeIn(delay: AppAnimations.stagger(0)),
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppText.h3(l10n.createPinTitle, color: context.themePrimary),
-                  const SizedBox(height: AppSpacing.xs),
-                  AppText.body(
-                    l10n.createPinSubtitle,
-                    color: context.themePrimary.withValues(alpha: 0.7),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.xl2),
 
-                  // ── Glass card ──
-                  _GlassCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Phone
-                        AppTextField.phone(
-                          controller: _phoneController,
-                          label: l10n.mobileNumber,
-                          validator: (v) {
-                            final s = v?.trim() ?? '';
-                            if (s.length != 10 ||
-                                !RegExp(r'^[0-9]+$').hasMatch(s)) {
-                              return l10n.enterValidTenDigit;
-                            }
-                            return null;
-                          },
-                        ),
+                    const SizedBox(height: AppSpacing.lg),
 
-                        const SizedBox(height: AppSpacing.md),
+                    // ── Professional Auth Card ──
+                    ProfessionalAuthCard(
+                      isDark: isDark,
+                      securityMessage: 'Your data is 100% secure with us',
+                      child: Column(
+                        children: [
+                          // Header
+                          Column(
+                            children: [
+                              // Logo
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF001F4D),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.asset(
+                                    'assets/images/balaji_point_logo.png',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.home_rounded,
+                                      color: Colors.white,
+                                      size: 40,
+                                    ),
+                                  ),
+                                ),
+                              ).enterHero(delay: AppAnimations.stagger(1)),
+                              const SizedBox(height: AppSpacing.lg),
 
-                        // Branch picker
-                        _BranchPicker(
-                          branches: _branches,
-                          selected: _selectedBranchId,
-                          loading: _loadingBranches,
-                          onChanged: (id) =>
-                              setState(() => _selectedBranchId = id),
-                        ),
+                              // Title
+                              Text(
+                                l10n.createPinTitle,
+                                style: AppTypography.displaySmall(
+                                  color: const Color(0xFF001F4D),
+                                ).copyWith(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ).fadeIn(delay: AppAnimations.stagger(2)),
+                              const SizedBox(height: 8),
 
-                        const SizedBox(height: AppSpacing.md),
+                              // Subtitle
+                              Text(
+                                l10n.createPinSubtitle,
+                                style: AppTypography.bodyMedium(
+                                  color: const Color(0xFF78909C),
+                                ),
+                                textAlign: TextAlign.center,
+                              ).fadeIn(delay: AppAnimations.stagger(3)),
+                            ],
+                          ),
 
-                        // PIN
-                        AppTextField.pin(
-                          controller: _pinController,
-                          label: l10n.fourDigitPin,
-                          validator: (v) => (v == null || v.length != 4)
-                              ? l10n.enter4Digits
-                              : null,
-                        ),
+                          const SizedBox(height: AppSpacing.xl3),
 
-                        const SizedBox(height: AppSpacing.md),
+                          // Phone
+                          AppTextField.phone(
+                            controller: _phoneController,
+                            label: l10n.mobileNumber,
+                            validator: (v) {
+                              final s = v?.trim() ?? '';
+                              if (s.length != 10 ||
+                                  !RegExp(r'^[0-9]+$').hasMatch(s)) {
+                                return l10n.enterValidTenDigit;
+                              }
+                              return null;
+                            },
+                          ).fadeIn(delay: AppAnimations.stagger(4)),
 
-                        // Confirm PIN
-                        AppTextField.pin(
-                          controller: _confirmPinController,
-                          label: l10n.confirmPin,
-                          validator: (v) {
-                            if (v == null || v.length != 4) {
-                              return l10n.enter4Digits;
-                            }
-                            if (v != _pinController.text.trim()) {
-                              return l10n.pinsDoNotMatch;
-                            }
-                            return null;
-                          },
-                        ),
+                          const SizedBox(height: AppSpacing.xl2),
 
-                        const SizedBox(height: AppSpacing.xl),
+                          // Branch picker
+                          _BranchPicker(
+                            branches: _branches,
+                            selected: _selectedBranchId,
+                            loading: _loadingBranches,
+                            onChanged: (id) =>
+                                setState(() => _selectedBranchId = id),
+                          ).fadeIn(delay: AppAnimations.stagger(5)),
 
-                        // Save button
-                        AppButton.secondary(
-                          label: l10n.savePin,
-                          isLoading: isSaving,
-                          onPressed: isSaving ? null : _savePin,
-                        ),
-                      ],
-                    ),
-                  ),
+                          const SizedBox(height: AppSpacing.xl2),
 
-                  const SizedBox(height: AppSpacing.xl),
-                ],
+                          // PIN
+                          AppTextField.pin(
+                            controller: _pinController,
+                            label: l10n.fourDigitPin,
+                            validator: (v) => (v == null || v.length != 4)
+                                ? l10n.enter4Digits
+                                : null,
+                          ).fadeIn(delay: AppAnimations.stagger(6)),
+
+                          const SizedBox(height: AppSpacing.xl2),
+
+                          // Confirm PIN
+                          AppTextField.pin(
+                            controller: _confirmPinController,
+                            label: l10n.confirmPin,
+                            validator: (v) {
+                              if (v == null || v.length != 4) {
+                                return l10n.enter4Digits;
+                              }
+                              if (v != _pinController.text.trim()) {
+                                return l10n.pinsDoNotMatch;
+                              }
+                              return null;
+                            },
+                          ).fadeIn(delay: AppAnimations.stagger(7)),
+
+                          const SizedBox(height: AppSpacing.xl2),
+
+                          // Save button
+                          AppButton.secondary(
+                            label: l10n.savePin,
+                            isLoading: isSaving,
+                            onPressed: isSaving ? null : _savePin,
+                          ).fadeIn(delay: AppAnimations.stagger(8)),
+                        ],
+                      ),
+                    ).enterCard(delay: AppAnimations.stagger(9)),
+
+                    const SizedBox(height: AppSpacing.xl2),
+
+                    // ── Footer ──
+                    AuthFooter(
+                      companyName: l10n.companyName,
+                      isDark: isDark,
+                    ).fadeIn(delay: AppAnimations.stagger(10)),
+
+                    const SizedBox(height: AppSpacing.xl3),
+                  ],
+                ),
               ),
             ),
           ),
@@ -366,64 +401,94 @@ class _BranchPicker extends StatelessWidget {
   }
 }
 
-// ── Glass card ────────────────────────────────────────────────────────────────
+// ── Theme toggle button ───────────────────────────────────────────────────────
 
-class _GlassCard extends StatelessWidget {
-  final Widget child;
-  const _GlassCard({required this.child});
+class _ThemeToggleButton extends ConsumerWidget {
+  final bool isDark;
+  const _ThemeToggleButton({required this.isDark});
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return ClipRRect(
-      borderRadius: AppRadius.forCard,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: AuthDesign.cardBlurSigma,
-          sigmaY: AuthDesign.cardBlurSigma,
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 40,
+      width: 40,
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.darkSurface.withValues(alpha: 0.85)
+            : AppColors.white.withValues(alpha: 0.90),
+        borderRadius: AppRadius.sm8,
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkBorder.withValues(alpha: 0.5)
+              : context.themePrimary.withValues(alpha: 0.30),
         ),
-        child: Container(
-          padding: AuthDesign.cardPadding,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isDark
-                  ? [
-                      AppColors.darkSurface
-                          .withValues(alpha: AuthDesign.darkCardMainOpacity),
-                      AppColors.darkBackground.withValues(
-                          alpha: AuthDesign.darkCardSecondaryOpacity),
-                    ]
-                  : [
-                      AppColors.white.withValues(
-                          alpha: AuthDesign.lightCardMainOpacity),
-                      AppColors.white.withValues(
-                          alpha: AuthDesign.lightCardSecondaryOpacity),
-                    ],
-            ),
-            borderRadius: AppRadius.forCard,
-            border: Border.all(
-              color: isDark
-                  ? AppColors.darkBorder
-                      .withValues(alpha: AuthDesign.darkCardBorderOpacity)
-                  : AppColors.white
-                      .withValues(alpha: AuthDesign.lightCardBorderOpacity),
-              width: AuthDesign.cardBorderWidth,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? AppColors.black
-                        .withValues(alpha: AuthDesign.darkCardShadowOpacity)
-                    : context.themePrimary.withValues(
-                        alpha: AuthDesign.lightCardShadowOpacity),
-                blurRadius: AuthDesign.cardShadowBlurRadius,
-                offset: AuthDesign.cardShadowOffset,
-              ),
-            ],
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+        onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+        icon: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          transitionBuilder: (child, anim) =>
+              RotationTransition(turns: anim, child: child),
+          child: Icon(
+            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+            key: ValueKey(isDark),
+            size: 20,
+            color: isDark ? AppColors.warning : context.themePrimary,
           ),
-          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Language picker ──────────────────────────────────────────────────────────
+
+class _LanguagePicker extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      height: 40,
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.darkSurface.withValues(alpha: 0.85)
+            : AppColors.white.withValues(alpha: 0.90),
+        borderRadius: AppRadius.sm8,
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkBorder.withValues(alpha: 0.5)
+              : context.themePrimary.withValues(alpha: 0.30),
+        ),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<Locale>(
+          value: ref.watch(localeProvider),
+          style: AppTypography.bodyMedium(color: context.themeTextPrimary),
+          dropdownColor: context.themeSurface,
+          iconEnabledColor: isDark ? AppColors.white : context.themePrimary,
+          onChanged: (locale) {
+            if (locale != null) {
+              ref.read(localeProvider.notifier).setLocale(locale);
+            }
+          },
+          items: [
+            DropdownMenuItem(
+              value: const Locale('en'),
+              child: Text(l10n.languageEnglish),
+            ),
+            DropdownMenuItem(
+              value: const Locale('hi'),
+              child: Text(l10n.languageHindi),
+            ),
+            DropdownMenuItem(
+              value: const Locale('ta'),
+              child: Text(l10n.languageTamil),
+            ),
+          ],
         ),
       ),
     );

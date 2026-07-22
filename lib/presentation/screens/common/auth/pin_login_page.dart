@@ -12,9 +12,11 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
+import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
+import 'package:balaji_points/providers/locale_provider.dart';
+import 'package:balaji_points/providers/theme_provider.dart';
 import '../../../../providers/auth_provider.dart';
 
 class PINLoginPage extends ConsumerStatefulWidget {
@@ -57,7 +59,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final topInset = MediaQuery.of(context).padding.top;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is AuthAuthenticated) {
@@ -77,80 +79,98 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
 
     return PopScope(
       canPop: true,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+            return;
+          }
+        }
+      },
       child: Scaffold(
         backgroundColor: AppColors.transparent,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: AppColors.transparent,
-          elevation: 0,
-          leading: BackButton(
-            color: context.themePrimary,
-            onPressed: () => context.pop(),
-          ),
-        ),
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // ── Attractive gradient background ──
-            AuthBackground(isDark: Theme.of(context).brightness == Brightness.dark),
+            // ── Modern gradient background ──
+            AuthBackground(isDark: isDark),
 
-            // ── Scrollable content ──
-            SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
-                AuthDesign.horizontalScreenPadding,
-                topInset + kToolbarHeight + AuthDesign.topContentPadding,
-                AuthDesign.horizontalScreenPadding,
-                bottomInset + AuthDesign.bottomKeyboardPadding,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // ── Logo ──
-                    ClipRRect(
-                      borderRadius: AppRadius.all16,
-                      child: Image.asset(
-                        'assets/images/balaji_point_logo.png',
-                        width: AuthDesign.logoSize.width,
-                        height: AuthDesign.logoSize.height,
-                        fit: BoxFit.cover,
+            // ── Content ──
+            SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(bottom: bottomInset + AppSpacing.xl),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      // ── Top Controls ──
+                      AuthTopControls(
+                        themeToggle: _ThemeToggleButton(isDark: isDark)
+                            .fadeIn(delay: AppAnimations.stagger(0)),
+                        languagePicker: _LanguagePicker()
+                            .fadeIn(delay: AppAnimations.stagger(0)),
                       ),
-                    ).enterHero(),
 
-                    SizedBox(height: AuthDesign.logoToTitleSpacing),
+                      const SizedBox(height: AppSpacing.lg),
 
-                    // ── App name ──
-                    AppText.h2(
-                      l10n.appName,
-                      color: context.themePrimary,
-                    ).enterHero(delay: AppAnimations.stagger(1)),
+                      // ── Professional Auth Card ──
+                      ProfessionalAuthCard(
+                        isDark: isDark,
+                        securityMessage: 'Your data is 100% secure with us',
+                        child: Column(
+                          children: [
+                            // Header with phone number
+                            Column(
+                              children: [
+                                // Logo
+                                Container(
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF001F4D),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.asset(
+                                      'assets/images/balaji_point_logo.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.home_rounded,
+                                        color: Colors.white,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                ).enterHero(delay: AppAnimations.stagger(1)),
+                                const SizedBox(height: AppSpacing.lg),
 
-                    const SizedBox(height: AppSpacing.xs),
+                                // Title
+                                Text(
+                                  l10n.enter4DigitPin,
+                                  style: AppTypography.displaySmall(
+                                    color: const Color(0xFF001F4D),
+                                  ).copyWith(fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ).fadeIn(delay: AppAnimations.stagger(2)),
+                                const SizedBox(height: 8),
 
-                    AppText.h4(
-                      l10n.enter4DigitPin,
-                      color: context.themePrimary,
-                    ).fadeIn(delay: AppAnimations.stagger(2)),
+                                // Phone number
+                                Text(
+                                  '+91 ${widget.phoneNumber}',
+                                  style: AppTypography.bodyMedium(
+                                    color: const Color(0xFF78909C),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ).fadeIn(delay: AppAnimations.stagger(3)),
+                              ],
+                            ),
 
-                    const SizedBox(height: AppSpacing.xs),
+                            const SizedBox(height: AppSpacing.xl3),
 
-                    AppText.body(
-                      '+91 ${widget.phoneNumber}',
-                      color: context.themeTextSecondary,
-                    ).fadeIn(delay: AppAnimations.stagger(3)),
-
-                    SizedBox(height: AuthDesign.sectionSpacing),
-
-                    // ── Glass card ──
-                    _GlassCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // PIN field
-                          SizedBox(
-                            height: AuthDesign.pinFieldHeight,
-                            child: AppTextField(
+                            // PIN input
+                            AppTextField(
                               controller: _pinController,
                               label: l10n.fourDigitPin,
                               keyboardType: TextInputType.number,
@@ -171,77 +191,78 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                               validator: (v) => (v == null || v.length != 4)
                                   ? l10n.enter4Digits
                                   : null,
-                            ),
-                          ),
+                            ).fadeIn(delay: AppAnimations.stagger(4)),
 
-                          SizedBox(height: AuthDesign.fieldSpacing),
+                            const SizedBox(height: AppSpacing.xl2),
 
-                          // Remember me
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: _rememberMe,
-                                activeColor: context.themeSecondary,
-                                onChanged: (v) =>
-                                    setState(() => _rememberMe = v ?? true),
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () => setState(
-                                    () => _rememberMe = !_rememberMe,
-                                  ),
-                                  child: Text(
-                                    l10n.rememberMe,
-                                    style: AppTypography.bodyMedium(
-                                      color: context.themeTextSecondary,
+                            // Remember me
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _rememberMe,
+                                  activeColor: context.themeSecondary,
+                                  onChanged: (v) =>
+                                      setState(() => _rememberMe = v ?? true),
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () => setState(
+                                      () => _rememberMe = !_rememberMe,
+                                    ),
+                                    child: Text(
+                                      l10n.rememberMe,
+                                      style: AppTypography.bodyMedium(
+                                        color: context.themeTextSecondary,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ).fadeIn(delay: AppAnimations.stagger(5)),
 
-                          SizedBox(height: AuthDesign.largeSpacing),
+                            const SizedBox(height: AppSpacing.xl2),
 
-                          // Login button
-                          SizedBox(
-                            height: AuthDesign.buttonHeight,
-                            child: AppButton.secondary(
+                            // Login button
+                            AppButton.secondary(
                               label: l10n.login,
                               onPressed: isLoggingIn ? null : _login,
                               isLoading: isLoggingIn,
-                            ),
-                          ),
+                            ).fadeIn(delay: AppAnimations.stagger(6)),
 
-                          SizedBox(height: AuthDesign.fieldSpacing),
+                            const SizedBox(height: AppSpacing.md),
 
-                          // Forgot PIN
-                          SizedBox(
-                            height: AuthDesign.buttonHeight,
-                            child: AppButton.outline(
+                            // Forgot PIN
+                            AppButton.outline(
                               label: l10n.forgotPin,
                               onPressed: () => context.push(
                                 '/pin-reset?phone=${widget.phoneNumber}',
                               ),
-                            ),
-                          ),
+                            ).fadeIn(delay: AppAnimations.stagger(7)),
 
-                          SizedBox(height: AuthDesign.fieldSpacing),
+                            const SizedBox(height: AppSpacing.md),
 
-                          // New user
-                          SizedBox(
-                            height: AuthDesign.buttonHeight,
-                            child: AppButton.outline(
+                            // New user
+                            AppButton.outline(
                               label: l10n.newUserSetPin,
                               onPressed: () => context.push(
                                 '/pin-setup?phone=${widget.phoneNumber}',
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ).enterCard(delay: AppAnimations.stagger(4)),
-                  ],
+                            ).fadeIn(delay: AppAnimations.stagger(8)),
+                          ],
+                        ),
+                      ).enterCard(delay: AppAnimations.stagger(9)),
+
+                      const SizedBox(height: AppSpacing.xl2),
+
+                      // ── Footer ──
+                      AuthFooter(
+                        companyName: l10n.companyName,
+                        isDark: isDark,
+                      ).fadeIn(delay: AppAnimations.stagger(10)),
+
+                      const SizedBox(height: AppSpacing.xl3),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -252,64 +273,94 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
   }
 }
 
-// ── Shared glass-morphism card ──────────────────────────────────────────────
+// ── Theme toggle button ───────────────────────────────────────────────────────
 
-class _GlassCard extends StatelessWidget {
-  final Widget child;
-  const _GlassCard({required this.child});
+class _ThemeToggleButton extends ConsumerWidget {
+  final bool isDark;
+  const _ThemeToggleButton({required this.isDark});
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return ClipRRect(
-      borderRadius: AppRadius.forCard,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: AuthDesign.cardBlurSigma,
-          sigmaY: AuthDesign.cardBlurSigma,
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 40,
+      width: 40,
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.darkSurface.withValues(alpha: 0.85)
+            : AppColors.white.withValues(alpha: 0.90),
+        borderRadius: AppRadius.sm8,
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkBorder.withValues(alpha: 0.5)
+              : context.themePrimary.withValues(alpha: 0.30),
         ),
-        child: Container(
-          padding: AuthDesign.cardPadding,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isDark
-                  ? [
-                      AppColors.darkSurface
-                          .withValues(alpha: AuthDesign.darkCardMainOpacity),
-                      AppColors.darkBackground.withValues(
-                          alpha: AuthDesign.darkCardSecondaryOpacity),
-                    ]
-                  : [
-                      AppColors.white.withValues(
-                          alpha: AuthDesign.lightCardMainOpacity),
-                      AppColors.white.withValues(
-                          alpha: AuthDesign.lightCardSecondaryOpacity),
-                    ],
-            ),
-            borderRadius: AppRadius.forCard,
-            border: Border.all(
-              color: isDark
-                  ? AppColors.darkBorder
-                      .withValues(alpha: AuthDesign.darkCardBorderOpacity)
-                  : AppColors.white
-                      .withValues(alpha: AuthDesign.lightCardBorderOpacity),
-              width: AuthDesign.cardBorderWidth,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? AppColors.black
-                        .withValues(alpha: AuthDesign.darkCardShadowOpacity)
-                    : context.themePrimary.withValues(
-                        alpha: AuthDesign.lightCardShadowOpacity),
-                blurRadius: AuthDesign.cardShadowBlurRadius,
-                offset: AuthDesign.cardShadowOffset,
-              ),
-            ],
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+        onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+        icon: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          transitionBuilder: (child, anim) =>
+              RotationTransition(turns: anim, child: child),
+          child: Icon(
+            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+            key: ValueKey(isDark),
+            size: 20,
+            color: isDark ? AppColors.warning : context.themePrimary,
           ),
-          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Language picker ──────────────────────────────────────────────────────────
+
+class _LanguagePicker extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      height: 40,
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.darkSurface.withValues(alpha: 0.85)
+            : AppColors.white.withValues(alpha: 0.90),
+        borderRadius: AppRadius.sm8,
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkBorder.withValues(alpha: 0.5)
+              : context.themePrimary.withValues(alpha: 0.30),
+        ),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<Locale>(
+          value: ref.watch(localeProvider),
+          style: AppTypography.bodyMedium(color: context.themeTextPrimary),
+          dropdownColor: context.themeSurface,
+          iconEnabledColor: isDark ? AppColors.white : context.themePrimary,
+          onChanged: (locale) {
+            if (locale != null) {
+              ref.read(localeProvider.notifier).setLocale(locale);
+            }
+          },
+          items: [
+            DropdownMenuItem(
+              value: const Locale('en'),
+              child: Text(l10n.languageEnglish),
+            ),
+            DropdownMenuItem(
+              value: const Locale('hi'),
+              child: Text(l10n.languageHindi),
+            ),
+            DropdownMenuItem(
+              value: const Locale('ta'),
+              child: Text(l10n.languageTamil),
+            ),
+          ],
         ),
       ),
     );
