@@ -13,10 +13,10 @@ import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
+import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/services/auth/biometric_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
@@ -213,107 +213,74 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               bottom: false,
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(bottom: bottomInset + AppSpacing.xl),
-                child: Padding(
-                  padding: AppSpacing.screenHorizontal,
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: AppSpacing.lg),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      // ── Top Controls ──
+                      AuthTopControls(
+                        themeToggle: _ThemeToggleButton(isDark: isDark)
+                            .fadeIn(delay: AppAnimations.stagger(0)),
+                        languagePicker: _LanguagePicker()
+                            .fadeIn(delay: AppAnimations.stagger(0)),
+                      ),
 
-                        // ── Top row: Language + Theme toggle ──
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // ── Professional Auth Card ──
+                      ProfessionalAuthCard(
+                        isDark: isDark,
+                        securityMessage: 'Your data is 100% secure with us',
+                        child: Column(
                           children: [
-                            _ThemeToggleButton(isDark: isDark)
-                                .fadeIn(delay: AppAnimations.stagger(0)),
-                            _LanguagePicker()
-                                .fadeIn(delay: AppAnimations.stagger(0)),
+                            // Header with logo
+                            AuthHeader(
+                              logoPath: 'assets/images/balaji_point_logo.png',
+                              title: l10n.appName,
+                              subtitle: l10n.enterPhoneNumber,
+                              isDark: isDark,
+                            ).enterHero(delay: AppAnimations.stagger(1)),
+
+                            const SizedBox(height: AppSpacing.xl3),
+
+                            // Phone input
+                            AppTextField.phone(
+                              controller: _phoneController,
+                              label: l10n.mobileNumber,
+                              validator: (value) {
+                                final v = value?.trim() ?? '';
+                                if (v.length != 10 ||
+                                    !RegExp(r'^[0-9]+$').hasMatch(v)) {
+                                  return l10n.enterValidTenDigit;
+                                }
+                                return null;
+                              },
+                            ).fadeIn(delay: AppAnimations.stagger(2)),
+
+                            const SizedBox(height: AppSpacing.xl2),
+
+                            // Continue button
+                            AppButton.secondary(
+                              label: l10n.continueWithPin,
+                              onPressed: isChecking
+                                  ? null
+                                  : _checkUserAndNavigate,
+                              isLoading: isChecking,
+                            ).fadeIn(delay: AppAnimations.stagger(3)),
                           ],
                         ),
+                      ).enterCard(delay: AppAnimations.stagger(4)),
 
-                        const SizedBox(height: AppSpacing.xl),
+                      const SizedBox(height: AppSpacing.xl2),
 
-                        // ── Logo ──
-                        ClipRRect(
-                          borderRadius: AppRadius.all16,
-                          child: Image.asset(
-                            'assets/images/balaji_point_logo.png',
-                            width: 96,
-                            height: 96,
-                            fit: BoxFit.cover,
-                          ),
-                        ).enterHero(delay: AppAnimations.stagger(1)),
+                      // ── Footer ──
+                      AuthFooter(
+                        companyName: l10n.companyName,
+                        isDark: isDark,
+                      ).fadeIn(delay: AppAnimations.stagger(5)),
 
-                        const SizedBox(height: AppSpacing.md),
-
-                        // ── Title ──
-                        AppText.h2(
-                          'Balaji Points',
-                          color: context.themePrimary,
-                        ).enterHero(delay: AppAnimations.stagger(2)),
-
-                        const SizedBox(height: AppSpacing.xl2),
-
-                        AppText.bodyLarge(
-                          l10n.enterPhoneNumber,
-                          color: context.themeTextSecondary,
-                        ).fadeIn(delay: AppAnimations.stagger(3)),
-
-                        const SizedBox(height: AppSpacing.xl3),
-
-                        if (_canUseDeviceAuth)
-                          _buildDeviceAuthCard(context, isDark),
-
-                        // ── Glass card ──
-                        _GlassCard(
-                          isDark: isDark,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              AppTextField.phone(
-                                controller: _phoneController,
-                                label: l10n.mobileNumber,
-                                validator: (value) {
-                                  final v = value?.trim() ?? '';
-                                  if (v.length != 10 ||
-                                      !RegExp(r'^[0-9]+$').hasMatch(v)) {
-                                    return l10n.enterValidTenDigit;
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              const SizedBox(height: AppSpacing.xl),
-
-                              AppButton.secondary(
-                                label: l10n.continueWithPin,
-                                onPressed: isChecking
-                                    ? null
-                                    : _checkUserAndNavigate,
-                                isLoading: isChecking,
-                              ),
-                            ],
-                          ),
-                        ).enterCard(delay: AppAnimations.stagger(4)),
-
-                        const SizedBox(height: AppSpacing.xl),
-
-                        // ── Footer ──
-                        AppText.label(
-                          '${l10n.poweredBy} ${l10n.companyName}',
-                          color: context.themePrimary,
-                          shadows: [
-                            Shadow(
-                              color: AppColors.white.withValues(alpha: 0.8),
-                              blurRadius: 10,
-                            ),
-                          ],
-                        ).fadeIn(delay: AppAnimations.stagger(5)),
-
-                        const SizedBox(height: AppSpacing.xl3),
-                      ],
-                    ),
+                      const SizedBox(height: AppSpacing.xl3),
+                    ],
                   ),
                 ),
               ),
