@@ -178,24 +178,51 @@ class _Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: AppRadius.all16,
-      child: Image.asset(
-        'assets/images/balaji_point_logo.png',
-        width: 100,
-        height: 100,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.all16,
+        boxShadow: [
+          BoxShadow(
+            color: context.themePrimary.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: AppRadius.all16,
+        child: Image.asset(
+          'assets/images/balaji_point_logo.png',
           width: 100,
           height: 100,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [context.themePrimary, context.themeSecondary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: const Icon(Icons.star_rounded, color: AppColors.white, size: 52),
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback gradient icon if image fails to load (works on web & mobile)
+            return Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.all16,
+                gradient: LinearGradient(
+                  colors: [
+                    context.themePrimary,
+                    context.themeSecondary,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.card_giftcard_rounded,
+                  color: AppColors.white,
+                  size: 52,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

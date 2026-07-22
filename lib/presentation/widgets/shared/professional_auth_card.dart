@@ -128,7 +128,7 @@ class AuthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Logo container with navy background
+        // Logo container with navy background and improved error handling
         SizedBox(
           width: 80,
           height: 80,
@@ -148,14 +148,19 @@ class AuthHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               child: Image.asset(
                 logoPath,
+                width: 80,
+                height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Center(
-                  child: Icon(
-                    Icons.home_rounded,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                ),
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback icon if image fails to load on web/mobile
+                  return const Center(
+                    child: Icon(
+                      Icons.card_giftcard_rounded,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  );
+                },
               ),
             ),
           ),

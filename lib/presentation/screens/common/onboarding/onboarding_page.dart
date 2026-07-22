@@ -55,7 +55,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final slides = [
       _SlideData(
         icon: Icons.receipt_long_rounded,
@@ -81,28 +82,44 @@ class _OnboardingPageState extends State<OnboardingPage> {
         body: Stack(
           fit: StackFit.expand,
           children: [
+            // Professional gradient background (works on web & mobile)
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [
+                          const Color(0xFF1A237E).withValues(alpha: 0.95),
+                          const Color(0xFF0D47A1).withValues(alpha: 0.95),
+                        ]
+                      : [
+                          const Color(0xFFF5F7FA),
+                          const Color(0xFFFFFFFF),
+                          const Color(0xFFF0F4F8),
+                        ],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+              ),
+            ),
+
+            // Optional: Try loading background image with error handling
             Positioned.fill(
               child: Image.asset(
                 'assets/images/background_image.png',
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // If image fails to load, gradient background shows through
+                  return const SizedBox.expand();
+                },
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    theme.colorScheme.surface.withValues(alpha: 0.15),
-                    theme.colorScheme.surface.withValues(alpha: 0.85),
-                  ],
-                ),
-              ),
-            ),
+
             SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Skip button with proper styling
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -111,11 +128,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         l10n.onboardingSkip,
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 15,
+                          fontWeight: FontWeight.w600,
                           color: context.themePrimary,
                         ),
                       ),
                     ),
                   ),
+
+                  // Slides PageView
                   Expanded(
                     child: PageView.builder(
                       controller: _pageController,
@@ -128,18 +148,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              // Icon container with proper sizing for web & mobile
                               Container(
+                                width: 120,
+                                height: 120,
                                 padding: const EdgeInsets.all(28),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppColors.white.withValues(
-                                    alpha: 0.92,
-                                  ),
+                                  color: isDark
+                                      ? AppColors.darkSurface.withValues(alpha: 0.85)
+                                      : AppColors.white.withValues(alpha: 0.92),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.black.withValues(
-                                        alpha: 0.08,
-                                      ),
+                                      color: isDark
+                                          ? AppColors.black.withValues(alpha: 0.3)
+                                          : AppColors.black.withValues(alpha: 0.08),
                                       blurRadius: 24,
                                       offset: const Offset(0, 8),
                                     ),
@@ -147,21 +170,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 ),
                                 child: Icon(
                                   s.icon,
-                                  size: 72,
+                                  size: 64,
                                   color: context.themePrimary,
                                 ),
                               ),
                               const SizedBox(height: 36),
+
+                              // Title
                               Text(
                                 s.title,
                                 textAlign: TextAlign.center,
                                 style: AppTypography.buttonMedium().copyWith(
                                   fontSize: 24,
                                   height: 1.25,
+                                  fontWeight: FontWeight.bold,
                                   color: context.themeTextPrimary,
                                 ),
                               ),
                               const SizedBox(height: 16),
+
+                              // Body text
                               Text(
                                 s.body,
                                 textAlign: TextAlign.center,
@@ -179,6 +207,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       },
                     ),
                   ),
+
+                  // Dot indicators with proper sizing
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
