@@ -94,14 +94,26 @@ class AppButton extends StatelessWidget {
         ? AppLoader(size: 20, strokeWidth: 2, color: fg)
         : Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (icon != null) ...[
                 Icon(icon, size: 18, color: fg),
                 const SizedBox(width: AppSpacing.sm),
               ],
-              Text(label, style: AppTypography.buttonMedium(color: fg)),
+              Flexible(
+                child: Text(
+                  label,
+                  style: AppTypography.buttonMedium(color: fg),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           );
+
+    // Ensure consistent button sizing across platforms
+    final minHeight = 50.0;  // Standard touch target size (48dp+)
+    final minWidth = fullWidth ? double.infinity : (width ?? 100.0);
 
     return ElevatedButton(
       onPressed: disabled ? null : onPressed,
@@ -114,13 +126,10 @@ class AppButton extends StatelessWidget {
         elevation:    0,
         padding: EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
-          vertical: verticalPadding,
+          vertical: verticalPadding.clamp(12.0, 20.0),  // Clamp for consistency
         ),
-        minimumSize: fullWidth
-            ? const Size(double.infinity, 0)
-            : width != null
-                ? Size(width!, 0)
-                : Size.zero,
+        minimumSize: Size(minWidth, minHeight),
+        fixedSize: fullWidth ? Size(minWidth, minHeight) : null,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.all16,
           side: border,

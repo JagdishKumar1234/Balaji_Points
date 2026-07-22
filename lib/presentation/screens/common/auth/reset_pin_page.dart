@@ -578,8 +578,8 @@ class _ThemeToggleButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      height: 40,
-      width: 40,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.darkSurface.withValues(alpha: 0.85)
@@ -589,20 +589,32 @@ class _ThemeToggleButton extends ConsumerWidget {
           color: isDark
               ? AppColors.darkBorder.withValues(alpha: 0.5)
               : context.themePrimary.withValues(alpha: 0.30),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: (isDark
+                    ? AppColors.darkBorder
+                    : context.themePrimary)
+                .withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: IconButton(
         padding: EdgeInsets.zero,
+        splashRadius: 22,
         tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
         onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
         icon: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 300),
           transitionBuilder: (child, anim) =>
               RotationTransition(turns: anim, child: child),
           child: Icon(
             isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
             key: ValueKey(isDark),
-            size: 20,
+            size: 22,
             color: isDark ? AppColors.warning : context.themePrimary,
           ),
         ),
@@ -620,7 +632,7 @@ class _LanguagePicker extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      height: 40,
+      height: 44,
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.darkSurface.withValues(alpha: 0.85)
@@ -630,14 +642,32 @@ class _LanguagePicker extends ConsumerWidget {
           color: isDark
               ? AppColors.darkBorder.withValues(alpha: 0.5)
               : context.themePrimary.withValues(alpha: 0.30),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: (isDark
+                    ? AppColors.darkBorder
+                    : context.themePrimary)
+                .withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Locale>(
           value: ref.watch(localeProvider),
-          style: AppTypography.bodyMedium(color: context.themeTextPrimary),
+          style: AppTypography.bodyMedium(
+            color: context.themeTextPrimary,
+          ),
           dropdownColor: context.themeSurface,
           iconEnabledColor: isDark ? AppColors.white : context.themePrimary,
+          icon: Icon(
+            Icons.language_rounded,
+            size: 22,
+            color: isDark ? AppColors.white : context.themePrimary,
+          ),
           onChanged: (locale) {
             if (locale != null) {
               ref.read(localeProvider.notifier).setLocale(locale);
@@ -646,15 +676,33 @@ class _LanguagePicker extends ConsumerWidget {
           items: [
             DropdownMenuItem(
               value: const Locale('en'),
-              child: Text(l10n.languageEnglish),
+              child: Row(
+                children: [
+                  const Icon(Icons.language, size: 16),
+                  const SizedBox(width: 8),
+                  Text(l10n.languageEnglish),
+                ],
+              ),
             ),
             DropdownMenuItem(
               value: const Locale('hi'),
-              child: Text(l10n.languageHindi),
+              child: Row(
+                children: [
+                  const Icon(Icons.language, size: 16),
+                  const SizedBox(width: 8),
+                  Text(l10n.languageHindi),
+                ],
+              ),
             ),
             DropdownMenuItem(
               value: const Locale('ta'),
-              child: Text(l10n.languageTamil),
+              child: Row(
+                children: [
+                  const Icon(Icons.language, size: 16),
+                  const SizedBox(width: 8),
+                  Text(l10n.languageTamil),
+                ],
+              ),
             ),
           ],
         ),

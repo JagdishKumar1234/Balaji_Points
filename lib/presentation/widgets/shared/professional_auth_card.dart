@@ -128,46 +128,70 @@ class AuthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Logo
-        Container(
+        // Logo container with navy background
+        SizedBox(
           width: 80,
           height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF001F4D),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset(
-              logoPath,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Icon(
-                Icons.home_rounded,
-                color: Colors.white,
-                size: 40,
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF001F4D),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF001F4D).withValues(alpha: 0.2),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                logoPath,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Center(
+                  child: Icon(
+                    Icons.home_rounded,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ),
               ),
             ),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
 
-        // Title
+        // Title - better sizing for all platforms
         Text(
           title,
           style: AppTypography.displaySmall(
-            color: const Color(0xFF001F4D),
-          ).copyWith(fontWeight: FontWeight.bold),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.95)
+                : const Color(0xFF001F4D),
+          ).copyWith(
+            fontWeight: FontWeight.bold,
+            height: 1.2,
+          ),
           textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 8),
 
-        // Subtitle
+        // Subtitle - responsive text sizing
         Text(
           subtitle,
           style: AppTypography.bodyMedium(
-            color: const Color(0xFF78909C),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.7)
+                : const Color(0xFF78909C),
+          ).copyWith(
+            height: 1.4,
           ),
           textAlign: TextAlign.center,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -188,46 +212,73 @@ class AuthFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
+        // Spacing from card above
         const SizedBox(height: AppSpacing.xl),
+
+        // "Powered by" text
         Text(
           'Powered by',
           style: AppTypography.bodySmall(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.6)
+                ? Colors.white.withValues(alpha: 0.7)
                 : const Color(0xFF78909C),
           ),
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 4),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '✦',
-              style: TextStyle(
-                color: const Color(0xFFD4AF37),
-                fontSize: 12,
+
+        // Space between texts
+        const SizedBox(height: 8),
+
+        // Company name with gold stars - constrained for stability
+        Container(
+          constraints: const BoxConstraints(maxWidth: 320),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Left gold star
+              Text(
+                '✦',
+                style: TextStyle(
+                  color: const Color(0xFFD4AF37),
+                  fontSize: 14,
+                  height: 1.0,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                companyName,
-                style: AppTypography.bodyMedium(
-                  color: const Color(0xFF001F4D),
-                ).copyWith(fontWeight: FontWeight.w600),
-                textAlign: TextAlign.center,
+              const SizedBox(width: 10),
+
+              // Company name - white on dark, navy on light
+              Flexible(
+                child: Text(
+                  companyName,
+                  style: AppTypography.bodyMedium(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.95)
+                        : const Color(0xFF001F4D),
+                  ).copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              '✦',
-              style: TextStyle(
-                color: const Color(0xFFD4AF37),
-                fontSize: 12,
+              const SizedBox(width: 10),
+
+              // Right gold star
+              Text(
+                '✦',
+                style: TextStyle(
+                  color: const Color(0xFFD4AF37),
+                  fontSize: 14,
+                  height: 1.0,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -250,13 +301,23 @@ class AuthTopControls extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
-        vertical: AppSpacing.md,
+        vertical: AppSpacing.lg,  // Increased for better visibility
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          themeToggle,
-          languagePicker,
+          // Left: Theme toggle - ensure proper sizing
+          SizedBox(
+            width: 44,
+            height: 44,
+            child: themeToggle,
+          ),
+
+          // Right: Language picker - ensure proper sizing
+          SizedBox(
+            height: 44,
+            child: languagePicker,
+          ),
         ],
       ),
     );
