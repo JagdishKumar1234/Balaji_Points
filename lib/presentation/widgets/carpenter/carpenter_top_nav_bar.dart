@@ -78,31 +78,33 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: topInset),
-            SizedBox(
-              height: CarpenterShellLayout.navBarHeight,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Hamburger or custom leading
-                    leading ?? const SizedBox(width: 48),
+            Flexible(
+              child: SizedBox(
+                height: CarpenterShellLayout.navBarHeight,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Hamburger or custom leading
+                      leading ?? const SizedBox(width: 48),
 
-                    // Center: logo + title/subtitle OR custom center widget
-                    Expanded(
-                      child: center ?? _DefaultCenter(
-                        title: title,
-                        subtitle: subtitle,
-                        fg: fg,
+                      // Center: logo + title/subtitle OR custom center widget
+                      Expanded(
+                        child: center ?? _DefaultCenter(
+                          title: title,
+                          subtitle: subtitle,
+                          fg: fg,
+                        ),
                       ),
-                    ),
 
-                    // Actions (cart icon etc.)
-                    if (actions != null && actions!.isNotEmpty)
-                      Row(mainAxisSize: MainAxisSize.min, children: actions!)
-                    else
-                      const SizedBox(width: 48),
-                  ],
+                      // Actions (cart icon etc.)
+                      if (actions != null && actions!.isNotEmpty)
+                        Row(mainAxisSize: MainAxisSize.min, children: actions!)
+                      else
+                        const SizedBox(width: 48),
+                    ],
+                  ),
                 ),
               ),
             ),
