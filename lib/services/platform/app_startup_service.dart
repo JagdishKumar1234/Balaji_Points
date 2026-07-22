@@ -28,6 +28,33 @@ class AppStartupService {
   final SessionService _sessionService;
   final LocalNotificationService _notificationService;
 
+  /// Check for blocking updates only (must complete before navigation)
+  Future<bool> checkForBlockingUpdate(BuildContext context) async {
+    _setupNotificationTapHandler();
+    final forceUpdatePending = await _updateService.checkForUpdate(context);
+    return forceUpdatePending;
+  }
+
+  /// Run non-blocking startup tasks in background (doesn't block navigation)
+  Future<void> runBackgroundStartupTasks(BuildContext context) async {
+    try {
+      // Notify admin/carpenter about new version (non-blocking)
+      await _updateService.notifyAdminCarpenterAboutUpdate();
+
+      // Ensure the default branch document exists in Firestore.
+      await BranchService().seedDefaultBranch();
+
+      // One-time backfill: stamp branchId on all legacy docs.
+      await BranchMigrationService().runIfNeeded();
+
+      await _runMigrationAndRefreshFcm();
+    } catch (e) {
+      // Background tasks failing shouldn't crash the app
+      AppLogger.error('Background startup tasks failed', e);
+    }
+  }
+
+  /// Legacy method for backwards compatibility
   Future<bool> runPreLaunchChecks(BuildContext context) async {
     // Set up notification tap handler to open Play Store URL
     _setupNotificationTapHandler();

@@ -39,10 +39,17 @@ class _SplashPageState extends State<SplashPage> {
     await Future<void>.delayed(const Duration(milliseconds: 800));
     if (!mounted) return;
 
-    final blockedByStartup = await AppStartupService().runPreLaunchChecks(context);
-    if (!mounted || blockedByStartup) return;
+    // Check for blocking updates only (must complete before navigation)
+    final forceUpdatePending = await AppStartupService().checkForBlockingUpdate(context);
+    if (!mounted || forceUpdatePending) return;
 
+    // Proceed to navigation immediately
     await _checkAuthAndNavigate();
+
+    // Start non-blocking startup tasks in background (doesn't block navigation)
+    if (mounted) {
+      unawaited(AppStartupService().runBackgroundStartupTasks(context));
+    }
   }
 
   Future<void> _checkAuthAndNavigate() async {
