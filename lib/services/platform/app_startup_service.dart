@@ -39,15 +39,20 @@ class AppStartupService {
   Future<void> runBackgroundStartupTasks(BuildContext context) async {
     try {
       // Notify admin/carpenter about new version (non-blocking)
-      await _updateService.notifyAdminCarpenterAboutUpdate();
+      // Use timeout to prevent hang on slow network
+      await _updateService.notifyAdminCarpenterAboutUpdate()
+          .timeout(const Duration(seconds: 10), onTimeout: () {});
 
       // Ensure the default branch document exists in Firestore.
-      await BranchService().seedDefaultBranch();
+      await BranchService().seedDefaultBranch()
+          .timeout(const Duration(seconds: 15), onTimeout: () {});
 
       // One-time backfill: stamp branchId on all legacy docs.
-      await BranchMigrationService().runIfNeeded();
+      await BranchMigrationService().runIfNeeded()
+          .timeout(const Duration(seconds: 30), onTimeout: () {});
 
-      await _runMigrationAndRefreshFcm();
+      await _runMigrationAndRefreshFcm()
+          .timeout(const Duration(seconds: 20), onTimeout: () {});
     } catch (e) {
       // Background tasks failing shouldn't crash the app
       AppLogger.error('Background startup tasks failed', e);
