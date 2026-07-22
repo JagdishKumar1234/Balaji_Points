@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/design/responsive_typography.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
 
 /// Professional auth card with centered design
@@ -126,38 +127,48 @@ class AuthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get responsive sizes based on device type
+    final logoSize = context.responsiveLogoSize;
+    final logoBorderRadius = context.responsiveLogoBorderRadius;
+    final logoShadowBlur = ResponsiveTypography.getLogoShadowBlur(context);
+    final fallbackIconSize = logoSize * 0.5; // Icon is 50% of logo size
+
+    final titleFontSize = context.responsiveTitleSize;
+    final subtitleFontSize = context.responsiveSubtitleSize;
+    final lineHeight = context.responsiveLineHeight;
+
     return Column(
       children: [
-        // Logo container with navy background and improved error handling
+        // Logo container - responsive sizing across all platforms
         SizedBox(
-          width: 80,
-          height: 80,
+          width: logoSize,
+          height: logoSize,
           child: Container(
             decoration: BoxDecoration(
               color: const Color(0xFF001F4D),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(logoBorderRadius),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF001F4D).withValues(alpha: 0.2),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  blurRadius: logoShadowBlur,
+                  offset: Offset(0, logoShadowBlur * 0.3),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(logoBorderRadius),
               child: Image.asset(
                 logoPath,
-                width: 80,
-                height: 80,
+                width: logoSize,
+                height: logoSize,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  // Fallback icon if image fails to load on web/mobile
-                  return const Center(
+                  // Fallback icon - responsive size
+                  return Center(
                     child: Icon(
                       Icons.card_giftcard_rounded,
                       color: Colors.white,
-                      size: 40,
+                      size: fallbackIconSize,
                     ),
                   );
                 },
@@ -165,34 +176,39 @@ class AuthHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.lg),
 
-        // Title - better sizing for all platforms
+        // Responsive spacing after logo
+        SizedBox(height: context.responsiveHeaderSpacing * 0.6),
+
+        // Title - responsive font size for all platforms
         Text(
           title,
-          style: AppTypography.displaySmall(
+          style: TextStyle(
+            fontSize: titleFontSize,
+            fontWeight: FontWeight.bold,
+            height: lineHeight,
             color: isDark
                 ? Colors.white.withValues(alpha: 0.95)
                 : const Color(0xFF001F4D),
-          ).copyWith(
-            fontWeight: FontWeight.bold,
-            height: 1.2,
+            letterSpacing: context.responsiveLetterSpacing,
           ),
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
+
+        // Space between title and subtitle
         const SizedBox(height: 8),
 
-        // Subtitle - responsive text sizing
+        // Subtitle - responsive font size
         Text(
           subtitle,
-          style: AppTypography.bodyMedium(
+          style: TextStyle(
+            fontSize: subtitleFontSize,
+            height: lineHeight,
             color: isDark
                 ? Colors.white.withValues(alpha: 0.7)
                 : const Color(0xFF78909C),
-          ).copyWith(
-            height: 1.4,
           ),
           textAlign: TextAlign.center,
           maxLines: 3,

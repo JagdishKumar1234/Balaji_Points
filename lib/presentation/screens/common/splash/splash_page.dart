@@ -1,4 +1,3 @@
-import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -8,6 +7,8 @@ import 'package:balaji_points/core/design/app_animations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/design/responsive_typography.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/services/auth/biometric_service.dart';
@@ -178,33 +179,39 @@ class _Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get responsive logo size
+    final logoSize = context.responsiveLogoSize;
+    final logoBorderRadius = context.responsiveLogoBorderRadius;
+    final logoShadowBlur = ResponsiveTypography.getLogoShadowBlur(context);
+    final fallbackIconSize = logoSize * 0.5; // Icon is 50% of logo size
+
     return Container(
-      width: 100,
-      height: 100,
+      width: logoSize,
+      height: logoSize,
       decoration: BoxDecoration(
-        borderRadius: AppRadius.all16,
+        borderRadius: BorderRadius.circular(logoBorderRadius),
         boxShadow: [
           BoxShadow(
             color: context.themePrimary.withValues(alpha: 0.2),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            blurRadius: logoShadowBlur,
+            offset: Offset(0, logoShadowBlur * 0.3),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: AppRadius.all16,
+        borderRadius: BorderRadius.circular(logoBorderRadius),
         child: Image.asset(
           'assets/images/balaji_point_logo.png',
-          width: 100,
-          height: 100,
+          width: logoSize,
+          height: logoSize,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            // Fallback gradient icon if image fails to load (works on web & mobile)
+            // Fallback gradient icon - responsive size
             return Container(
-              width: 100,
-              height: 100,
+              width: logoSize,
+              height: logoSize,
               decoration: BoxDecoration(
-                borderRadius: AppRadius.all16,
+                borderRadius: BorderRadius.circular(logoBorderRadius),
                 gradient: LinearGradient(
                   colors: [
                     context.themePrimary,
@@ -214,11 +221,11 @@ class _Logo extends StatelessWidget {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: const Center(
+              child: Center(
                 child: Icon(
                   Icons.card_giftcard_rounded,
                   color: AppColors.white,
-                  size: 52,
+                  size: fallbackIconSize,
                 ),
               ),
             );

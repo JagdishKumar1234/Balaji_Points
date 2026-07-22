@@ -1,6 +1,8 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/design/responsive_typography.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -143,16 +145,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       onPageChanged: (i) => setState(() => _pageIndex = i),
                       itemBuilder: (context, index) {
                         final s = slides[index];
+
+                        // Get responsive sizes based on device type
+                        final iconContainerSize = context.responsiveLogoSize * 1.2; // Slightly larger than logo
+                        final iconSize = iconContainerSize * 0.5;
+                        final titleFontSize = context.responsiveTitleSize * 0.85;
+                        final bodyFontSize = context.responsiveBodySize;
+                        final lineHeight = context.responsiveLineHeight;
+
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 28),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Icon container with proper sizing for web & mobile
+                              // Icon container - responsive sizing
                               Container(
-                                width: 120,
-                                height: 120,
-                                padding: const EdgeInsets.all(28),
+                                width: iconContainerSize,
+                                height: iconContainerSize,
+                                padding: EdgeInsets.all(iconContainerSize * 0.2),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: isDark
@@ -170,32 +180,33 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 ),
                                 child: Icon(
                                   s.icon,
-                                  size: 64,
+                                  size: iconSize,
                                   color: context.themePrimary,
                                 ),
                               ),
-                              const SizedBox(height: 36),
+                              SizedBox(height: context.responsiveHeaderSpacing * 0.8),
 
-                              // Title
+                              // Title - responsive font size
                               Text(
                                 s.title,
                                 textAlign: TextAlign.center,
-                                style: AppTypography.buttonMedium().copyWith(
-                                  fontSize: 24,
-                                  height: 1.25,
+                                style: TextStyle(
+                                  fontSize: titleFontSize,
+                                  height: lineHeight,
                                   fontWeight: FontWeight.bold,
                                   color: context.themeTextPrimary,
+                                  letterSpacing: context.responsiveLetterSpacing,
                                 ),
                               ),
                               const SizedBox(height: 16),
 
-                              // Body text
+                              // Body text - responsive font size
                               Text(
                                 s.body,
                                 textAlign: TextAlign.center,
-                                style: AppTypography.bodyMedium().copyWith(
-                                  fontSize: 16,
-                                  height: 1.5,
+                                style: TextStyle(
+                                  fontSize: bodyFontSize,
+                                  height: lineHeight,
                                   color: context.themeTextPrimary.withValues(
                                     alpha: 0.78,
                                   ),
