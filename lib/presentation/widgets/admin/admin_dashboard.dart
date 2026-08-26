@@ -14,8 +14,7 @@ const List<List<Color>> _kAccents = [
   [Color(0xFF42A5F5), Color(0xFFE3F2FD)], // blue   — history
   [Color(0xFFFF8A65), Color(0xFFFFF3E0)], // orange — offers
   [Color(0xFFBA68C8), Color(0xFFF3E5F5)], // purple — users
-  [Color(0xFFEF5350), Color(0xFFFFEBEE)], // red    — notif/orders
-  [Color(0xFF26C6DA), Color(0xFFE0F7FA)], // cyan   — products
+  [Color(0xFFEF5350), Color(0xFFFFEBEE)], // red    — notifications
   [Color(0xFFFFCA28), Color(0xFFFFF8E1)], // amber  — spin
 ];
 
@@ -38,8 +37,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
     _SectionCard(id: 'offers',        label: 'Offers',         icon: Icons.local_offer,    accentIndex: 2),
     _SectionCard(id: 'users',         label: 'Users',          icon: Icons.people,         accentIndex: 3),
     _SectionCard(id: 'notifications', label: 'Notifications',  icon: Icons.notifications,  accentIndex: 4),
-    _SectionCard(id: 'products',      label: 'Products',       icon: Icons.inventory_2,    accentIndex: 5),
-    _SectionCard(id: 'orders',        label: 'Orders',         icon: Icons.shopping_bag,   accentIndex: 4),
     _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 6),
     _SectionCard(id: 'points-repair', label: 'Points Repair',  icon: Icons.build_circle,   accentIndex: 2),
   ];
@@ -76,72 +73,61 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                   key: ValueKey<int>(_refreshKey),
                   stream: FirebaseFirestore.instance
-                      .collection('orders')
-                      .where('status', isEqualTo: 'pending')
+                      .collection('users')
                       .snapshots(),
-                  builder: (context, ordersSnap) {
-                    final pendingOrdersCount = ordersSnap.data?.docs.length ?? 0;
+                  builder: (context, usersSnap) {
+                    final usersDocs = usersSnap.data?.docs ?? const [];
+                    final totalUsersCount = usersDocs.length;
+                    final carpentersCount = usersDocs.where((doc) {
+                      final role = doc.data()['role'] as String?;
+                      if (role == 'admin') return false;
+                      return role == null || role.isEmpty || role == 'carpenter';
+                    }).length;
+
                     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      key: ValueKey<int>(_refreshKey),
                       stream: FirebaseFirestore.instance
-                          .collection('users')
+                          .collection('notification_logs')
+                          .where('type', whereIn: const [
+                            'newPendingBill',
+                            'newUserRegistered',
+                          ])
                           .snapshots(),
-                      builder: (context, usersSnap) {
-                        final usersDocs = usersSnap.data?.docs ?? const [];
-                        final totalUsersCount = usersDocs.length;
-                        final carpentersCount = usersDocs.where((doc) {
-                          final role = doc.data()['role'] as String?;
-                          if (role == 'admin') return false;
-                          return role == null || role.isEmpty || role == 'carpenter';
-                        }).length;
+                      builder: (context, notifSnap) {
+                        final notificationCount =
+                            notifSnap.hasError ? 0 : notifSnap.data?.docs.length ?? 0;
 
-                        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                          stream: FirebaseFirestore.instance
-                              .collection('notification_logs')
-                              .where('type', whereIn: const [
-                                'newPendingBill',
-                                'newUserRegistered',
-                              ])
-                              .snapshots(),
-                          builder: (context, notifSnap) {
-                            final notificationCount =
-                                notifSnap.hasError ? 0 : notifSnap.data?.docs.length ?? 0;
+                        // Responsive grid: 2 columns on mobile, 3 on tablet, 4 on large desktop
+                        final crossAxisCount = switch (context.deviceType) {
+                          DeviceType.mobile => 2,
+                          DeviceType.tablet => 3,
+                          DeviceType.desktop => 3,
+                          DeviceType.largeDesktop => 4,
+                        };
 
-                            // Responsive grid: 2 columns on mobile, 3 on tablet, 4 on large desktop
-                            final crossAxisCount = switch (context.deviceType) {
-                              DeviceType.mobile => 2,
-                              DeviceType.tablet => 3,
-                              DeviceType.desktop => 3,
-                              DeviceType.largeDesktop => 4,
-                            };
-
-                            return GridView.count(
-                              padding: EdgeInsets.zero,
-                              crossAxisCount: crossAxisCount,
-                              mainAxisSpacing: 12,
-                              crossAxisSpacing: 12,
-                              childAspectRatio: 1.0,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              children: _sections.map((s) {
-                                int? count;
-                                int? secondaryCount;
-                                if (s.id == 'pending') count = pendingBillsCount;
-                                if (s.id == 'orders') count = pendingOrdersCount;
-                                if (s.id == 'notifications') count = notificationCount;
-                                if (s.id == 'users') {
-                                  count = totalUsersCount;
-                                  secondaryCount = carpentersCount;
-                                }
-                                return _SectionTile(
-                                  section: s,
-                                  count: count,
-                                  secondaryCount: secondaryCount,
-                                  isDark: isDark,
-                                  onTap: () => widget.onOpenSection(s.id),
-                                );
-                              }).toList(),
+                        return GridView.count(
+                          padding: EdgeInsets.zero,
+                          crossAxisCount: crossAxisCount,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 1.0,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: _sections.map((s) {
+                            int? count;
+                            int? secondaryCount;
+                            if (s.id == 'pending') count = pendingBillsCount;
+                            if (s.id == 'notifications') count = notificationCount;
+                            if (s.id == 'users') {
+                              count = totalUsersCount;
+                              secondaryCount = carpentersCount;
+                            }
+                            return _SectionTile(
+                              section: s,
+                              count: count,
+                              secondaryCount: secondaryCount,
+                              isDark: isDark,
+                              onTap: () => widget.onOpenSection(s.id),
                             );
-                          },
+                          }).toList(),
                         );
                       },
                     );

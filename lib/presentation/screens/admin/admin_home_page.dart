@@ -17,11 +17,9 @@ import 'package:balaji_points/services/auth/session_service.dart';
 import '../../widgets/admin/admin_dashboard.dart';
 import '../../widgets/admin/pending_bills_list.dart';
 import '../../widgets/admin/offers_management.dart';
-import '../../widgets/admin/products_management.dart';
 import '../../widgets/admin/users_list.dart';
 import '../../widgets/admin/daily_spin_management.dart';
 import '../../widgets/admin/bill_history_list.dart';
-import '../../widgets/admin/orders_management.dart';
 import 'admin_notifications_page.dart';
 import 'points_repair_page.dart';
 
@@ -332,10 +330,6 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return 'Users';
       case 'notifications':
         return 'Notifications';
-      case 'products':
-        return 'Products';
-      case 'orders':
-        return 'Orders';
       case 'spin':
         return 'Spin';
       case 'points-repair':
@@ -381,10 +375,6 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return const UsersList();
       case 'notifications':
         return const AdminNotificationsPage(embedded: true);
-      case 'products':
-        return const ProductsManagement();
-      case 'orders':
-        return const OrdersManagement();
       case 'spin':
         return const DailySpinManagement();
       case 'points-repair':

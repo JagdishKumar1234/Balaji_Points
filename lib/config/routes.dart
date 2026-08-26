@@ -24,11 +24,6 @@ import 'package:balaji_points/presentation/screens/super_admin/super_admin_page.
 import 'package:balaji_points/presentation/screens/carpenter/bills/add_bill_page.dart';
 import 'package:balaji_points/presentation/screens/carpenter/notifications/notifications_page.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
-import 'package:balaji_points/presentation/screens/carpenter/products/product_list_page.dart';
-import 'package:balaji_points/presentation/screens/carpenter/cart/cart_page.dart';
-import 'package:balaji_points/presentation/screens/carpenter/products/product_detail_page.dart';
-import 'package:balaji_points/presentation/screens/carpenter/orders/orders_page.dart';
-import 'package:balaji_points/presentation/screens/carpenter/orders/order_detail_page.dart';
 import 'package:balaji_points/presentation/screens/common/info/about_us_page.dart';
 import 'package:balaji_points/presentation/screens/common/onboarding/onboarding_page.dart';
 import 'package:balaji_points/presentation/screens/admin/carpenter_profile_detail_screen.dart';
@@ -228,40 +223,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/about-us',
             name: 'about-us',
             builder: (context, state) => const AboutUsPage(),
-          ),
-          GoRoute(
-            path: '/products',
-            name: 'products',
-            builder: (context, state) {
-              final category = state.uri.queryParameters['category'];
-              return ProductListPage(initialCategory: category);
-            },
-          ),
-          GoRoute(
-            path: '/cart',
-            name: 'cart',
-            builder: (context, state) => const CartPage(),
-          ),
-          GoRoute(
-            path: '/product-detail/:id',
-            name: 'product-detail',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return ProductDetailPage(productId: id);
-            },
-          ),
-          GoRoute(
-            path: '/orders',
-            name: 'orders',
-            builder: (context, state) => const OrdersPage(),
-          ),
-          GoRoute(
-            path: '/order-detail/:id',
-            name: 'order-detail',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return OrderDetailPage(orderId: id);
-            },
           ),
           GoRoute(
             path: '/edit-profile',
