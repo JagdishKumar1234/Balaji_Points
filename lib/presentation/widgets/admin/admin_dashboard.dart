@@ -16,6 +16,7 @@ const List<List<Color>> _kAccents = [
   [Color(0xFFBA68C8), Color(0xFFF3E5F5)], // purple — users
   [Color(0xFFEF5350), Color(0xFFFFEBEE)], // red    — notifications
   [Color(0xFFFFCA28), Color(0xFFFFF8E1)], // amber  — spin
+  [Color(0xFF26C6DA), Color(0xFFE0F7FA)], // cyan   — points-repair
 ];
 
 // Single dark card surface used by every tile in dark mode
@@ -37,8 +38,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
     _SectionCard(id: 'offers',        label: 'Offers',         icon: Icons.local_offer,    accentIndex: 2),
     _SectionCard(id: 'users',         label: 'Users',          icon: Icons.people,         accentIndex: 3),
     _SectionCard(id: 'notifications', label: 'Notifications',  icon: Icons.notifications,  accentIndex: 4),
-    _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 6),
-    _SectionCard(id: 'points-repair', label: 'Points Repair',  icon: Icons.build_circle,   accentIndex: 2),
+    _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 5),
+    _SectionCard(id: 'points-repair', label: 'Points Repair',  icon: Icons.build_circle,   accentIndex: 6),
   ];
 
   int _refreshKey = 0;
