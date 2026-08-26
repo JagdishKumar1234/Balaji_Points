@@ -865,19 +865,40 @@ class _DailySpinManagementState extends State<DailySpinManagement>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.calendar_month,
-                color: context.themeContentColor,
-                size: 24,
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_month,
+                    color: context.themeContentColor,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Monthly Winners',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: context.themeTextPrimary,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Monthly Winners',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: context.themeTextPrimary,
+              ElevatedButton.icon(
+                onPressed: () => context.push('/admin/spin-history'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.themePrimary,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.md12,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                icon: const Icon(Icons.history, size: 18),
+                label: const Text(
+                  'Full History',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -931,7 +952,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 ..sort((a, b) => b.compareTo(a));
 
               return Column(
-                children: sortedDates.take(5).map((date) {
+                children: sortedDates.map((date) {
                   final winners = groupedWinners[date]!;
                   final dateObj = DateTime.parse(date);
                   final formattedDate =
