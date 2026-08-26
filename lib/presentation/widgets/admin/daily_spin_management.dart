@@ -327,7 +327,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                               color: AppColors.white,
                               size: 24,
                             ),
-                            onPressed: () => context.push('/admin/spin-history'),
+                            onPressed: () => GoRouter.of(context).push('/admin/spin-history'),
                             tooltip: 'View Spin History',
                           ),
                         ],
@@ -886,7 +886,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 ],
               ),
               ElevatedButton.icon(
-                onPressed: () => context.push('/admin/spin-history'),
+                onPressed: () => GoRouter.of(context).push('/admin/spin-history'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.themePrimary,
                   foregroundColor: AppColors.white,
