@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'todays_eligible_carpenters.dart';
 
 class DailySpinManagement extends StatefulWidget {
@@ -319,6 +320,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                                 ),
                               ],
                             ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.history,
+                              color: AppColors.white,
+                              size: 24,
+                            ),
+                            onPressed: () => context.push('/admin/spin-history'),
+                            tooltip: 'View Spin History',
                           ),
                         ],
                       ),

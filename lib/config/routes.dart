@@ -32,6 +32,7 @@ import 'package:balaji_points/presentation/screens/carpenter/orders/order_detail
 import 'package:balaji_points/presentation/screens/common/info/about_us_page.dart';
 import 'package:balaji_points/presentation/screens/common/onboarding/onboarding_page.dart';
 import 'package:balaji_points/presentation/screens/admin/carpenter_profile_detail_screen.dart';
+import 'package:balaji_points/presentation/screens/admin/daily_spin_history_screen.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/logger.dart';
@@ -298,6 +299,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           final carpenterId = state.pathParameters['carpenterId']!;
           return CarpenterProfileDetailScreen(carpenterId: carpenterId);
         },
+      ),
+      GoRoute(
+        path: '/admin/spin-history',
+        builder: (context, _) => const DailySpinHistoryScreen(),
       ),
       GoRoute(
         path: '/super-admin',
