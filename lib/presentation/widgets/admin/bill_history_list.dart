@@ -1206,10 +1206,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             carpenterData['profileImage'] as String?;
                       }
 
-                      // Apply carpenter name filter
+                      // Apply carpenter name and phone filter
                       if (_carpenterNameFilter.isNotEmpty) {
                         final fullName = carpenterName.toLowerCase();
-                        if (!fullName.contains(_carpenterNameFilter)) {
+                        final carpenterPhone = phone.toLowerCase();
+                        final searchQuery = _carpenterNameFilter.toLowerCase();
+
+                        // Search by name or phone
+                        if (!fullName.contains(searchQuery) && !carpenterPhone.contains(searchQuery)) {
                           return const SizedBox.shrink();
                         }
                       }

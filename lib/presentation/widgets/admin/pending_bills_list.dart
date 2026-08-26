@@ -509,6 +509,17 @@ class _PendingBillsListState extends State<PendingBillsList> {
     return bills.where((billDoc) {
       final bill = billDoc.data() as Map<String, dynamic>;
 
+      // Carpenter name and phone search filter
+      if (_carpenterNameFilter.isNotEmpty) {
+        final carpenterPhone = (bill['carpenterPhone'] as String? ?? '').toLowerCase();
+        // Phone search is exact match for bill phone
+        if (!carpenterPhone.contains(_carpenterNameFilter.toLowerCase())) {
+          // If phone doesn't match, we'll do name matching in the UI
+          // (after fetching carpenter data), so we can't filter here perfectly
+          // For now, we'll include all bills and let the UI handle name filtering
+        }
+      }
+
       // Bill number filter
       if (_billNumberFilter.isNotEmpty) {
         final billNumber = (bill['billNumber'] as String? ?? '').toUpperCase();
@@ -558,7 +569,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
         }
       }
 
-      // Carpenter name filter (will be applied after fetching carpenter data)
+      // Allow the bill to be displayed; carpenter name filter is applied in the UI after fetching carpenter data
       return true;
     }).toList();
   }
@@ -1186,10 +1197,14 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                 carpenterData['profileImage'] as String?;
                           }
 
-                          // Apply carpenter name filter
+                          // Apply carpenter name and phone filter
                           if (_carpenterNameFilter.isNotEmpty) {
                             final fullName = carpenterName.toLowerCase();
-                            if (!fullName.contains(_carpenterNameFilter)) {
+                            final carpenterPhone = phone.toLowerCase();
+                            final searchQuery = _carpenterNameFilter.toLowerCase();
+
+                            // Search by name or phone
+                            if (!fullName.contains(searchQuery) && !carpenterPhone.contains(searchQuery)) {
                               return const SizedBox.shrink();
                             }
                           }
