@@ -4,6 +4,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
 
 class DailySpinHistoryScreen extends StatefulWidget {
