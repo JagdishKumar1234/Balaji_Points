@@ -99,6 +99,46 @@ class _SearchHeaderState extends State<SearchHeader> {
         return;
       }
 
+      // Fetch bill data for each carpenter
+      final Map<String, Map<String, dynamic>> carpenterBillData = {};
+      double totalGrossPoints = 0;
+
+      for (var userDoc in users) {
+        final userId = userDoc.id;
+        final billsSnapshot = await FirebaseFirestore.instance
+            .collection('bills')
+            .where('carpenterId', isEqualTo: userId)
+            .get();
+
+        double totalBillAmount = 0;
+        double totalEarnedPoints = 0;
+
+        for (var billDoc in billsSnapshot.docs) {
+          final billData = billDoc.data();
+          final amount = (billData['amount'] as num?)?.toDouble() ?? 0.0;
+          final status = billData['status'] as String? ?? '';
+
+          totalBillAmount += amount;
+          if (status == 'approved') {
+            totalEarnedPoints += amount / 1000;
+          }
+        }
+
+        carpenterBillData[userId] = {
+          'totalBillAmount': totalBillAmount,
+          'totalEarnedPoints': totalEarnedPoints,
+        };
+
+        totalGrossPoints += totalEarnedPoints;
+      }
+
+      // Sort users by points (descending)
+      users.sort((a, b) {
+        final pointsA = carpenterBillData[a.id]?['totalEarnedPoints'] ?? 0.0 as num;
+        final pointsB = carpenterBillData[b.id]?['totalEarnedPoints'] ?? 0.0 as num;
+        return pointsB.compareTo(pointsA);
+      });
+
       final pdf = pw.Document();
       final fontData = await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
       final ttf = pw.Font.ttf(fontData);
@@ -114,28 +154,31 @@ class _SearchHeaderState extends State<SearchHeader> {
                 style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, font: ttf),
               ),
             ),
-            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 10),
             pw.Text(
               'Generated on: ${DateFormat('dd/MM/yyyy, hh:mm a').format(DateTime.now())}',
               style: pw.TextStyle(fontSize: 10, font: ttf),
             ),
             pw.SizedBox(height: 20),
             pw.TableHelper.fromTextArray(
-              headers: ['Name', 'Phone', 'Tier', 'Points', 'Status'],
+              headers: ['Name', 'Phone', 'Tier', 'Total Bills (₹)', 'Earned Points', 'Status'],
               data: users.map((doc) {
                 final data = doc.data();
                 final firstName = data['firstName'] ?? '';
                 final lastName = data['lastName'] ?? '';
                 final phone = data['phoneNumber'] ?? data['phone'] ?? '';
                 final tier = data['tier'] ?? 'Bronze';
-                final totalPoints = data['totalPoints'] ?? 0;
                 final isActive = data['isActive'] ?? true;
+                final billData = carpenterBillData[doc.id] ?? {};
+                final totalBillAmount = (billData['totalBillAmount'] ?? 0.0 as num).toStringAsFixed(0);
+                final earnedPoints = (billData['totalEarnedPoints'] ?? 0.0 as num).toStringAsFixed(2);
 
                 return [
                   '$firstName $lastName',
                   phone,
                   tier,
-                  totalPoints.toString(),
+                  totalBillAmount,
+                  earnedPoints,
                   isActive ? 'Active' : 'Inactive',
                 ];
               }).toList(),
@@ -146,9 +189,26 @@ class _SearchHeaderState extends State<SearchHeader> {
                 0: const pw.FlexColumnWidth(2),
                 1: const pw.FlexColumnWidth(1.5),
                 2: const pw.FlexColumnWidth(1),
-                3: const pw.FlexColumnWidth(1),
-                4: const pw.FlexColumnWidth(1),
+                3: const pw.FlexColumnWidth(1.5),
+                4: const pw.FlexColumnWidth(1.5),
+                5: const pw.FlexColumnWidth(1),
               },
+            ),
+            pw.SizedBox(height: 20),
+            pw.Divider(),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Total Summary',
+              style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, font: ttf),
+            ),
+            pw.SizedBox(height: 8),
+            pw.Text(
+              'Total Carpenters: ${users.length}',
+              style: pw.TextStyle(fontSize: 12, font: ttf),
+            ),
+            pw.Text(
+              'Gross Total Points: ${totalGrossPoints.toStringAsFixed(2)}',
+              style: pw.TextStyle(fontSize: 12, font: ttf),
             ),
           ],
         ),
@@ -284,11 +344,32 @@ class _SearchHeaderState extends State<SearchHeader> {
                         Icons.arrow_drop_down,
                         color: context.themeContentColor,
                       ),
-                      style: AppTypography.labelLarge().copyWith(fontSize: 13),
+                      style: AppTypography.labelLarge().copyWith(
+                        fontSize: 13,
+                        color: context.themeTextPrimary,
+                      ),
                       items: [
-                        DropdownMenuItem(value: 'points', child: Text('Sort by Points')),
-                        DropdownMenuItem(value: 'name', child: Text('Sort by Name')),
-                        DropdownMenuItem(value: 'recent', child: Text('Recent Joins')),
+                        DropdownMenuItem(
+                          value: 'points',
+                          child: Text(
+                            'Sort by Points',
+                            style: TextStyle(color: context.themeTextPrimary),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'name',
+                          child: Text(
+                            'Sort by Name',
+                            style: TextStyle(color: context.themeTextPrimary),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'recent',
+                          child: Text(
+                            'Recent Joins',
+                            style: TextStyle(color: context.themeTextPrimary),
+                          ),
+                        ),
                       ],
                       onChanged: widget.onSortChanged,
                     ),
@@ -314,12 +395,18 @@ class _SearchHeaderState extends State<SearchHeader> {
                           Icons.arrow_drop_down,
                           color: context.themeContentColor,
                         ),
-                        style: AppTypography.labelLarge().copyWith(fontSize: 13),
+                        style: AppTypography.labelLarge().copyWith(
+                          fontSize: 13,
+                          color: context.themeTextPrimary,
+                        ),
                         isExpanded: true,
                         items: widget.tiers
                             .map((tier) => DropdownMenuItem(
                                   value: tier,
-                                  child: Text('Tier: $tier'),
+                                  child: Text(
+                                    'Tier: $tier',
+                                    style: TextStyle(color: context.themeTextPrimary),
+                                  ),
                                 ))
                             .toList(),
                         onChanged: widget.onTierChanged,
