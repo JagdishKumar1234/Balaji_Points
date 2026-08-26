@@ -7,6 +7,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
+import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
@@ -787,6 +788,11 @@ class _CarpenterProfileDetailScreenState
                 ),
                 const SizedBox(height: 10),
 
+                    // Pending Bill Requests Section
+                    _buildPendingBillsSection(context, widget.carpenterId),
+
+                const SizedBox(height: 16),
+
                     // Complete History Header
                     Text(
                       'Complete History',
@@ -1214,6 +1220,435 @@ class _CarpenterProfileDetailScreenState
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPendingBillsSection(BuildContext context, String carpenterId) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('bills')
+          .where('carpenterId', isEqualTo: carpenterId)
+          .where('status', isEqualTo: 'pending')
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(color: context.themePrimary),
+          );
+        }
+
+        final bills = snapshot.data?.docs ?? [];
+
+        if (bills.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.schedule,
+                  size: 20,
+                  color: const Color(0xFFFFA500),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Pending Bill Requests',
+                  style: AppTypography.labelLarge().copyWith(
+                    fontSize: 16,
+                    color: const Color(0xFFFFA500),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFA500).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${bills.length}',
+                    style: AppTypography.labelSmall().copyWith(
+                      color: const Color(0xFFFFA500),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: bills.length,
+              itemBuilder: (context, index) {
+                final billData = bills[index].data() as Map<String, dynamic>;
+                billData['billId'] = bills[index].id;
+                return _buildPendingBillCard(context, billData);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPendingBillCard(BuildContext context, Map<String, dynamic> bill) {
+    final imageUrl = bill['imageUrl'] as String? ?? '';
+    final billNumber = bill['billNumber'] ?? 'N/A';
+    final siteName = bill['siteName'] ?? '-';
+    final amount = bill['amount'] ?? 0;
+    final billDate = bill['billDate'] as Timestamp?;
+    final billId = bill['billId'] as String?;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: context.themeSurface,
+        borderRadius: AppRadius.md12,
+        border: Border.all(
+          color: const Color(0xFFFFA500).withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                if (imageUrl.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      imageUrl,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 60,
+                        height: 60,
+                        color: context.themeBackground,
+                        child: Icon(
+                          Icons.receipt,
+                          size: 24,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: context.themeBackground,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      Icons.receipt,
+                      size: 24,
+                      color: context.themeTextSecondary,
+                    ),
+                  ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFA500).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        child: Text(
+                          'PENDING',
+                          style: AppTypography.labelSmall().copyWith(
+                            fontSize: 9,
+                            color: const Color(0xFFFFA500),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Site Material Purchase',
+                        style: AppTypography.labelMedium().copyWith(fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Bill No. $billNumber',
+                        style: AppTypography.bodySmall().copyWith(
+                          fontSize: 11,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Site: $siteName',
+                        style: AppTypography.bodySmall().copyWith(
+                          fontSize: 11,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        billDate != null
+                            ? DateFormat('dd MMM yyyy • hh:mm a').format(billDate.toDate())
+                            : '-',
+                        style: AppTypography.bodySmall().copyWith(
+                          fontSize: 10,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFA500).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Pending',
+                        style: AppTypography.labelSmall().copyWith(
+                          fontSize: 10,
+                          color: const Color(0xFFFFA500),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '+${(amount / 1000).toStringAsFixed(2)}',
+                          style: AppTypography.labelMedium().copyWith(
+                            fontSize: 13,
+                            color: context.themeTextPrimary,
+                          ),
+                        ),
+                        Text(
+                          'Points',
+                          style: AppTypography.bodySmall().copyWith(
+                            fontSize: 10,
+                            color: context.themeTextSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _rejectPendingBill(billId ?? ''),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error.withValues(alpha: 0.1),
+                      foregroundColor: AppColors.error,
+                      side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    icon: const Icon(Icons.close, size: 16),
+                    label: const Text(
+                      'Reject',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _approvePendingBill(bill),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.success,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    icon: const Icon(Icons.check, size: 16),
+                    label: const Text(
+                      'Approve',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _approvePendingBill(Map<String, dynamic> bill) async {
+    final billId = bill['billId'] as String?;
+    final amount = (bill['amount'] ?? 0).toDouble();
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: AppText.label('Approve Bill'),
+        content: AppText.body(
+          'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${(amount / 1000).toStringAsFixed(2)} points will be added.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: AppText.label('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.success,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Approve', style: TextStyle(color: AppColors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || billId == null) return;
+
+    _showLoadingDialog();
+
+    try {
+      final billService = BillService();
+      final success = await billService.approveBill(
+        billId,
+        widget.carpenterId,
+        amount,
+      );
+
+      if (mounted) Navigator.pop(context);
+
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Bill approved successfully'),
+            backgroundColor: AppColors.success,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to approve bill'),
+            backgroundColor: context.themeError,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: context.themeError,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _rejectPendingBill(String billId) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Reject Bill',
+          style: AppTypography.labelLarge().copyWith(
+            fontSize: 20,
+            color: context.themeError,
+          ),
+        ),
+        content: AppText.body('Are you sure you want to reject this bill?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: AppText.label('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.themeError,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Reject', style: TextStyle(color: AppColors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    _showLoadingDialog();
+
+    try {
+      final billService = BillService();
+      final success = await billService.rejectBill(billId);
+
+      if (mounted) Navigator.pop(context);
+
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Bill rejected successfully'),
+            backgroundColor: AppColors.warning,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to reject bill'),
+            backgroundColor: context.themeError,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: context.themeError,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Center(
+        child: CircularProgressIndicator(color: context.themePrimary),
+      ),
     );
   }
 
