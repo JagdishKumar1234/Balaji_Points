@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 
 class SearchHeader extends StatefulWidget {
@@ -140,8 +139,6 @@ class _SearchHeaderState extends State<SearchHeader> {
       });
 
       final pdf = pw.Document();
-      final fontData = await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
-      final ttf = pw.Font.ttf(fontData);
 
       pdf.addPage(
         pw.MultiPage(
@@ -151,13 +148,13 @@ class _SearchHeaderState extends State<SearchHeader> {
               level: 0,
               child: pw.Text(
                 'Carpenter List Report',
-                style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, font: ttf),
+                style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
               ),
             ),
             pw.SizedBox(height: 10),
             pw.Text(
               'Generated on: ${DateFormat('dd/MM/yyyy, hh:mm a').format(DateTime.now())}',
-              style: pw.TextStyle(fontSize: 10, font: ttf),
+              style: pw.TextStyle(fontSize: 10),
             ),
             pw.SizedBox(height: 20),
             pw.TableHelper.fromTextArray(
@@ -182,8 +179,8 @@ class _SearchHeaderState extends State<SearchHeader> {
                   isActive ? 'Active' : 'Inactive',
                 ];
               }).toList(),
-              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: ttf),
-              cellStyle: pw.TextStyle(font: ttf),
+              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              cellStyle: const pw.TextStyle(),
               cellHeight: 20,
               columnWidths: {
                 0: const pw.FlexColumnWidth(2),
@@ -199,16 +196,16 @@ class _SearchHeaderState extends State<SearchHeader> {
             pw.SizedBox(height: 10),
             pw.Text(
               'Total Summary',
-              style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, font: ttf),
+              style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 8),
             pw.Text(
               'Total Carpenters: ${users.length}',
-              style: pw.TextStyle(fontSize: 12, font: ttf),
+              style: pw.TextStyle(fontSize: 12),
             ),
             pw.Text(
               'Gross Total Points: ${totalGrossPoints.toStringAsFixed(2)}',
-              style: pw.TextStyle(fontSize: 12, font: ttf),
+              style: pw.TextStyle(fontSize: 12),
             ),
           ],
         ),

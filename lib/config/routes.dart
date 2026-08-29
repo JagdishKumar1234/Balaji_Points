@@ -28,6 +28,12 @@ import 'package:balaji_points/presentation/screens/common/info/about_us_page.dar
 import 'package:balaji_points/presentation/screens/common/onboarding/onboarding_page.dart';
 import 'package:balaji_points/presentation/screens/admin/carpenter_profile_detail_screen.dart';
 import 'package:balaji_points/presentation/screens/admin/daily_spin_history_screen.dart';
+import 'package:balaji_points/presentation/screens/admin/duplicate_accounts_screen.dart';
+import 'package:balaji_points/presentation/screens/admin/export_users_before_cleanup.dart';
+import 'package:balaji_points/presentation/screens/admin/cleanup_duplicate_accounts_screen.dart';
+import 'package:balaji_points/presentation/screens/admin/firestore_backup_screen.dart';
+import 'package:balaji_points/presentation/screens/admin/firebase_duplicate_checker_screen.dart';
+import 'package:balaji_points/presentation/screens/admin/smart_duplicate_cleanup_screen.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/logger.dart';
@@ -264,6 +270,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/spin-history',
         builder: (context, _) => const DailySpinHistoryScreen(),
+      ),
+      GoRoute(
+        path: '/admin/duplicate-accounts',
+        builder: (context, _) => const DuplicateAccountsScreen(),
+      ),
+      GoRoute(
+        path: '/admin/export-users',
+        builder: (context, _) => const ExportUsersBeforeCleanupScreen(),
+      ),
+      GoRoute(
+        path: '/admin/cleanup-duplicates',
+        builder: (context, _) => const CleanupDuplicateAccountsScreen(),
+      ),
+      GoRoute(
+        path: '/admin/backup',
+        builder: (context, _) => const FirestoreBackupScreen(),
+      ),
+      GoRoute(
+        path: '/admin/check-duplicates',
+        builder: (context, _) => const FirebaseDuplicateCheckerScreen(),
+      ),
+      GoRoute(
+        path: '/admin/smart-cleanup',
+        builder: (context, _) => const SmartDuplicateCleanupScreen(),
       ),
       GoRoute(
         path: '/super-admin',

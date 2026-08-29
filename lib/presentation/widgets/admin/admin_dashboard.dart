@@ -17,6 +17,10 @@ const List<List<Color>> _kAccents = [
   [Color(0xFFEF5350), Color(0xFFFFEBEE)], // red    — notifications
   [Color(0xFFFFCA28), Color(0xFFFFF8E1)], // amber  — spin
   [Color(0xFF26C6DA), Color(0xFFE0F7FA)], // cyan   — points-repair
+  [Color(0xFF9C27B0), Color(0xFFF3E5F5)], // deep-purple — duplicates
+  [Color(0xFF00ACC1), Color(0xFFE0F2F1)], // teal   — backup
+  [Color(0xFF6D4C41), Color(0xFFD7CCC8)], // brown  — check-firebase
+  [Color(0xFFD32F2F), Color(0xFFFFCDD2)], // dark-red — smart-cleanup
 ];
 
 // Single dark card surface used by every tile in dark mode
@@ -40,6 +44,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
     _SectionCard(id: 'notifications', label: 'Notifications',  icon: Icons.notifications,  accentIndex: 4),
     _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 5),
     _SectionCard(id: 'points-repair', label: 'Points Repair',  icon: Icons.build_circle,   accentIndex: 6),
+    _SectionCard(id: 'duplicates',    label: 'Duplicates',     icon: Icons.content_copy,   accentIndex: 7),
+    _SectionCard(id: 'backup',        label: 'Backup',         icon: Icons.cloud_download, accentIndex: 8),
+    _SectionCard(id: 'check-duplicates', label: 'Check Firebase', icon: Icons.search, accentIndex: 9),
+    _SectionCard(id: 'smart-cleanup', label: 'Smart Cleanup', icon: Icons.auto_delete, accentIndex: 10),
   ];
 
   int _refreshKey = 0;
@@ -78,12 +86,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       .snapshots(),
                   builder: (context, usersSnap) {
                     final usersDocs = usersSnap.data?.docs ?? const [];
-                    final totalUsersCount = usersDocs.length;
                     final carpentersCount = usersDocs.where((doc) {
                       final role = doc.data()['role'] as String?;
                       if (role == 'admin') return false;
                       return role == null || role.isEmpty || role == 'carpenter';
                     }).length;
+                    final totalUsersCount = carpentersCount;
 
                     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                       stream: FirebaseFirestore.instance

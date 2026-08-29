@@ -22,6 +22,12 @@ import '../../widgets/admin/daily_spin_management.dart';
 import '../../widgets/admin/bill_history_list.dart';
 import 'admin_notifications_page.dart';
 import 'points_repair_page.dart';
+import 'duplicate_accounts_screen.dart';
+import 'export_users_before_cleanup.dart';
+import 'cleanup_duplicate_accounts_screen.dart';
+import 'firestore_backup_screen.dart';
+import 'firebase_duplicate_checker_screen.dart';
+import 'smart_duplicate_cleanup_screen.dart';
 
 class AdminHomePage extends ConsumerStatefulWidget {
   const AdminHomePage({super.key});
@@ -334,6 +340,18 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return 'Spin';
       case 'points-repair':
         return 'Points Repair';
+      case 'duplicates':
+        return 'Duplicate Accounts';
+      case 'export-users':
+        return 'Export Users';
+      case 'cleanup':
+        return 'Clean Up';
+      case 'backup':
+        return 'Backup Database';
+      case 'check-duplicates':
+        return 'Check Firebase Duplicates';
+      case 'smart-cleanup':
+        return 'Smart Cleanup';
       default:
         return 'Admin';
     }
@@ -379,6 +397,18 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return const DailySpinManagement();
       case 'points-repair':
         return const PointsRepairPage();
+      case 'duplicates':
+        return const DuplicateAccountsScreen();
+      case 'export-users':
+        return const ExportUsersBeforeCleanupScreen();
+      case 'cleanup':
+        return const CleanupDuplicateAccountsScreen();
+      case 'backup':
+        return const FirestoreBackupScreen();
+      case 'check-duplicates':
+        return const FirebaseDuplicateCheckerScreen();
+      case 'smart-cleanup':
+        return const SmartDuplicateCleanupScreen();
       default:
         return const SizedBox.shrink();
     }
