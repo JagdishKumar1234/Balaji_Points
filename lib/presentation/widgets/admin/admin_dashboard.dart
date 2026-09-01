@@ -21,6 +21,7 @@ const List<List<Color>> _kAccents = [
   [Color(0xFF00ACC1), Color(0xFFE0F2F1)], // teal   — backup
   [Color(0xFF6D4C41), Color(0xFFD7CCC8)], // brown  — check-firebase
   [Color(0xFFD32F2F), Color(0xFFFFCDD2)], // dark-red — smart-cleanup
+  [Color(0xFF3F51B5), Color(0xFFE8EAF6)], // indigo — greeting
 ];
 
 // Single dark card surface used by every tile in dark mode
@@ -40,14 +41,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
     _SectionCard(id: 'pending',       label: 'Pending Bills',  icon: Icons.receipt_long,  accentIndex: 0),
     _SectionCard(id: 'history',       label: 'Bill History',   icon: Icons.history,        accentIndex: 1),
     _SectionCard(id: 'offers',        label: 'Offers',         icon: Icons.local_offer,    accentIndex: 2),
-    _SectionCard(id: 'users',         label: 'Users',          icon: Icons.people,         accentIndex: 3),
-    _SectionCard(id: 'notifications', label: 'Notifications',  icon: Icons.notifications,  accentIndex: 4),
-    _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 5),
-    _SectionCard(id: 'points-repair', label: 'Points Repair',  icon: Icons.build_circle,   accentIndex: 6),
-    _SectionCard(id: 'duplicates',    label: 'Duplicates',     icon: Icons.content_copy,   accentIndex: 7),
-    _SectionCard(id: 'backup',        label: 'Backup',         icon: Icons.cloud_download, accentIndex: 8),
-    _SectionCard(id: 'check-duplicates', label: 'Check Firebase', icon: Icons.search, accentIndex: 9),
-    _SectionCard(id: 'smart-cleanup', label: 'Smart Cleanup', icon: Icons.auto_delete, accentIndex: 10),
+    _SectionCard(id: 'greeting',      label: 'Send Greeting',  icon: Icons.message,       accentIndex: 3),
+    _SectionCard(id: 'users',         label: 'Users',          icon: Icons.people,         accentIndex: 4),
+    _SectionCard(id: 'notifications', label: 'Notifications',  icon: Icons.notifications,  accentIndex: 5),
+    _SectionCard(id: 'spin',          label: 'Spin',           icon: Icons.casino,         accentIndex: 6),
+    _SectionCard(id: 'points-repair', label: 'Points Repair',  icon: Icons.build_circle,   accentIndex: 7),
+    _SectionCard(id: 'duplicates',    label: 'Duplicates',     icon: Icons.content_copy,   accentIndex: 8),
+    _SectionCard(id: 'backup',        label: 'Backup',         icon: Icons.cloud_download, accentIndex: 9),
+    _SectionCard(id: 'check-duplicates', label: 'Check Firebase', icon: Icons.search, accentIndex: 10),
+    _SectionCard(id: 'smart-cleanup', label: 'Smart Cleanup', icon: Icons.auto_delete, accentIndex: 11),
   ];
 
   int _refreshKey = 0;

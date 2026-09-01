@@ -47,6 +47,20 @@ service firebase.storage {
       allow delete: if true;
     }
 
+    // Greeting images - allow anyone to read, upload, and delete
+    match /greeting_images/{fileName} {
+      // Allow anyone to read greeting images
+      allow read: if true;
+
+      // Allow uploads for greeting images
+      // Security: File size limit (10MB) and content type validation
+      allow write: if request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+
+      // Allow deletion of greeting images
+      allow delete: if true;
+    }
+
     // Deny all other paths
     match /{allPaths=**} {
       allow read, write: if false;

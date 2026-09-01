@@ -250,16 +250,18 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
 
                       const SizedBox(height: AppSpacing.lg),
 
-                      // ── Professional Auth Card ──
-                      ProfessionalAuthCard(
-                        isDark: isDark,
-                        securityMessage: 'Your data is 100% secure with us',
-                        child: Column(
-                          children: [
-                            // Header
-                            Column(
+                      // ── Professional Auth Card with Back Button ──
+                      Stack(
+                        children: [
+                          ProfessionalAuthCard(
+                            isDark: isDark,
+                            securityMessage: 'Your data is 100% secure with us',
+                            child: Column(
                               children: [
-                                // Logo
+                                // Header
+                                Column(
+                                  children: [
+                                    // Logo
                                 Container(
                                   width: 80,
                                   height: 80,
@@ -512,6 +514,34 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                         ),
                       ).enterCard(
                         delay: AppAnimations.stagger(_isLoggedIn ? 11 : 9),
+                      ),
+                          // Back button (top-left, not scrollable - icon only)
+                          Positioned(
+                            top: 12,
+                            left: 12,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  if (Navigator.of(context).canPop()) {
+                                    Navigator.of(context).pop();
+                                  } else {
+                                    context.go('/login');
+                                  }
+                                },
+                                borderRadius: const BorderRadius.all(Radius.circular(99)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Icon(
+                                    Icons.arrow_back_rounded,
+                                    color: context.themePrimary,
+                                    size: 24,
+                                  ),
+                                ),
+                              ),
+                            ).fadeIn(delay: AppAnimations.stagger(0)),
+                          ),
+                        ],
                       ),
 
                       const SizedBox(height: AppSpacing.xl2),

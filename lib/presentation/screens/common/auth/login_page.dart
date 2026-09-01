@@ -227,14 +227,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                       const SizedBox(height: AppSpacing.lg),
 
-                      // ── Professional Auth Card ──
-                      ProfessionalAuthCard(
-                        isDark: isDark,
-                        securityMessage: 'Your data is 100% secure with us',
-                        child: Column(
-                          children: [
-                            // Header with logo
-                            AuthHeader(
+                      // ── Professional Auth Card with Back Button ──
+                      Stack(
+                        children: [
+                          ProfessionalAuthCard(
+                            isDark: isDark,
+                            securityMessage: 'Your data is 100% secure with us',
+                            child: Column(
+                              children: [
+                                // Header with logo
+                                AuthHeader(
                               logoPath: 'assets/images/balaji_point_logo.png',
                               title: l10n.appName,
                               subtitle: l10n.enterPhoneNumber,
@@ -270,6 +272,34 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ],
                         ),
                       ).enterCard(delay: AppAnimations.stagger(4)),
+                          // Back button (top-left, not scrollable - icon only)
+                          Positioned(
+                            top: 12,
+                            left: 12,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  if (Navigator.of(context).canPop()) {
+                                    Navigator.of(context).pop();
+                                  } else {
+                                    context.go('/login');
+                                  }
+                                },
+                                borderRadius: const BorderRadius.all(Radius.circular(99)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Icon(
+                                    Icons.arrow_back_rounded,
+                                    color: context.themePrimary,
+                                    size: 24,
+                                  ),
+                                ),
+                              ),
+                            ).fadeIn(delay: AppAnimations.stagger(0)),
+                          ),
+                        ],
+                      ),
 
                       const SizedBox(height: AppSpacing.xl2),
 

@@ -6,6 +6,7 @@ import 'package:balaji_points/services/user/user_service.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/services/platform/cart_service.dart';
 import 'package:balaji_points/core/logger.dart';
+import 'package:balaji_points/core/models/greeting_model.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/top_carpenters_display.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/offers_carousel.dart';
 
@@ -32,6 +33,10 @@ class HomeState {
   final List<OfferItem> offers;
   final bool offersLoading;
 
+  // Greeting
+  final GreetingItem? greeting;
+  final bool greetingLoading;
+
   const HomeState({
     this.loading = true,
     this.error,
@@ -44,6 +49,8 @@ class HomeState {
     this.rankingsLoading = true,
     this.offers = const [],
     this.offersLoading = true,
+    this.greeting,
+    this.greetingLoading = true,
   });
 
   bool get isProfileComplete {
@@ -78,6 +85,8 @@ class HomeState {
     bool? rankingsLoading,
     List<OfferItem>? offers,
     bool? offersLoading,
+    GreetingItem? greeting,
+    bool? greetingLoading,
   }) =>
       HomeState(
         loading: loading ?? this.loading,
@@ -91,6 +100,8 @@ class HomeState {
         rankingsLoading: rankingsLoading ?? this.rankingsLoading,
         offers: offers ?? this.offers,
         offersLoading: offersLoading ?? this.offersLoading,
+        greeting: greeting ?? this.greeting,
+        greetingLoading: greetingLoading ?? this.greetingLoading,
       );
 }
 
@@ -138,7 +149,7 @@ class HomeNotifier extends Notifier<HomeState> {
     try {
       await ref.read(carpenterPointsProvider.notifier).ensureLoaded();
       await _loadUser();
-      await Future.wait([_loadOffers(), _refreshRankings()]);
+      await Future.wait([_loadOffers(), _refreshRankings(), _loadGreeting()]);
       state = state.copyWith(loading: false);
     } catch (e, st) {
       AppLogger.error('HomeNotifier load failed', e, st);
@@ -217,6 +228,29 @@ class HomeNotifier extends Notifier<HomeState> {
     } catch (e, st) {
       AppLogger.error('HomeNotifier offers load failed', e, st);
       state = state.copyWith(offersLoading: false);
+    }
+  }
+
+  Future<void> _loadGreeting() async {
+    state = state.copyWith(greetingLoading: true);
+    try {
+      final snap = await _firestore
+          .collection('greetings')
+          .where('active', isEqualTo: true)
+          .orderBy('createdAt', descending: true)
+          .limit(1)
+          .get();
+
+      if (snap.docs.isEmpty) {
+        state = state.copyWith(greeting: null, greetingLoading: false);
+        return;
+      }
+
+      final greeting = GreetingItem.fromFirestore(snap.docs.first);
+      state = state.copyWith(greeting: greeting, greetingLoading: false);
+    } catch (e, st) {
+      AppLogger.error('HomeNotifier greeting load failed', e, st);
+      state = state.copyWith(greetingLoading: false);
     }
   }
 

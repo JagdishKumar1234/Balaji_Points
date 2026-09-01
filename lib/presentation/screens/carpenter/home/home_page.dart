@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:balaji_points/core/design/app_animations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -22,7 +23,7 @@ import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_drawer.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_feature_highlights.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_hero_card.dart';
-import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_product_categories.dart';
+import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_greeting_banner.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_top_carpenters.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_top_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/offers_carousel.dart';
@@ -46,6 +47,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
   String _appVersion = '';
   String? _confettiPlayedKey;
+  String? _dismissedGreetingId;
   late ConfettiController _confettiController;
 
   @override
@@ -59,6 +61,19 @@ class _HomePageState extends ConsumerState<HomePage>
       duration: const Duration(seconds: 3),
     );
     _loadAppVersion();
+    _loadDismissedGreeting();
+  }
+
+  Future<void> _loadDismissedGreeting() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final dismissed = prefs.getString('dismissedGreetingId');
+      if (mounted && dismissed != null) {
+        setState(() => _dismissedGreetingId = dismissed);
+      }
+    } catch (e) {
+      AppLogger.debug('Failed to load dismissed greeting ID: $e');
+    }
   }
 
   Future<void> _loadAppVersion() async {
@@ -344,12 +359,19 @@ class _HomePageState extends ConsumerState<HomePage>
                     const SizedBox(height: AppSpacing.md),
                   ],
 
-                  // Product categories + real product cards
-                  RepaintBoundary(
-                    child: HomeProductCategories(),
-                  ).enterCard(delay: AppAnimations.stagger(3)),
-
-                  const SizedBox(height: AppSpacing.md),
+                  // Greeting banner — shown after offers
+                  if (!homeState.greetingLoading && homeState.greeting != null)
+                    if (_dismissedGreetingId != homeState.greeting!.id) ...[
+                      HomeGreetingBanner(
+                        greeting: homeState.greeting!,
+                        onDismiss: () async {
+                          setState(() => _dismissedGreetingId = homeState.greeting!.id);
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setString('dismissedGreetingId', homeState.greeting!.id);
+                        },
+                      ).fadeIn(delay: AppAnimations.stagger(3)),
+                      const SizedBox(height: AppSpacing.md),
+                    ],
 
                   // Today's Winner — standalone card
                   RepaintBoundary(

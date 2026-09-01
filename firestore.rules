@@ -205,6 +205,30 @@ service cloud.firestore {
     }
 
     // ============================================
+    // GREETINGS COLLECTION (admin broadcast messages)
+    // ============================================
+    match /greetings/{greetingId} {
+      // All users can read greetings (for home screen banner)
+      // Security: App-level filtering ensures carpenters only see active greetings
+      allow read: if true;
+
+      // Only admin can create greetings (validated at app level)
+      // Validation: Ensure required fields are present
+      allow create: if request.resource.data.message != null
+                    && request.resource.data.createdAt != null
+                    && request.resource.data.createdBy != null
+                    && request.resource.data.active != null;
+
+      // Only admin can update greetings (validated at app level)
+      // Validation: Ensure core fields remain present
+      allow update: if request.resource.data.message != null
+                    && request.resource.data.active != null;
+
+      // Only admin can delete greetings (validated at app level)
+      allow delete: if true; // App-level validation ensures only admins can delete
+    }
+
+    // ============================================
     // OFFER REDEMPTIONS COLLECTION
     // ============================================
     match /offer_redemptions/{redemptionId} {

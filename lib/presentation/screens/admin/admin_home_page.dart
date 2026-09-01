@@ -28,6 +28,7 @@ import 'cleanup_duplicate_accounts_screen.dart';
 import 'firestore_backup_screen.dart';
 import 'firebase_duplicate_checker_screen.dart';
 import 'smart_duplicate_cleanup_screen.dart';
+import 'send_greeting_page.dart';
 
 class AdminHomePage extends ConsumerStatefulWidget {
   const AdminHomePage({super.key});
@@ -352,6 +353,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return 'Check Firebase Duplicates';
       case 'smart-cleanup':
         return 'Smart Cleanup';
+      case 'greeting':
+        return 'Send Greeting';
       default:
         return 'Admin';
     }
@@ -409,6 +412,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return const FirebaseDuplicateCheckerScreen();
       case 'smart-cleanup':
         return const SmartDuplicateCleanupScreen();
+      case 'greeting':
+        return const SendGreetingPage(embedded: true);
       default:
         return const SizedBox.shrink();
     }

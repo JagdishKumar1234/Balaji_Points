@@ -116,11 +116,25 @@ exports.processNotificationQueue = onDocumentCreated(
           },
         });
 
+        const sentAt = admin.firestore.FieldValue.serverTimestamp();
         await snap.ref.update({
           status: "sent",
-          sentAt: admin.firestore.FieldValue.serverTimestamp(),
+          sentAt: sentAt,
         });
-        console.log(`[notifQueue/${queueId}] FCM sent`);
+
+        // Log notification to notification_logs for the app to display in notification screen
+        await db.collection("notification_logs").add({
+          userId: doc.userId,
+          type: type || "notification",
+          title: title || "Balaji Points",
+          body: body || "",
+          data: rawData || {},
+          sentAt: sentAt,
+          isBroadcast: doc.userId ? false : true, // Mark as broadcast if no specific userId
+          queueId: queueId,
+        });
+
+        console.log(`[notifQueue/${queueId}] FCM sent + logged`);
         return null;
       } catch (err) {
         console.error(`[notifQueue/${queueId}] FCM error:`, err.message);

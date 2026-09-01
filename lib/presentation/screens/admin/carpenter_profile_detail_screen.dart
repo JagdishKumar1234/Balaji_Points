@@ -1433,14 +1433,15 @@ class _CarpenterProfileDetailScreenState
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '+${(amount / 1000).toStringAsFixed(2)}',
+                          '₹${amount.toStringAsFixed(0)}',
                           style: AppTypography.labelMedium().copyWith(
                             fontSize: 13,
                             color: context.themeTextPrimary,
                           ),
                         ),
+                        const SizedBox(height: 2),
                         Text(
-                          'Points',
+                          '+${(amount / 1000).toStringAsFixed(2)} pts',
                           style: AppTypography.bodySmall().copyWith(
                             fontSize: 10,
                             color: context.themeTextSecondary,
@@ -1831,14 +1832,15 @@ class _CarpenterProfileDetailScreenState
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '+${(amount / 1000).toStringAsFixed(2)}',
+                      '₹${amount.toStringAsFixed(0)}',
                       style: AppTypography.labelMedium().copyWith(
                         fontSize: 13,
                         color: context.themeTextPrimary,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
-                      'Points',
+                      '+${(amount / 1000).toStringAsFixed(2)} pts',
                       style: AppTypography.bodySmall().copyWith(
                         fontSize: 10,
                         color: context.themeTextSecondary,
