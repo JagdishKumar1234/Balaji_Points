@@ -92,7 +92,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         );
       }
       if (mounted) {
-        final profileData = data != null ? Map<String, dynamic>.from(data) : null;
+        final profileData = data != null
+            ? Map<String, dynamic>.from(data)
+            : null;
         profileData?.remove('totalPoints');
         profileData?.remove('tier');
 
@@ -128,20 +130,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.no,
-                style: AppTypography.labelLarge(color: context.themeTextSecondary)),
+            child: Text(
+              l10n.no,
+              style: AppTypography.labelLarge(
+                color: context.themeTextSecondary,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: AppRadius.md12),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             ),
-            child: Text(l10n.yes,
-                style: AppTypography.labelLarge(color: AppColors.white)
-                    .copyWith(fontWeight: FontWeight.w600)),
+            child: Text(
+              l10n.yes,
+              style: AppTypography.labelLarge(
+                color: AppColors.white,
+              ).copyWith(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -157,10 +165,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         if (context.mounted) context.go('/login');
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('${l10n.logoutFailed}: ${e.toString()}'),
-            backgroundColor: context.themeError,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.logoutFailed}: ${e.toString()}'),
+              backgroundColor: context.themeError,
+            ),
+          );
         }
       }
     }
@@ -176,10 +186,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Could not make call: $e'),
-          backgroundColor: context.themeError,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not make call: $e'),
+            backgroundColor: context.themeError,
+          ),
+        );
       }
     }
   }
@@ -229,28 +241,38 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                           color: AppColors.white.withValues(alpha: 0.2),
                           borderRadius: AppRadius.md12,
                         ),
-                        child: const Icon(Icons.support_agent,
-                            color: AppColors.white, size: 28),
+                        child: const Icon(
+                          Icons.support_agent,
+                          color: AppColors.white,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(l10n.helpSupport,
-                                style: AppTypography.h5(color: AppColors.white)),
+                            Text(
+                              l10n.helpSupport,
+                              style: AppTypography.h5(color: AppColors.white),
+                            ),
                             const SizedBox(height: 4),
-                            Text(l10n.getInTouch,
-                                style: AppTypography.bodySmall(
-                                    color: AppColors.white
-                                        .withValues(alpha: 0.9))),
+                            Text(
+                              l10n.getInTouch,
+                              style: AppTypography.bodySmall(
+                                color: AppColors.white.withValues(alpha: 0.9),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       IconButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.close,
-                            color: AppColors.white, size: 24),
+                        icon: const Icon(
+                          Icons.close,
+                          color: AppColors.white,
+                          size: 24,
+                        ),
                       ),
                     ],
                   ),
@@ -363,13 +385,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: AppTypography.labelSmall(
-                        color: context.themeTextSecondary)),
+                Text(
+                  label,
+                  style: AppTypography.labelSmall(
+                    color: context.themeTextSecondary,
+                  ),
+                ),
                 const SizedBox(height: 6),
-                Text(value,
-                    style: AppTypography.labelLarge()
-                        .copyWith(fontWeight: FontWeight.w600)),
+                Text(
+                  value,
+                  style: AppTypography.labelLarge().copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -397,8 +425,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 onTap: onTap,
                 child: const Padding(
                   padding: EdgeInsets.all(12),
-                  child: Icon(Icons.call_rounded,
-                      color: AppColors.white, size: 22),
+                  child: Icon(
+                    Icons.call_rounded,
+                    color: AppColors.white,
+                    size: 22,
+                  ),
                 ),
               ),
             ),
@@ -451,8 +482,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 const SizedBox(width: 16),
                 Text(
                   title,
-                  style: AppTypography.labelLarge()
-                      .copyWith(fontWeight: FontWeight.w600),
+                  style: AppTypography.labelLarge().copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const Spacer(),
                 Icon(Icons.chevron_right, color: context.themeTextMuted),
@@ -489,13 +521,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             const SizedBox(width: 16),
             Text(
               isHindi ? 'भाषा' : 'Language',
-              style: AppTypography.labelLarge()
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: AppTypography.labelLarge().copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const Spacer(),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: context.themePrimary.withValues(alpha: 0.1),
                 borderRadius: AppRadius.sm8,
@@ -504,20 +536,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 child: DropdownButton<Locale>(
                   value: locale,
                   isDense: true,
-                  icon: Icon(Icons.arrow_drop_down,
-                      color: context.themePrimary, size: 20),
+                  icon: Icon(
+                    Icons.arrow_drop_down,
+                    color: context.themePrimary,
+                    size: 20,
+                  ),
                   style: AppTypography.labelMedium(color: context.themePrimary),
                   dropdownColor: theme.colorScheme.surface,
                   borderRadius: AppRadius.md12,
                   onChanged: (Locale? newLocale) {
                     if (newLocale != null) {
-                      ref
-                          .read(localeProvider.notifier)
-                          .setLocale(newLocale);
+                      ref.read(localeProvider.notifier).setLocale(newLocale);
                     }
                   },
                   items: const [
-                    DropdownMenuItem(value: Locale('en'), child: Text('English')),
+                    DropdownMenuItem(
+                      value: Locale('en'),
+                      child: Text('English'),
+                    ),
                     DropdownMenuItem(value: Locale('hi'), child: Text('हिंदी')),
                     DropdownMenuItem(value: Locale('ta'), child: Text('தமிழ்')),
                   ],
@@ -556,10 +592,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               size: 24,
             ),
             const SizedBox(width: 16),
-            Text('Theme',
-                style: AppTypography.labelLarge(
-                    color: theme.colorScheme.onSurface)
-                    .copyWith(fontWeight: FontWeight.w600)),
+            Text(
+              'Theme',
+              style: AppTypography.labelLarge(
+                color: theme.colorScheme.onSurface,
+              ).copyWith(fontWeight: FontWeight.w600),
+            ),
             const Spacer(),
             SegmentedButton<ThemeMode>(
               style: SegmentedButton.styleFrom(
@@ -583,12 +621,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                 ),
               ],
               selected: {
-                themeMode == ThemeMode.system ? ThemeMode.light : themeMode
+                themeMode == ThemeMode.system ? ThemeMode.light : themeMode,
               },
               onSelectionChanged: (modes) {
-                ref
-                    .read(themeModeProvider.notifier)
-                    .setThemeMode(modes.first);
+                ref.read(themeModeProvider.notifier).setThemeMode(modes.first);
               },
             ),
           ],
@@ -618,7 +654,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               child: _isLoading
                   ? Center(
                       child: CircularProgressIndicator(
-                          color: context.themePrimary))
+                        color: context.themePrimary,
+                      ),
+                    )
                   : RefreshIndicator(
                       onRefresh: _handleRefresh,
                       color: context.themePrimary,
@@ -626,9 +664,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: EdgeInsets.only(
-                          bottom: CarpenterShellLayout
-                              .bottomPaddingForScrollView(
-                                  MediaQuery.of(context)),
+                          bottom:
+                              CarpenterShellLayout.bottomPaddingForScrollView(
+                                MediaQuery.of(context),
+                              ),
                         ),
                         child: Column(
                           children: [
@@ -636,15 +675,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
                             // Profile card
                             Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 20),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.surface,
                                 borderRadius: AppRadius.all16,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.black
-                                        .withValues(alpha: 0.1),
+                                    color: AppColors.black.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -664,8 +706,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       ),
                                     ),
                                     child: ClipOval(
-                                      child: _userData?['profileImage'] !=
-                                                  null &&
+                                      child:
+                                          _userData?['profileImage'] != null &&
                                               (_userData!['profileImage']
                                                       as String)
                                                   .isNotEmpty
@@ -677,8 +719,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                                     as String,
                                               ),
                                               fit: BoxFit.cover,
-                                              loadingBuilder: (context, child,
-                                                  progress) {
+                                              loadingBuilder: (context, child, progress) {
                                                 if (progress == null) {
                                                   return child;
                                                 }
@@ -687,54 +728,63 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                                       .withValues(alpha: 0.3),
                                                   child: Center(
                                                     child: CircularProgressIndicator(
-                                                      value: progress
-                                                                  .expectedTotalBytes !=
+                                                      value:
+                                                          progress.expectedTotalBytes !=
                                                               null
-                                                          ? progress
-                                                                  .cumulativeBytesLoaded /
-                                                              progress
-                                                                  .expectedTotalBytes!
+                                                          ? progress.cumulativeBytesLoaded /
+                                                                progress
+                                                                    .expectedTotalBytes!
                                                           : null,
                                                       strokeWidth: 3,
                                                       valueColor:
                                                           const AlwaysStoppedAnimation<
-                                                                  Color>(
-                                                              AppColors.primary),
+                                                            Color
+                                                          >(AppColors.primary),
                                                     ),
                                                   ),
                                                 );
                                               },
                                               errorBuilder:
-                                                  (context, error, _) =>
-                                                      Container(
-                                                color:
-                                                    context.themeSecondary,
-                                                child: const Icon(Icons.person,
-                                                    color: AppColors.white,
-                                                    size: 40),
-                                              ),
+                                                  (
+                                                    context,
+                                                    error,
+                                                    _,
+                                                  ) => Container(
+                                                    color:
+                                                        context.themeSecondary,
+                                                    child: const Icon(
+                                                      Icons.person,
+                                                      color: AppColors.white,
+                                                      size: 40,
+                                                    ),
+                                                  ),
                                             )
                                           : Container(
                                               color: context.themeSecondary,
-                                              child: const Icon(Icons.person,
-                                                  color: AppColors.white,
-                                                  size: 40),
+                                              child: const Icon(
+                                                Icons.person,
+                                                color: AppColors.white,
+                                                size: 40,
+                                              ),
                                             ),
                                     ),
                                   ),
                                   const SizedBox(height: 16),
 
-                                  Text(_displayName(),
-                                      style: AppTypography.h4(),
-                                      textAlign: TextAlign.center),
+                                  Text(
+                                    _displayName(),
+                                    style: AppTypography.h4(),
+                                    textAlign: TextAlign.center,
+                                  ),
                                   const SizedBox(height: 4),
 
                                   if (_userData?['userDisplayId'] != null)
                                     Text(
                                       '#BP${_userData!['userDisplayId']}',
                                       style: AppTypography.labelMedium(
-                                        color: context.themePrimary
-                                            .withValues(alpha: 0.7),
+                                        color: context.themePrimary.withValues(
+                                          alpha: 0.7,
+                                        ),
                                       ).copyWith(letterSpacing: 0.5),
                                       textAlign: TextAlign.center,
                                     ),
@@ -745,14 +795,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.phone,
-                                            size: 16,
-                                            color: context.themeTextSecondary),
+                                        Icon(
+                                          Icons.phone,
+                                          size: 16,
+                                          color: context.themeTextSecondary,
+                                        ),
                                         const SizedBox(width: 6),
                                         Text(
                                           _userData!['phone'] as String,
                                           style: AppTypography.bodySmall(
-                                              color: context.themeTextSecondary),
+                                            color: context.themeTextSecondary,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -760,12 +813,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
                                   // Points + tier
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.monetization_on,
-                                          color: Color(0xFFFFA000),
-                                          size: 18),
+                                      const Icon(
+                                        Icons.monetization_on,
+                                        color: Color(0xFFFFA000),
+                                        size: 18,
+                                      ),
                                       const SizedBox(width: 4),
                                       Text(
                                         carpenterPoints.formattedPoints,
@@ -776,18 +830,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       const SizedBox(width: 12),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 4),
+                                          horizontal: 12,
+                                          vertical: 4,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: context.themeSecondary
                                               .withValues(alpha: 0.2),
-                                          borderRadius:
-                                              AppRadius.md12,
+                                          borderRadius: AppRadius.md12,
                                         ),
                                         child: Text(
                                           carpenterPoints.tier,
-                                          style: AppTypography.labelSmall(
-                                            color: context.themeSecondary,
-                                          ).copyWith(fontWeight: FontWeight.w600),
+                                          style:
+                                              AppTypography.labelSmall(
+                                                color: context.themeSecondary,
+                                              ).copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                         ),
                                       ),
                                     ],
@@ -800,13 +858,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 20),
+                                horizontal: 20,
+                              ),
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.stretch,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   _sectionHeader(
-                                      l10n.profileSectionAccount, theme),
+                                    l10n.profileSectionAccount,
+                                    theme,
+                                  ),
                                   const SizedBox(height: 8),
 
                                   _menuButton(
@@ -826,8 +886,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                       final phone = await _sessionService
                                           .getPhoneNumber();
                                       if (phone != null && context.mounted) {
-                                        context.push(
-                                            '/pin-reset?phone=$phone');
+                                        context.push('/pin-reset?phone=$phone');
                                       }
                                     },
                                   ),
@@ -841,20 +900,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                   const SizedBox(height: 20),
 
                                   _sectionHeader(
-                                      l10n.profileSectionSupport, theme),
+                                    l10n.profileSectionSupport,
+                                    theme,
+                                  ),
                                   const SizedBox(height: 8),
 
                                   _menuButton(
                                     icon: Icons.phone,
                                     title: l10n.helpSupport,
-                                    onTap: () =>
-                                        _showSupportDialog(context),
+                                    onTap: () => _showSupportDialog(context),
                                   ),
                                   const SizedBox(height: 20),
 
                                   _sectionHeader(
-                                      l10n.profileSectionPreferences,
-                                      theme),
+                                    l10n.profileSectionPreferences,
+                                    theme,
+                                  ),
                                   const SizedBox(height: 8),
 
                                   _languageSelector(),
@@ -868,30 +929,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     width: double.infinity,
                                     margin: const EdgeInsets.only(top: 8),
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          AppRadius.all16,
+                                      borderRadius: AppRadius.all16,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: context.themeError
-                                              .withValues(alpha: 0.2),
+                                          color: context.themeError.withValues(
+                                            alpha: 0.2,
+                                          ),
                                           blurRadius: 10,
                                           offset: const Offset(0, 4),
                                         ),
                                       ],
                                     ),
                                     child: ElevatedButton(
-                                      onPressed: () =>
-                                          _handleLogout(context),
+                                      onPressed: () => _handleLogout(context),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            context.themeError,
+                                        backgroundColor: context.themeError,
                                         foregroundColor: AppColors.white,
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 18),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 18,
+                                        ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              AppRadius.all16,
+                                          borderRadius: AppRadius.all16,
                                         ),
                                         elevation: 0,
                                       ),
@@ -904,7 +962,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                           Text(
                                             l10n.logout,
                                             style: AppTypography.buttonLarge(
-                                                color: AppColors.white),
+                                              color: AppColors.white,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -914,8 +973,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                   const SizedBox(height: 12),
 
                                   TextButton.icon(
-                                    onPressed: () =>
-                                        context.push('/about-us'),
+                                    onPressed: () => context.push('/about-us'),
                                     icon: Icon(
                                       Icons.info_outline_rounded,
                                       size: 20,
@@ -924,8 +982,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     label: Text(
                                       l10n.profileAboutLink,
                                       style: AppTypography.labelLarge(
-                                          color: context.themeSecondary)
-                                          .copyWith(fontWeight: FontWeight.w600),
+                                        color: context.themeSecondary,
+                                      ).copyWith(fontWeight: FontWeight.w600),
                                     ),
                                   ),
 

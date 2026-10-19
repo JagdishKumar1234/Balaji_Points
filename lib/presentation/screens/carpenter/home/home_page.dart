@@ -326,82 +326,89 @@ class _HomePageState extends ConsumerState<HomePage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  // Hero card
-                  RepaintBoundary(
-                    child: showHeroLoading
-                        ? const HomeHeroCardShimmer()
-                        : HomeHeroCard(homeState: displayHomeState),
-                  ).fadeIn(),
-
-                  const SizedBox(height: AppSpacing.md),
-
-                  // Offers
-                  if (homeState.offersLoading ||
-                      homeState.offers.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        l10n.latestOffers,
-                        style: AppTypography.h5(
-                          color: context.themeTextPrimary,
-                        ),
-                      ),
-                    ).fadeIn(delay: AppAnimations.stagger(2)),
-                    const SizedBox(height: AppSpacing.sm),
+                    // Hero card
                     RepaintBoundary(
-                      child: homeState.offersLoading
-                          ? const SizedBox(
-                              height: 220,
-                              child: ShimmerOfferCard(),
-                            )
-                          : OffersCarousel(offers: homeState.offers),
-                    ).fadeIn(delay: AppAnimations.stagger(2)),
-                    const SizedBox(height: AppSpacing.md),
-                  ],
+                      child: showHeroLoading
+                          ? const HomeHeroCardShimmer()
+                          : HomeHeroCard(homeState: displayHomeState),
+                    ).fadeIn(),
 
-                  // Greeting banner — shown after offers
-                  if (!homeState.greetingLoading && homeState.greeting != null)
-                    if (_dismissedGreetingId != homeState.greeting!.id) ...[
-                      HomeGreetingBanner(
-                        greeting: homeState.greeting!,
-                        onDismiss: () async {
-                          setState(() => _dismissedGreetingId = homeState.greeting!.id);
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('dismissedGreetingId', homeState.greeting!.id);
-                        },
-                      ).fadeIn(delay: AppAnimations.stagger(3)),
+                    const SizedBox(height: AppSpacing.md),
+
+                    // Offers
+                    if (homeState.offersLoading ||
+                        homeState.offers.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          l10n.latestOffers,
+                          style: AppTypography.h5(
+                            color: context.themeTextPrimary,
+                          ),
+                        ),
+                      ).fadeIn(delay: AppAnimations.stagger(2)),
+                      const SizedBox(height: AppSpacing.sm),
+                      RepaintBoundary(
+                        child: homeState.offersLoading
+                            ? const SizedBox(
+                                height: 220,
+                                child: ShimmerOfferCard(),
+                              )
+                            : OffersCarousel(offers: homeState.offers),
+                      ).fadeIn(delay: AppAnimations.stagger(2)),
                       const SizedBox(height: AppSpacing.md),
                     ],
 
-                  // Today's Winner — standalone card
-                  RepaintBoundary(
-                    child: const HomeTodaysWinnerCard(),
-                  ).enterCard(delay: AppAnimations.stagger(4)),
+                    // Greeting banner — shown after offers
+                    if (!homeState.greetingLoading &&
+                        homeState.greeting != null)
+                      if (_dismissedGreetingId != homeState.greeting!.id) ...[
+                        HomeGreetingBanner(
+                          greeting: homeState.greeting!,
+                          onDismiss: () async {
+                            setState(
+                              () =>
+                                  _dismissedGreetingId = homeState.greeting!.id,
+                            );
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setString(
+                              'dismissedGreetingId',
+                              homeState.greeting!.id,
+                            );
+                          },
+                        ).fadeIn(delay: AppAnimations.stagger(3)),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
 
-                  if (homeState.topCarpenters.isNotEmpty)
+                    // Today's Winner — standalone card
+                    RepaintBoundary(
+                      child: const HomeTodaysWinnerCard(),
+                    ).enterCard(delay: AppAnimations.stagger(4)),
+
+                    if (homeState.topCarpenters.isNotEmpty)
+                      const SizedBox(height: AppSpacing.md),
+
+                    // Your Position — standalone card
+                    RepaintBoundary(
+                      child: HomeYourPositionCard(homeState: displayHomeState),
+                    ).enterCard(delay: AppAnimations.stagger(5)),
+
+                    if (homeState.userRank != null)
+                      const SizedBox(height: AppSpacing.md),
+
+                    // Top Carpenters podium + top-10 list
+                    RepaintBoundary(
+                      child: HomeTopCarpenters(homeState: homeState),
+                    ).enterCard(delay: AppAnimations.stagger(6)),
+
                     const SizedBox(height: AppSpacing.md),
 
-                  // Your Position — standalone card
-                  RepaintBoundary(
-                    child: HomeYourPositionCard(homeState: displayHomeState),
-                  ).enterCard(delay: AppAnimations.stagger(5)),
+                    // Feature highlights
+                    const RepaintBoundary(
+                      child: HomeFeatureHighlights(),
+                    ).enterCard(delay: AppAnimations.stagger(7)),
 
-                  if (homeState.userRank != null)
-                    const SizedBox(height: AppSpacing.md),
-
-                  // Top Carpenters podium + top-10 list
-                  RepaintBoundary(
-                    child: HomeTopCarpenters(homeState: homeState),
-                  ).enterCard(delay: AppAnimations.stagger(6)),
-
-                  const SizedBox(height: AppSpacing.md),
-
-                  // Feature highlights
-                  const RepaintBoundary(
-                    child: HomeFeatureHighlights(),
-                  ).enterCard(delay: AppAnimations.stagger(7)),
-
-                  const SizedBox(height: AppSpacing.sectionGap),
+                    const SizedBox(height: AppSpacing.sectionGap),
                   ],
                 ),
               ),

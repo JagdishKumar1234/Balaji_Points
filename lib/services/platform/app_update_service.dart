@@ -80,20 +80,42 @@ class AppUpdateService {
   /// Returns true when a force update dialog was shown and the splash flow
   /// should postpone navigation until the user updates the app.
   Future<bool> checkForUpdate(BuildContext context) async {
+    AppLogger.update('════════ Force update check started ════════');
     try {
       final remoteInfo = await _fetchRemoteUpdateInfo();
-      if (remoteInfo == null) return false;
+      if (remoteInfo == null) {
+        AppLogger.warning(
+          'Update check unavailable; allowing startup (no remote config).',
+        );
+        return false;
+      }
 
       final platformInfo = remoteInfo.forCurrentPlatform;
-      if (platformInfo == null) return false;
+      if (platformInfo == null) {
+        AppLogger.update('Unsupported platform; update gate not applicable.');
+        return false;
+      }
 
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version.trim();
+      final buildNumber = packageInfo.buildNumber.trim();
       final latestVersion = platformInfo.latestVersion.trim();
       final minimumVersion = platformInfo.minimumVersion.trim();
       final forceFlag = platformInfo.forceUpdate;
 
-      if (currentVersion.isEmpty) return false;
+      if (currentVersion.isEmpty) {
+        AppLogger.warning(
+          'Update check unavailable; package version is empty. Allowing startup.',
+        );
+        return false;
+      }
+
+      AppLogger.update(
+        'Installed: $currentVersion ($buildNumber) | '
+        'Latest: ${latestVersion.isEmpty ? "not set" : latestVersion} | '
+        'Minimum: ${minimumVersion.isEmpty ? "not set" : minimumVersion} | '
+        'Force flag: $forceFlag',
+      );
 
       final isBelowMinimum =
           minimumVersion.isNotEmpty &&
@@ -105,14 +127,26 @@ class AppUpdateService {
       final needsOptionalUpdate = !needsForceUpdate && isBelowLatest;
       final targetVersion = isBelowMinimum ? minimumVersion : latestVersion;
 
-      if (!needsForceUpdate && !needsOptionalUpdate) return false;
+      if (!needsForceUpdate && !needsOptionalUpdate) {
+        AppLogger.update('Decision: current version is allowed; continuing.');
+        AppLogger.update('════════ Force update check complete ════════');
+        return false;
+      }
 
-      if (!context.mounted) return needsForceUpdate;
+      if (!context.mounted) {
+        AppLogger.warning(
+          'Update prompt required, but splash context was unmounted; '
+          'blocking=$needsForceUpdate.',
+        );
+        return needsForceUpdate;
+      }
 
       AppLogger.update(
         needsForceUpdate
-            ? 'Force update required ($currentVersion → $targetVersion)'
-            : 'Optional update ($currentVersion → $latestVersion)',
+            ? 'Decision: BLOCK startup; update required '
+                  '($currentVersion → $targetVersion).'
+            : 'Decision: optional update available '
+                  '($currentVersion → $latestVersion).',
       );
 
       await _showUpdateDialog(
@@ -125,9 +159,19 @@ class AppUpdateService {
         forceUpdate: needsForceUpdate,
       );
 
+      AppLogger.update(
+        needsForceUpdate
+            ? 'Force update dialog closed; splash remains gated.'
+            : 'Optional update dialog closed; startup may continue.',
+      );
+      AppLogger.update('════════ Force update check complete ════════');
       return needsForceUpdate;
     } catch (error, stackTrace) {
-      AppLogger.error('Failed to check app update', error, stackTrace);
+      AppLogger.error(
+        'Force update check failed; allowing startup (fail-open policy).',
+        error,
+        stackTrace,
+      );
       return false;
     }
   }
@@ -139,7 +183,17 @@ class AppUpdateService {
           .doc(AppConstants.appConfigDocument)
           .get(const GetOptions(source: Source.server));
 
-      if (!doc.exists || doc.data() == null) return null;
+      if (!doc.exists || doc.data() == null) {
+        AppLogger.warning(
+          'Update config ${AppConstants.appConfigCollection}/'
+          '${AppConstants.appConfigDocument} is missing; allowing startup.',
+        );
+        return null;
+      }
+      AppLogger.update(
+        'Loaded update config from '
+        '${AppConstants.appConfigCollection}/${AppConstants.appConfigDocument}.',
+      );
       return AppUpdateInfo.fromMap(doc.data()!);
     } on FirebaseException catch (e) {
       if (e.code == 'permission-denied') {

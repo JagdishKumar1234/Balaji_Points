@@ -8,7 +8,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/responsive_typography.dart';
-import 'package:balaji_points/core/layout/responsive.dart';
+import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/services/auth/biometric_service.dart';
@@ -40,8 +40,23 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     // Check for blocking updates only (must complete before navigation)
-    final forceUpdatePending = await AppStartupService().checkForBlockingUpdate(context);
-    if (!mounted || forceUpdatePending) return;
+    AppLogger.startup('Splash: checking installed version and update policy.');
+    final forceUpdatePending = await AppStartupService().checkForBlockingUpdate(
+      context,
+    );
+    if (!mounted) {
+      AppLogger.startup('Splash: disposed while update check was running.');
+      return;
+    }
+    if (forceUpdatePending) {
+      AppLogger.startup(
+        'Splash: force update required; navigation blocked until app is updated.',
+      );
+      return;
+    }
+    AppLogger.startup(
+      'Splash: update gate passed; continuing to authentication.',
+    );
 
     // Proceed to navigation immediately
     await _checkAuthAndNavigate();
@@ -116,62 +131,79 @@ class _SplashPageState extends State<SplashPage> {
 
             // Content
             SafeArea(
-              child: Column(
-                children: [
-                  const Spacer(flex: 3),
-
-                  // ── Logo ──
-                  _Logo().enterHero(),
-
-                  const SizedBox(height: AppSpacing.xl2),
-
-                  // ── App name ──
-                  Text(
-                    l10n?.appName ?? 'Balaji Points',
-                    style: AppTypography.displaySmall(
-                      color: context.themePrimary,
-                    ).copyWith(letterSpacing: 1.2),
-                  ).enterHero(delay: AppAnimations.stagger(1)),
-
-                  const SizedBox(height: AppSpacing.sm),
-
-                  // ── Tagline ──
-                  Text(
-                    l10n?.rewardsLoyaltyProgram ?? 'Rewards & Loyalty Program',
-                    style: AppTypography.bodyLarge(
-                      color: context.themeTextSecondary,
+              child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                  ).fadeIn(
-                    delay: AppAnimations.stagger(2),
-                    duration: AppAnimations.medium,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.md,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // ── Brand ──
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _Logo().enterHero(),
+                              const SizedBox(height: AppSpacing.xl2),
+                              Text(
+                                l10n?.appName ?? 'Balaji Points',
+                                textAlign: TextAlign.center,
+                                style: AppTypography.displaySmall(
+                                  color: context.themePrimary,
+                                ).copyWith(letterSpacing: 1.2),
+                              ).enterHero(delay: AppAnimations.stagger(1)),
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                l10n?.rewardsLoyaltyProgram ??
+                                    'Rewards & Loyalty Program',
+                                textAlign: TextAlign.center,
+                                style: AppTypography.bodyLarge(
+                                  color: context.themeTextSecondary,
+                                ),
+                              ).fadeIn(
+                                delay: AppAnimations.stagger(2),
+                                duration: AppAnimations.medium,
+                              ),
+                            ],
+                          ),
+
+                          // Keep progress and attribution together at the
+                          // bottom; the scroll view handles short screens.
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: context.themePrimary.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                ),
+                              ).fadeIn(delay: AppAnimations.stagger(3)),
+                              const SizedBox(height: AppSpacing.xl),
+                              Text(
+                                '${l10n?.poweredBy ?? 'Powered by'}\n'
+                                '${l10n?.companyName ?? 'Shri Balaji Plywood & Hardware'}',
+                                textAlign: TextAlign.center,
+                                style: AppTypography.labelMedium(
+                                  color: context.themePrimary,
+                                ).copyWith(height: 1.5),
+                              ).fadeIn(delay: AppAnimations.stagger(4)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-
-                  const Spacer(flex: 4),
-
-                  // ── Loading indicator ──
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: context.themePrimary.withValues(alpha: 0.7),
-                    ),
-                  ).fadeIn(delay: AppAnimations.stagger(3)),
-
-                  const SizedBox(height: AppSpacing.xl),
-
-                  // ── Footer ──
-                  Text(
-                    '${l10n?.poweredBy ?? 'Powered by'}\n'
-                    '${l10n?.companyName ?? 'Shri Balaji Plywood & Hardware'}',
-                    textAlign: TextAlign.center,
-                    style: AppTypography.labelMedium(
-                      color: context.themePrimary,
-                    ).copyWith(height: 1.5),
-                  ).fadeIn(delay: AppAnimations.stagger(4)),
-
-                  const SizedBox(height: AppSpacing.xl3),
-                ],
+                ),
               ),
             ),
           ],
@@ -220,10 +252,7 @@ class _Logo extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(logoBorderRadius),
                 gradient: LinearGradient(
-                  colors: [
-                    context.themePrimary,
-                    context.themeSecondary,
-                  ],
+                  colors: [context.themePrimary, context.themeSecondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
