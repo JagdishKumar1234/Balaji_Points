@@ -69,11 +69,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAmCcBsbGah2kEHsXk10o-IcpWMjm7OxHk',
-    appId: '1:53571317085:web:0c6636c806fa28de158cb4',
+    appId: '1:53571317085:web:bf8e5031a99a928f158cb4',
     messagingSenderId: '53571317085',
     projectId: 'balajipoints',
     authDomain: 'balajipoints.firebaseapp.com',
     storageBucket: 'balajipoints.firebasestorage.app',
-    measurementId: 'G-1DYKJ23TN0',
+    measurementId: 'G-BRYRJMN6EF',
   );
 }

@@ -2,6 +2,71 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function isConfiguredSuperAdmin(userId) {
+      return request.auth != null
+          && request.auth.uid == userId
+          && request.auth.token.email == 'aajitechstudio@gmail.com'
+          && request.auth.token.email_verified == true;
+    }
+
+    function hasConfiguredSuperAdminProfile() {
+      return request.auth != null
+          && request.auth.token.email == 'aajitechstudio@gmail.com'
+          && request.auth.token.email_verified == true
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin'
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email == 'aajitechstudio@gmail.com';
+    }
+
+    function isActiveBranch(branchId) {
+      return branchId is string
+          && exists(/databases/$(database)/documents/branches/$(branchId))
+          && get(/databases/$(database)/documents/branches/$(branchId)).data.isActive == true;
+    }
+
+    function isSelfRegisteringUser(userId) {
+      return request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.uid == userId
+          && request.resource.data.role in ['carpenter', 'architect', 'interior_designer']
+          && request.resource.data.roleId == request.resource.data.role
+          && isActiveBranch(request.resource.data.branchId)
+          && request.resource.data.phone is string
+          && request.resource.data.phone.matches('^[0-9]{10}$');
+    }
+
+    function isCompletingOwnProfile(userId) {
+      return request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.uid == userId
+          && request.resource.data.role in ['carpenter', 'architect', 'interior_designer']
+          && request.resource.data.roleId == request.resource.data.role
+          && isActiveBranch(request.resource.data.branchId)
+          && request.resource.data.phone is string
+          && request.resource.data.phone.matches('^[0-9]{10}$')
+          && (resource.data.get('role', null) == null
+              || resource.data.get('role', null) == ''
+              || resource.data.get('role', null) == request.resource.data.role)
+          && (resource.data.get('branchId', null) == null
+              || resource.data.get('branchId', null) == ''
+              || resource.data.get('branchId', null) == request.resource.data.branchId)
+          && (resource.data.get('role', null) == null
+              || resource.data.get('role', null) == ''
+              || resource.data.get('branchId', null) == null
+              || resource.data.get('branchId', null) == '')
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'firstName', 'lastName', 'phone', 'phoneNumber',
+            'role', 'roleId', 'branchId', 'status', 'profileCompletedAt'
+          ]);
+    }
+
+    function protectedUserFieldsUnchanged(userId) {
+      return (request.resource.data.get('role', null) == resource.data.get('role', null)
+              && request.resource.data.get('branchId', null) == resource.data.get('branchId', null))
+          || isConfiguredSuperAdmin(userId)
+          || isCompletingOwnProfile(userId);
+    }
+
     // ============================================
     // PIN-BASED AUTHENTICATION RULES
     // ============================================
@@ -24,14 +89,24 @@ service cloud.firestore {
       // 1) Full registration document (admin/verification flow) with role/points/tier
       // 2) Minimal self-profile doc where doc ID == phone (for legacy users that only exist by phone)
       allow create: if request.resource.data.phone != null
-                    && (
-                      (
-                        request.resource.data.role != null
-                        && request.resource.data.totalPoints != null
-                        && request.resource.data.tier != null
-                      )
-                      || request.resource.data.phone == userId
-                    );
+          && (
+            isSelfRegisteringUser(userId)
+            || (
+              hasConfiguredSuperAdminProfile()
+              && request.resource.data.role == 'admin'
+              && request.resource.data.roleId == 'admin'
+              && isActiveBranch(request.resource.data.branchId)
+            )
+            || (
+              request.resource.data.role in ['carpenter', 'architect', 'interior_designer']
+              && request.resource.data.role != 'super_admin'
+              && (
+                (request.resource.data.totalPoints != null
+                 && request.resource.data.tier != null)
+                || request.resource.data.phone == userId
+              )
+            )
+          );
 
       // Allow users to update their own document (profile).
       // Supports both:
@@ -44,7 +119,8 @@ service cloud.firestore {
                       // Legacy strategy: doc ID is UID, phone stored in document data
                       || (resource.data.phone != null
                           && request.resource.data.phone == resource.data.phone)
-                    );
+                    )
+                    && protectedUserFieldsUnchanged(userId);
 
       // Allow users to update notification preferences only
       allow update: if request.resource.data.phone != null
@@ -54,17 +130,21 @@ service cloud.firestore {
                           && request.resource.data.phone == resource.data.phone)
                     )
                     && request.resource.data.keys().hasAll(['notificationPreferences'])
-                    && request.resource.data.notificationPreferences is map;
+                    && request.resource.data.notificationPreferences is map
+                    && protectedUserFieldsUnchanged(userId);
 
       // Allow admin updates (validated at app level).
       // Admin operations include: updating points, tier, profile info.
       // App validates admin status before making these requests.
       // Here we just require that a phone field is present.
       allow update: if request.resource.data.phone != null
-                    && request.resource.data.keys().hasAll(['phone']);
+                    && request.resource.data.keys().hasAll(['phone'])
+                    && protectedUserFieldsUnchanged(userId);
 
-      // Allow admin to delete users (validated at app level)
-      allow delete: if true; // App-level validation ensures only admins can delete
+      // Protect account records from client-side deletion. User records are
+      // retained for audit/history; any future retention workflow must run
+      // through a separately reviewed Admin SDK process with backups.
+      allow delete: if false;
     }
 
     // ============================================
@@ -409,14 +489,14 @@ service cloud.firestore {
       // All authenticated users can read branch list (for signup dropdown)
       allow read: if true;
 
-      // Only super_admin / admin SDK creates/updates branches.
-      // Client-side creates allowed only if the document has required fields.
-      // Full security enforced at app level (only super_admin role can call BranchService.createBranch).
-      allow create: if request.resource.data.name != null
+      // Only the verified, UID-bound configured super admin can manage branches.
+      allow create: if hasConfiguredSuperAdminProfile()
+            && request.resource.data.name != null
                     && request.resource.data.shortName != null
                     && request.resource.data.isActive != null;
 
-      allow update: if resource.data.name != null; // branch exists
+      allow update: if hasConfiguredSuperAdminProfile()
+            && resource.data.name != null;
 
       // Deletes disabled from client — use Admin SDK only
       allow delete: if false;

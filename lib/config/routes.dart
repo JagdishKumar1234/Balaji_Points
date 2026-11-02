@@ -10,10 +10,8 @@ import 'package:balaji_points/presentation/screens/carpenter/profile/profile_pag
 import 'package:balaji_points/presentation/screens/common/splash/splash_page.dart';
 
 import 'package:balaji_points/presentation/screens/common/auth/login_page.dart';
-import 'package:balaji_points/presentation/screens/common/auth/pin_setup_page.dart';
-import 'package:balaji_points/presentation/screens/common/auth/pin_login_page.dart';
-import 'package:balaji_points/presentation/screens/common/auth/reset_pin_page.dart';
-
+import 'package:balaji_points/presentation/screens/common/auth/register_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/forgot_password_page.dart';
 import 'package:balaji_points/presentation/screens/carpenter/spin/daily_spin_page.dart';
 import 'package:balaji_points/presentation/screens/carpenter/wallet/wallet_page.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_home_page.dart';
@@ -55,7 +53,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // Skip role checks for public/auth routes.
-      const publicPaths = ['/splash', '/login', '/pin-setup', '/pin-login', '/pin-reset', '/onboarding'];
+      const publicPaths = [
+        '/splash',
+        '/login',
+        '/register',
+        '/complete-registration',
+        '/forgot-password',
+        '/onboarding',
+      ];
       if (publicPaths.any((p) => path.startsWith(p))) return null;
 
       final role = (await SessionService().getUserRole())?.trim().toLowerCase();
@@ -137,8 +142,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
-                    final role =
-                        (await SessionService().getUserRole())?.trim().toLowerCase();
+                    final role = (await SessionService().getUserRole())
+                        ?.trim()
+                        .toLowerCase();
                     if (!context.mounted) return;
                     if (role == 'super_admin') {
                       context.go('/super-admin');
@@ -166,33 +172,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, _) => const OnboardingPage(),
       ),
 
+      GoRoute(path: '/login', builder: (context, _) => const LoginPage()),
+      GoRoute(path: '/register', builder: (context, _) => const RegisterPage()),
       GoRoute(
-        path: '/login',
-        builder: (context, _) => const LoginPage(),
+        path: '/complete-registration',
+        builder: (context, state) => RegisterPage(
+          completeGoogleProfile: true,
+          googleProfile: state.extra as Map<String, dynamic>?,
+        ),
       ),
-
       GoRoute(
-        path: '/pin-setup',
-        builder: (context, state) {
-          final phone = state.uri.queryParameters['phone'] ?? '';
-          return PINSetupPage(phoneNumber: phone);
-        },
-      ),
-
-      GoRoute(
-        path: '/pin-login',
-        builder: (context, state) {
-          final phone = state.uri.queryParameters['phone'] ?? '';
-          return PINLoginPage(phoneNumber: phone);
-        },
-      ),
-
-      GoRoute(
-        path: '/pin-reset',
-        builder: (context, state) {
-          final phone = state.uri.queryParameters['phone'] ?? '';
-          return ResetPINPage(phoneNumber: phone);
-        },
+        path: '/forgot-password',
+        builder: (context, state) =>
+            ForgotPasswordPage(initialEmail: state.extra as String?),
       ),
 
       // Carpenter shell with persistent bottom tab bar
@@ -244,10 +236,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/daily-spin',
         builder: (context, _) => const DailySpinPage(),
       ),
-      GoRoute(
-        path: '/admin',
-        builder: (context, _) => const AdminHomePage(),
-      ),
+      GoRoute(path: '/admin', builder: (context, _) => const AdminHomePage()),
       GoRoute(
         path: '/admin/add-bill',
         builder: (context, _) => const AdminAddBillPage(),

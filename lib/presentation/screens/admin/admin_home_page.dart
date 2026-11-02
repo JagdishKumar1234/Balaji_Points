@@ -29,6 +29,7 @@ import 'firestore_backup_screen.dart';
 import 'firebase_duplicate_checker_screen.dart';
 import 'smart_duplicate_cleanup_screen.dart';
 import 'send_greeting_page.dart';
+import '../../widgets/shared/responsive_role_navigation.dart';
 
 class AdminHomePage extends ConsumerStatefulWidget {
   const AdminHomePage({super.key});
@@ -41,6 +42,53 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     with DoubleTapExitMixin {
   bool _showDashboard = true;
   String? _selectedSection;
+
+  static const _adminRailSections = [
+    null,
+    'users',
+    'pending',
+    'history',
+    'offers',
+    'spin',
+    'notifications',
+  ];
+  static const _adminRailItems = [
+    RoleNavigationItem(
+      label: 'Dashboard',
+      icon: Icons.dashboard_outlined,
+      selectedIcon: Icons.dashboard_rounded,
+    ),
+    RoleNavigationItem(
+      label: 'Users',
+      icon: Icons.people_outline_rounded,
+      selectedIcon: Icons.people_rounded,
+    ),
+    RoleNavigationItem(
+      label: 'Pending bills',
+      icon: Icons.pending_actions_outlined,
+      selectedIcon: Icons.pending_actions_rounded,
+    ),
+    RoleNavigationItem(
+      label: 'Transactions',
+      icon: Icons.receipt_long_outlined,
+      selectedIcon: Icons.receipt_long_rounded,
+    ),
+    RoleNavigationItem(
+      label: 'Offers',
+      icon: Icons.local_offer_outlined,
+      selectedIcon: Icons.local_offer_rounded,
+    ),
+    RoleNavigationItem(
+      label: 'Rewards',
+      icon: Icons.emoji_events_outlined,
+      selectedIcon: Icons.emoji_events_rounded,
+    ),
+    RoleNavigationItem(
+      label: 'Notifications',
+      icon: Icons.notifications_outlined,
+      selectedIcon: Icons.notifications_rounded,
+    ),
+  ];
 
   static const List<String> _adminNotificationTypes = [
     'newPendingBill',
@@ -59,6 +107,15 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       _showDashboard = true;
       _selectedSection = null;
     });
+  }
+
+  void _onRailSelected(int index) {
+    final section = _adminRailSections[index];
+    if (section == null) {
+      _backToDashboard();
+    } else {
+      _openSection(section);
+    }
   }
 
   Future<void> _handleLogout() async {
@@ -244,11 +301,16 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: context.themeTextPrimary.withValues(alpha: 0.15),
+                              color: context.themeTextPrimary.withValues(
+                                alpha: 0.15,
+                              ),
                               borderRadius: AppRadius.sm8,
                             ),
-                            child: Icon(Icons.forest,
-                                color: context.themeTextPrimary, size: 22),
+                            child: Icon(
+                              Icons.forest,
+                              color: context.themeTextPrimary,
+                              size: 22,
+                            ),
                           ),
                         ),
                       ),
@@ -306,19 +368,29 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         ),
         body: Container(
           color: context.themeSoftSurface,
-          child: Column(
-            children: [
-              Expanded(
-                child: _showDashboard
-                    ? AdminDashboard(onOpenSection: _openSection)
-                    : _buildSectionContent(_selectedSection!),
-              ),
-              // Bottom safe area padding
-              SizedBox(
-                height: MediaQuery.of(context).viewInsets.bottom +
-                    MediaQuery.of(context).padding.bottom,
-              ),
-            ],
+          child: ResponsiveRoleNavigation(
+            roleLabel: 'Branch admin',
+            items: _adminRailItems,
+            selectedIndex: _showDashboard
+                ? 0
+                : (_adminRailSections
+                      .indexOf(_selectedSection)
+                      .clamp(0, _adminRailSections.length - 1)),
+            onSelected: _onRailSelected,
+            child: Column(
+              children: [
+                Expanded(
+                  child: _showDashboard
+                      ? AdminDashboard(onOpenSection: _openSection)
+                      : _buildSectionContent(_selectedSection!),
+                ),
+                SizedBox(
+                  height:
+                      MediaQuery.of(context).viewInsets.bottom +
+                      MediaQuery.of(context).padding.bottom,
+                ),
+              ],
+            ),
           ),
         ),
       ),

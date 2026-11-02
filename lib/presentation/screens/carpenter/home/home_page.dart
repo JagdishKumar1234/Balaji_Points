@@ -19,6 +19,7 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/home_provider.dart';
 import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
+import 'package:balaji_points/providers/loading_provider.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_drawer.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_feature_highlights.dart';
@@ -165,6 +166,7 @@ class _HomePageState extends ConsumerState<HomePage>
     );
 
     if (shouldLogout == true && context.mounted) {
+      ref.read(loadingProvider.notifier).start();
       try {
         await _fcmService.deleteToken();
         ref.read(carpenterPointsProvider.notifier).resetForLogout();
@@ -180,6 +182,10 @@ class _HomePageState extends ConsumerState<HomePage>
               backgroundColor: context.themeError,
             ),
           );
+        }
+      } finally {
+        if (context.mounted) {
+          ref.read(loadingProvider.notifier).stop();
         }
       }
     }
@@ -300,15 +306,6 @@ class _HomePageState extends ConsumerState<HomePage>
         actions: [
           // Theme toggle
           _ThemeToggleButton(fg: fg),
-          // Cart with badge
-          _NavBarIconButton(
-            icon: Icons.shopping_cart_outlined,
-            fg: fg,
-            badge: homeState.cartCount > 0 ? homeState.cartCount : null,
-            badgeColor: context.themeError,
-            tooltip: l10n.drawerCart,
-            onTap: () => context.push('/cart'),
-          ),
         ],
       ),
       body: Stack(
@@ -440,61 +437,6 @@ class _HomePageState extends ConsumerState<HomePage>
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// _NavBarIconButton — kept here as it's AppBar-specific
-// ---------------------------------------------------------------------------
-
-class _NavBarIconButton extends StatelessWidget {
-  final IconData icon;
-  final Color fg;
-  final int? badge;
-  final Color? badgeColor;
-  final String? tooltip;
-  final VoidCallback onTap;
-
-  const _NavBarIconButton({
-    required this.icon,
-    required this.fg,
-    required this.onTap,
-    this.badge,
-    this.badgeColor,
-    this.tooltip,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: onTap,
-      tooltip: tooltip,
-      icon: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Icon(icon, color: fg),
-          if (badge != null && badge! > 0)
-            Positioned(
-              top: -4,
-              right: -4,
-              child: Container(
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  color: badgeColor ?? context.themeError,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: context.themeBackground, width: 1),
-                ),
-                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                child: Text(
-                  badge! > 99 ? '99+' : '$badge',
-                  style: AppTypography.overline(color: AppColors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
         ],
       ),
     );

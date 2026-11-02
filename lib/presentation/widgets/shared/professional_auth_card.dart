@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -35,20 +36,16 @@ class ProfessionalAuthCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // White card container
+              // White/Card container
               Container(
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  color: isDark ? context.themeCard : AppColors.surface,
                   borderRadius: BorderRadius.circular(AppRadius.lg),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: isDark ? 0.3 : 0.12,
-                      ),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                  border: Border.all(
+                    color: context.themeBorder.withValues(alpha: 0.6),
+                    width: 1,
+                  ),
+                  boxShadow: context.themeShadow,
                 ),
                 padding: cardPadding,
                 child: child,
@@ -90,16 +87,14 @@ class _SecurityMessage extends StatelessWidget {
           Icon(
             Icons.shield_outlined,
             size: 16,
-            color: const Color(0xFF0D47A1).withValues(alpha: 0.7),
+            color: context.themePrimary,
           ),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
               message,
               style: AppTypography.bodySmall(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.6)
-                    : const Color(0xFF78909C),
+                color: context.themeTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -131,7 +126,7 @@ class AuthHeader extends StatelessWidget {
     final logoSize = context.responsiveLogoSize;
     final logoBorderRadius = context.responsiveLogoBorderRadius;
     final logoShadowBlur = ResponsiveTypography.getLogoShadowBlur(context);
-    final fallbackIconSize = logoSize * 0.5; // Icon is 50% of logo size
+    final fallbackIconSize = logoSize * 0.5;
 
     final titleFontSize = context.responsiveTitleSize;
     final subtitleFontSize = context.responsiveSubtitleSize;
@@ -139,17 +134,17 @@ class AuthHeader extends StatelessWidget {
 
     return Column(
       children: [
-        // Logo container - responsive sizing across all platforms
+        // Logo container
         SizedBox(
           width: logoSize,
           height: logoSize,
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF001F4D),
+              color: isDark ? context.themePrimary.withValues(alpha: 0.3) : context.themePrimary,
               borderRadius: BorderRadius.circular(logoBorderRadius),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF001F4D).withValues(alpha: 0.2),
+                  color: context.themePrimary.withValues(alpha: 0.2),
                   blurRadius: logoShadowBlur,
                   offset: Offset(0, logoShadowBlur * 0.3),
                 ),
@@ -163,11 +158,10 @@ class AuthHeader extends StatelessWidget {
                 height: logoSize,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  // Fallback icon - responsive size
                   return Center(
                     child: Icon(
                       Icons.card_giftcard_rounded,
-                      color: Colors.white,
+                      color: AppColors.white,
                       size: fallbackIconSize,
                     ),
                   );
@@ -177,19 +171,16 @@ class AuthHeader extends StatelessWidget {
           ),
         ),
 
-        // Responsive spacing after logo
         SizedBox(height: context.responsiveHeaderSpacing * 0.6),
 
-        // Title - responsive font size for all platforms
+        // Title
         Text(
           title,
           style: TextStyle(
             fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
             height: lineHeight,
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.95)
-                : const Color(0xFF001F4D),
+            color: context.themeTextPrimary,
             letterSpacing: context.responsiveLetterSpacing,
           ),
           textAlign: TextAlign.center,
@@ -197,18 +188,15 @@ class AuthHeader extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
 
-        // Space between title and subtitle
         const SizedBox(height: 8),
 
-        // Subtitle - responsive font size
+        // Subtitle
         Text(
           subtitle,
           style: TextStyle(
             fontSize: subtitleFontSize,
             height: lineHeight,
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.7)
-                : const Color(0xFF78909C),
+            color: context.themeTextSecondary,
           ),
           textAlign: TextAlign.center,
           maxLines: 3,
@@ -235,49 +223,39 @@ class AuthFooter extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Spacing from card above
         const SizedBox(height: AppSpacing.xl),
 
-        // "Powered by" text
         Text(
           'Powered by',
           style: AppTypography.bodySmall(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.7)
-                : const Color(0xFF78909C),
+            color: context.themeTextSecondary,
           ),
           textAlign: TextAlign.center,
         ),
 
-        // Space between texts
         const SizedBox(height: 8),
 
-        // Company name with gold stars - constrained for stability
         Container(
           constraints: const BoxConstraints(maxWidth: 320),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Left gold star
               Text(
                 '✦',
                 style: TextStyle(
-                  color: const Color(0xFFD4AF37),
+                  color: context.themeGold,
                   fontSize: 14,
                   height: 1.0,
                 ),
               ),
               const SizedBox(width: 10),
 
-              // Company name - white on dark, navy on light
               Flexible(
                 child: Text(
                   companyName,
                   style: AppTypography.bodyMedium(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.95)
-                        : const Color(0xFF001F4D),
+                    color: context.themeTextPrimary,
                   ).copyWith(
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
@@ -289,11 +267,10 @@ class AuthFooter extends StatelessWidget {
               ),
               const SizedBox(width: 10),
 
-              // Right gold star
               Text(
                 '✦',
                 style: TextStyle(
-                  color: const Color(0xFFD4AF37),
+                  color: context.themeGold,
                   fontSize: 14,
                   height: 1.0,
                 ),
@@ -322,19 +299,17 @@ class AuthTopControls extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
-        vertical: AppSpacing.lg,  // Increased for better visibility
+        vertical: AppSpacing.lg,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left: Theme toggle - ensure proper sizing
           SizedBox(
             width: 44,
             height: 44,
             child: themeToggle,
           ),
 
-          // Right: Language picker - ensure proper sizing
           SizedBox(
             height: 44,
             child: languagePicker,
@@ -363,7 +338,7 @@ class DividerText extends StatelessWidget {
       child: Text(
         text.toUpperCase(),
         style: AppTypography.labelSmall(
-          color: const Color(0xFFD4AF37),
+          color: context.themeGold,
         ).copyWith(
           fontWeight: FontWeight.w600,
           letterSpacing: 1.2,

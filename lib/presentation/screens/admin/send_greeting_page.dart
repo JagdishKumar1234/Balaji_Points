@@ -13,6 +13,7 @@ import 'dart:io' show Platform, File;
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 
 class SendGreetingPage extends StatefulWidget {
   const SendGreetingPage({super.key, this.embedded = false});
@@ -392,8 +393,11 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: ResponsiveContainer(
+                maxWidth: 700,
+                padding: EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText.h4('Compose Message'),
                   const SizedBox(height: AppSpacing.md),
@@ -541,6 +545,7 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
                 ],
               ),
             ),
+          ),
     );
   }
 

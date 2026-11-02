@@ -17,34 +17,32 @@ class LoadingOverlay extends ConsumerWidget {
       ignoring: false,
       child: Stack(
         children: [
-          ModalBarrier(color: AppColors.black.withValues(alpha: 0.25)),
+          ModalBarrier(color: AppColors.black.withValues(alpha: 0.35)),
           Center(
             child: Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: context.themeCard,
                 borderRadius: AppRadius.all16,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.black.withValues(alpha: 0.1),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
+                border: Border.all(color: context.themeBorder, width: 1),
+                boxShadow: context.themeShadow,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    width: 40,
-                    height: 40,
+                    width: 44,
+                    height: 44,
                     child: CircularProgressIndicator(
                       strokeWidth: 4,
                       color: context.themeSecondary,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  AppText.body('Loading...', color: context.themeTextPrimary),
+                  const SizedBox(height: 16),
+                  AppText.body(
+                    'Loading...',
+                    color: context.themeTextPrimary,
+                  ),
                 ],
               ),
             ),

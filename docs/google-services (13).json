@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "53571317085",
+    "project_id": "balajipoints",
+    "storage_bucket": "balajipoints.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53571317085:android:9a0a2f059605eb97158cb4",
+        "android_client_info": {
+          "package_name": "com.balaji.points"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53571317085-5hp893b6q1vhe374dais0o7ocrpb8u9v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.balaji.points",
+            "certificate_hash": "1edf2c5615931e44a770a1c76ccb30f31571c76a"
+          }
+        },
+        {
+          "client_id": "53571317085-3pcurtbbavuegp6sdg6c4q2i6tbg80p3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1sfFB_qTXzIGaI0QonxGEZo8MICouGzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53571317085-3pcurtbbavuegp6sdg6c4q2i6tbg80p3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "53571317085-511qa95vhjtn123u04eejdiktqj4hm55.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.balaji.points"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

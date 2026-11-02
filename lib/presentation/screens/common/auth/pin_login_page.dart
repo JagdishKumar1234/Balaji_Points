@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +7,6 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
-import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
@@ -130,7 +127,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                                   width: 80,
                                   height: 80,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF001F4D),
+                                    color: isDark ? context.themePrimary.withValues(alpha: 0.3) : context.themePrimary,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: ClipRRect(
@@ -152,7 +149,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                                 Text(
                                   l10n.enter4DigitPin,
                                   style: AppTypography.displaySmall(
-                                    color: const Color(0xFF001F4D),
+                                    color: context.themeTextPrimary,
                                   ).copyWith(fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.center,
                                 ).fadeIn(delay: AppAnimations.stagger(2)),
@@ -162,7 +159,7 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
                                 Text(
                                   '+91 ${widget.phoneNumber}',
                                   style: AppTypography.bodyMedium(
-                                    color: const Color(0xFF78909C),
+                                    color: context.themeTextSecondary,
                                   ),
                                   textAlign: TextAlign.center,
                                 ).fadeIn(delay: AppAnimations.stagger(3)),

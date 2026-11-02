@@ -99,19 +99,15 @@ class HomeHeroCard extends StatelessWidget {
 
     // Overlay colours — semi-transparent so image shows through
     final overlayStart = isDark
-        ? const Color(0xFF0D1520).withValues(alpha: 0.55)
-        : const Color(0xFFFFFFFF).withValues(alpha: 0.45);
+        ? context.themeBackground.withValues(alpha: 0.55)
+        : AppColors.white.withValues(alpha: 0.45);
     final overlayEnd = isDark
-        ? const Color(0xFF0D1520).withValues(alpha: 0.20)
-        : const Color(0xFFFFFFFF).withValues(alpha: 0.10);
+        ? context.themeBackground.withValues(alpha: 0.20)
+        : AppColors.white.withValues(alpha: 0.10);
 
-    final textPrimary = isDark ? AppColors.white : const Color(0xFF0D1520);
-    final textSecondary = isDark
-        ? AppColors.white.withValues(alpha: 0.70)
-        : const Color(0xFF0D1520).withValues(alpha: 0.55);
-    final dividerColor = isDark
-        ? AppColors.white.withValues(alpha: 0.18)
-        : AppColors.black.withValues(alpha: 0.10);
+    final textPrimary = context.themeTextPrimary;
+    final textSecondary = context.themeTextSecondary;
+    final dividerColor = context.themeBorder;
     // Stats bar at bottom — frosted transparent
     final statsOverlayBg = isDark
         ? AppColors.black.withValues(alpha: 0.35)

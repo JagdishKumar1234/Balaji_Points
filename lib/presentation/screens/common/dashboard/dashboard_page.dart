@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_bottom_nav_bar.dart';
+import 'package:balaji_points/presentation/widgets/shared/responsive_role_navigation.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/core/logger.dart';
 
@@ -33,13 +35,16 @@ class DashboardPage extends ConsumerStatefulWidget {
 
 class _DashboardPageState extends ConsumerState<DashboardPage>
     with DoubleTapExitMixin {
-
   void _onTabTapped(int index) {
     switch (index) {
-      case 0: GoRouter.of(context).go('/');
-      case 1: GoRouter.of(context).go('/wallet');
-      case 2: GoRouter.of(context).go('/notifications');
-      case 3: GoRouter.of(context).go('/profile');
+      case 0:
+        GoRouter.of(context).go('/');
+      case 1:
+        GoRouter.of(context).go('/wallet');
+      case 2:
+        GoRouter.of(context).go('/notifications');
+      case 3:
+        GoRouter.of(context).go('/profile');
     }
   }
 
@@ -53,7 +58,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     final roleAsync = ref.watch(_roleProvider);
     final role = roleAsync.asData?.value;
     final isAdmin = role == 'admin';
-    final showNav = roleAsync.hasValue && !isAdmin;
+    final showNav = roleAsync.hasValue && !isAdmin && !context.isWideScreen;
 
     // Apply light-mode canvas override (matches fintech premium feel)
     final shellTheme = isDark
@@ -74,10 +79,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     final tabIndex = path.startsWith('/wallet')
         ? 1
         : path.startsWith('/notifications')
-            ? 2
-            : path.startsWith('/profile')
-                ? 3
-                : 0;
+        ? 2
+        : path.startsWith('/profile')
+        ? 3
+        : 0;
 
     final bottomChromeHeight = CarpenterShellLayout.chromeHeight(mq);
 
@@ -99,28 +104,81 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             },
             child: Scaffold(
               backgroundColor: t.scaffoldBackgroundColor,
-              body: Stack(
-                children: [
-                  // ── Page content with bottom padding so it clears the nav bar ──
-                  Padding(
-                    padding: EdgeInsets.only(
-                      bottom: showNav ? bottomChromeHeight : 0,
-                    ),
-                    child: widget.child ?? const SizedBox.shrink(),
+              body: ResponsiveRoleNavigation(
+                roleLabel: role?.replaceAll('_', ' ') ?? 'Member',
+                selectedIndex: path.startsWith('/wallet')
+                    ? 1
+                    : path.startsWith('/add-bill')
+                    ? 2
+                    : path.startsWith('/notifications')
+                    ? 3
+                    : path.startsWith('/profile')
+                    ? 4
+                    : 0,
+                items: const [
+                  RoleNavigationItem(
+                    label: 'Dashboard',
+                    icon: Icons.home_outlined,
+                    selectedIcon: Icons.home_rounded,
                   ),
-
-                  // ── Bottom nav bar ──
-                  if (showNav)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: CarpenterBottomNavBar.fromContext(
-                        ctx,
-                        currentIndex: tabIndex,
-                        onTabSelected: _onTabTapped,
-                        onAddBillTap: () => context.push('/add-bill'),
-                      ),
-                    ),
+                  RoleNavigationItem(
+                    label: 'Wallet',
+                    icon: Icons.account_balance_wallet_outlined,
+                    selectedIcon: Icons.account_balance_wallet_rounded,
+                  ),
+                  RoleNavigationItem(
+                    label: 'Add bill',
+                    icon: Icons.add_circle_outline_rounded,
+                    selectedIcon: Icons.add_circle_rounded,
+                  ),
+                  RoleNavigationItem(
+                    label: 'Notifications',
+                    icon: Icons.notifications_outlined,
+                    selectedIcon: Icons.notifications_rounded,
+                  ),
+                  RoleNavigationItem(
+                    label: 'Profile',
+                    icon: Icons.person_outline_rounded,
+                    selectedIcon: Icons.person_rounded,
+                  ),
                 ],
+                onSelected: (index) {
+                  switch (index) {
+                    case 0:
+                      GoRouter.of(context).go('/');
+                    case 1:
+                      GoRouter.of(context).go('/wallet');
+                    case 2:
+                      GoRouter.of(context).go('/add-bill');
+                    case 3:
+                      GoRouter.of(context).go('/notifications');
+                    case 4:
+                      GoRouter.of(context).go('/profile');
+                  }
+                },
+                child: Stack(
+                  children: [
+                    // ── Page content with bottom padding so it clears the nav bar ──
+                    Padding(
+                      padding: EdgeInsets.only(
+                        bottom: showNav ? bottomChromeHeight : 0,
+                      ),
+                      child: widget.child ?? const SizedBox.shrink(),
+                    ),
+
+                    // ── Bottom nav bar ──
+                    if (showNav)
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: CarpenterBottomNavBar.fromContext(
+                          ctx,
+                          currentIndex: tabIndex,
+                          onTabSelected: _onTabTapped,
+                          onAddBillTap: () => context.push('/add-bill'),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           );

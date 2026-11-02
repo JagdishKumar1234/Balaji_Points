@@ -1,5 +1,6 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -304,21 +305,25 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE3F2FD),
+                        color: context.themeSoftSurface,
                         borderRadius: AppRadius.md12,
+                        border: Border.all(
+                          color: context.themeBorder,
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.info_outline, color: const Color(0xFF1976D2)),
+                          Icon(Icons.info_outline_rounded, color: context.themePrimary),
                           const SizedBox(width: 10),
-                          Text(
-                            'You\'ve already spun today!\nCome back tomorrow for another chance.',
-                            style: TextStyle(
-                              color: const Color(0xFF1976D2),
-                              fontSize: 14,
+                          Flexible(
+                            child: Text(
+                              'You\'ve already spun today!\nCome back tomorrow for another chance.',
+                              style: AppTypography.bodySmall(
+                                color: context.themeTextPrimary,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),

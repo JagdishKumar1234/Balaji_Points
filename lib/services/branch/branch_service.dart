@@ -14,38 +14,6 @@ class BranchService {
   CollectionReference<Map<String, dynamic>> get _branches =>
       _db.collection('branches');
 
-  // ── Seed ───────────────────────────────────────────────────────────────────
-
-  static const String _seedName =
-      'Sri Balaji Plywood and Hardware - E Road';
-
-  /// Idempotent seed: creates the default branch doc if missing, or corrects
-  /// the name if it was previously saved with a different value.
-  Future<void> seedDefaultBranch() async {
-    try {
-      final ref = _branches.doc(kDefaultBranchId);
-      final snap = await ref.get();
-      if (!snap.exists) {
-        await ref.set({
-          'name': _seedName,
-          'shortName': 'E Road Branch',
-          'address': '150 VCTV Main Road, Erode',
-          'phone': '96006-09121',
-          'isActive': true,
-          'createdAt': FieldValue.serverTimestamp(),
-          'createdBy': 'system',
-        });
-        AppLogger.info('BranchService: seeded default branch erode_main');
-      } else if (snap.data()?['name'] != _seedName) {
-        // Correct the name if it was saved differently in a prior version.
-        await ref.update({'name': _seedName});
-        AppLogger.info('BranchService: updated erode_main branch name');
-      }
-    } catch (e) {
-      AppLogger.error('BranchService.seedDefaultBranch', e);
-    }
-  }
-
   // ── Reads ──────────────────────────────────────────────────────────────────
 
   Stream<QuerySnapshot<Map<String, dynamic>>> watchAllBranches() =>
@@ -59,6 +27,22 @@ class BranchService {
     } catch (e) {
       AppLogger.error('BranchService.getBranch', e);
       return null;
+    }
+  }
+
+  /// Checks whether a branch already has an assigned Admin (Constraint: Only 1 Admin per branch).
+  Future<bool> hasAdmin(String branchId) async {
+    try {
+      final snap = await _db
+          .collection('users')
+          .where('branchId', isEqualTo: branchId)
+          .where('role', isEqualTo: 'admin')
+          .limit(1)
+          .get();
+      return snap.docs.isNotEmpty;
+    } catch (e) {
+      AppLogger.error('BranchService.hasAdmin', e);
+      return false;
     }
   }
 
@@ -78,8 +62,9 @@ class BranchService {
             .where((d) => d.data()['isActive'] == true)
             .map((d) => {'id': d.id, ...d.data()})
             .toList();
-        results.sort((a, b) =>
-            (a['name'] as String).compareTo(b['name'] as String));
+        results.sort(
+          (a, b) => (a['name'] as String).compareTo(b['name'] as String),
+        );
         return results;
       } catch (e2) {
         AppLogger.error('BranchService.listActiveBranches (fallback)', e2);
@@ -98,6 +83,17 @@ class BranchService {
     required String createdBy,
   }) async {
     try {
+      final duplicate = await _branches
+          .where('name', isEqualTo: name.trim())
+          .limit(1)
+          .get();
+      if (duplicate.docs.isNotEmpty) {
+        AppLogger.warning(
+          'BranchService: branch already exists: ${name.trim()}',
+        );
+        return null;
+      }
+
       final ref = await _branches.add({
         'name': name,
         'shortName': shortName,
@@ -156,5 +152,4 @@ class BranchService {
       return false;
     }
   }
-
 }

@@ -72,8 +72,6 @@ class AppConstants {
   static const String dailyPrizeWinnersCollection = 'daily_prize_winners';
 
   // User Roles
-  static const String roleAdmin = 'admin';
-  static const String roleCarpenter = 'carpenter';
 
   // Bill Status
   static const String billStatusPending = 'pending';
@@ -127,6 +125,7 @@ class AppConstants {
   static const String keyUserId = 'userId';
   static const String keyUserRole = 'userRole';
   static const String keyThemeMode = 'themeMode';
+  static const String keyThemeColorPalette = 'themeColorPalette';
   static const String keyLanguage = 'language';
 
   // Deep Link Routes
@@ -139,4 +138,29 @@ class AppConstants {
   static const bool enableOffers = true;
   static const bool enablePushNotifications = true;
   static const bool enableAnalytics = true;
+
+  // Platform Roles
+  static const String roleSuperAdmin = 'super_admin';
+  static const String roleAdmin = 'admin';
+  static const String roleCarpenter = 'carpenter';
+  static const String roleArchitect = 'architect';
+  static const String roleInteriorDesigner = 'interior_designer';
+
+  /// Roles available for selection during branch user registration
+  static const List<String> branchRegistrationRoles = [
+    roleCarpenter,
+    roleArchitect,
+    roleInteriorDesigner,
+    roleAdmin,
+  ];
+
+  // Platform Super Admin Configuration
+  static const String superAdminEmail = 'aajitechstudio@gmail.com';
+  static const String superAdminPhone = '8947038661';
+  static const String superAdminPhoneE164 = '+918947038661';
+  static const String googleWebClientId =
+      '53571317085-i0f9v256m44jelpcqp2pte765igl2k2h.apps.googleusercontent.com';
+
+  // Capacity
+  static const int defaultBranchUserCapacity = 5000;
 }

@@ -257,27 +257,27 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                             isDark: isDark,
                             securityMessage: 'Your data is 100% secure with us',
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                // Header
-                                Column(
-                                  children: [
-                                    // Logo
-                                Container(
-                                  width: 80,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF001F4D),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Image.asset(
-                                      'assets/images/balaji_point_logo.png',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => const Icon(
-                                        Icons.home_rounded,
-                                        color: Colors.white,
-                                        size: 40,
+                                // Logo
+                                Center(
+                                  child: Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: isDark ? context.themePrimary.withValues(alpha: 0.3) : context.themePrimary,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.asset(
+                                        'assets/images/balaji_point_logo.png',
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => const Icon(
+                                          Icons.home_rounded,
+                                          color: Colors.white,
+                                          size: 40,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -288,7 +288,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                 Text(
                                   l10n.resetPinTitle,
                                   style: AppTypography.displaySmall(
-                                    color: const Color(0xFF001F4D),
+                                    color: context.themeTextPrimary,
                                   ).copyWith(fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.center,
                                 ).fadeIn(delay: AppAnimations.stagger(2)),
@@ -298,23 +298,21 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                 Text(
                                   l10n.resetPinSubtitle,
                                   style: AppTypography.bodyMedium(
-                                    color: const Color(0xFF78909C),
+                                    color: context.themeTextSecondary,
                                   ),
                                   textAlign: TextAlign.center,
                                 ).fadeIn(delay: AppAnimations.stagger(3)),
-                              ],
-                            ),
 
-                            const SizedBox(height: AppSpacing.xl3),
+                                const SizedBox(height: AppSpacing.xl3),
 
-                            // Phone field
-                            AppTextField.phone(
-                              controller: _phoneController,
-                              label: l10n.mobileNumber,
-                              enabled: !_isLoggedIn,
-                            ).fadeIn(delay: AppAnimations.stagger(4)),
+                                // Phone field
+                                AppTextField.phone(
+                                  controller: _phoneController,
+                                  label: l10n.mobileNumber,
+                                  enabled: !_isLoggedIn,
+                                ).fadeIn(delay: AppAnimations.stagger(4)),
 
-                            const SizedBox(height: AppSpacing.xl2),
+                                const SizedBox(height: AppSpacing.xl2),
 
                             // Check number button (only for non-logged-in)
                             if (!_isLoggedIn)

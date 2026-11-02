@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/logger.dart';
 import '../user/user_service.dart';
 
@@ -41,10 +42,39 @@ class PinAuthService {
     String? lastName,
     String? profileImageUrl,
     String? branchId,
+    String? role,
   }) async {
     try {
       final normalized = normalizePhone(phone);
       final usersRef = _firestore.collection('users');
+
+      // Determine role with Super Admin & 1-Admin-Per-Branch guard
+      String assignedRole = role ?? AppConstants.roleCarpenter;
+      if (normalized == AppConstants.superAdminPhone ||
+          phone == AppConstants.superAdminPhone ||
+          normalized == '8947038661' ||
+          normalized == '918947038661') {
+        assignedRole = AppConstants.roleSuperAdmin;
+      } else if (assignedRole == AppConstants.roleAdmin && branchId != null) {
+        // Enforce: ONLY ONE ADMIN PER BRANCH
+        final adminCheck = await usersRef
+            .where('branchId', isEqualTo: branchId)
+            .where('role', isEqualTo: 'admin')
+            .limit(1)
+            .get();
+        if (adminCheck.docs.isNotEmpty) {
+          final existingAdmin = adminCheck.docs.first;
+          final existingPhone = existingAdmin.data()['phone']?.toString();
+          if (existingPhone != normalized) {
+            AppLogger.warning(
+              'Admin registration blocked: branch $branchId already has an admin',
+            );
+            throw Exception(
+              'Branch already has an assigned Admin. Only one Admin is permitted per branch.',
+            );
+          }
+        }
+      }
 
       final salt = _generateSalt();
       final pinHash = _hashPin(pin, salt);
@@ -57,6 +87,7 @@ class PinAuthService {
           'pinHash': pinHash,
           'pinSalt': salt,
           'pinUpdatedAt': FieldValue.serverTimestamp(),
+          'role': assignedRole,
         };
 
         if (firstName != null && firstName.isNotEmpty) {
@@ -77,7 +108,7 @@ class PinAuthService {
         }
 
         await doc.reference.set(data, SetOptions(merge: true));
-        AppLogger.info('PIN updated for existing user: $normalized');
+        AppLogger.info('PIN updated for existing user: $normalized (role: $assignedRole)');
         return true;
       } else {
         // SAFETY CHECK: Ensure no duplicate exists before creating new user
@@ -98,6 +129,7 @@ class PinAuthService {
             'pinHash': pinHash,
             'pinSalt': salt,
             'pinUpdatedAt': FieldValue.serverTimestamp(),
+            'role': assignedRole,
           };
 
           if (firstName != null && firstName.isNotEmpty) {
@@ -126,7 +158,7 @@ class PinAuthService {
           'lastName': lastName ?? '',
           'phone': normalized,
           'profileImage': profileImageUrl ?? '',
-          'role': 'carpenter',
+          'role': assignedRole,
           'branchId': branchId,
           'status': 'verified',
           'totalPoints': 0,
@@ -709,7 +741,9 @@ class PinAuthService {
         'firstName': firstName,
         'lastName': lastName ?? '',
         'profileImage': profileImageUrl ?? '',
-        'role': 'carpenter',
+        'role': (normalized == AppConstants.superAdminPhone || normalized == '8947038661' || normalized == '918947038661')
+            ? AppConstants.roleSuperAdmin
+            : 'carpenter',
         'status': 'verified',
         'totalPoints': 0,
         'tier': 'Bronze',

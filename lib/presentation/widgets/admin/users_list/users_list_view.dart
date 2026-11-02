@@ -9,13 +9,11 @@ class UsersListView extends StatelessWidget {
   final String searchQuery;
   final String selectedTier;
   final String selectedSort;
-  final VoidCallback onCarpenterDeleted;
 
   const UsersListView({
     required this.searchQuery,
     required this.selectedTier,
     required this.selectedSort,
-    required this.onCarpenterDeleted,
     super.key,
   });
 
@@ -41,8 +39,9 @@ class UsersListView extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   'Error loading users',
-                  style: AppTypography.bodyMedium()
-                      .copyWith(color: AppColors.error),
+                  style: AppTypography.bodyMedium().copyWith(
+                    color: AppColors.error,
+                  ),
                 ),
               ],
             ),
@@ -63,7 +62,9 @@ class UsersListView extends StatelessWidget {
         if (searchQuery.isNotEmpty) {
           users = users.where((doc) {
             final data = doc.data() as Map<String, dynamic>;
-            final firstName = (data['firstName'] ?? '').toString().toLowerCase();
+            final firstName = (data['firstName'] ?? '')
+                .toString()
+                .toLowerCase();
             final lastName = (data['lastName'] ?? '').toString().toLowerCase();
             final phone = (data['phoneNumber'] ?? data['phone'] ?? '')
                 .toString()
@@ -91,17 +92,20 @@ class UsersListView extends StatelessWidget {
 
           switch (selectedSort) {
             case 'name':
-              final nameA = '${dataA['firstName'] ?? ''} ${dataA['lastName'] ?? ''}'
-                  .toLowerCase();
-              final nameB = '${dataB['firstName'] ?? ''} ${dataB['lastName'] ?? ''}'
-                  .toLowerCase();
+              final nameA =
+                  '${dataA['firstName'] ?? ''} ${dataA['lastName'] ?? ''}'
+                      .toLowerCase();
+              final nameB =
+                  '${dataB['firstName'] ?? ''} ${dataB['lastName'] ?? ''}'
+                      .toLowerCase();
               return nameA.compareTo(nameB);
 
             case 'recent':
               final dateA = dataA['createdAt'] as Timestamp?;
               final dateB = dataB['createdAt'] as Timestamp?;
-              return (dateB?.toDate() ?? DateTime(2000))
-                  .compareTo(dateA?.toDate() ?? DateTime(2000));
+              return (dateB?.toDate() ?? DateTime(2000)).compareTo(
+                dateA?.toDate() ?? DateTime(2000),
+              );
 
             case 'points':
             default:
@@ -116,13 +120,17 @@ class UsersListView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.people_outline,
-                    color: context.themeTextSecondary, size: 48),
+                Icon(
+                  Icons.people_outline,
+                  color: context.themeTextSecondary,
+                  size: 48,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'No carpenters found',
-                  style: AppTypography.bodyMedium()
-                      .copyWith(color: context.themeTextSecondary),
+                  style: AppTypography.bodyMedium().copyWith(
+                    color: context.themeTextSecondary,
+                  ),
                 ),
               ],
             ),
@@ -144,11 +152,7 @@ class UsersListView extends StatelessWidget {
               final user = users[index];
               final data = user.data() as Map<String, dynamic>;
 
-              return UserListItem(
-                userId: user.id,
-                userData: data,
-                onDeleted: onCarpenterDeleted,
-              );
+              return UserListItem(userId: user.id, userData: data);
             },
           );
         }
@@ -160,11 +164,7 @@ class UsersListView extends StatelessWidget {
             final user = users[index];
             final data = user.data() as Map<String, dynamic>;
 
-            return UserListItem(
-              userId: user.id,
-              userData: data,
-              onDeleted: onCarpenterDeleted,
-            );
+            return UserListItem(userId: user.id, userData: data);
           },
         );
       },

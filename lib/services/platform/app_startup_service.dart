@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/services/platform/app_update_service.dart';
-import 'package:balaji_points/services/branch/branch_migration_service.dart';
-import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/notifications/local_notification_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
@@ -40,19 +38,15 @@ class AppStartupService {
     try {
       // Notify admin/carpenter about new version (non-blocking)
       // Use timeout to prevent hang on slow network
-      await _updateService.notifyAdminCarpenterAboutUpdate()
-          .timeout(const Duration(seconds: 10), onTimeout: () {});
+      await _updateService.notifyAdminCarpenterAboutUpdate().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {},
+      );
 
-      // Ensure the default branch document exists in Firestore.
-      await BranchService().seedDefaultBranch()
-          .timeout(const Duration(seconds: 15), onTimeout: () {});
-
-      // One-time backfill: stamp branchId on all legacy docs.
-      await BranchMigrationService().runIfNeeded()
-          .timeout(const Duration(seconds: 30), onTimeout: () {});
-
-      await _runMigrationAndRefreshFcm()
-          .timeout(const Duration(seconds: 20), onTimeout: () {});
+      await _runMigrationAndRefreshFcm().timeout(
+        const Duration(seconds: 20),
+        onTimeout: () {},
+      );
     } catch (e) {
       // Background tasks failing shouldn't crash the app
       AppLogger.error('Background startup tasks failed', e);
@@ -69,12 +63,6 @@ class AppStartupService {
 
     // Notify admin/carpenter about new version (non-blocking)
     await _updateService.notifyAdminCarpenterAboutUpdate();
-
-    // Ensure the default branch document exists in Firestore.
-    await BranchService().seedDefaultBranch();
-
-    // One-time backfill: stamp branchId on all legacy docs.
-    await BranchMigrationService().runIfNeeded();
 
     await _runMigrationAndRefreshFcm();
     return false;

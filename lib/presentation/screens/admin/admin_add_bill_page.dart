@@ -14,6 +14,7 @@ import 'package:balaji_points/services/user/user_service.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/presentation/widgets/admin/carpenter_selection_widget.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
 
 class AdminAddBillPage extends StatefulWidget {
@@ -744,10 +745,13 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                    child: ResponsiveContainer(
+                      maxWidth: 700,
+                      padding: EdgeInsets.zero,
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const SizedBox(height: 20),
 
@@ -952,6 +956,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                     ),
                   ),
                 ),
+              ),
 
                 // Fixed Submit Button at Bottom
                 Container(
@@ -967,10 +972,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                     ],
                   ),
                   child: SafeArea(
-                    child: AppButton.primary(
-                      label: 'Submit Bill',
-                      onPressed: _isSubmitting ? null : _submitBill,
-                      isLoading: _isSubmitting,
+                    child: ResponsiveContainer(
+                      maxWidth: 700,
+                      padding: EdgeInsets.zero,
+                      child: AppButton.primary(
+                        label: 'Submit Bill',
+                        onPressed: _isSubmitting ? null : _submitBill,
+                        isLoading: _isSubmitting,
+                      ),
                     ),
                   ),
                 ),

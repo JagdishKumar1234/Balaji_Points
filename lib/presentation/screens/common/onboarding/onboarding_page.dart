@@ -2,7 +2,6 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/responsive_typography.dart';
-import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';

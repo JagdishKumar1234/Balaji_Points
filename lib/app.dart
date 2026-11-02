@@ -17,15 +17,16 @@ class BalajiPointsApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final colorPalette = ref.watch(themeColorPaletteProvider);
     final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: AppConstants.appName,
 
-      // Theme Configuration (Light & Dark)
-      theme: AppThemeData.light,
-      darkTheme: AppThemeData.dark,
+      // Theme Configuration (Light & Dark with selectable Light Material Color Palette)
+      theme: AppThemeData.light(colorPalette),
+      darkTheme: AppThemeData.dark(colorPalette),
       themeMode: themeMode,
 
       // Localization Configuration

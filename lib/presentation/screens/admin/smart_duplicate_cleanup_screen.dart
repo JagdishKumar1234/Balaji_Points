@@ -58,14 +58,16 @@ class _SmartDuplicateCleanupScreenState
     phoneMap.forEach((phone, users) {
       if (users.length > 1) {
         // Sort by points descending to find highest
-        users.sort((a, b) => (b['points'] as num).compareTo(a['points'] as num));
+        users.sort(
+          (a, b) => (b['points'] as num).compareTo(a['points'] as num),
+        );
 
         duplicateGroups.add({
           'phone': phone,
           'users': users,
           'keepUser': users[0], // Highest points
-          'deleteUsers': users.skip(1).toList(), // Rest to delete
-          'totalToDelete': users.length - 1,
+          'reviewUsers': users.skip(1).toList(),
+          'reviewCount': users.length - 1,
           'pointsDifference':
               (users[0]['points'] as num) - (users[1]['points'] as num),
         });
@@ -73,122 +75,20 @@ class _SmartDuplicateCleanupScreenState
     });
 
     // Sort by points difference (highest first - biggest cleanup impact)
-    duplicateGroups.sort((a, b) =>
-        (b['pointsDifference'] as num).compareTo(a['pointsDifference'] as num));
+    duplicateGroups.sort(
+      (a, b) => (b['pointsDifference'] as num).compareTo(
+        a['pointsDifference'] as num,
+      ),
+    );
 
     return {
       'duplicateGroups': duplicateGroups,
       'totalDuplicatePhones': duplicateGroups.length,
-      'totalAccountsToDelete': duplicateGroups.fold(0,
-          (sum, group) => sum + (group['totalToDelete'] as int)),
-    };
-  }
-
-  Future<void> _deleteAccount(String accountId, String accountName) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: Text(
-          'Delete Account',
-          style: AppTypography.h3(),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Delete this duplicate account?',
-              style: AppTypography.bodyMedium(),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
-                borderRadius: AppRadius.md12,
-              ),
-              child: Text(
-                'Account: $accountName\nID: $accountId',
-                style: AppTypography.bodySmall().copyWith(
-                  color: Colors.red[700],
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '⚠️ This action cannot be undone!',
-              style: AppTypography.labelSmall().copyWith(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themeTextSecondary,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+      'totalAccountsForReview': duplicateGroups.fold(
+        0,
+        (subtotal, group) => subtotal + (group['reviewCount'] as int),
       ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(
-          child: CircularProgressIndicator(
-            color: context.themePrimary,
-          ),
-        ),
-      );
-
-      await FirebaseFirestore.instance.collection('users').doc(accountId).delete();
-
-      if (!mounted) return;
-      Navigator.pop(context); // Close progress dialog
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('✅ Account deleted: $accountName'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-
-      // Refresh the list
-      setState(() {
-        _analysisFuture = _analyzeAndRecommend();
-      });
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context); // Close progress dialog
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error deleting account: $e'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+    };
   }
 
   @override
@@ -196,10 +96,7 @@ class _SmartDuplicateCleanupScreenState
     return Scaffold(
       backgroundColor: context.themeBackground,
       appBar: AppBar(
-        title: Text(
-          'Smart Duplicate Cleanup',
-          style: AppTypography.h2(),
-        ),
+        title: Text('Smart Duplicate Cleanup', style: AppTypography.h2()),
         backgroundColor: context.themePrimary,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -207,9 +104,7 @@ class _SmartDuplicateCleanupScreenState
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(
-                color: context.themePrimary,
-              ),
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -227,7 +122,7 @@ class _SmartDuplicateCleanupScreenState
           final data = snapshot.data ?? {};
           final duplicateGroups =
               data['duplicateGroups'] as List<dynamic>? ?? [];
-          final totalToDelete = data['totalAccountsToDelete'] as int? ?? 0;
+          final totalForReview = data['totalAccountsForReview'] as int? ?? 0;
 
           return SingleChildScrollView(
             child: Padding(
@@ -281,7 +176,7 @@ class _SmartDuplicateCleanupScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '⚠️ Smart Cleanup Recommendation',
+                            'Potential duplicate accounts — review required',
                             style: AppTypography.labelLarge().copyWith(
                               color: Colors.red[700],
                             ),
@@ -292,7 +187,7 @@ class _SmartDuplicateCleanupScreenState
                             style: AppTypography.bodyMedium(),
                           ),
                           Text(
-                            'Ready to delete: $totalToDelete accounts',
+                            'Accounts to review: $totalForReview',
                             style: AppTypography.bodyMedium().copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.red,
@@ -300,7 +195,7 @@ class _SmartDuplicateCleanupScreenState
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '📋 Strategy: Keep highest points account, delete lower points duplicates',
+                            'All records are retained. The highest-points profile is only a suggested primary account.',
                             style: AppTypography.bodySmall().copyWith(
                               color: context.themeTextMuted,
                             ),
@@ -310,16 +205,16 @@ class _SmartDuplicateCleanupScreenState
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Cleanup List (${duplicateGroups.length})',
+                      'Potential duplicate groups (${duplicateGroups.length})',
                       style: AppTypography.h3(),
                     ),
                     const SizedBox(height: 12),
                     ...List.generate(duplicateGroups.length, (index) {
-                      final group = duplicateGroups[index] as Map<String, dynamic>;
+                      final group =
+                          duplicateGroups[index] as Map<String, dynamic>;
                       return _DuplicateGroupCard(
                         group: group,
                         groupIndex: index + 1,
-                        onDelete: _deleteAccount,
                       );
                     }),
                   ],
@@ -336,18 +231,13 @@ class _SmartDuplicateCleanupScreenState
 class _DuplicateGroupCard extends StatelessWidget {
   final Map<String, dynamic> group;
   final int groupIndex;
-  final Future<void> Function(String id, String name) onDelete;
 
-  const _DuplicateGroupCard({
-    required this.group,
-    required this.groupIndex,
-    required this.onDelete,
-  });
+  const _DuplicateGroupCard({required this.group, required this.groupIndex});
 
   @override
   Widget build(BuildContext context) {
     final keepUser = group['keepUser'] as Map<String, dynamic>;
-    final deleteUsers = group['deleteUsers'] as List<dynamic>;
+    final reviewUsers = group['reviewUsers'] as List<dynamic>;
     final phone = group['phone'] as String;
     final pointsDiff = group['pointsDifference'] as num;
 
@@ -355,10 +245,7 @@ class _DuplicateGroupCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        border: Border.all(
-          color: Colors.red.withValues(alpha: 0.3),
-          width: 2,
-        ),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3), width: 2),
         borderRadius: AppRadius.all24,
       ),
       child: Column(
@@ -388,7 +275,7 @@ class _DuplicateGroupCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${deleteUsers.length + 1} accounts | Points diff: ${pointsDiff.toStringAsFixed(0)}',
+                      '${reviewUsers.length + 1} similar accounts | Points diff: ${pointsDiff.toStringAsFixed(0)}',
                       style: AppTypography.bodySmall().copyWith(
                         color: Colors.red[700],
                       ),
@@ -396,14 +283,16 @@ class _DuplicateGroupCard extends StatelessWidget {
                   ],
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: AppRadius.sm8,
                   ),
                   child: Text(
-                    'Delete ${deleteUsers.length}',
+                    'Review only',
                     style: AppTypography.labelSmall().copyWith(
                       color: Colors.white,
                     ),
@@ -413,54 +302,44 @@ class _DuplicateGroupCard extends StatelessWidget {
             ),
           ),
 
-          // Keep Account (Highest Points)
+          // Suggested primary account; retain every record until reviewed.
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '✅ KEEP - Highest Points Account',
+                  'Suggested primary account (highest points)',
                   style: AppTypography.labelLarge().copyWith(
                     color: Colors.green[700],
                   ),
                 ),
                 const SizedBox(height: 8),
-                _AccountCard(
-                  user: keepUser,
-                  isKeep: true,
-                ),
+                _AccountCard(user: keepUser, isKeep: true),
               ],
             ),
           ),
 
-          // Delete Accounts (Lower Points)
-          if (deleteUsers.isNotEmpty)
+          // No records are deleted from this screen.
+          if (reviewUsers.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '❌ DELETE - Lower Points Accounts',
+                    'Other matching accounts — manual review required',
                     style: AppTypography.labelLarge().copyWith(
                       color: Colors.red[700],
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...List.generate(deleteUsers.length, (idx) {
-                    final user = deleteUsers[idx] as Map<String, dynamic>;
+                  ...List.generate(reviewUsers.length, (idx) {
+                    final user = reviewUsers[idx] as Map<String, dynamic>;
                     return Column(
                       children: [
-                        _AccountCard(
-                          user: user,
-                          isKeep: false,
-                          onDelete: () => onDelete(
-                            user['id'] as String,
-                            user['name'] as String,
-                          ),
-                        ),
-                        if (idx < deleteUsers.length - 1)
+                        _AccountCard(user: user, isKeep: false),
+                        if (idx < reviewUsers.length - 1)
                           const SizedBox(height: 8),
                       ],
                     );
@@ -477,13 +356,8 @@ class _DuplicateGroupCard extends StatelessWidget {
 class _AccountCard extends StatelessWidget {
   final Map<String, dynamic> user;
   final bool isKeep;
-  final VoidCallback? onDelete;
 
-  const _AccountCard({
-    required this.user,
-    required this.isKeep,
-    this.onDelete,
-  });
+  const _AccountCard({required this.user, required this.isKeep});
 
   @override
   Widget build(BuildContext context) {
@@ -527,8 +401,10 @@ class _AccountCard extends StatelessWidget {
               const SizedBox(width: 8),
               if (isKeep)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.2),
                     borderRadius: AppRadius.sm8,
@@ -541,26 +417,32 @@ class _AccountCard extends StatelessWidget {
                   ),
                 )
               else
-                ElevatedButton.icon(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete, size: 16),
-                  label: const Text('Delete'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.15),
+                    borderRadius: AppRadius.sm8,
+                  ),
+                  child: Text(
+                    'Review only',
+                    style: AppTypography.labelSmall().copyWith(
+                      color: Colors.orange[800],
+                    ),
                   ),
                 ),
             ],
           ),
           const SizedBox(height: 8),
           _InfoText('Email', user['email'] as String),
-          _InfoText('Status', user['isActive'] ? 'Active' : 'Inactive',
-              color: user['isActive'] ? Colors.green : Colors.orange),
           _InfoText(
-            'Created',
-            _formatDate(user['createdAt'] as DateTime),
+            'Status',
+            user['isActive'] ? 'Active' : 'Inactive',
+            color: user['isActive'] ? Colors.green : Colors.orange,
           ),
+          _InfoText('Created', _formatDate(user['createdAt'] as DateTime)),
           _InfoText('ID', user['id'] as String, mono: true),
         ],
       ),

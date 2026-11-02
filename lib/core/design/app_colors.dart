@@ -9,77 +9,79 @@ class AppColors {
 
   // ── Brand ──────────────────────────────────────────────────────────────────
 
-  static const Color primary      = Color(0xFF243B6B); // navy
-  static const Color primaryLight = Color(0xFF3655A7); // lighter navy for hover/pressed
-  static const Color primarySoft  = Color(0xFFEAF0FF); // very light navy tint (chips, tags)
+  static const Color primary = Color(0xFF082D6B); // Reference navy
+  static const Color primaryLight = Color(0xFF174A91);
+  static const Color primarySoft = Color(0xFFEAF0FA);
 
-  static const Color gold     = Color(0xFFF4B400); // accent — points, rewards
-  static const Color goldSoft = Color(0xFFFFF7DD); // very light gold tint
+  static const Color gold = Color(0xFFC49143); // HTML reference accent
+  static const Color goldSoft = Color(0xFFFAF1E3);
+  static const Color action = Color(0xFFE52E50); // PDF primary action
+  static const Color navigation = Color(0xFF0B203B); // Desktop role rail
 
   // ── Status ─────────────────────────────────────────────────────────────────
 
-  static const Color success = Color(0xFF22C55E);
-  static const Color error   = Color(0xFFEF4444);
+  static const Color success = Color(0xFF16A34A); // Blueprint Success #16A34A
+  static const Color error = Color(0xFFEF4444);
   static const Color warning = Color(0xFFF59E0B); // expiring-soon only
 
   // ── Light theme surfaces ────────────────────────────────────────────────────
 
-  static const Color background   = Color(0xFFF8F9FB);
-  static const Color surface      = Color(0xFFFFFFFF);
-  static const Color softSurface  = Color(0xFFF2F4F7);
-  static const Color border       = Color(0xFFE5E7EB);
+  static const Color background = Color(0xFFF5F4EF); // Reference canvas
+  static const Color surface = Color(0xFFFFFFFF); // Blueprint Surface #FFFFFF
+  static const Color softSurface = Color(0xFFF1F2F4);
+  static const Color border = Color(0xFFE1E4E9);
 
   // ── Light theme text ────────────────────────────────────────────────────────
 
-  static const Color textPrimary   = Color(0xFF111827);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color textMuted     = Color(0xFF9CA3AF);
+  static const Color textPrimary = Color(0xFF1F1E1D); // HTML reference ink
+  static const Color textSecondary = Color(0xFF5F6672);
+  static const Color textMuted = Color(0xFF98A2B3);
 
   // ── Dark theme surfaces ─────────────────────────────────────────────────────
 
-  static const Color darkBackground  = Color(0xFF0F1115);
-  static const Color darkSurface     = Color(0xFF171A22);
+  static const Color darkBackground = Color(0xFF0F1115);
+  static const Color darkSurface = Color(0xFF171A22);
   static const Color darkSoftSurface = Color(0xFF1E2430);
-  static const Color darkBorder      = Color(0xFF2B313D);
+  static const Color darkBorder = Color(0xFF2B313D);
 
   // ── Dark theme text ─────────────────────────────────────────────────────────
 
-  static const Color darkTextPrimary   = Color(0xFFFFFFFF);
+  static const Color darkTextPrimary = Color(0xFFFFFFFF);
   static const Color darkTextSecondary = Color(0xFFD1D5DB);
-  static const Color darkTextMuted     = Color(0xFF9CA3AF);
+  static const Color darkTextMuted = Color(0xFF9CA3AF);
 
   // ── Loyalty tiers ───────────────────────────────────────────────────────────
 
-  static const Color tierBronze   = Color(0xFFCD7F32);
-  static const Color tierSilver   = Color(0xFFC0C0C0);
-  static const Color tierGold     = gold;
+  static const Color tierBronze = Color(0xFFCD7F32);
+  static const Color tierSilver = Color(0xFFC0C0C0);
+  static const Color tierGold = gold;
   static const Color tierPlatinum = Color(0xFF7C3AED);
 
   // ── Common ──────────────────────────────────────────────────────────────────
 
-  static const Color white       = Color(0xFFFFFFFF);
-  static const Color black       = Color(0xFF000000);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
   static const Color transparent = Colors.transparent;
 
   // ── Shadow helper ───────────────────────────────────────────────────────────
 
   /// Single shadow level — opacity 0.05, blur 24, offset (0, 8).
   static List<BoxShadow> get shadowLevel1 => [
-        BoxShadow(
-          color: black.withValues(alpha: 0.05),
-          blurRadius: 24,
-          offset: const Offset(0, 8),
-        ),
-      ];
+    BoxShadow(
+      color: black.withValues(alpha: 0.05),
+      blurRadius: 24,
+      offset: const Offset(0, 8),
+    ),
+  ];
 
   /// Dark-mode variant — slightly stronger.
   static List<BoxShadow> get shadowLevel1Dark => [
-        BoxShadow(
-          color: black.withValues(alpha: 0.20),
-          blurRadius: 24,
-          offset: const Offset(0, 8),
-        ),
-      ];
+    BoxShadow(
+      color: black.withValues(alpha: 0.20),
+      blurRadius: 24,
+      offset: const Offset(0, 8),
+    ),
+  ];
 }
 
 // ── BuildContext extensions ──────────────────────────────────────────────────
@@ -88,30 +90,37 @@ extension AppColorsThemeExtension on BuildContext {
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
 
   // Brand
-  Color get themePrimary      => Theme.of(this).colorScheme.primary;
-  Color get themePrimaryLight => isDarkMode ? AppColors.primaryLight : AppColors.primaryLight;
-  Color get themePrimarySoft  => isDarkMode ? AppColors.primary.withValues(alpha: 0.12) : AppColors.primarySoft;
-  Color get themeGold         => AppColors.gold;
-  Color get themeGoldSoft     => isDarkMode ? AppColors.gold.withValues(alpha: 0.15) : AppColors.goldSoft;
-  Color get themeSecondary    => Theme.of(this).colorScheme.secondary; // = gold
+  Color get themePrimary => Theme.of(this).colorScheme.primary;
+  Color get themePrimaryLight =>
+      isDarkMode ? AppColors.primaryLight : AppColors.primaryLight;
+  Color get themePrimarySoft => isDarkMode
+      ? AppColors.primary.withValues(alpha: 0.12)
+      : AppColors.primarySoft;
+  Color get themeGold => AppColors.gold;
+  Color get themeGoldSoft =>
+      isDarkMode ? AppColors.gold.withValues(alpha: 0.15) : AppColors.goldSoft;
+  Color get themeSecondary => Theme.of(this).colorScheme.secondary; // = gold
 
   // Surfaces
-  Color get themeBackground   => Theme.of(this).scaffoldBackgroundColor;
-  Color get themeSurface      => Theme.of(this).colorScheme.surface;
-  Color get themeSoftSurface  => isDarkMode ? AppColors.darkSoftSurface : AppColors.softSurface;
-  Color get themeCard         => isDarkMode ? AppColors.darkSurface : AppColors.surface;
-  Color get themeBorder       => isDarkMode ? AppColors.darkBorder : AppColors.border;
-  Color get themeLineBorder   => isDarkMode
+  Color get themeBackground => Theme.of(this).scaffoldBackgroundColor;
+  Color get themeSurface => Theme.of(this).colorScheme.surface;
+  Color get themeSoftSurface =>
+      isDarkMode ? AppColors.darkSoftSurface : AppColors.softSurface;
+  Color get themeCard => isDarkMode ? AppColors.darkSurface : AppColors.surface;
+  Color get themeBorder => isDarkMode ? AppColors.darkBorder : AppColors.border;
+  Color get themeLineBorder => isDarkMode
       ? AppColors.white.withValues(alpha: 0.08)
       : AppColors.black.withValues(alpha: 0.06);
 
   // Text
-  Color get themeTextPrimary   => Theme.of(this).colorScheme.onSurface;
-  Color get themeTextSecondary => isDarkMode ? AppColors.darkTextSecondary : AppColors.textSecondary;
-  Color get themeTextMuted     => isDarkMode ? AppColors.darkTextMuted : AppColors.textMuted;
+  Color get themeTextPrimary => Theme.of(this).colorScheme.onSurface;
+  Color get themeTextSecondary =>
+      isDarkMode ? AppColors.darkTextSecondary : AppColors.textSecondary;
+  Color get themeTextMuted =>
+      isDarkMode ? AppColors.darkTextMuted : AppColors.textMuted;
 
   // Status
-  Color get themeError   => Theme.of(this).colorScheme.error;
+  Color get themeError => Theme.of(this).colorScheme.error;
   Color get themeOnError => Theme.of(this).colorScheme.onError;
 
   // Foreground — white in dark (so icons/text never appear as navy on dark bg)
@@ -121,4 +130,78 @@ extension AppColorsThemeExtension on BuildContext {
   // Shadow
   List<BoxShadow> get themeShadow =>
       isDarkMode ? AppColors.shadowLevel1Dark : AppColors.shadowLevel1;
+}
+
+// ── Light Material Color Palettes ──────────────────────────────────────────
+
+enum AppColorPalette { navy, emerald, indigo, crimson, teal, orange }
+
+class AppPaletteColors {
+  final Color primary;
+  final Color primaryLight;
+  final Color primarySoft;
+
+  const AppPaletteColors({
+    required this.primary,
+    required this.primaryLight,
+    required this.primarySoft,
+  });
+
+  static AppPaletteColors of(AppColorPalette palette) {
+    switch (palette) {
+      case AppColorPalette.navy:
+        return const AppPaletteColors(
+          primary: AppColors.primary,
+          primaryLight: AppColors.primaryLight,
+          primarySoft: AppColors.primarySoft,
+        );
+      case AppColorPalette.emerald:
+        return const AppPaletteColors(
+          primary: Color(0xFF059669),
+          primaryLight: Color(0xFF10B981),
+          primarySoft: Color(0xFFECFDF5),
+        );
+      case AppColorPalette.indigo:
+        return const AppPaletteColors(
+          primary: Color(0xFF4F46E5),
+          primaryLight: Color(0xFF6366F1),
+          primarySoft: Color(0xFFEEF2FF),
+        );
+      case AppColorPalette.crimson:
+        return const AppPaletteColors(
+          primary: Color(0xFFDC2626),
+          primaryLight: Color(0xFFEF4444),
+          primarySoft: Color(0xFFFEF2F2),
+        );
+      case AppColorPalette.teal:
+        return const AppPaletteColors(
+          primary: Color(0xFF0D9488),
+          primaryLight: Color(0xFF14B8A6),
+          primarySoft: Color(0xFFF0FDFA),
+        );
+      case AppColorPalette.orange:
+        return const AppPaletteColors(
+          primary: Color(0xFFEA580C),
+          primaryLight: Color(0xFFF97316),
+          primarySoft: Color(0xFFFFF7ED),
+        );
+    }
+  }
+
+  static String displayName(AppColorPalette palette) {
+    switch (palette) {
+      case AppColorPalette.navy:
+        return 'Classic Navy';
+      case AppColorPalette.emerald:
+        return 'Emerald Green';
+      case AppColorPalette.indigo:
+        return 'Royal Indigo';
+      case AppColorPalette.crimson:
+        return 'Crimson Red';
+      case AppColorPalette.teal:
+        return 'Ocean Teal';
+      case AppColorPalette.orange:
+        return 'Sunset Orange';
+    }
+  }
 }

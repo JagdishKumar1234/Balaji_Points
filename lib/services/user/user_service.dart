@@ -227,7 +227,11 @@ class UserService {
       final doc = await _firestore
           .collection('users')
           .doc(docId)
-          .get(GetOptions(source: forceRefresh ? Source.server : Source.serverAndCache));
+          .get(
+            GetOptions(
+              source: forceRefresh ? Source.server : Source.serverAndCache,
+            ),
+          );
 
       Map<String, dynamic>? data = doc.exists ? doc.data() : null;
       if (data == null) {
@@ -267,151 +271,6 @@ class UserService {
       return data?['role'] == 'admin';
     } catch (e) {
       AppLogger.error('Error checking admin status', e);
-      return false;
-    }
-  }
-
-  /// Delete carpenter from the system
-  /// This will delete the user and all related data
-  /// Note: Firestore batch operations are limited to 500 operations
-  Future<bool> deleteCarpenter(String userId) async {
-    try {
-      AppLogger.info('Deleting carpenter: $userId');
-
-      // First, get user data to retrieve phone number
-      final userRef = _firestore.collection('users').doc(userId);
-      final userDoc = await userRef.get();
-
-      if (!userDoc.exists) {
-        AppLogger.warning('User document does not exist: $userId');
-        return false;
-      }
-
-      final userData = userDoc.data();
-      final phone = userData?['phone'] as String?;
-
-      // Get all related data first
-      final billsQuery = await _firestore
-          .collection('bills')
-          .where('userId', isEqualTo: userId)
-          .get();
-
-      final redemptionsQuery = await _firestore
-          .collection('offer_redemptions')
-          .where('carpenterId', isEqualTo: userId)
-          .get();
-
-      // Check if batch size exceeds Firestore limit (500 operations)
-      final totalOperations =
-          2 +
-          billsQuery.docs.length +
-          redemptionsQuery.docs.length +
-          (phone != null ? 1 : 0);
-
-      if (totalOperations > 500) {
-        AppLogger.error(
-          'Too many operations for batch delete',
-          'Total: $totalOperations',
-        );
-        // Delete in multiple batches if needed
-        return await _deleteCarpenterInBatches(
-          userId,
-          phone,
-          billsQuery.docs,
-          redemptionsQuery.docs,
-        );
-      }
-
-      // Use batch write for atomic operations
-      final batch = _firestore.batch();
-
-      // 1. Delete user document
-      batch.delete(userRef);
-
-      // 2. Delete user_points document
-      final userPointsRef = _firestore.collection('user_points').doc(userId);
-      batch.delete(userPointsRef);
-
-      // 3. Delete all bills associated with this user
-      for (var billDoc in billsQuery.docs) {
-        batch.delete(billDoc.reference);
-      }
-
-      // 4. Delete all offer redemptions associated with this user
-      for (var redemptionDoc in redemptionsQuery.docs) {
-        batch.delete(redemptionDoc.reference);
-      }
-
-      // 5. Delete from pending_users if exists (using phone number)
-      if (phone != null && phone.isNotEmpty) {
-        final pendingRef = _firestore.collection('pending_users').doc(phone);
-        final pendingDoc = await pendingRef.get();
-        if (pendingDoc.exists) {
-          batch.delete(pendingRef);
-        }
-      }
-
-      // Execute batch delete
-      await batch.commit();
-
-      AppLogger.info('Carpenter deleted successfully: $userId');
-      return true;
-    } catch (e) {
-      AppLogger.error('Error deleting carpenter', e);
-      rethrow; // Re-throw to get better error messages
-    }
-  }
-
-  /// Delete carpenter in multiple batches if operation count exceeds Firestore limit
-  Future<bool> _deleteCarpenterInBatches(
-    String userId,
-    String? phone,
-    List<QueryDocumentSnapshot> bills,
-    List<QueryDocumentSnapshot> redemptions,
-  ) async {
-    try {
-      // Batch 1: Delete user and user_points
-      final batch1 = _firestore.batch();
-      batch1.delete(_firestore.collection('users').doc(userId));
-      batch1.delete(_firestore.collection('user_points').doc(userId));
-      await batch1.commit();
-
-      // Batch 2: Delete bills (in chunks of 498 to stay under 500 limit)
-      const chunkSize = 498;
-      for (var i = 0; i < bills.length; i += chunkSize) {
-        final batch = _firestore.batch();
-        final chunk = bills.skip(i).take(chunkSize);
-        for (var billDoc in chunk) {
-          batch.delete(billDoc.reference);
-        }
-        await batch.commit();
-      }
-
-      // Batch 3: Delete redemptions (in chunks of 498)
-      for (var i = 0; i < redemptions.length; i += chunkSize) {
-        final batch = _firestore.batch();
-        final chunk = redemptions.skip(i).take(chunkSize);
-        for (var redemptionDoc in chunk) {
-          batch.delete(redemptionDoc.reference);
-        }
-        await batch.commit();
-      }
-
-      // Batch 4: Delete pending_users if exists
-      if (phone != null && phone.isNotEmpty) {
-        final pendingRef = _firestore.collection('pending_users').doc(phone);
-        final pendingDoc = await pendingRef.get();
-        if (pendingDoc.exists) {
-          final batch = _firestore.batch();
-          batch.delete(pendingRef);
-          await batch.commit();
-        }
-      }
-
-      AppLogger.info('Carpenter deleted successfully in batches: $userId');
-      return true;
-    } catch (e) {
-      AppLogger.error('Error deleting carpenter in batches', e);
       return false;
     }
   }

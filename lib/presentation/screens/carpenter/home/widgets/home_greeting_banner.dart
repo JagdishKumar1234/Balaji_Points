@@ -213,8 +213,6 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                         AppText.body(
                           widget.greeting.message,
                           color: context.themeTextPrimary,
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -263,8 +261,6 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                     AppText.body(
                       widget.greeting.message,
                       color: context.themeTextPrimary,
-                      maxLines: 5,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

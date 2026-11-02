@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/user/user_service.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
-import 'package:balaji_points/services/platform/cart_service.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/models/greeting_model.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/top_carpenters_display.dart';
@@ -23,7 +22,6 @@ class HomeState {
   final double points;
   final String? userDocId;
   final int? userRank;
-  final int cartCount;
 
   // Leaderboard
   final List<CarpenterRank> topCarpenters;
@@ -44,7 +42,6 @@ class HomeState {
     this.points = 0.0,
     this.userDocId,
     this.userRank,
-    this.cartCount = 0,
     this.topCarpenters = const [],
     this.rankingsLoading = true,
     this.offers = const [],
@@ -80,7 +77,6 @@ class HomeState {
     String? userDocId,
     int? userRank,
     bool clearUserRank = false,
-    int? cartCount,
     List<CarpenterRank>? topCarpenters,
     bool? rankingsLoading,
     List<OfferItem>? offers,
@@ -95,7 +91,6 @@ class HomeState {
         points: points ?? this.points,
         userDocId: userDocId ?? this.userDocId,
         userRank: clearUserRank ? null : (userRank ?? this.userRank),
-        cartCount: cartCount ?? this.cartCount,
         topCarpenters: topCarpenters ?? this.topCarpenters,
         rankingsLoading: rankingsLoading ?? this.rankingsLoading,
         offers: offers ?? this.offers,
@@ -113,7 +108,6 @@ class HomeNotifier extends Notifier<HomeState> {
   final _firestore = FirebaseFirestore.instance;
   final _session = SessionService();
   final _userService = UserService();
-  final _cartService = CartService();
 
   @override
   HomeState build() {
@@ -161,7 +155,6 @@ class HomeNotifier extends Notifier<HomeState> {
     try {
       final data = await _userService.getCurrentUserData();
       final docId = await _resolveDocId();
-      final userId = await _session.getUserId();
       final carpenterPoints = ref.read(carpenterPointsProvider);
 
       // Profile fields from users; points/tier always from user_points.
@@ -178,15 +171,6 @@ class HomeNotifier extends Notifier<HomeState> {
         points: carpenterPoints.loaded ? carpenterPoints.totalPoints : state.points,
         userDocId: docId,
       );
-
-      // Subscribe cart count
-      if (userId != null) {
-        _cartService.watchCartCount(userId).listen((n) {
-          if (state.userDocId != null) {
-            state = state.copyWith(cartCount: n);
-          }
-        });
-      }
     } catch (e) {
       AppLogger.error('HomeNotifier _loadUser failed', e);
     }

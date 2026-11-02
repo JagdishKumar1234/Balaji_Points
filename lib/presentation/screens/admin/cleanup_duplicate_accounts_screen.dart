@@ -8,10 +8,12 @@ class CleanupDuplicateAccountsScreen extends StatefulWidget {
   const CleanupDuplicateAccountsScreen({super.key});
 
   @override
-  State<CleanupDuplicateAccountsScreen> createState() => _CleanupDuplicateAccountsScreenState();
+  State<CleanupDuplicateAccountsScreen> createState() =>
+      _CleanupDuplicateAccountsScreenState();
 }
 
-class _CleanupDuplicateAccountsScreenState extends State<CleanupDuplicateAccountsScreen> {
+class _CleanupDuplicateAccountsScreenState
+    extends State<CleanupDuplicateAccountsScreen> {
   late Future<Map<String, dynamic>> _duplicatesFuture;
 
   @override
@@ -51,7 +53,11 @@ class _CleanupDuplicateAccountsScreenState extends State<CleanupDuplicateAccount
     final duplicates = <String, List<Map<String, dynamic>>>{};
     phoneMap.forEach((phone, users) {
       if (users.length > 1) {
-        users.sort((a, b) => (a['createdAt'] as DateTime).compareTo(b['createdAt'] as DateTime));
+        users.sort(
+          (a, b) => (a['createdAt'] as DateTime).compareTo(
+            b['createdAt'] as DateTime,
+          ),
+        );
         duplicates[phone] = users;
       }
     });
@@ -59,115 +65,11 @@ class _CleanupDuplicateAccountsScreenState extends State<CleanupDuplicateAccount
     return {
       'duplicates': duplicates,
       'totalAccounts': usersSnapshot.docs.length,
-      'duplicateCount': duplicates.values.fold(0, (total, list) => total + list.length),
-    };
-  }
-
-  Future<void> _deleteAccount(String accountId, String accountName) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: Text(
-          'Delete Duplicate Account',
-          style: AppTypography.h3(),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Are you sure you want to delete this duplicate account?',
-              style: AppTypography.bodyMedium(),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
-                borderRadius: AppRadius.md12,
-              ),
-              child: Text(
-                'Account: $accountName\nID: $accountId',
-                style: AppTypography.bodySmall().copyWith(
-                  color: Colors.red[700],
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '⚠️ This action cannot be undone!',
-              style: AppTypography.labelSmall().copyWith(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge().copyWith(
-                color: context.themeTextSecondary,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+      'duplicateCount': duplicates.values.fold(
+        0,
+        (total, list) => total + list.length,
       ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(
-          child: CircularProgressIndicator(
-            color: context.themePrimary,
-          ),
-        ),
-      );
-
-      await FirebaseFirestore.instance.collection('users').doc(accountId).delete();
-
-      if (!mounted) return;
-      Navigator.pop(context); // Close progress dialog
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('✅ Duplicate account deleted: $accountName'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-
-      // Refresh the list
-      setState(() {
-        _duplicatesFuture = _fetchDuplicates();
-      });
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context); // Close progress dialog
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error deleting account: $e'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+    };
   }
 
   @override
@@ -175,10 +77,7 @@ class _CleanupDuplicateAccountsScreenState extends State<CleanupDuplicateAccount
     return Scaffold(
       backgroundColor: context.themeBackground,
       appBar: AppBar(
-        title: Text(
-          'Clean Up Duplicates',
-          style: AppTypography.h2(),
-        ),
+        title: Text('Clean Up Duplicates', style: AppTypography.h2()),
         backgroundColor: context.themePrimary,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -186,9 +85,7 @@ class _CleanupDuplicateAccountsScreenState extends State<CleanupDuplicateAccount
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(
-                color: context.themePrimary,
-              ),
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -282,10 +179,7 @@ class _CleanupDuplicateAccountsScreenState extends State<CleanupDuplicateAccount
                     ),
                   if (duplicates.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    Text(
-                      'Duplicate Groups',
-                      style: AppTypography.h3(),
-                    ),
+                    Text('Duplicate Groups', style: AppTypography.h3()),
                     const SizedBox(height: 12),
                     ...duplicates.entries.mapIndexed((index, entry) {
                       final phone = entry.key;
@@ -295,7 +189,6 @@ class _CleanupDuplicateAccountsScreenState extends State<CleanupDuplicateAccount
                         phone: phone,
                         users: users.cast<Map<String, dynamic>>(),
                         groupIndex: index + 1,
-                        onDelete: _deleteAccount,
                       );
                     }),
                   ],
@@ -313,13 +206,11 @@ class _DuplicateGroup extends StatelessWidget {
   final String phone;
   final List<Map<String, dynamic>> users;
   final int groupIndex;
-  final Future<void> Function(String id, String name) onDelete;
 
   const _DuplicateGroup({
     required this.phone,
     required this.users,
     required this.groupIndex,
-    required this.onDelete,
   });
 
   @override
@@ -328,9 +219,7 @@ class _DuplicateGroup extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        border: Border.all(
-          color: context.themePrimary.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: context.themePrimary.withValues(alpha: 0.3)),
         borderRadius: AppRadius.all24,
       ),
       child: Column(
@@ -362,7 +251,9 @@ class _DuplicateGroup extends StatelessWidget {
                 final isOldest = idx == 0;
 
                 return Container(
-                  margin: EdgeInsets.only(bottom: idx < users.length - 1 ? 12 : 0),
+                  margin: EdgeInsets.only(
+                    bottom: idx < users.length - 1 ? 12 : 0,
+                  ),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: context.themeBackground,
@@ -401,36 +292,24 @@ class _DuplicateGroup extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          if (!isOldest)
-                            ElevatedButton.icon(
-                              onPressed: () => onDelete(
-                                user['id'] as String,
-                                user['name'] as String,
-                              ),
-                              icon: const Icon(Icons.delete, size: 18),
-                              label: const Text('Delete'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                              ),
-                            )
-                          else
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.2),
-                                borderRadius: AppRadius.sm8,
-                              ),
-                              child: Text(
-                                '⭐ Keep',
-                                style: AppTypography.labelSmall().copyWith(
-                                  color: Colors.green[700],
-                                ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withValues(alpha: 0.2),
+                              borderRadius: AppRadius.sm8,
+                            ),
+                            child: Text(
+                              isOldest ? '⭐ Keep' : 'Review only',
+                              style: AppTypography.labelSmall().copyWith(
+                                color: isOldest
+                                    ? Colors.green[700]
+                                    : Colors.orange[800],
                               ),
                             ),
+                          ),
                         ],
                       ),
                     ],

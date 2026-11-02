@@ -15,6 +15,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import '../../../../providers/auth_provider.dart';
 
@@ -37,6 +38,11 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
   String? _selectedBranchId;
   bool _loadingBranches = true;
 
+  // Role selection state
+  String _selectedRole = AppConstants.roleCarpenter;
+  bool _branchHasAdmin = false;
+  bool _checkingAdmin = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +62,32 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
           _selectedBranchId = branches.first['id'] as String;
         }
         _loadingBranches = false;
+      });
+      if (_selectedBranchId != null) {
+        _checkBranchAdmin(_selectedBranchId!);
+      }
+    }
+  }
+
+  Future<void> _checkBranchAdmin(String branchId) async {
+    setState(() => _checkingAdmin = true);
+    final hasAdmin = await BranchService().hasAdmin(branchId);
+    if (mounted) {
+      setState(() {
+        _branchHasAdmin = hasAdmin;
+        _checkingAdmin = false;
+        if (_selectedRole == AppConstants.roleAdmin && hasAdmin) {
+          _selectedRole = AppConstants.roleCarpenter;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Selected branch already has an Admin. Role defaulted to Carpenter.',
+              ),
+              backgroundColor: AppColors.warning,
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
       });
     }
   }
@@ -95,6 +127,19 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
       return;
     }
 
+    // Enforce 1-admin constraint
+    if (_selectedRole == AppConstants.roleAdmin && _branchHasAdmin) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'This branch already has an assigned Admin. Only one Admin is permitted per branch.',
+          ),
+          backgroundColor: context.themeError,
+        ),
+      );
+      return;
+    }
+
     ref
         .read(authProvider.notifier)
         .setupPin(
@@ -102,6 +147,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
           pin: pin,
           firstName: '',
           branchId: _selectedBranchId,
+          role: _selectedRole,
         );
   }
 
@@ -119,7 +165,13 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
             backgroundColor: AppColors.success,
           ),
         );
-        context.go('/');
+        if (state.user.role == AppConstants.roleSuperAdmin) {
+          context.go('/super-admin');
+        } else if (state.user.role == AppConstants.roleAdmin) {
+          context.go('/admin');
+        } else {
+          context.go('/');
+        }
       } else if (state is PinSetupError) {
         ScaffoldMessenger.of(context).clearSnackBars();
         String msg = state.message;
@@ -204,7 +256,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                                 width: 80,
                                 height: 80,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF001F4D),
+                                  color: isDark ? context.themePrimary.withValues(alpha: 0.3) : context.themePrimary,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: ClipRRect(
@@ -226,7 +278,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                               Text(
                                 l10n.createPinTitle,
                                 style: AppTypography.displaySmall(
-                                  color: const Color(0xFF001F4D),
+                                  color: context.themeTextPrimary,
                                 ).copyWith(fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ).fadeIn(delay: AppAnimations.stagger(2)),
@@ -236,7 +288,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                               Text(
                                 l10n.createPinSubtitle,
                                 style: AppTypography.bodyMedium(
-                                  color: const Color(0xFF78909C),
+                                  color: context.themeTextSecondary,
                                 ),
                                 textAlign: TextAlign.center,
                               ).fadeIn(delay: AppAnimations.stagger(3)),
@@ -266,8 +318,24 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                             branches: _branches,
                             selected: _selectedBranchId,
                             loading: _loadingBranches,
-                            onChanged: (id) =>
-                                setState(() => _selectedBranchId = id),
+                            onChanged: (id) {
+                              setState(() => _selectedBranchId = id);
+                              if (id != null) _checkBranchAdmin(id);
+                            },
+                          ).fadeIn(delay: AppAnimations.stagger(5)),
+
+                          const SizedBox(height: AppSpacing.xl2),
+
+                          // Role picker (Carpenter, Architect, Interior Designer, Branch Admin)
+                          _RolePicker(
+                            selectedRole: _selectedRole,
+                            branchHasAdmin: _branchHasAdmin,
+                            checkingAdmin: _checkingAdmin,
+                            onChanged: (role) {
+                              if (role != null) {
+                                setState(() => _selectedRole = role);
+                              }
+                            },
                           ).fadeIn(delay: AppAnimations.stagger(5)),
 
                           const SizedBox(height: AppSpacing.xl2),
@@ -425,6 +493,123 @@ class _BranchPicker extends StatelessWidget {
                     }).toList(),
                   ),
                 ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Role picker ───────────────────────────────────────────────────────────────
+
+class _RolePicker extends StatelessWidget {
+  final String selectedRole;
+  final bool branchHasAdmin;
+  final bool checkingAdmin;
+  final ValueChanged<String?> onChanged;
+
+  const _RolePicker({
+    required this.selectedRole,
+    required this.branchHasAdmin,
+    required this.checkingAdmin,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'User Role *',
+              style: AppTypography.bodyMedium(color: context.themeTextSecondary),
+            ),
+            if (checkingAdmin) ...[
+              const SizedBox(width: 8),
+              const SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(strokeWidth: 1.5),
+              ),
+            ],
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Container(
+          decoration: BoxDecoration(
+            color: context.themePrimary.withValues(alpha: 0.05),
+            borderRadius: AppRadius.forInput,
+            border: Border.all(
+              color: context.themePrimary.withValues(alpha: 0.2),
+              width: 1.5,
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedRole,
+              isExpanded: true,
+              dropdownColor: context.themeSurface,
+              icon: Icon(Icons.arrow_drop_down, color: context.themePrimary),
+              style: AppTypography.bodyMedium(color: context.themeTextPrimary),
+              onChanged: onChanged,
+              items: [
+                DropdownMenuItem<String>(
+                  value: AppConstants.roleCarpenter,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.handyman_outlined, size: 20),
+                      SizedBox(width: 10),
+                      Text('Carpenter / Woodworker'),
+                    ],
+                  ),
+                ),
+                DropdownMenuItem<String>(
+                  value: AppConstants.roleArchitect,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.architecture_outlined, size: 20),
+                      SizedBox(width: 10),
+                      Text('Architect'),
+                    ],
+                  ),
+                ),
+                DropdownMenuItem<String>(
+                  value: AppConstants.roleInteriorDesigner,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.brush_outlined, size: 20),
+                      SizedBox(width: 10),
+                      Text('Interior Designer'),
+                    ],
+                  ),
+                ),
+                DropdownMenuItem<String>(
+                  value: AppConstants.roleAdmin,
+                  enabled: !branchHasAdmin,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.admin_panel_settings_outlined,
+                        size: 20,
+                        color: branchHasAdmin ? Colors.grey : null,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        branchHasAdmin
+                            ? 'Branch Admin (Already Assigned)'
+                            : 'Branch Admin (1 per branch)',
+                        style: TextStyle(
+                          color: branchHasAdmin ? Colors.grey : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

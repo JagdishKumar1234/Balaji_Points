@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 /// Responsive breakpoint constants and helpers
 class ResponsiveBreakpoints {
-  // Breakpoint widths (in logical pixels)
-  static const double mobile = 480;      // Phone (< 480px)
-  static const double tablet = 768;      // Tablet (480px - 768px)
-  static const double desktop = 1024;    // Desktop (≥ 1024px)
-  static const double largeDesktop = 1440; // Large desktop (≥ 1440px)
+  // Material adaptive layout breakpoints (logical pixels).
+  static const double mobile = 600;
+  static const double tablet = 840;
+  static const double desktop = 1200;
+  static const double largeDesktop = 1600;
 }
 
 /// Extension on BuildContext to provide responsive helpers
@@ -17,21 +17,21 @@ extension ResponsiveContext on BuildContext {
   /// Current screen height in logical pixels
   double get screenHeight => MediaQuery.of(this).size.height;
 
-  /// True if screen width < 480px (phone)
+  /// Compact phone layout.
   bool get isMobile => screenWidth < ResponsiveBreakpoints.mobile;
 
-  /// True if screen width is 480px - 768px (tablet)
+  /// Tablet-sized layout, including landscape tablets and narrow desktop panes.
   bool get isTablet =>
       screenWidth >= ResponsiveBreakpoints.mobile &&
       screenWidth < ResponsiveBreakpoints.desktop;
 
-  /// True if screen width >= 1024px (desktop)
+  /// Desktop layout.
   bool get isDesktop => screenWidth >= ResponsiveBreakpoints.desktop;
 
-  /// True if screen width >= 1440px (large desktop)
+  /// Wide desktop layout.
   bool get isLargeDesktop => screenWidth >= ResponsiveBreakpoints.largeDesktop;
 
-  /// True if screen is tablet or desktop (wide screen)
+  /// True for medium and larger layouts.
   bool get isWideScreen => screenWidth >= ResponsiveBreakpoints.tablet;
 
   /// Get device type for conditional logic
@@ -125,11 +125,8 @@ class AdaptivePadding extends EdgeInsets {
     return AdaptivePadding.all(padding);
   }
 
-  const AdaptivePadding.all(double value)
-      : super.all(value);
+  const AdaptivePadding.all(double value) : super.all(value);
 
-  const AdaptivePadding.symmetric({
-    double horizontal = 0,
-    double vertical = 0,
-  }) : super.symmetric(horizontal: horizontal, vertical: vertical);
+  const AdaptivePadding.symmetric({double horizontal = 0, double vertical = 0})
+    : super.symmetric(horizontal: horizontal, vertical: vertical);
 }

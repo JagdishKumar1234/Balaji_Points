@@ -9,6 +9,9 @@ import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
+import 'package:balaji_points/providers/loading_provider.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
+import 'package:balaji_points/presentation/widgets/shared/responsive_role_navigation.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
@@ -63,9 +66,16 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
       ),
     );
     if (confirmed != true || !mounted) return;
-    await FirebaseAuth.instance.signOut();
-    await SessionService().clearSession();
-    if (mounted) context.go('/login');
+    ref.read(loadingProvider.notifier).start();
+    try {
+      await FirebaseAuth.instance.signOut();
+      await SessionService().clearSession();
+      if (mounted) context.go('/login');
+    } finally {
+      if (mounted) {
+        ref.read(loadingProvider.notifier).stop();
+      }
+    }
   }
 
   @override
@@ -99,27 +109,51 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
               onPressed: _logout,
             ),
           ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(48),
-            child: Row(
-              children: [
-                _TabBtn(
-                  label: 'Branches',
-                  index: 0,
-                  current: _tab,
-                  onTap: () => setState(() => _tab = 0),
+          bottom: context.isWideScreen
+              ? null
+              : PreferredSize(
+                  preferredSize: const Size.fromHeight(48),
+                  child: Row(
+                    children: [
+                      _TabBtn(
+                        label: 'Branches',
+                        index: 0,
+                        current: _tab,
+                        onTap: () => setState(() => _tab = 0),
+                      ),
+                      _TabBtn(
+                        label: 'Create Admin',
+                        index: 1,
+                        current: _tab,
+                        onTap: () => setState(() => _tab = 1),
+                      ),
+                    ],
+                  ),
                 ),
-                _TabBtn(
-                  label: 'Create Admin',
-                  index: 1,
-                  current: _tab,
-                  onTap: () => setState(() => _tab = 1),
-                ),
-              ],
+        ),
+        body: ResponsiveRoleNavigation(
+          roleLabel: 'Super admin',
+          items: const [
+            RoleNavigationItem(
+              label: 'Branches',
+              icon: Icons.store_outlined,
+              selectedIcon: Icons.store_rounded,
             ),
+            RoleNavigationItem(
+              label: 'Create admin',
+              icon: Icons.admin_panel_settings_outlined,
+              selectedIcon: Icons.admin_panel_settings_rounded,
+            ),
+          ],
+          selectedIndex: _tab,
+          onSelected: (index) => setState(() => _tab = index),
+          onLogout: _logout,
+          child: ResponsiveContainer(
+            maxWidth: 1200,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: _tab == 0 ? const _BranchesTab() : const _CreateAdminTab(),
           ),
         ),
-        body: _tab == 0 ? const _BranchesTab() : const _CreateAdminTab(),
       ),
     );
   }
@@ -175,9 +209,7 @@ class _TabBtn extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: active
-                    ? context.themeSecondary
-                    : AppColors.transparent,
+                color: active ? context.themeSecondary : AppColors.transparent,
                 width: 3,
               ),
             ),
@@ -185,7 +217,9 @@ class _TabBtn extends StatelessWidget {
           child: Text(
             label,
             style: AppTypography.labelLarge(
-              color: active ? AppColors.white : AppColors.white.withValues(alpha: 0.70),
+              color: active
+                  ? AppColors.white
+                  : AppColors.white.withValues(alpha: 0.70),
             ),
           ),
         ),
@@ -365,9 +399,7 @@ class _BranchCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'ID: $branchId',
-                    style: AppTypography.caption(
-                      color: context.themeTextMuted,
-                    ),
+                    style: AppTypography.caption(color: context.themeTextMuted),
                   ),
                 ],
               ),
@@ -404,8 +436,10 @@ class _CreateBranchDialog extends StatefulWidget {
 
 class _CreateBranchDialogState extends State<_CreateBranchDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
-  final _shortCtrl = TextEditingController();
+  final _nameCtrl = TextEditingController(
+    text: 'Sri Balaji Plywood and Hardware - Karur',
+  );
+  final _shortCtrl = TextEditingController(text: 'Karur Branch');
   final _addrCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   bool _saving = false;
@@ -466,9 +500,10 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
               const SizedBox(height: AppSpacing.sm),
               _field(
                 _shortCtrl,
-                'Short Name *',
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+                'Short Name',
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Enter a short branch name'
+                    : null,
               ),
               const SizedBox(height: AppSpacing.sm),
               _field(_addrCtrl, 'Address'),
@@ -483,9 +518,7 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
           onPressed: _saving ? null : () => Navigator.pop(context),
           child: Text(
             'Cancel',
-            style: AppTypography.labelLarge(
-              color: context.themeTextSecondary,
-            ),
+            style: AppTypography.labelLarge(color: context.themeTextSecondary),
           ),
         ),
         ElevatedButton(
@@ -524,9 +557,7 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: AppTypography.bodySmall(
-          color: context.themeTextSecondary,
-        ),
+        labelStyle: AppTypography.bodySmall(color: context.themeTextSecondary),
         border: OutlineInputBorder(borderRadius: AppRadius.forInput),
         isDense: true,
       ),
@@ -837,10 +868,8 @@ class _CreateAdminTabState extends State<_CreateAdminTab> {
     );
   }
 
-  Widget _sectionLabel(String text) => Text(
-    text,
-    style: AppTypography.labelLarge(color: context.themePrimary),
-  );
+  Widget _sectionLabel(String text) =>
+      Text(text, style: AppTypography.labelLarge(color: context.themePrimary));
 
   Widget _field(
     TextEditingController ctrl,

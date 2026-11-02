@@ -8,7 +8,10 @@ class User {
   final String? phoneNumber;
   final String? displayName;
   final String? photoUrl;
-  final String role; // 'admin' or 'carpenter'
+  final String role; // 'super_admin', 'admin', 'carpenter', 'architect', 'interior_designer'
+  final String? branchId;
+  final String? tenantId;
+  final String status; // 'active', 'pending', 'deactivated'
   final bool isEmailVerified;
   final DateTime? createdAt;
   final DateTime? lastLoginAt;
@@ -20,10 +23,19 @@ class User {
     this.displayName,
     this.photoUrl,
     required this.role,
+    this.branchId,
+    this.tenantId,
+    this.status = 'active',
     required this.isEmailVerified,
     this.createdAt,
     this.lastLoginAt,
   });
+
+  bool get isSuperAdmin => role == 'super_admin';
+  bool get isAdmin => role == 'admin';
+  bool get isCarpenter => role == 'carpenter';
+  bool get isArchitect => role == 'architect';
+  bool get isInteriorDesigner => role == 'interior_designer';
   
   @override
   bool operator ==(Object other) {
@@ -41,6 +53,9 @@ class User {
     String? displayName,
     String? photoUrl,
     String? role,
+    String? branchId,
+    String? tenantId,
+    String? status,
     bool? isEmailVerified,
     DateTime? createdAt,
     DateTime? lastLoginAt,
@@ -52,6 +67,9 @@ class User {
       displayName: displayName ?? this.displayName,
       photoUrl: photoUrl ?? this.photoUrl,
       role: role ?? this.role,
+      branchId: branchId ?? this.branchId,
+      tenantId: tenantId ?? this.tenantId,
+      status: status ?? this.status,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       createdAt: createdAt ?? this.createdAt,
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,

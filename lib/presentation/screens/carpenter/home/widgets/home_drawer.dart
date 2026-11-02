@@ -200,35 +200,6 @@ class HomeDrawer extends StatelessWidget {
                     _DrawerSectionLabel(
                         label: l10n.drawerSectionMore, color: subtitleColor),
                     _DrawerNavItem(
-                      icon: Icons.layers_rounded,
-                      label: l10n.drawerProductsTitle,
-                      subtitle: l10n.drawerProductsSubtitle,
-                      titleColor: titleColor,
-                      subtitleColor: subtitleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.push('/products');
-                      },
-                    ),
-                    _DrawerNavItem(
-                      icon: Icons.shopping_cart_outlined,
-                      label: l10n.drawerCart,
-                      titleColor: titleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.push('/cart');
-                      },
-                    ),
-                    _DrawerNavItem(
-                      icon: Icons.receipt_long_rounded,
-                      label: l10n.myOrders,
-                      titleColor: titleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.push('/orders');
-                      },
-                    ),
-                    _DrawerNavItem(
                       icon: Icons.info_outline_rounded,
                       label: l10n.aboutUs,
                       subtitle: l10n.aboutUsMenuSubtitle,

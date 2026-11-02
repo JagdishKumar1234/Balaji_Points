@@ -1,5 +1,6 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'top_carpenters_display.dart';
 
@@ -130,9 +131,10 @@ class TopCarpentersList extends StatelessWidget {
           Expanded(
             child: Text(
               carpenter.name,
-              style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600).copyWith(
-                fontSize: 16,
+              style: AppTypography.section(
                 color: context.themeTextPrimary,
+              ).copyWith(
+                fontSize: 16,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -159,9 +161,11 @@ class TopCarpentersList extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   _formatPoints(carpenter.points),
-                  style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700).copyWith(
-                    fontSize: 16,
+                  style: AppTypography.section(
                     color: context.themeTextPrimary,
+                  ).copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
                   ),
                 ),
               ],

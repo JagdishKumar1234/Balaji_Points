@@ -19,6 +19,7 @@ class SessionService {
   static const String _keyPhoneNumber = 'phone_number';
   static const String _keyUserRole = 'user_role';
   static const String _keyUserId = 'user_id';
+  static const String _keyEmail = 'user_email';
   static const String _keyFirstName = 'first_name';
   static const String _keyLastName = 'last_name';
   static const String _keyProfileImage = 'profile_image';
@@ -32,6 +33,7 @@ class SessionService {
     required String phoneNumber,
     required String userId,
     required String role,
+    String? email,
     String? firstName,
     String? lastName,
     String? profileImage,
@@ -42,6 +44,10 @@ class SessionService {
     await _storage.write(key: _keyPhoneNumber, value: phoneNumber);
     await _storage.write(key: _keyUserId, value: userId);
     await _storage.write(key: _keyUserRole, value: role);
+
+    if (email != null && email.trim().isNotEmpty) {
+      await _storage.write(key: _keyEmail, value: email.trim());
+    }
 
     if (firstName != null) {
       await _storage.write(key: _keyFirstName, value: firstName);
@@ -74,6 +80,11 @@ class SessionService {
   /// Get stored user ID
   Future<String?> getUserId() async {
     return await _storage.read(key: _keyUserId);
+  }
+
+  /// Get stored email address
+  Future<String?> getEmail() async {
+    return await _storage.read(key: _keyEmail);
   }
 
   /// IDs used when querying bills / points (session userId + phone).
@@ -131,6 +142,7 @@ class SessionService {
     return {
       'phoneNumber': await getPhoneNumber(),
       'userId': await getUserId(),
+      'email': await getEmail(),
       'role': await getUserRole(),
       'firstName': await getFirstName(),
       'lastName': await getLastName(),

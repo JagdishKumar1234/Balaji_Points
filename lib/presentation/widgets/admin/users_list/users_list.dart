@@ -81,7 +81,6 @@ class _UsersListState extends State<UsersList> {
                 searchQuery: _searchQuery,
                 selectedTier: _selectedTier,
                 selectedSort: _selectedSort,
-                onCarpenterDeleted: () => setState(() {}),
               ),
             ),
           ],

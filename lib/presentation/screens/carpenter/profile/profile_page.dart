@@ -11,6 +11,7 @@ import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
+import 'package:balaji_points/providers/loading_provider.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
@@ -156,6 +157,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     );
 
     if (shouldLogout == true && context.mounted) {
+      ref.read(loadingProvider.notifier).start();
       try {
         await _fcmService.deleteToken();
         ref.read(carpenterPointsProvider.notifier).resetForLogout();
@@ -171,6 +173,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
               backgroundColor: context.themeError,
             ),
           );
+        }
+      } finally {
+        if (context.mounted) {
+          ref.read(loadingProvider.notifier).stop();
         }
       }
     }
@@ -633,6 +639,76 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     );
   }
 
+  Widget _colorPaletteSelector() {
+    final currentPalette = ref.watch(themeColorPaletteProvider);
+    final theme = Theme.of(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: AppRadius.md12,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.palette,
+                  color: context.themePrimary,
+                  size: 24,
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  'Theme Color Palette',
+                  style: AppTypography.labelLarge(
+                    color: theme.colorScheme.onSurface,
+                  ).copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: AppColorPalette.values.map((palette) {
+                final colors = AppPaletteColors.of(palette);
+                final isSelected = currentPalette == palette;
+                return ChoiceChip(
+                  label: Text(AppPaletteColors.displayName(palette)),
+                  selected: isSelected,
+                  selectedColor: colors.primary,
+                  labelStyle: TextStyle(
+                    color: isSelected ? AppColors.white : theme.colorScheme.onSurface,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  avatar: CircleAvatar(
+                    backgroundColor: colors.primary,
+                    radius: 8,
+                  ),
+                  onSelected: (selected) {
+                    if (selected) {
+                      ref.read(themeColorPaletteProvider.notifier).setColorPalette(palette);
+                    }
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -921,6 +997,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                   _languageSelector(),
                                   const SizedBox(height: 12),
                                   _themeToggle(),
+                                  const SizedBox(height: 12),
+                                  _colorPaletteSelector(),
 
                                   const SizedBox(height: 24),
 

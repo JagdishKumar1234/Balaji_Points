@@ -1,5 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:balaji_points/core/models/user.dart';
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
@@ -65,6 +70,22 @@ class AuthError extends AuthState {
   const AuthError(this.message);
 }
 
+class AuthPasswordResetSent extends AuthState {
+  final String message;
+  const AuthPasswordResetSent(this.message);
+}
+
+class AuthProfileCompletionRequired extends AuthState {
+  final String email;
+  final String displayName;
+  final String? existingRole;
+  const AuthProfileCompletionRequired({
+    required this.email,
+    required this.displayName,
+    this.existingRole,
+  });
+}
+
 class PinSetupLoading extends AuthState {
   const PinSetupLoading();
 }
@@ -98,6 +119,13 @@ class AuthNotifier extends Notifier<AuthState> {
   @override
   AuthState build() => const AuthInitial();
 
+  final firebase_auth.FirebaseAuth _firebaseAuth =
+      firebase_auth.FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: kIsWeb ? AppConstants.googleWebClientId : null,
+  );
+
   PinAuthService get _pin => ref.read(pinAuthServiceProvider);
   SessionService get _session => ref.read(sessionServiceProvider);
   FCMService get _fcm => ref.read(fcmServiceProvider);
@@ -107,11 +135,17 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> checkSession() async {
     try {
+      final firebaseUser = _firebaseAuth.currentUser;
+      if (firebaseUser != null) {
+        await _finishFirebaseSignIn(firebaseUser, rememberMe: true);
+        return;
+      }
+
       final session = await _session.getSessionData();
       if (session.isNotEmpty && session['userId'] != null) {
         final user = User(
           id: session['userId'] ?? '',
-          email: '',
+          email: session['email'] ?? '',
           phoneNumber: session['phoneNumber'] ?? '',
           displayName: _displayName(session['firstName'], session['lastName']),
           role: session['role'] ?? 'carpenter',
@@ -125,6 +159,488 @@ class AuthNotifier extends Notifier<AuthState> {
     } catch (e) {
       AppLogger.error('Session check failed', e);
       state = const AuthUnauthenticated();
+    }
+  }
+
+  Future<void> loginWithEmailAndPassword({
+    required String email,
+    required String password,
+    bool rememberMe = true,
+  }) async {
+    state = const AuthLoading();
+    try {
+      final normalizedEmail = email.trim();
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: normalizedEmail,
+        password: password.trim(),
+      );
+
+      final fbUser = userCredential.user;
+      if (fbUser == null) {
+        state = const AuthError('Unable to sign in. Please try again.');
+        return;
+      }
+
+      await _finishFirebaseSignIn(fbUser, rememberMe: rememberMe);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      AppLogger.error('Email login failed', e);
+      state = AuthError(_messageFromFirebaseError(e));
+    } catch (e) {
+      AppLogger.error('Email login failed', e);
+      state = AuthError('Login failed: $e');
+    }
+  }
+
+  Future<void> loginWithGoogle({bool rememberMe = true}) async {
+    state = const AuthLoading();
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        state = const AuthUnauthenticated();
+        return;
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final credential = firebase_auth.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final firebaseUser = (await _firebaseAuth.signInWithCredential(
+        credential,
+      )).user;
+      if (firebaseUser == null) {
+        state = const AuthError('Google sign in failed.');
+        return;
+      }
+
+      await _finishFirebaseSignIn(firebaseUser, rememberMe: rememberMe);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      AppLogger.error('Google login failed', e);
+      state = AuthError(_messageFromFirebaseError(e));
+    } catch (e) {
+      AppLogger.error('Google login failed', e);
+      state = AuthError('Google sign in failed: $e');
+    }
+  }
+
+  Future<void> completeGoogleRegistration({
+    required String firstName,
+    required String lastName,
+    required String phoneNumber,
+    required String role,
+    required String branchId,
+  }) async {
+    state = const AuthLoading();
+    try {
+      final firebaseUser = _firebaseAuth.currentUser;
+      if (firebaseUser == null || firebaseUser.email == null) {
+        state = const AuthError('Google session expired. Sign in again.');
+        return;
+      }
+      const selfSelectableRoles = {
+        AppConstants.roleCarpenter,
+        AppConstants.roleArchitect,
+        AppConstants.roleInteriorDesigner,
+      };
+      if (!selfSelectableRoles.contains(role)) {
+        state = const AuthError(
+          'Branch Admin access must be assigned by a Super Admin.',
+        );
+        return;
+      }
+
+      final normalizedPhone = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+      if (normalizedPhone.length != 10) {
+        state = const AuthError('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+
+      final branchSnapshot = await _firestore
+          .collection('branches')
+          .doc(branchId)
+          .get();
+      if (!branchSnapshot.exists ||
+          branchSnapshot.data()?['isActive'] != true) {
+        state = const AuthError('Select an active branch to continue.');
+        return;
+      }
+
+      final userRef = _firestore.collection('users').doc(firebaseUser.uid);
+      final existing = await userRef.get();
+      final existingRole = (existing.data()?['role'] as String?)?.trim();
+      if (existingRole != null &&
+          existingRole.isNotEmpty &&
+          existingRole != role) {
+        state = const AuthError(
+          'A role is already assigned to this account. Contact your branch administrator to change it.',
+        );
+        return;
+      }
+
+      final duplicatePhone = await _firestore
+          .collection('users')
+          .where('phone', isEqualTo: normalizedPhone)
+          .limit(2)
+          .get();
+      if (duplicatePhone.docs.any((doc) => doc.id != firebaseUser.uid)) {
+        state = const AuthError(
+          'This mobile number is already registered. Contact your branch administrator.',
+        );
+        return;
+      }
+
+      final fullName = '$firstName $lastName'.trim();
+      final completionFields = <String, dynamic>{
+        'firstName': firstName.trim(),
+        'lastName': lastName.trim(),
+        'phone': normalizedPhone,
+        'phoneNumber': '+91$normalizedPhone',
+        'role': role,
+        'roleId': role,
+        'branchId': branchId,
+        'status': 'verified',
+        'profileCompletedAt': FieldValue.serverTimestamp(),
+      };
+      if (existing.exists) {
+        await userRef.update(completionFields);
+      } else {
+        await userRef.set({
+          ...completionFields,
+          'uid': firebaseUser.uid,
+          'userId': firebaseUser.uid,
+          'email': firebaseUser.email!.trim(),
+          'totalPoints': 0,
+          'tier': 'Bronze',
+          'createdAt': FieldValue.serverTimestamp(),
+          'verifiedAt': FieldValue.serverTimestamp(),
+          'verifiedBy': 'google-profile-completion',
+        });
+      }
+
+      final pointsRef = _firestore
+          .collection('user_points')
+          .doc(firebaseUser.uid);
+      final points = await pointsRef.get();
+      if (!points.exists) {
+        await pointsRef.set({
+          'userId': firebaseUser.uid,
+          'branchId': branchId,
+          'totalPoints': 0,
+          'tier': 'Bronze',
+          'lastUpdated': FieldValue.serverTimestamp(),
+          'pointsHistory': <dynamic>[],
+        });
+      }
+
+      await firebaseUser.updateDisplayName(fullName);
+      await _session.saveSession(
+        phoneNumber: normalizedPhone,
+        userId: firebaseUser.uid,
+        role: role,
+        email: firebaseUser.email!.trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        profileImage: firebaseUser.photoURL,
+        branchId: branchId,
+      );
+
+      final user = User(
+        id: firebaseUser.uid,
+        email: firebaseUser.email!.trim(),
+        phoneNumber: normalizedPhone,
+        displayName: fullName,
+        photoUrl: firebaseUser.photoURL,
+        role: role,
+        branchId: branchId,
+        isEmailVerified: true,
+        createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
+      );
+      state = AuthAuthenticated(user, role: role);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      AppLogger.error('Google profile completion failed', e);
+      state = AuthError(_messageFromFirebaseError(e));
+    } catch (e) {
+      AppLogger.error('Google profile completion failed', e);
+      state = AuthError('Unable to complete registration: $e');
+    }
+  }
+
+  Future<void> cancelGoogleProfileCompletion() async {
+    await _firebaseAuth.signOut();
+    await _googleSignIn.signOut();
+    state = const AuthUnauthenticated();
+  }
+
+  Future<void> _finishFirebaseSignIn(
+    firebase_auth.User firebaseUser, {
+    required bool rememberMe,
+  }) async {
+    await _ensureConfiguredSuperAdminProfile(firebaseUser);
+    final profile = await _findUserProfile(firebaseUser);
+    final role =
+        (profile?['role'] as String? ??
+                profile?['roleId'] as String? ??
+                profile?['userRole'] as String?)
+            ?.trim();
+    final branchId = profile?['branchId'] as String?;
+    final phone =
+        (profile?['phone'] as String? ??
+                profile?['phoneNumber'] as String? ??
+                await _session.getPhoneNumber() ??
+                '')
+            .replaceAll(RegExp(r'[^0-9]'), '');
+    final isSuperAdmin = role == AppConstants.roleSuperAdmin;
+
+    if (profile == null ||
+        role == null ||
+        role.isEmpty ||
+        phone.length != 10 ||
+        (!isSuperAdmin && (branchId == null || branchId.trim().isEmpty))) {
+      state = AuthProfileCompletionRequired(
+        email: firebaseUser.email ?? '',
+        displayName:
+            firebaseUser.displayName ??
+            _displayNameFromEmail(firebaseUser.email),
+        existingRole: role,
+      );
+      return;
+    }
+
+    if (!isSuperAdmin) {
+      final branch = await _firestore
+          .collection('branches')
+          .doc(branchId)
+          .get();
+      if (!branch.exists || branch.data()?['isActive'] != true) {
+        state = const AuthError(
+          'Your assigned branch is inactive. Contact your administrator.',
+        );
+        return;
+      }
+    }
+
+    final firstName =
+        profile['firstName'] as String? ??
+        firebaseUser.displayName?.split(' ').first ??
+        _displayNameFromEmail(firebaseUser.email);
+    final lastName = profile['lastName'] as String? ?? '';
+    final displayName = '$firstName $lastName'.trim();
+    final email = firebaseUser.email ?? '';
+    final user = User(
+      id: firebaseUser.uid,
+      email: email,
+      phoneNumber: phone,
+      displayName: displayName.isEmpty ? 'User' : displayName,
+      photoUrl: profile['profileImage'] as String? ?? firebaseUser.photoURL,
+      role: role,
+      branchId: branchId,
+      isEmailVerified: firebaseUser.emailVerified,
+      createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
+    );
+
+    if (rememberMe) {
+      await _session.saveSession(
+        phoneNumber: phone,
+        userId: firebaseUser.uid,
+        role: role,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        profileImage: user.photoUrl,
+        branchId: branchId,
+      );
+    }
+    state = AuthAuthenticated(user, role: role);
+  }
+
+  Future<Map<String, dynamic>?> _findUserProfile(
+    firebase_auth.User firebaseUser,
+  ) async {
+    final byUid = await _firestore
+        .collection('users')
+        .doc(firebaseUser.uid)
+        .get();
+    if (byUid.exists) return byUid.data();
+
+    final email = firebaseUser.email?.trim();
+    if (email == null || email.isEmpty) return null;
+    final byEmail = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+    if (byEmail.docs.isEmpty) return null;
+    return byEmail.docs.first.data();
+  }
+
+  Future<void> resetPassword({required String email}) async {
+    state = const AuthLoading();
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
+      state = const AuthPasswordResetSent(
+        'If an account exists for this email, password reset instructions have been sent.',
+      );
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      AppLogger.error('Password reset failed', e);
+      if (e.code == 'user-not-found') {
+        // Keep the response generic to avoid revealing whether an email is registered.
+        state = const AuthPasswordResetSent(
+          'If an account exists for this email, password reset instructions have been sent.',
+        );
+      } else {
+        state = AuthError(_messageFromFirebaseError(e));
+      }
+    } catch (e) {
+      AppLogger.error('Password reset failed', e);
+      state = AuthError('Unable to send password reset email: $e');
+    }
+  }
+
+  Future<void> registerWithEmailAndPassword({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String phoneNumber,
+    required String role,
+    required String branchId,
+  }) async {
+    state = const AuthLoading();
+    firebase_auth.User? createdUser;
+    try {
+      const selfSelectableRoles = {
+        AppConstants.roleCarpenter,
+        AppConstants.roleArchitect,
+        AppConstants.roleInteriorDesigner,
+      };
+      if (!selfSelectableRoles.contains(role)) {
+        state = const AuthError(
+          'This role must be assigned by a branch administrator.',
+        );
+        return;
+      }
+
+      final normalizedPhone = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+      if (normalizedPhone.length != 10) {
+        state = const AuthError('Please enter a valid 10-digit phone number.');
+        return;
+      }
+
+      final branch = await _firestore
+          .collection('branches')
+          .doc(branchId)
+          .get();
+      if (!branch.exists || branch.data()?['isActive'] != true) {
+        state = const AuthError('Please select an active branch.');
+        return;
+      }
+
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      final registeredUser = credential.user;
+      if (registeredUser == null) {
+        state = const AuthError(
+          'Unable to create your account. Please try again.',
+        );
+        return;
+      }
+      createdUser = registeredUser;
+
+      final fullName = '$firstName $lastName'.trim();
+      await registeredUser.updateDisplayName(fullName);
+
+      final userRef = _firestore.collection('users').doc(registeredUser.uid);
+      final pointsRef = _firestore
+          .collection('user_points')
+          .doc(registeredUser.uid);
+      final batch = _firestore.batch();
+      batch.set(userRef, {
+        'uid': registeredUser.uid,
+        'userId': registeredUser.uid,
+        'firstName': firstName.trim(),
+        'lastName': lastName.trim(),
+        'email': email.trim(),
+        'phone': normalizedPhone,
+        'phoneNumber': '+91$normalizedPhone',
+        'role': role,
+        'roleId': role,
+        'branchId': branchId,
+        'status': 'verified',
+        'totalPoints': 0,
+        'tier': 'Bronze',
+        'createdAt': FieldValue.serverTimestamp(),
+        'verifiedAt': FieldValue.serverTimestamp(),
+        'verifiedBy': 'email-registration',
+      });
+      batch.set(pointsRef, {
+        'userId': registeredUser.uid,
+        'branchId': branchId,
+        'totalPoints': 0,
+        'tier': 'Bronze',
+        'lastUpdated': FieldValue.serverTimestamp(),
+        'pointsHistory': <dynamic>[],
+      });
+      await batch.commit();
+
+      await _session.saveSession(
+        phoneNumber: normalizedPhone,
+        userId: registeredUser.uid,
+        role: role,
+        email: email.trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        branchId: branchId,
+      );
+
+      try {
+        await _fcm.refreshTokenAfterLogin(
+          uid: registeredUser.uid,
+          phone: normalizedPhone,
+        );
+      } catch (e) {
+        AppLogger.warning('FCM refresh after registration failed: $e');
+      }
+
+      final user = User(
+        id: registeredUser.uid,
+        email: email.trim(),
+        phoneNumber: normalizedPhone,
+        displayName: fullName,
+        role: role,
+        branchId: branchId,
+        isEmailVerified: registeredUser.emailVerified,
+        createdAt: registeredUser.metadata.creationTime ?? DateTime.now(),
+      );
+      state = AuthAuthenticated(user, role: role);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      AppLogger.error('Email registration failed', e);
+      final incompleteUser = createdUser;
+      if (incompleteUser != null) {
+        try {
+          await incompleteUser.delete();
+        } catch (cleanupError) {
+          AppLogger.warning(
+            'Unable to clean up incomplete registration: $cleanupError',
+          );
+        }
+      }
+      state = AuthError(_messageFromFirebaseError(e));
+    } catch (e) {
+      AppLogger.error('Email registration failed', e);
+      final incompleteUser = createdUser;
+      if (incompleteUser != null) {
+        try {
+          await incompleteUser.delete();
+        } catch (cleanupError) {
+          AppLogger.warning(
+            'Unable to clean up incomplete registration: $cleanupError',
+          );
+        }
+      }
+      state = AuthError('Registration failed: $e');
     }
   }
 
@@ -233,6 +749,7 @@ class AuthNotifier extends Notifier<AuthState> {
     String? lastName,
     String? profileImageUrl,
     String? branchId,
+    String? role,
   }) async {
     state = const PinSetupLoading();
     try {
@@ -243,6 +760,7 @@ class AuthNotifier extends Notifier<AuthState> {
         lastName: lastName,
         profileImageUrl: profileImageUrl,
         branchId: branchId,
+        role: role,
       );
       if (!success) {
         state = const PinSetupError('Failed to setup PIN');
@@ -358,6 +876,8 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> logout() async {
     try {
+      await _firebaseAuth.signOut();
+      await _googleSignIn.signOut();
       ref.read(carpenterPointsProvider.notifier).resetForLogout();
       ref.invalidate(homeProvider);
       ref.invalidate(walletProvider);
@@ -378,6 +898,125 @@ class AuthNotifier extends Notifier<AuthState> {
   String _displayName(String? first, String? last) {
     final name = '${first ?? ''} ${last ?? ''}'.trim();
     return name.isEmpty ? 'User' : name;
+  }
+
+  String _displayNameFromEmail(String? email) {
+    if (email == null || email.isEmpty) return 'User';
+    final local = email.split('@').first.trim();
+    return local.isEmpty ? 'User' : local;
+  }
+
+  String _messageFromFirebaseError(firebase_auth.FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return 'Please enter a valid email address.';
+      case 'user-not-found':
+        return 'No account found for this email.';
+      case 'wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'too-many-requests':
+        return 'Too many attempts. Please try again later.';
+      case 'email-already-in-use':
+        return 'This email address is already in use.';
+      case 'weak-password':
+        return 'Password is too weak. Use a stronger password.';
+      case 'account-exists-with-different-credential':
+        return 'This account already exists with a different sign-in method.';
+      default:
+        return e.message ?? 'Authentication failed. Please try again.';
+    }
+  }
+
+  Future<String> _resolveRoleForUser(firebase_auth.User firebaseUser) async {
+    try {
+      final uidSnapshot = await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
+      if (uidSnapshot.exists) {
+        final data = uidSnapshot.data();
+        final role = data?['role'] as String? ?? data?['userRole'] as String?;
+        if (role != null && role.trim().isNotEmpty) return role.trim();
+      }
+
+      final email = firebaseUser.email?.trim();
+      if (email != null && email.isNotEmpty) {
+        final emailQuery = await _firestore
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .limit(1)
+            .get();
+        if (emailQuery.docs.isNotEmpty) {
+          final data = emailQuery.docs.first.data();
+          final role = data['role'] as String? ?? data['userRole'] as String?;
+          if (role != null && role.trim().isNotEmpty) return role.trim();
+        }
+      }
+
+      final phoneQuery = await _firestore
+          .collection('users')
+          .where('uid', isEqualTo: firebaseUser.uid)
+          .limit(1)
+          .get();
+      if (phoneQuery.docs.isNotEmpty) {
+        final data = phoneQuery.docs.first.data();
+        final role = data['role'] as String? ?? data['userRole'] as String?;
+        if (role != null && role.trim().isNotEmpty) return role.trim();
+      }
+    } catch (_) {
+      AppLogger.warning(
+        'Unable to resolve user role from Firestore; defaulting to carpenter.',
+      );
+    }
+
+    return 'carpenter';
+  }
+
+  Future<void> _ensureConfiguredSuperAdminProfile(
+    firebase_auth.User firebaseUser,
+  ) async {
+    final email = firebaseUser.email?.trim().toLowerCase();
+    AppLogger.info(
+      'Checking configured super-admin identity: email=$email uid=${firebaseUser.uid}',
+    );
+    if (email != AppConstants.superAdminEmail.toLowerCase()) return;
+
+    if (!firebaseUser.emailVerified) {
+      await _firebaseAuth.signOut();
+      throw StateError(
+        'The configured super admin account must have a verified email. Sign in with Google or verify the email first.',
+      );
+    }
+
+    final userRef = _firestore.collection('users').doc(firebaseUser.uid);
+    final existing = await userRef.get();
+    final profile = <String, dynamic>{
+      'uid': firebaseUser.uid,
+      'userId': firebaseUser.uid,
+      'email': AppConstants.superAdminEmail,
+      'firstName': 'Jagdish',
+      'lastName': 'Kumar',
+      'phone': AppConstants.superAdminPhone,
+      'phoneNumber': AppConstants.superAdminPhoneE164,
+      'role': AppConstants.roleSuperAdmin,
+      'branchId': null,
+      'status': 'active',
+      'lastLoginAt': FieldValue.serverTimestamp(),
+      'verifiedBy': 'configured-super-admin',
+    };
+    if (!existing.exists) {
+      profile.addAll({
+        'totalPoints': 0,
+        'tier': 'Bronze',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    await userRef.set(profile, SetOptions(merge: true));
+    if (firebaseUser.displayName != 'Jagdish Kumar') {
+      await firebaseUser.updateDisplayName('Jagdish Kumar');
+    }
+    AppLogger.auth('Configured super admin profile ensured for $email');
   }
 }
 

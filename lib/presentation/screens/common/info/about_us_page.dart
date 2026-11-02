@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
 
 /// Carpenter-facing About screen — copy is store-agnostic for multi-tenant SaaS.
 class AboutUsPage extends StatelessWidget {
@@ -50,9 +51,12 @@ class AboutUsPage extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, scrollBottomPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              child: ResponsiveContainer(
+                maxWidth: 700,
+                padding: EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(AppSpacing.lg),
@@ -143,6 +147,7 @@ class AboutUsPage extends StatelessWidget {
               ),
             ),
           ),
+        ),
         ],
       ),
     );

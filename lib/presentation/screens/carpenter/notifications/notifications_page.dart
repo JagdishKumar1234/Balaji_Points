@@ -373,8 +373,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.delete_outline,
-                color: const Color(0xFFD32F2F),
+                Icons.delete_outline_rounded,
+                color: context.themeError,
                 size: 24,
               ),
             ),
@@ -564,11 +564,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
       case 'dailySpinWon':
         return AppColors.warning;
       case 'offerRedeemed':
-        return const Color(0xFF2196F3);
+        return context.themePrimary;
       case 'newOfferAvailable':
         return context.themePrimary;
       case 'pointsMilestone':
-        return const Color(0xFFFFA000);
+        return context.themeGold;
       // Admin notification types
       case 'newPendingBill':
         return context.themePrimary;

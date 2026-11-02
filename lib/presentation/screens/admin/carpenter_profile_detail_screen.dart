@@ -10,15 +10,11 @@ import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
-import 'package:go_router/go_router.dart';
 
 class CarpenterProfileDetailScreen extends StatefulWidget {
   final String carpenterId;
 
-  const CarpenterProfileDetailScreen({
-    required this.carpenterId,
-    super.key,
-  });
+  const CarpenterProfileDetailScreen({required this.carpenterId, super.key});
 
   @override
   State<CarpenterProfileDetailScreen> createState() =>
@@ -193,10 +189,7 @@ class _CarpenterProfileDetailScreenState
                 ),
                 child: const Text(
                   '⚠️ Carpenter will need to use this new PIN to login. Make sure to communicate it securely.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.warning,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppColors.warning),
                 ),
               ),
               const SizedBox(height: 16),
@@ -242,9 +235,7 @@ class _CarpenterProfileDetailScreenState
               confirmPinController.text.trim(),
               carpenterPhone,
             ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.warning,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
             child: const Text(
               'Reset PIN',
               style: TextStyle(color: AppColors.white),
@@ -258,103 +249,15 @@ class _CarpenterProfileDetailScreenState
     });
   }
 
-  Future<void> _deleteCarpenterUser(
+  Future<void> _selectHistoryDate(
     BuildContext context,
-    String carpenterId,
-    String carpenterName,
+    bool isStartDate,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: const Row(
-          children: [
-            Icon(Icons.warning, color: AppColors.error, size: 28),
-            SizedBox(width: 12),
-            Text('Delete Carpenter'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Are you sure you want to delete $carpenterName?',
-              style: AppTypography.bodyMedium(),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                borderRadius: AppRadius.md12,
-                border: Border.all(
-                  color: AppColors.error.withValues(alpha: 0.3),
-                ),
-              ),
-              child: const Text(
-                '⚠️ This action cannot be undone. All carpenter data will be permanently deleted.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.error,
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: AppColors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && mounted) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(carpenterId)
-            .delete();
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$carpenterName deleted successfully'),
-              backgroundColor: AppColors.success,
-            ),
-          );
-          context.go('/admin');
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error deleting carpenter: $e'),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _selectHistoryDate(BuildContext context, bool isStartDate) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStartDate ? (_historyStartDate ?? DateTime.now()) : (_historyEndDate ?? DateTime.now()),
+      initialDate: isStartDate
+          ? (_historyStartDate ?? DateTime.now())
+          : (_historyEndDate ?? DateTime.now()),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -386,117 +289,119 @@ class _CarpenterProfileDetailScreenState
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.carpenterId)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: context.themePrimary,
-              ),
-            );
-          }
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.carpenterId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(color: context.themePrimary),
+          );
+        }
 
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: AppColors.white,
-                elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                title: const AppText.title('Carpenter Details'),
-              ),
-              body: Center(
-                child: AppText.body('Carpenter not found'),
-              ),
-            );
-          }
-
-          final userData = snapshot.data!.data() as Map<String, dynamic>;
-          final firstName = userData['firstName'] ?? '';
-          final lastName = userData['lastName'] ?? '';
-          final phone = userData['phone'] ?? '';
-          final totalPoints = (userData['totalPoints'] ?? 0) as num;
-          final tier = userData['tier'] ?? 'Bronze';
-          final profileImage = userData['profileImage'] ?? '';
-          final branchId = userData['branchId'] ?? '';
-          final createdAt = userData['createdAt'] as Timestamp?;
-          final carpenterName = '$firstName $lastName';
-
+        if (!snapshot.hasData || !snapshot.data!.exists) {
           return Scaffold(
-            backgroundColor: context.themeBackground,
             appBar: AppBar(
               backgroundColor: AppColors.white,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: AppColors.textPrimary,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               title: const AppText.title('Carpenter Details'),
-              centerTitle: false,
-              actions: context.isDesktop
-                  ? [
-                      // Desktop: Show as button group
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            OutlinedButton.icon(
-                              icon: Icon(Icons.lock_reset, color: context.themePrimary),
-                              label: const Text('Reset PIN'),
-                              onPressed: () => _resetPinDialog(
-                                context,
-                                widget.carpenterId,
-                                phone,
-                                carpenterName,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            OutlinedButton.icon(
-                              icon: Icon(Icons.edit, color: context.themePrimary),
-                              label: const Text('Edit'),
-                              onPressed: () => _showEditDialog(context, widget.carpenterId, userData),
-                            ),
-                            const SizedBox(width: 8),
-                            OutlinedButton.icon(
-                              icon: const Icon(Icons.delete, color: AppColors.error),
-                              label: const Text('Delete'),
-                              onPressed: () => _deleteCarpenterUser(context, widget.carpenterId, carpenterName),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ]
-                  : [
-                      // Mobile: Show as icons
-                      IconButton(
-                        icon: Icon(Icons.lock_reset, color: context.themePrimary),
-                        onPressed: () => _resetPinDialog(
-                          context,
-                          widget.carpenterId,
-                          phone,
-                          carpenterName,
-                        ),
-                        tooltip: 'Reset PIN',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit, color: context.themePrimary),
-                        onPressed: () => _showEditDialog(context, widget.carpenterId, userData),
-                        tooltip: 'Edit',
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: AppColors.error),
-                        onPressed: () => _deleteCarpenterUser(context, widget.carpenterId, carpenterName),
-                        tooltip: 'Delete',
-                      ),
-                    ],
             ),
-            body: SingleChildScrollView(
+            body: Center(child: AppText.body('Carpenter not found')),
+          );
+        }
+
+        final userData = snapshot.data!.data() as Map<String, dynamic>;
+        final firstName = userData['firstName'] ?? '';
+        final lastName = userData['lastName'] ?? '';
+        final phone = userData['phone'] ?? '';
+        final totalPoints = (userData['totalPoints'] ?? 0) as num;
+        final tier = userData['tier'] ?? 'Bronze';
+        final profileImage = userData['profileImage'] ?? '';
+        final branchId = userData['branchId'] ?? '';
+        final createdAt = userData['createdAt'] as Timestamp?;
+        final carpenterName = '$firstName $lastName';
+
+        return Scaffold(
+          backgroundColor: context.themeBackground,
+          appBar: AppBar(
+            backgroundColor: AppColors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: const AppText.title('Carpenter Details'),
+            centerTitle: false,
+            actions: context.isDesktop
+                ? [
+                    // Desktop: Show as button group
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          OutlinedButton.icon(
+                            icon: Icon(
+                              Icons.lock_reset,
+                              color: context.themePrimary,
+                            ),
+                            label: const Text('Reset PIN'),
+                            onPressed: () => _resetPinDialog(
+                              context,
+                              widget.carpenterId,
+                              phone,
+                              carpenterName,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          OutlinedButton.icon(
+                            icon: Icon(Icons.edit, color: context.themePrimary),
+                            label: const Text('Edit'),
+                            onPressed: () => _showEditDialog(
+                              context,
+                              widget.carpenterId,
+                              userData,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]
+                : [
+                    // Mobile: Show as icons
+                    IconButton(
+                      icon: Icon(Icons.lock_reset, color: context.themePrimary),
+                      onPressed: () => _resetPinDialog(
+                        context,
+                        widget.carpenterId,
+                        phone,
+                        carpenterName,
+                      ),
+                      tooltip: 'Reset PIN',
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit, color: context.themePrimary),
+                      onPressed: () => _showEditDialog(
+                        context,
+                        widget.carpenterId,
+                        userData,
+                      ),
+                      tooltip: 'Edit',
+                    ),
+                  ],
+          ),
+          body: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -563,7 +468,10 @@ class _CarpenterProfileDetailScreenState
                             ),
                             const SizedBox(height: 4),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.success,
                                 borderRadius: BorderRadius.circular(8),
@@ -591,7 +499,9 @@ class _CarpenterProfileDetailScreenState
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: context.themeContentColor.withValues(alpha: 0.1),
+                              color: context.themeContentColor.withValues(
+                                alpha: 0.1,
+                              ),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -605,9 +515,7 @@ class _CarpenterProfileDetailScreenState
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AppText.section(
-                                  totalPoints.toStringAsFixed(0),
-                                ),
+                                AppText.section(totalPoints.toStringAsFixed(0)),
                                 const SizedBox(height: 1),
                                 AppText.caption('Total Points'),
                               ],
@@ -673,7 +581,8 @@ class _CarpenterProfileDetailScreenState
                 FutureBuilder<Map<String, dynamic>?>(
                   future: BranchService().getBranch(branchId),
                   builder: (context, branchSnapshot) {
-                    final branchName = branchSnapshot.data?['shortName'] ??
+                    final branchName =
+                        branchSnapshot.data?['shortName'] ??
                         branchSnapshot.data?['name'] ??
                         (branchId.isNotEmpty ? branchId : '-');
 
@@ -722,7 +631,10 @@ class _CarpenterProfileDetailScreenState
                                   children: [
                                     Row(
                                       children: [
-                                        const Icon(Icons.calendar_today, size: 11),
+                                        const Icon(
+                                          Icons.calendar_today,
+                                          size: 11,
+                                        ),
                                         const SizedBox(width: 3),
                                         AppText.caption('Member Since'),
                                       ],
@@ -730,7 +642,9 @@ class _CarpenterProfileDetailScreenState
                                     const SizedBox(height: 1),
                                     AppText.caption(
                                       createdAt != null
-                                          ? DateFormat('dd MMM').format(createdAt.toDate())
+                                          ? DateFormat(
+                                              'dd MMM',
+                                            ).format(createdAt.toDate())
                                           : '-',
                                     ),
                                   ],
@@ -788,160 +702,193 @@ class _CarpenterProfileDetailScreenState
                 ),
                 const SizedBox(height: 10),
 
-                    // Pending Bill Requests Section
-                    _buildPendingBillsSection(context, widget.carpenterId),
+                // Pending Bill Requests Section
+                _buildPendingBillsSection(context, widget.carpenterId),
 
                 const SizedBox(height: 16),
 
-                    // Complete History Header
-                    Text(
-                      'Complete History',
-                      style: AppTypography.labelLarge().copyWith(fontSize: 18),
-                    ),
-                    const SizedBox(height: 12),
+                // Complete History Header
+                Text(
+                  'Complete History',
+                  style: AppTypography.labelLarge().copyWith(fontSize: 18),
+                ),
+                const SizedBox(height: 12),
 
-                    // Filters Section
+                // Filters Section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Icon(Icons.tune, size: 18, color: context.themeContentColor),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Filters',
-                              style: AppTypography.labelMedium().copyWith(fontSize: 12),
-                            ),
-                          ],
+                        Icon(
+                          Icons.tune,
+                          size: 18,
+                          color: context.themeContentColor,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _statusFilter = 'all';
-                              _siteFilter = null;
-                              _historyStartDate = null;
-                              _historyEndDate = null;
-                            });
-                          },
+                        const SizedBox(width: 6),
+                        Text(
+                          'Filters',
+                          style: AppTypography.labelMedium().copyWith(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _statusFilter = 'all';
+                          _siteFilter = null;
+                          _historyStartDate = null;
+                          _historyEndDate = null;
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.refresh,
+                            size: 16,
+                            color: context.themePrimary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Clear All',
+                            style: AppTypography.labelSmall().copyWith(
+                              fontSize: 12,
+                              color: context.themePrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+
+                // Site Filter Dropdown
+                _buildSiteFilterDropdown(context, widget.carpenterId),
+                const SizedBox(height: 10),
+
+                // Date Range Filters
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => _selectHistoryDate(context, true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.themeSoftSurface,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: _historyStartDate != null
+                                  ? context.themePrimary
+                                  : context.themeBorder,
+                            ),
+                          ),
                           child: Row(
                             children: [
-                              Icon(Icons.refresh, size: 16, color: context.themePrimary),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Clear All',
-                                style: AppTypography.labelSmall().copyWith(
-                                  fontSize: 12,
-                                  color: context.themePrimary,
+                              Icon(
+                                Icons.calendar_today,
+                                size: 14,
+                                color: context.themeTextSecondary,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  _historyStartDate != null
+                                      ? DateFormat(
+                                          'dd MMM',
+                                        ).format(_historyStartDate!)
+                                      : 'From Date',
+                                  style: AppTypography.bodySmall().copyWith(
+                                    fontSize: 11,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(height: 10),
-
-                    // Site Filter Dropdown
-                    _buildSiteFilterDropdown(context, widget.carpenterId),
-                    const SizedBox(height: 10),
-
-                    // Date Range Filters
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectHistoryDate(context, true),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.themeSoftSurface,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                  color: _historyStartDate != null
-                                      ? context.themePrimary
-                                      : context.themeBorder,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today,
-                                    size: 14,
-                                    color: context.themeTextSecondary,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      _historyStartDate != null
-                                          ? DateFormat('dd MMM').format(_historyStartDate!)
-                                          : 'From Date',
-                                      style: AppTypography.bodySmall().copyWith(fontSize: 11),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => _selectHistoryDate(context, false),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.themeSoftSurface,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: _historyEndDate != null
+                                  ? context.themePrimary
+                                  : context.themeBorder,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectHistoryDate(context, false),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                size: 14,
+                                color: context.themeTextSecondary,
                               ),
-                              decoration: BoxDecoration(
-                                color: context.themeSoftSurface,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                  color: _historyEndDate != null
-                                      ? context.themePrimary
-                                      : context.themeBorder,
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  _historyEndDate != null
+                                      ? DateFormat(
+                                          'dd MMM',
+                                        ).format(_historyEndDate!)
+                                      : 'To Date',
+                                  style: AppTypography.bodySmall().copyWith(
+                                    fontSize: 11,
+                                  ),
                                 ),
                               ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today,
-                                    size: 14,
-                                    color: context.themeTextSecondary,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      _historyEndDate != null
-                                          ? DateFormat('dd MMM').format(_historyEndDate!)
-                                          : 'To Date',
-                                      style: AppTypography.bodySmall().copyWith(fontSize: 11),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(height: 12),
+                  ],
+                ),
+                const SizedBox(height: 12),
 
-                    // Status Filter Pills
-                    Row(
-                      children: [
-                        _buildFilterPill(context, 'All', 'all', Colors.blue),
-                        const SizedBox(width: 8),
-                        _buildFilterPill(context, 'Approved', 'approved', AppColors.success),
-                        const SizedBox(width: 8),
-                        _buildFilterPill(context, 'Pending', 'pending', const Color(0xFFFFA500)),
-                        const SizedBox(width: 8),
-                        _buildFilterPill(context, 'Rejected', 'rejected', AppColors.error),
-                      ],
+                // Status Filter Pills
+                Row(
+                  children: [
+                    _buildFilterPill(context, 'All', 'all', Colors.blue),
+                    const SizedBox(width: 8),
+                    _buildFilterPill(
+                      context,
+                      'Approved',
+                      'approved',
+                      AppColors.success,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(width: 8),
+                    _buildFilterPill(
+                      context,
+                      'Pending',
+                      'pending',
+                      const Color(0xFFFFA500),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterPill(
+                      context,
+                      'Rejected',
+                      'rejected',
+                      AppColors.error,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
 
                 // History Items
                 _buildHistoryList(context, widget.carpenterId),
@@ -949,10 +896,10 @@ class _CarpenterProfileDetailScreenState
                 const SizedBox(height: 20),
               ],
             ),
-            ),
-          );
-        },
-      );
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _showEditDialog(
@@ -1009,7 +956,8 @@ class _CarpenterProfileDetailScreenState
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  helperText: 'Changing phone number will update login credentials',
+                  helperText:
+                      'Changing phone number will update login credentials',
                 ),
                 keyboardType: TextInputType.phone,
               ),
@@ -1051,11 +999,11 @@ class _CarpenterProfileDetailScreenState
                     .collection('users')
                     .doc(carpenterId)
                     .update({
-                  'firstName': firstNameController.text,
-                  'lastName': lastNameController.text,
-                  'phone': newPhone,
-                  'branchId': branchIdController.text,
-                });
+                      'firstName': firstNameController.text,
+                      'lastName': lastNameController.text,
+                      'phone': newPhone,
+                      'branchId': branchIdController.text,
+                    });
 
                 if (mounted) {
                   Navigator.pop(dialogContext);
@@ -1086,10 +1034,7 @@ class _CarpenterProfileDetailScreenState
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themePrimary,
             ),
-            child: AppText.body(
-              'Update',
-              color: AppColors.white,
-            ),
+            child: AppText.body('Update', color: AppColors.white),
           ),
         ],
       ),
@@ -1119,14 +1064,9 @@ class _CarpenterProfileDetailScreenState
           child: Icon(icon, size: 20, color: color),
         ),
         const SizedBox(height: 6),
-        AppText.section(
-          count,
-          color: color,
-        ),
+        AppText.section(count, color: color),
         const SizedBox(height: 2),
-        AppText.caption(
-          label,
-        ),
+        AppText.caption(label),
       ],
     );
   }
@@ -1146,11 +1086,15 @@ class _CarpenterProfileDetailScreenState
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? color : context.themeSoftSurface,
-        foregroundColor: isSelected ? AppColors.white : context.themeTextPrimary,
+        foregroundColor: isSelected
+            ? AppColors.white
+            : context.themeTextPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: !isSelected ? BorderSide(color: context.themeBorder) : BorderSide.none,
+          side: !isSelected
+              ? BorderSide(color: context.themeBorder)
+              : BorderSide.none,
         ),
       ),
       child: Text(
@@ -1204,13 +1148,15 @@ class _CarpenterProfileDetailScreenState
                   style: AppTypography.bodySmall().copyWith(fontSize: 12),
                 ),
               ),
-              ...sites.map((site) => DropdownMenuItem(
-                value: site,
-                child: Text(
-                  site,
-                  style: AppTypography.bodySmall().copyWith(fontSize: 12),
+              ...sites.map(
+                (site) => DropdownMenuItem(
+                  value: site,
+                  child: Text(
+                    site,
+                    style: AppTypography.bodySmall().copyWith(fontSize: 12),
+                  ),
                 ),
-              )),
+              ),
             ],
             onChanged: (value) {
               setState(() {
@@ -1249,11 +1195,7 @@ class _CarpenterProfileDetailScreenState
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.schedule,
-                  size: 20,
-                  color: const Color(0xFFFFA500),
-                ),
+                Icon(Icons.schedule, size: 20, color: const Color(0xFFFFA500)),
                 const SizedBox(width: 8),
                 Text(
                   'Pending Bill Requests',
@@ -1264,7 +1206,10 @@ class _CarpenterProfileDetailScreenState
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFA500).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
@@ -1296,7 +1241,10 @@ class _CarpenterProfileDetailScreenState
     );
   }
 
-  Widget _buildPendingBillCard(BuildContext context, Map<String, dynamic> bill) {
+  Widget _buildPendingBillCard(
+    BuildContext context,
+    Map<String, dynamic> bill,
+  ) {
     final imageUrl = bill['imageUrl'] as String? ?? '';
     final billNumber = bill['billNumber'] ?? 'N/A';
     final siteName = bill['siteName'] ?? '-';
@@ -1360,9 +1308,14 @@ class _CarpenterProfileDetailScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFA500).withValues(alpha: 0.15),
+                          color: const Color(
+                            0xFFFFA500,
+                          ).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(3),
                         ),
                         child: Text(
@@ -1377,7 +1330,9 @@ class _CarpenterProfileDetailScreenState
                       const SizedBox(height: 4),
                       Text(
                         'Site Material Purchase',
-                        style: AppTypography.labelMedium().copyWith(fontSize: 12),
+                        style: AppTypography.labelMedium().copyWith(
+                          fontSize: 12,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1400,7 +1355,9 @@ class _CarpenterProfileDetailScreenState
                       const SizedBox(height: 2),
                       Text(
                         billDate != null
-                            ? DateFormat('dd MMM yyyy • hh:mm a').format(billDate.toDate())
+                            ? DateFormat(
+                                'dd MMM yyyy • hh:mm a',
+                              ).format(billDate.toDate())
                             : '-',
                         style: AppTypography.bodySmall().copyWith(
                           fontSize: 10,
@@ -1415,7 +1372,10 @@ class _CarpenterProfileDetailScreenState
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFA500).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
@@ -1462,17 +1422,16 @@ class _CarpenterProfileDetailScreenState
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.error.withValues(alpha: 0.1),
                       foregroundColor: AppColors.error,
-                      side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+                      side: BorderSide(
+                        color: AppColors.error.withValues(alpha: 0.3),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     icon: const Icon(Icons.close, size: 16),
-                    label: const Text(
-                      'Reject',
-                      style: TextStyle(fontSize: 12),
-                    ),
+                    label: const Text('Reject', style: TextStyle(fontSize: 12)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -1523,9 +1482,14 @@ class _CarpenterProfileDetailScreenState
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: const Text('Approve', style: TextStyle(color: AppColors.white)),
+            child: const Text(
+              'Approve',
+              style: TextStyle(color: AppColors.white),
+            ),
           ),
         ],
       ),
@@ -1596,9 +1560,14 @@ class _CarpenterProfileDetailScreenState
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeError,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: const Text('Reject', style: TextStyle(color: AppColors.white)),
+            child: const Text(
+              'Reject',
+              style: TextStyle(color: AppColors.white),
+            ),
           ),
         ],
       ),
@@ -1647,9 +1616,8 @@ class _CarpenterProfileDetailScreenState
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => Center(
-        child: CircularProgressIndicator(color: context.themePrimary),
-      ),
+      builder: (_) =>
+          Center(child: CircularProgressIndicator(color: context.themePrimary)),
     );
   }
 
@@ -1706,8 +1674,8 @@ class _CarpenterProfileDetailScreenState
     final statusColor = status == 'approved'
         ? AppColors.success
         : status == 'rejected'
-            ? AppColors.error
-            : const Color(0xFFFFA500);
+        ? AppColors.error
+        : const Color(0xFFFFA500);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -1760,7 +1728,10 @@ class _CarpenterProfileDetailScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: context.themeContentColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(3),
@@ -1799,7 +1770,9 @@ class _CarpenterProfileDetailScreenState
                   const SizedBox(height: 2),
                   Text(
                     billDate != null
-                        ? DateFormat('dd MMM yyyy • hh:mm a').format(billDate.toDate())
+                        ? DateFormat(
+                            'dd MMM yyyy • hh:mm a',
+                          ).format(billDate.toDate())
                         : '-',
                     style: AppTypography.bodySmall().copyWith(
                       fontSize: 10,
@@ -1814,7 +1787,10 @@ class _CarpenterProfileDetailScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
@@ -1897,7 +1873,10 @@ class _CarpenterProfileDetailScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: context.themeContentColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(3),
@@ -1920,7 +1899,9 @@ class _CarpenterProfileDetailScreenState
                   const SizedBox(height: 6),
                   Text(
                     timestamp != null
-                        ? DateFormat('dd MMM yyyy • hh:mm a').format(timestamp.toDate())
+                        ? DateFormat(
+                            'dd MMM yyyy • hh:mm a',
+                          ).format(timestamp.toDate())
                         : '-',
                     style: AppTypography.bodySmall().copyWith(
                       fontSize: 10,
@@ -1934,7 +1915,10 @@ class _CarpenterProfileDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
@@ -1981,74 +1965,79 @@ class _CarpenterProfileDetailScreenState
     );
   }
 
-  Stream<List<Map<String, dynamic>>> _getCombinedHistoryStream(String carpenterId) {
+  Stream<List<Map<String, dynamic>>> _getCombinedHistoryStream(
+    String carpenterId,
+  ) {
     return FirebaseFirestore.instance
         .collection('bills')
         .where('carpenterId', isEqualTo: carpenterId)
         .snapshots()
         .asyncMap((billSnapshot) async {
-      final bills = billSnapshot.docs.map((doc) {
-        final data = doc.data();
-        return {...data, 'type': 'bill'};
-      }).toList();
+          final bills = billSnapshot.docs.map((doc) {
+            final data = doc.data();
+            return {...data, 'type': 'bill'};
+          }).toList();
 
-      final pointsSnapshot = await FirebaseFirestore.instance
-          .collection('points_history')
-          .where('userId', isEqualTo: carpenterId)
-          .get();
+          final pointsSnapshot = await FirebaseFirestore.instance
+              .collection('points_history')
+              .where('userId', isEqualTo: carpenterId)
+              .get();
 
-      final points = pointsSnapshot.docs.map((doc) {
-        final data = doc.data();
-        return {...data, 'type': 'points'};
-      }).toList();
+          final points = pointsSnapshot.docs.map((doc) {
+            final data = doc.data();
+            return {...data, 'type': 'points'};
+          }).toList();
 
-      final combined = [...bills, ...points];
-      combined.sort((a, b) {
-        final dateA = (a['timestamp'] ?? a['billDate']) as Timestamp?;
-        final dateB = (b['timestamp'] ?? b['billDate']) as Timestamp?;
+          final combined = [...bills, ...points];
+          combined.sort((a, b) {
+            final dateA = (a['timestamp'] ?? a['billDate']) as Timestamp?;
+            final dateB = (b['timestamp'] ?? b['billDate']) as Timestamp?;
 
-        if (dateA == null || dateB == null) return 0;
-        return dateB.compareTo(dateA);
-      });
+            if (dateA == null || dateB == null) return 0;
+            return dateB.compareTo(dateA);
+          });
 
-      // Apply filters
-      return combined.where((event) {
-        // Site filter (only applies to bills)
-        if (_siteFilter != null && event['type'] == 'bill') {
-          final siteName = event['siteName'] as String? ?? '';
-          if (siteName != _siteFilter) {
-            return false;
-          }
-        }
+          // Apply filters
+          return combined.where((event) {
+            // Site filter (only applies to bills)
+            if (_siteFilter != null && event['type'] == 'bill') {
+              final siteName = event['siteName'] as String? ?? '';
+              if (siteName != _siteFilter) {
+                return false;
+              }
+            }
 
-        final status = event['status'] as String? ?? 'pending';
+            final status = event['status'] as String? ?? 'pending';
 
-        // Status filter pills
-        if (_statusFilter == 'all') {
-          // All pills selected is same as "All" button
-        } else if (_statusFilter == 'approved' && status != 'approved') {
-          return false;
-        } else if (_statusFilter == 'pending' && status != 'pending') {
-          return false;
-        } else if (_statusFilter == 'rejected' && status != 'rejected') {
-          return false;
-        }
+            // Status filter pills
+            if (_statusFilter == 'all') {
+              // All pills selected is same as "All" button
+            } else if (_statusFilter == 'approved' && status != 'approved') {
+              return false;
+            } else if (_statusFilter == 'pending' && status != 'pending') {
+              return false;
+            } else if (_statusFilter == 'rejected' && status != 'rejected') {
+              return false;
+            }
 
-        // Date range filter
-        final timestamp = event['timestamp'] ?? event['billDate'];
-        if (timestamp != null) {
-          final date = timestamp is Timestamp ? timestamp.toDate() : (timestamp as DateTime);
-          if (_historyStartDate != null && date.isBefore(_historyStartDate!)) {
-            return false;
-          }
-          if (_historyEndDate != null &&
-              date.isAfter(_historyEndDate!.add(const Duration(days: 1)))) {
-            return false;
-          }
-        }
+            // Date range filter
+            final timestamp = event['timestamp'] ?? event['billDate'];
+            if (timestamp != null) {
+              final date = timestamp is Timestamp
+                  ? timestamp.toDate()
+                  : (timestamp as DateTime);
+              if (_historyStartDate != null &&
+                  date.isBefore(_historyStartDate!)) {
+                return false;
+              }
+              if (_historyEndDate != null &&
+                  date.isAfter(_historyEndDate!.add(const Duration(days: 1)))) {
+                return false;
+              }
+            }
 
-        return true;
-      }).toList();
-    });
+            return true;
+          }).toList();
+        });
   }
 }

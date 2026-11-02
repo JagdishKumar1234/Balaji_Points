@@ -4,20 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
-import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 class UserListItem extends StatelessWidget {
   final String userId;
   final Map<String, dynamic> userData;
-  final VoidCallback onDeleted;
 
-  const UserListItem({
-    required this.userId,
-    required this.userData,
-    required this.onDeleted,
-    super.key,
-  });
+  const UserListItem({required this.userId, required this.userData, super.key});
 
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
@@ -34,73 +27,8 @@ class UserListItem extends StatelessWidget {
     }
   }
 
-  Future<void> _deleteCarpenter(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Confirm Delete'),
-            content: Text(l10n.deleteCarpenterWarning),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.delete),
-                style: TextButton.styleFrom(
-                  foregroundColor: context.themeError,
-                ),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-
-    if (!confirmed) return;
-
-    if (!context.mounted) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(userId).delete();
-
-      if (context.mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.carpenterDeletedSuccess),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-        onDeleted();
-      }
-    } catch (e) {
-      if (context.mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.failedToDeleteCarpenter),
-            backgroundColor: context.themeError,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final firstName = userData['firstName'] ?? '';
     final lastName = userData['lastName'] ?? '';
     final phone = userData['phone'] ?? '';
@@ -110,8 +38,8 @@ class UserListItem extends StatelessWidget {
     final createdAt = userData['createdAt'] is Timestamp
         ? (userData['createdAt'] as Timestamp).toDate()
         : (userData['createdAt'] is DateTime
-            ? userData['createdAt'] as DateTime
-            : null);
+              ? userData['createdAt'] as DateTime
+              : null);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -144,8 +72,9 @@ class UserListItem extends StatelessWidget {
                               return Container(
                                 width: 48,
                                 height: 48,
-                                color: context.themeContentColor
-                                    .withValues(alpha: 0.1),
+                                color: context.themeContentColor.withValues(
+                                  alpha: 0.1,
+                                ),
                                 child: Icon(
                                   Icons.person,
                                   size: 24,
@@ -158,8 +87,9 @@ class UserListItem extends StatelessWidget {
                               return Container(
                                 width: 48,
                                 height: 48,
-                                color: context.themeContentColor
-                                    .withValues(alpha: 0.1),
+                                color: context.themeContentColor.withValues(
+                                  alpha: 0.1,
+                                ),
                                 child: Center(
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
@@ -174,8 +104,9 @@ class UserListItem extends StatelessWidget {
                         : Container(
                             width: 48,
                             height: 48,
-                            color: context.themeContentColor
-                                .withValues(alpha: 0.1),
+                            color: context.themeContentColor.withValues(
+                              alpha: 0.1,
+                            ),
                             child: Icon(
                               Icons.person,
                               size: 24,
@@ -207,33 +138,6 @@ class UserListItem extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  // Delete Button
-                  OutlinedButton(
-                    onPressed: () => _deleteCarpenter(context),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: context.themeError,
-                      side: BorderSide(
-                        color: context.themeError,
-                        width: 1.5,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.sm8,
-                      ),
-                    ),
-                    child: Text(
-                      l10n.delete,
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 13,
-                        color: context.themeError,
-                      ),
                     ),
                   ),
                 ],

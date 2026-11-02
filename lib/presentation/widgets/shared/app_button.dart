@@ -83,11 +83,11 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark   = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final disabled = isLoading || onPressed == null;
 
-    final bg     = _bg(context, isDark, disabled);
-    final fg     = _fg(context, isDark, disabled);
+    final bg = _bg(context, isDark, disabled);
+    final fg = _fg(context, isDark, disabled);
     final border = _border(context, isDark, disabled);
 
     final Widget child = isLoading
@@ -112,24 +112,22 @@ class AppButton extends StatelessWidget {
           );
 
     // Ensure consistent button sizing across platforms
-    final minHeight = 50.0;  // Standard touch target size (48dp+)
-    final minWidth = fullWidth ? double.infinity : (width ?? 100.0);
+    final minHeight = 50.0; // Standard touch target size (48dp+)
 
-    return ElevatedButton(
+    final button = ElevatedButton(
       onPressed: disabled ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor:         bg,
-        foregroundColor:         fg,
+        backgroundColor: bg,
+        foregroundColor: fg,
         disabledBackgroundColor: bg,
         disabledForegroundColor: fg,
-        shadowColor:  Colors.transparent,
-        elevation:    0,
+        shadowColor: Colors.transparent,
+        elevation: 0,
         padding: EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
-          vertical: verticalPadding.clamp(12.0, 20.0),  // Clamp for consistency
+          vertical: verticalPadding.clamp(12.0, 20.0), // Clamp for consistency
         ),
-        minimumSize: Size(minWidth, minHeight),
-        fixedSize: fullWidth ? Size(minWidth, minHeight) : null,
+        minimumSize: Size(width ?? 0, minHeight),
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.all16,
           side: border,
@@ -137,13 +135,23 @@ class AppButton extends StatelessWidget {
       ),
       child: child,
     );
+
+    if (fullWidth) {
+      return SizedBox(width: double.infinity, height: minHeight, child: button);
+    }
+
+    if (width != null) {
+      return SizedBox(width: width, height: minHeight, child: button);
+    }
+
+    return button;
   }
 
   Color _bg(BuildContext context, bool isDark, bool disabled) {
     final a = disabled ? 0.50 : 1.0;
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.primary.withValues(alpha: a);
+        return AppColors.action.withValues(alpha: a);
       case AppButtonVariant.gold:
         return AppColors.gold.withValues(alpha: a);
       case AppButtonVariant.danger:
@@ -152,8 +160,8 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.outline:
         return disabled
             ? (isDark
-                ? AppColors.darkBorder.withValues(alpha: 0.12)
-                : AppColors.primary.withValues(alpha: 0.05))
+                  ? AppColors.darkBorder.withValues(alpha: 0.12)
+                  : AppColors.primary.withValues(alpha: 0.05))
             : Colors.transparent;
     }
   }
@@ -177,8 +185,9 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
         return BorderSide(
-          color: (isDark ? AppColors.darkBorder : AppColors.primary)
-              .withValues(alpha: disabled ? 0.30 : 1.0),
+          color: (isDark ? AppColors.darkBorder : AppColors.primary).withValues(
+            alpha: disabled ? 0.30 : 1.0,
+          ),
           width: 1.5,
         );
       default:

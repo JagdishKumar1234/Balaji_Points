@@ -1,15 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:balaji_points/core/design/app_animations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
-import 'package:balaji_points/core/design/auth_design.dart';
 import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
@@ -18,9 +14,6 @@ import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
-import 'package:balaji_points/services/auth/biometric_service.dart';
-import 'package:balaji_points/services/auth/session_service.dart';
-import 'package:balaji_points/services/notifications/fcm_service.dart';
 import '../../../../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -31,154 +24,81 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final SessionService _sessionService = SessionService();
-  bool _canUseDeviceAuth = false;
-  bool _isDeviceAuthLoading = false;
-  String? _rememberedPhone;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadStoredSession();
-  }
+  bool _isPasswordVisible = false;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
-    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _checkUserAndNavigate() {
+  Future<void> _loginWithEmail() async {
     if (!_formKey.currentState!.validate()) return;
-    final phone = _phoneController.text.trim();
-    if (phone.isEmpty) return;
-    ref.read(authProvider.notifier).checkUserExists(phone);
-  }
 
-  Future<void> _loadStoredSession() async {
-    final isLoggedIn = await _sessionService.isLoggedIn();
-    if (!isLoggedIn) return;
-
-    final savedPhone = await _sessionService.getPhoneNumber();
-    final biometricEnabled = await _sessionService.isBiometricEnabled();
-    final deviceAvailable =
-        biometricEnabled && await BiometricService().isAvailable();
-
-    if (!mounted) return;
-    setState(() {
-      _rememberedPhone = savedPhone;
-      _canUseDeviceAuth =
-          deviceAvailable && savedPhone != null && savedPhone.isNotEmpty;
-    });
-  }
-
-  Future<void> _authenticateWithDevice() async {
-    setState(() => _isDeviceAuthLoading = true);
-    final authenticated = await BiometricService().authenticate(
-      localizedReason: 'Verify your identity to open Balaji Points',
-    );
-
-    if (!mounted) return;
-    setState(() => _isDeviceAuthLoading = false);
-
-    final messenger = ScaffoldMessenger.of(context);
-    final errorColor = context.themeError;
-
-    if (!authenticated) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: const Text('Authentication failed. Please try again.'),
-          backgroundColor: errorColor,
-        ),
-      );
-      return;
-    }
-
-    final isLoggedIn = await _sessionService.isLoggedIn();
-    if (!isLoggedIn) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: const Text(
-            'No stored session found. Please login with PIN.',
-          ),
-          backgroundColor: errorColor,
-        ),
-      );
-      return;
-    }
-
-    final role = await _sessionService.getUserRole();
-    FCMService().processPendingNavigation();
-    if (!mounted) return;
-
-    if (role?.trim().toLowerCase() == 'admin') {
-      context.go('/admin');
-    } else {
-      context.go('/');
+    setState(() => _isSubmitting = true);
+    try {
+      await ref
+          .read(authProvider.notifier)
+          .loginWithEmailAndPassword(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
-  Widget _buildDeviceAuthCard(BuildContext context, bool isDark) {
-    return Container(
-      margin: EdgeInsets.only(bottom: AuthDesign.largeSpacing),
-      padding: EdgeInsets.all(AuthDesign.cardSpacing),
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.darkSurface.withValues(alpha: 0.88)
-            : AppColors.white.withValues(alpha: 0.90),
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(
-          color: isDark
-              ? AppColors.darkBorder.withValues(alpha: 0.5)
-              : context.themePrimary.withValues(alpha: 0.18),
-          width: AuthDesign.textFieldBorderWidth,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Use device authentication',
-            style: AppTypography.bodyLarge(
-              color: context.themePrimary,
-            ).copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            _rememberedPhone != null
-                ? '+91 $_rememberedPhone'
-                : 'Use your saved session',
-            style: AppTypography.bodyMedium(color: context.themeTextSecondary),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          AppButton.secondary(
-            label: 'Login with device authentication',
-            icon: Icons.fingerprint,
-            onPressed: _isDeviceAuthLoading ? null : _authenticateWithDevice,
-            isLoading: _isDeviceAuthLoading,
-          ),
-        ],
-      ),
-    );
+  Future<void> _loginWithGoogle() async {
+    setState(() => _isSubmitting = true);
+    try {
+      await ref.read(authProvider.notifier).loginWithGoogle();
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    AppLocalizations? l10n;
+    try {
+      l10n = AppLocalizations.of(context);
+    } catch (_) {
+      l10n = null;
+    }
+
+    final appName = l10n?.appName ?? 'Balaji Points';
+    final errorLabel = l10n?.error ?? 'Error';
+    final companyName = l10n?.companyName ?? 'Balaji Points';
+    final subtitle = l10n?.enterPhoneNumber ?? 'Sign in with your email';
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     ref.listen<AuthState>(authProvider, (_, state) {
-      if (state is AuthUserExists) {
-        context.push('/pin-login?phone=${state.phoneNumber}');
-      } else if (state is AuthUserNotFound) {
-        context.push('/pin-setup?phone=${state.phoneNumber}');
+      if (state is AuthAuthenticated) {
+        final destination = switch (state.role) {
+          'super_admin' => '/super-admin',
+          'admin' => '/admin',
+          _ => '/',
+        };
+        context.go(destination);
+      } else if (state is AuthProfileCompletionRequired) {
+        context.go(
+          '/complete-registration',
+          extra: {
+            'email': state.email,
+            'displayName': state.displayName,
+            'existingRole': state.existingRole,
+          },
+        );
       } else if (state is AuthError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: ${state.message}'),
+            content: Text('$errorLabel: ${state.message}'),
             backgroundColor: context.themeError,
             duration: const Duration(seconds: 3),
           ),
@@ -186,7 +106,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
     });
 
-    final isChecking = ref.watch(authProvider) is AuthCheckingUser;
+    final isChecking = _isSubmitting;
 
     return PopScope(
       canPop: false,
@@ -205,10 +125,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // ── Modern gradient background ──
             AuthBackground(isDark: isDark),
-
-            // ── Content ──
             SafeArea(
               bottom: false,
               child: SingleChildScrollView(
@@ -217,17 +134,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      // ── Top Controls ──
                       AuthTopControls(
-                        themeToggle: _ThemeToggleButton(isDark: isDark)
-                            .fadeIn(delay: AppAnimations.stagger(0)),
-                        languagePicker: _LanguagePicker()
-                            .fadeIn(delay: AppAnimations.stagger(0)),
+                        themeToggle: _ThemeToggleButton(isDark: isDark),
+                        languagePicker: _LanguagePicker(),
                       ),
-
                       const SizedBox(height: AppSpacing.lg),
-
-                      // ── Professional Auth Card with Back Button ──
                       Stack(
                         children: [
                           ProfessionalAuthCard(
@@ -235,44 +146,96 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             securityMessage: 'Your data is 100% secure with us',
                             child: Column(
                               children: [
-                                // Header with logo
                                 AuthHeader(
-                              logoPath: 'assets/images/balaji_point_logo.png',
-                              title: l10n.appName,
-                              subtitle: l10n.enterPhoneNumber,
-                              isDark: isDark,
-                            ).enterHero(delay: AppAnimations.stagger(1)),
-
-                            const SizedBox(height: AppSpacing.xl3),
-
-                            // Phone input
-                            AppTextField.phone(
-                              controller: _phoneController,
-                              label: l10n.mobileNumber,
-                              validator: (value) {
-                                final v = value?.trim() ?? '';
-                                if (v.length != 10 ||
-                                    !RegExp(r'^[0-9]+$').hasMatch(v)) {
-                                  return l10n.enterValidTenDigit;
-                                }
-                                return null;
-                              },
-                            ).fadeIn(delay: AppAnimations.stagger(2)),
-
-                            const SizedBox(height: AppSpacing.xl2),
-
-                            // Continue button
-                            AppButton.secondary(
-                              label: l10n.continueWithPin,
-                              onPressed: isChecking
-                                  ? null
-                                  : _checkUserAndNavigate,
-                              isLoading: isChecking,
-                            ).fadeIn(delay: AppAnimations.stagger(3)),
-                          ],
-                        ),
-                      ).enterCard(delay: AppAnimations.stagger(4)),
-                          // Back button (top-left, not scrollable - icon only)
+                                  logoPath:
+                                      'assets/images/balaji_point_logo.png',
+                                  title: appName,
+                                  subtitle: subtitle,
+                                  isDark: isDark,
+                                ),
+                                const SizedBox(height: AppSpacing.xl3),
+                                AppTextField(
+                                  controller: _emailController,
+                                  label: 'Email',
+                                  prefixIcon: Icons.email_outlined,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    final v = value?.trim() ?? '';
+                                    if (v.isEmpty ||
+                                        !RegExp(
+                                          r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                                        ).hasMatch(v)) {
+                                      return 'Please enter a valid email address';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                AppTextField(
+                                  controller: _passwordController,
+                                  label: 'Password',
+                                  prefixIcon: Icons.lock_outline,
+                                  obscureText: !_isPasswordVisible,
+                                  suffix: IconButton(
+                                    onPressed: () => setState(
+                                      () => _isPasswordVisible =
+                                          !_isPasswordVisible,
+                                    ),
+                                    icon: Icon(
+                                      _isPasswordVisible
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: context.themePrimary,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    final v = value ?? '';
+                                    if (v.isEmpty || v.length < 6) {
+                                      return 'Password must be at least 6 characters';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: AppSpacing.md),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () => context.push(
+                                      '/forgot-password',
+                                      extra: _emailController.text.trim(),
+                                    ),
+                                    child: Text(
+                                      'Forgot password?',
+                                      style: AppTypography.bodyMedium(
+                                        color: context.themePrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: AppSpacing.xl2),
+                                AppButton.primary(
+                                  label: 'Sign in',
+                                  onPressed: isChecking
+                                      ? null
+                                      : _loginWithEmail,
+                                  isLoading: isChecking,
+                                ),
+                                const SizedBox(height: AppSpacing.md),
+                                AppButton.secondary(
+                                  label: 'Continue with Google',
+                                  icon: Icons.g_mobiledata_rounded,
+                                  onPressed: isChecking
+                                      ? null
+                                      : _loginWithGoogle,
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                TextButton(
+                                  onPressed: () => context.go('/register'),
+                                  child: const Text('Create an account'),
+                                ),
+                              ],
+                            ),
+                          ),
                           Positioned(
                             top: 12,
                             left: 12,
@@ -286,7 +249,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     context.go('/login');
                                   }
                                 },
-                                borderRadius: const BorderRadius.all(Radius.circular(99)),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(99),
+                                ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8),
                                   child: Icon(
@@ -296,19 +261,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   ),
                                 ),
                               ),
-                            ).fadeIn(delay: AppAnimations.stagger(0)),
+                            ),
                           ),
                         ],
                       ),
-
                       const SizedBox(height: AppSpacing.xl2),
-
-                      // ── Footer ──
-                      AuthFooter(
-                        companyName: l10n.companyName,
-                        isDark: isDark,
-                      ).fadeIn(delay: AppAnimations.stagger(5)),
-
+                      AuthFooter(companyName: companyName, isDark: isDark),
                       const SizedBox(height: AppSpacing.xl3),
                     ],
                   ),
@@ -321,8 +279,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 }
-
-// ── Theme toggle button ───────────────────────────────────────────────────────
 
 class _ThemeToggleButton extends ConsumerWidget {
   final bool isDark;
@@ -364,13 +320,17 @@ class _ThemeToggleButton extends ConsumerWidget {
   }
 }
 
-// ── Language picker ──────────────────────────────────────────────────────────
-
 class _LanguagePicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context)!;
+    AppLocalizations? l10n;
+    try {
+      l10n = AppLocalizations.of(context);
+    } catch (_) {
+      l10n = null;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       height: 40,
@@ -399,70 +359,17 @@ class _LanguagePicker extends ConsumerWidget {
           items: [
             DropdownMenuItem(
               value: const Locale('en'),
-              child: Text(l10n.languageEnglish),
+              child: Text(l10n?.languageEnglish ?? 'English'),
             ),
             DropdownMenuItem(
               value: const Locale('hi'),
-              child: Text(l10n.languageHindi),
+              child: Text(l10n?.languageHindi ?? 'Hindi'),
             ),
             DropdownMenuItem(
               value: const Locale('ta'),
-              child: Text(l10n.languageTamil),
+              child: Text(l10n?.languageTamil ?? 'Tamil'),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Glass-morphism card ───────────────────────────────────────────────────────
-
-class _GlassCard extends StatelessWidget {
-  final Widget child;
-  final bool isDark;
-  const _GlassCard({required this.child, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: AppRadius.forCard,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-        child: Container(
-          padding: const EdgeInsets.all(AppSpacing.xl3),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isDark
-                  ? [
-                      AppColors.darkSurface.withValues(alpha: 0.82),
-                      AppColors.darkBackground.withValues(alpha: 0.72),
-                    ]
-                  : [
-                      AppColors.white.withValues(alpha: 0.92),
-                      AppColors.white.withValues(alpha: 0.72),
-                    ],
-            ),
-            borderRadius: AppRadius.forCard,
-            border: Border.all(
-              color: isDark
-                  ? AppColors.darkBorder.withValues(alpha: 0.55)
-                  : AppColors.white.withValues(alpha: 0.50),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? AppColors.black.withValues(alpha: 0.40)
-                    : context.themePrimary.withValues(alpha: 0.10),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: child,
         ),
       ),
     );
