@@ -52,7 +52,15 @@ class BranchService {
           .where('isActive', isEqualTo: true)
           .orderBy('name')
           .get();
-      return snap.docs.map((d) => {'id': d.id, ...d.data()}).toList();
+      return snap.docs
+          .map(
+            (d) => {
+              ...d.data(),
+              'id': d.id,
+              'branchCode': d.data()['branchCode'] as String? ?? d.id,
+            },
+          )
+          .toList();
     } catch (e) {
       // Index may still be building — fall back to full fetch + in-memory filter
       AppLogger.error('BranchService.listActiveBranches (indexed)', e);
@@ -60,7 +68,13 @@ class BranchService {
         final snap = await _branches.get();
         final results = snap.docs
             .where((d) => d.data()['isActive'] == true)
-            .map((d) => {'id': d.id, ...d.data()})
+            .map(
+              (d) => {
+                ...d.data(),
+                'id': d.id,
+                'branchCode': d.data()['branchCode'] as String? ?? d.id,
+              },
+            )
             .toList();
         results.sort(
           (a, b) => (a['name'] as String).compareTo(b['name'] as String),
@@ -78,6 +92,7 @@ class BranchService {
   Future<String?> createBranch({
     required String name,
     required String shortName,
+    required String branchCode,
     required String address,
     required String phone,
     required String createdBy,
@@ -94,9 +109,21 @@ class BranchService {
         return null;
       }
 
+      final normalizedCode = branchCode.trim().toUpperCase();
+      final duplicateCode = await _branches
+          .where('branchCode', isEqualTo: normalizedCode)
+          .limit(1)
+          .get();
+      if (duplicateCode.docs.isNotEmpty) {
+        AppLogger.warning('BranchService: branch code already exists');
+        return null;
+      }
+
       final ref = await _branches.add({
         'name': name,
         'shortName': shortName,
+        'branchCode': normalizedCode,
+        'diwaliCelebrationEnabled': false,
         'address': address,
         'phone': phone,
         'isActive': true,
@@ -118,6 +145,7 @@ class BranchService {
     String? address,
     String? phone,
     bool? isActive,
+    bool? diwaliCelebrationEnabled,
   }) async {
     try {
       final data = <String, dynamic>{};
@@ -126,6 +154,9 @@ class BranchService {
       if (address != null) data['address'] = address;
       if (phone != null) data['phone'] = phone;
       if (isActive != null) data['isActive'] = isActive;
+      if (diwaliCelebrationEnabled != null) {
+        data['diwaliCelebrationEnabled'] = diwaliCelebrationEnabled;
+      }
       await _branches.doc(branchId).update(data);
       return true;
     } catch (e) {

@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'dart:async';
 import 'dart:math';
 
 import 'package:confetti/confetti.dart';
@@ -20,6 +21,9 @@ import 'package:balaji_points/providers/home_provider.dart';
 import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/providers/loading_provider.dart';
+import 'package:balaji_points/providers/branch_celebration_provider.dart';
+import 'package:balaji_points/presentation/screens/carpenter/home/widgets/diwali_celebration_dialog.dart';
+import 'package:balaji_points/services/branch/branch_celebration_service.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_drawer.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_feature_highlights.dart';
@@ -49,6 +53,7 @@ class _HomePageState extends ConsumerState<HomePage>
   String _appVersion = '';
   String? _confettiPlayedKey;
   String? _dismissedGreetingId;
+  bool _celebrationShownThisEntry = false;
   late ConfettiController _confettiController;
 
   @override
@@ -196,6 +201,8 @@ class _HomePageState extends ConsumerState<HomePage>
     super.build(context);
 
     final homeState = ref.watch(homeProvider);
+    final celebrationEnabled =
+        ref.watch(branchCelebrationEnabledProvider).asData?.value ?? false;
     final carpenterPoints = ref.watch(carpenterPointsProvider);
     final pointsReady = carpenterPoints.loaded;
     final displayHomeState = pointsReady
@@ -215,6 +222,24 @@ class _HomePageState extends ConsumerState<HomePage>
     final fg = isDark ? AppColors.white : context.themeTextPrimary;
     final bg = canvas; // transparent — same as scaffold background
     final l10n = AppLocalizations.of(context)!;
+
+    final userRole = (homeState.userData?['role'] as String? ?? 'carpenter')
+        .toLowerCase();
+    final branchId = (homeState.userData?['branchId'] as String? ?? '').trim();
+    final branchName =
+        (homeState.userData?['branchName'] as String? ?? branchId).trim();
+    final currentPath = GoRouterState.of(context).uri.path;
+    if (!homeState.loading &&
+        currentPath == '/' &&
+        userRole == 'carpenter' &&
+        celebrationEnabled &&
+        !_celebrationShownThisEntry) {
+      _celebrationShownThisEntry = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || GoRouterState.of(context).uri.path != '/') return;
+        unawaited(_showDiwaliCelebration(branchId, branchName));
+      });
+    }
 
     // Confetti on rank #1
     final topKey = homeState.topCarpenters.isNotEmpty
@@ -401,8 +426,10 @@ class _HomePageState extends ConsumerState<HomePage>
                     const SizedBox(height: AppSpacing.md),
 
                     // Feature highlights
-                    const RepaintBoundary(
-                      child: HomeFeatureHighlights(),
+                    RepaintBoundary(
+                      child: HomeFeatureHighlights(
+                        showAddBill: !celebrationEnabled,
+                      ),
                     ).enterCard(delay: AppAnimations.stagger(7)),
 
                     const SizedBox(height: AppSpacing.sectionGap),
@@ -438,6 +465,43 @@ class _HomePageState extends ConsumerState<HomePage>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _showDiwaliCelebration(
+    String branchId,
+    String fallbackBranchName,
+  ) async {
+    final service = BranchCelebrationService();
+    var resolvedBranchId = branchId;
+    if (resolvedBranchId.isEmpty) {
+      try {
+        resolvedBranchId = await service.getCurrentBranchId() ?? '';
+      } catch (error) {
+        AppLogger.warning('Could not resolve celebration branch: $error');
+      }
+    }
+    if (resolvedBranchId.isEmpty) {
+      _celebrationShownThisEntry = false;
+      return;
+    }
+    String branchName = fallbackBranchName;
+    try {
+      branchName = await service.loadBranchName(resolvedBranchId);
+    } catch (error) {
+      AppLogger.warning('Could not load celebration branch name: $error');
+      branchName = fallbackBranchName.isEmpty
+          ? resolvedBranchId
+          : fallbackBranchName;
+    }
+    if (!mounted || GoRouterState.of(context).uri.path != '/') return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => DiwaliCelebrationDialog(
+        branchName: branchName,
+        leaderboard: service.loadBranchCarpenters(resolvedBranchId),
       ),
     );
   }

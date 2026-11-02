@@ -12,6 +12,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
+import 'package:balaji_points/services/auth/role_service.dart';
 import '../../../../providers/auth_provider.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
@@ -30,17 +31,18 @@ class RegisterPage extends ConsumerStatefulWidget {
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
+  final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   List<Map<String, dynamic>> _branches = [];
+  List<AppRole> _roles = [];
   String? _selectedBranchId;
-  String _selectedRole = AppConstants.roleCarpenter;
+  String? _selectedRole;
   bool _loadingBranches = true;
+  bool _loadingRoles = true;
   bool _submitting = false;
   bool _showPassword = false;
   bool _showConfirmPassword = false;
@@ -54,11 +56,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           (widget.googleProfile?['displayName'] as String?) ??
           googleUser?.displayName ??
           '';
-      final nameParts = fullName.trim().split(RegExp(r'\s+'));
-      _firstNameController.text = nameParts.isEmpty ? '' : nameParts.first;
-      if (nameParts.length > 1) {
-        _lastNameController.text = nameParts.skip(1).join(' ');
-      }
+      _fullNameController.text = fullName;
       _emailController.text =
           (widget.googleProfile?['email'] as String?) ??
           googleUser?.email ??
@@ -71,6 +69,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       }
     }
     _loadBranches();
+    _loadRoles();
   }
 
   Future<void> _loadBranches() async {
@@ -78,6 +77,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     if (!mounted) return;
     setState(() {
       _branches = branches;
+      if (_selectedBranchId != null &&
+          !branches.any((branch) => branch['id'] == _selectedBranchId)) {
+        _selectedBranchId = null;
+      }
       if (branches.length == 1) {
         _selectedBranchId = branches.first['id'] as String;
       }
@@ -85,10 +88,27 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     });
   }
 
+  Future<void> _loadRoles() async {
+    final roles = await RoleService().listSignupRoles();
+    if (!mounted) return;
+    final existingRole = widget.googleProfile?['existingRole'] as String?;
+    setState(() {
+      _roles = roles;
+      if (_selectedRole != null &&
+          !roles.any((role) => role.id == _selectedRole)) {
+        _selectedRole = null;
+      }
+      if (existingRole != null &&
+          roles.any((role) => role.id == existingRole)) {
+        _selectedRole = existingRole;
+      }
+      _loadingRoles = false;
+    });
+  }
+
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _fullNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
@@ -102,26 +122,45 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       _showMessage('Select a branch to continue.');
       return;
     }
+    final selectedRole = _selectedRole;
+    if (selectedRole == null) {
+      _showMessage('Select a role to continue.');
+      return;
+    }
+    final selectedRoleData = _roles.where((role) => role.id == selectedRole);
+    if (selectedRoleData.isEmpty || !selectedRoleData.first.isActive) {
+      _showMessage('Select an active role to continue.');
+      return;
+    }
+    final role = selectedRoleData.first;
+
+    final nameParts = _fullNameController.text.trim().split(RegExp(r'\s+'));
+    final firstName = nameParts.first;
+    final lastName = nameParts.skip(1).join(' ');
 
     setState(() => _submitting = true);
     try {
       final notifier = ref.read(authProvider.notifier);
       if (widget.completeGoogleProfile) {
         await notifier.completeGoogleRegistration(
-          firstName: _firstNameController.text.trim(),
-          lastName: _lastNameController.text.trim(),
+          firstName: firstName,
+          lastName: lastName,
           phoneNumber: _phoneController.text.trim(),
-          role: _selectedRole,
+          role: role.id,
+          roleName: role.name,
+          roleAbbreviation: role.abbreviation,
           branchId: _selectedBranchId!,
         );
       } else {
         await notifier.registerWithEmailAndPassword(
-          firstName: _firstNameController.text.trim(),
-          lastName: _lastNameController.text.trim(),
+          firstName: firstName,
+          lastName: lastName,
           email: _emailController.text.trim(),
           password: _passwordController.text,
           phoneNumber: _phoneController.text.trim(),
-          role: _selectedRole,
+          role: role.id,
+          roleName: role.name,
+          roleAbbreviation: role.abbreviation,
           branchId: _selectedBranchId!,
         );
       }
@@ -203,19 +242,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           ),
                           const SizedBox(height: AppSpacing.xl2),
                           AppTextField(
-                            controller: _firstNameController,
-                            label: 'First name',
+                            controller: _fullNameController,
+                            label: 'Full name',
                             prefixIcon: Icons.person_outline,
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
-                                ? 'Enter your first name'
+                                ? 'Enter your full name'
                                 : null,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          AppTextField(
-                            controller: _lastNameController,
-                            label: 'Last name (optional)',
-                            prefixIcon: Icons.person_outline,
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
@@ -292,24 +325,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             ),
                           ],
                           const SizedBox(height: AppSpacing.lg),
-                          _SelectionField<String>(
-                            label: 'Role',
-                            value: _selectedRole,
-                            items: const {
-                              AppConstants.roleCarpenter:
-                                  'Carpenter / Woodworker',
-                              AppConstants.roleArchitect: 'Architect',
-                              AppConstants.roleInteriorDesigner:
-                                  'Interior Designer',
-                            },
+                          _RoleField(
+                            roles: _roles,
+                            selectedRoleId: _selectedRole,
+                            isLoading: _loadingRoles,
                             enabled:
                                 widget.googleProfile?['existingRole'] == null ||
                                 widget.googleProfile?['existingRole'] ==
                                     _selectedRole,
                             onChanged: (value) {
-                              if (value != null) {
-                                setState(() => _selectedRole = value);
-                              }
+                              setState(() => _selectedRole = value);
                             },
                           ),
                           const SizedBox(height: AppSpacing.md),
@@ -320,6 +345,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             onChanged: (value) =>
                                 setState(() => _selectedBranchId = value),
                           ),
+                          if (!_loadingRoles && _roles.isEmpty) ...[
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              'No active roles are available. Contact the Super Admin.',
+                              style: AppTypography.caption(
+                                color: context.themeError,
+                              ),
+                            ),
+                          ],
                           if (!_loadingBranches && _branches.isEmpty) ...[
                             const SizedBox(height: AppSpacing.xs),
                             Text(
@@ -348,7 +382,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             onPressed:
                                 _submitting ||
                                     _loadingBranches ||
+                                    _loadingRoles ||
                                     _branches.isEmpty ||
+                                    _roles.isEmpty ||
                                     widget.googleProfile?['existingRole'] ==
                                         AppConstants.roleAdmin
                                 ? null
@@ -380,37 +416,52 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 }
 
-class _SelectionField<T> extends StatelessWidget {
-  const _SelectionField({
-    required this.label,
-    required this.value,
-    required this.items,
+class _RoleField extends StatelessWidget {
+  const _RoleField({
+    required this.roles,
+    required this.selectedRoleId,
+    required this.isLoading,
+    required this.enabled,
     required this.onChanged,
-    this.enabled = true,
   });
 
-  final String label;
-  final T value;
-  final Map<T, String> items;
-  final ValueChanged<T?> onChanged;
+  final List<AppRole> roles;
+  final String? selectedRoleId;
+  final bool isLoading;
   final bool enabled;
+  final ValueChanged<String?> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<T>(
-      key: ValueKey<T>(value),
-      initialValue: value,
+    final hasSelectedRole = roles.any((role) => role.id == selectedRoleId);
+    return DropdownButtonFormField<String>(
+      key: ValueKey<String?>(hasSelectedRole ? selectedRoleId : null),
+      initialValue: hasSelectedRole ? selectedRoleId : null,
+      isExpanded: true,
       decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+        labelText: 'Select role *',
+        hintText: isLoading ? 'Loading roles…' : 'Choose one role',
+        prefixIcon: const Icon(Icons.badge_outlined),
+        filled: true,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
       ),
-      items: items.entries
+      items: roles
           .map(
-            (entry) =>
-                DropdownMenuItem<T>(value: entry.key, child: Text(entry.value)),
+            (role) => DropdownMenuItem<String>(
+              value: role.id,
+              child: Text(
+                role.selectionLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           )
           .toList(),
-      onChanged: enabled ? onChanged : null,
+      onChanged: !isLoading && enabled && roles.isNotEmpty ? onChanged : null,
+      validator: (value) => value == null ? 'Select a role to continue' : null,
     );
   }
 }
@@ -430,25 +481,96 @@ class _BranchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      key: ValueKey<String?>(selectedBranchId),
-      initialValue: selectedBranchId,
-      decoration: InputDecoration(
-        labelText: 'Branch',
-        hintText: isLoading ? 'Loading branches…' : 'Select your branch',
-        prefixIcon: const Icon(Icons.store_outlined),
-        border: const OutlineInputBorder(),
-      ),
-      items: branches
-          .map(
-            (branch) => DropdownMenuItem<String>(
-              value: branch['id'] as String,
-              child: Text(branch['name'] as String? ?? branch['id'] as String),
+    final availableIds = branches
+        .map((branch) => branch['id'] as String? ?? '')
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final safeSelectedId = availableIds.contains(selectedBranchId)
+        ? selectedBranchId
+        : null;
+    final selectedBranch = branches.cast<Map<String, dynamic>?>().firstWhere(
+      (branch) => branch?['id'] == safeSelectedId,
+      orElse: () => null,
+    );
+    final selectedFullName = selectedBranch?['name'] as String?;
+    final selectedShortName = selectedBranch?['shortName'] as String?;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<String>(
+          key: ValueKey<String?>(safeSelectedId),
+          initialValue: safeSelectedId,
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Branch *',
+            hintText: isLoading ? 'Loading branches…' : 'Select your branch',
+            prefixIcon: const Icon(Icons.store_rounded),
+            filled: true,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
             ),
-          )
-          .toList(),
-      onChanged: isLoading ? null : onChanged,
-      validator: (value) => value == null ? 'Select a branch' : null,
+          ),
+          items: branches.map((branch) {
+            final branchId = branch['id'] as String? ?? '';
+            final fullName = branch['name'] as String? ?? branchId;
+            final shortName = branch['shortName'] as String? ?? fullName;
+            final branchCode =
+                (branch['branchCode'] as String? ?? '').trim().isNotEmpty
+                ? (branch['branchCode'] as String).trim()
+                : branchId;
+            return DropdownMenuItem<String>(
+              value: branchId,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      shortName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.labelLarge(
+                        color: context.themeTextPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 88),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.themePrimary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      branchCode,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.caption(color: context.themePrimary),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: isLoading || branches.isEmpty ? null : onChanged,
+          validator: (value) => value == null ? 'Select a branch' : null,
+        ),
+        if (selectedFullName != null &&
+            selectedShortName != null &&
+            selectedFullName != selectedShortName)
+          Padding(
+            padding: const EdgeInsets.only(left: 12, top: 6),
+            child: Text(
+              selectedFullName,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.caption(color: context.themeTextSecondary),
+            ),
+          ),
+      ],
     );
   }
 }

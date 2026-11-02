@@ -10,6 +10,7 @@ import 'package:balaji_points/presentation/widgets/carpenter/carpenter_bottom_na
 import 'package:balaji_points/presentation/widgets/shared/responsive_role_navigation.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/core/logger.dart';
+import 'package:balaji_points/providers/branch_celebration_provider.dart';
 
 // ---------------------------------------------------------------------------
 // Role provider — cached so DashboardPage never hits SharedPreferences twice
@@ -57,6 +58,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     // Resolve role — show content immediately; nav bar appears once role is known
     final roleAsync = ref.watch(_roleProvider);
     final role = roleAsync.asData?.value;
+    final celebrationAsync = ref.watch(branchCelebrationEnabledProvider);
+    final celebrationEnabled = celebrationAsync.asData?.value ?? false;
+    final showAddBill = !celebrationEnabled;
     final isAdmin = role == 'admin';
     final showNav = roleAsync.hasValue && !isAdmin && !context.isWideScreen;
 
@@ -84,6 +88,50 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         ? 3
         : 0;
 
+    final navItems = <RoleNavigationItem>[
+      const RoleNavigationItem(
+        label: 'Dashboard',
+        icon: Icons.home_outlined,
+        selectedIcon: Icons.home_rounded,
+      ),
+      const RoleNavigationItem(
+        label: 'Wallet',
+        icon: Icons.account_balance_wallet_outlined,
+        selectedIcon: Icons.account_balance_wallet_rounded,
+      ),
+      if (showAddBill)
+        const RoleNavigationItem(
+          label: 'Add bill',
+          icon: Icons.add_circle_outline_rounded,
+          selectedIcon: Icons.add_circle_rounded,
+        ),
+      const RoleNavigationItem(
+        label: 'Notifications',
+        icon: Icons.notifications_outlined,
+        selectedIcon: Icons.notifications_rounded,
+      ),
+      const RoleNavigationItem(
+        label: 'Profile',
+        icon: Icons.person_outline_rounded,
+        selectedIcon: Icons.person_rounded,
+      ),
+    ];
+    final navPaths = <String>[
+      '/',
+      '/wallet',
+      if (showAddBill) '/add-bill',
+      '/notifications',
+      '/profile',
+    ];
+    final selectedPath = switch (path) {
+      final value when value.startsWith('/wallet') => '/wallet',
+      final value when value.startsWith('/add-bill') && showAddBill =>
+        '/add-bill',
+      final value when value.startsWith('/notifications') => '/notifications',
+      final value when value.startsWith('/profile') => '/profile',
+      _ => '/',
+    };
+
     final bottomChromeHeight = CarpenterShellLayout.chromeHeight(mq);
 
     return Theme(
@@ -106,56 +154,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               backgroundColor: t.scaffoldBackgroundColor,
               body: ResponsiveRoleNavigation(
                 roleLabel: role?.replaceAll('_', ' ') ?? 'Member',
-                selectedIndex: path.startsWith('/wallet')
-                    ? 1
-                    : path.startsWith('/add-bill')
-                    ? 2
-                    : path.startsWith('/notifications')
-                    ? 3
-                    : path.startsWith('/profile')
-                    ? 4
-                    : 0,
-                items: const [
-                  RoleNavigationItem(
-                    label: 'Dashboard',
-                    icon: Icons.home_outlined,
-                    selectedIcon: Icons.home_rounded,
-                  ),
-                  RoleNavigationItem(
-                    label: 'Wallet',
-                    icon: Icons.account_balance_wallet_outlined,
-                    selectedIcon: Icons.account_balance_wallet_rounded,
-                  ),
-                  RoleNavigationItem(
-                    label: 'Add bill',
-                    icon: Icons.add_circle_outline_rounded,
-                    selectedIcon: Icons.add_circle_rounded,
-                  ),
-                  RoleNavigationItem(
-                    label: 'Notifications',
-                    icon: Icons.notifications_outlined,
-                    selectedIcon: Icons.notifications_rounded,
-                  ),
-                  RoleNavigationItem(
-                    label: 'Profile',
-                    icon: Icons.person_outline_rounded,
-                    selectedIcon: Icons.person_rounded,
-                  ),
-                ],
-                onSelected: (index) {
-                  switch (index) {
-                    case 0:
-                      GoRouter.of(context).go('/');
-                    case 1:
-                      GoRouter.of(context).go('/wallet');
-                    case 2:
-                      GoRouter.of(context).go('/add-bill');
-                    case 3:
-                      GoRouter.of(context).go('/notifications');
-                    case 4:
-                      GoRouter.of(context).go('/profile');
-                  }
-                },
+                selectedIndex: navPaths.indexOf(selectedPath),
+                items: navItems,
+                onSelected: (index) => GoRouter.of(context).go(navPaths[index]),
                 child: Stack(
                   children: [
                     // ── Page content with bottom padding so it clears the nav bar ──
@@ -175,6 +176,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                           currentIndex: tabIndex,
                           onTabSelected: _onTabTapped,
                           onAddBillTap: () => context.push('/add-bill'),
+                          showAddBill: showAddBill,
                         ),
                       ),
                   ],

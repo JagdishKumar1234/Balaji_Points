@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +17,7 @@ import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
+import 'package:balaji_points/services/branch/branch_celebration_service.dart';
 
 class AddBillPage extends StatefulWidget {
   const AddBillPage({super.key});
@@ -37,6 +39,8 @@ class _AddBillPageState extends State<AddBillPage> {
   Uint8List? _selectedImageBytes;
   DateTime? _billDate;
   bool _isSubmitting = false;
+  StreamSubscription<bool>? _celebrationSubscription;
+  bool? _celebrationEnabled;
 
   bool _hasFormData() {
     return _amountController.text.trim().isNotEmpty ||
@@ -50,6 +54,16 @@ class _AddBillPageState extends State<AddBillPage> {
   void initState() {
     super.initState();
     _billDate = DateTime.now();
+    _celebrationSubscription = BranchCelebrationService()
+        .watchCurrentBranchEnabled()
+        .listen(
+          (enabled) {
+            if (mounted) setState(() => _celebrationEnabled = enabled);
+          },
+          onError: (_) {
+            if (mounted) setState(() => _celebrationEnabled = false);
+          },
+        );
     _checkProfileCompletion();
   }
 
@@ -131,6 +145,7 @@ class _AddBillPageState extends State<AddBillPage> {
 
   @override
   void dispose() {
+    _celebrationSubscription?.cancel();
     _amountController.dispose();
     _siteNameController.dispose();
     _vendorNameController.dispose();
@@ -336,7 +351,9 @@ class _AddBillPageState extends State<AddBillPage> {
 
       // CHECK FOR DUPLICATE BILL - FRONTEND VALIDATION
       AppLogger.info('🔍 Checking for duplicate bill...');
-      AppLogger.info('   Site: $siteName, Amount: $amount, Date: ${billDate.toIso8601String()}');
+      AppLogger.info(
+        '   Site: $siteName, Amount: $amount, Date: ${billDate.toIso8601String()}',
+      );
 
       final duplicateBill = await _billService.checkDuplicateBill(
         carpenterId: carpenterId,
@@ -348,7 +365,9 @@ class _AddBillPageState extends State<AddBillPage> {
 
       if (mounted) {
         if (duplicateBill != null) {
-          AppLogger.warning('⚠️ Duplicate bill detected! Showing warning dialog...');
+          AppLogger.warning(
+            '⚠️ Duplicate bill detected! Showing warning dialog...',
+          );
           setState(() => _isSubmitting = false);
           // Show duplicate warning dialog
           _showDuplicateWarningDialog(
@@ -446,9 +465,7 @@ class _AddBillPageState extends State<AddBillPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             Container(
@@ -467,9 +484,9 @@ class _AddBillPageState extends State<AddBillPage> {
             Expanded(
               child: Text(
                 '⚠️ Duplicate Bill Detected',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: context.themeError,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: context.themeError),
               ),
             ),
           ],
@@ -481,9 +498,9 @@ class _AddBillPageState extends State<AddBillPage> {
             children: [
               Text(
                 'A bill with the SAME site, amount, and date already exists:',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 16),
 
@@ -515,15 +532,15 @@ class _AddBillPageState extends State<AddBillPage> {
                             children: [
                               Text(
                                 'Site Name',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: context.themeTextSecondary,
-                                ),
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: context.themeTextSecondary,
+                                    ),
                               ),
                               Text(
                                 siteName,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -545,16 +562,18 @@ class _AddBillPageState extends State<AddBillPage> {
                             children: [
                               Text(
                                 'Amount',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: context.themeTextSecondary,
-                                ),
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: context.themeTextSecondary,
+                                    ),
                               ),
                               Text(
                                 '₹${duplicateAmount.toStringAsFixed(0)}',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.success,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.success,
+                                    ),
                               ),
                             ],
                           ),
@@ -576,16 +595,18 @@ class _AddBillPageState extends State<AddBillPage> {
                             children: [
                               Text(
                                 'Points',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: context.themeTextSecondary,
-                                ),
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: context.themeTextSecondary,
+                                    ),
                               ),
                               Text(
                                 '${duplicatePoints.toStringAsFixed(2)} pts',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: context.themePrimary,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: context.themePrimary,
+                                    ),
                               ),
                             ],
                           ),
@@ -607,15 +628,15 @@ class _AddBillPageState extends State<AddBillPage> {
                             children: [
                               Text(
                                 'Date',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: context.themeTextSecondary,
-                                ),
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: context.themeTextSecondary,
+                                    ),
                               ),
                               Text(
                                 duplicateDateStr,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),
@@ -635,11 +656,7 @@ class _AddBillPageState extends State<AddBillPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info,
-                      size: 18,
-                      color: AppColors.warning,
-                    ),
+                    Icon(Icons.info, size: 18, color: AppColors.warning),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -656,9 +673,9 @@ class _AddBillPageState extends State<AddBillPage> {
               const SizedBox(height: 16),
               Text(
                 'Do you want to add this bill anyway?',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -694,48 +711,46 @@ class _AddBillPageState extends State<AddBillPage> {
                   vendorName: vendorName,
                 );
 
-                if (mounted) {
-                  setState(() => _isSubmitting = false);
-                  if (success) {
-                    AppLogger.info('✅ Duplicate bill submitted successfully');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          l10n?.billSubmitted ??
-                              'Bill submitted successfully! Admin will review it.',
-                        ),
-                        backgroundColor: AppColors.success,
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                    Future.delayed(const Duration(seconds: 1), () {
-                      if (mounted) context.pop();
-                    });
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          l10n?.billSubmitError ??
-                              'Failed to submit bill. Please try again.',
-                        ),
-                        backgroundColor: context.themeError,
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                  }
-                }
-              } catch (e) {
-                AppLogger.error('Error submitting duplicate bill', e);
-                if (mounted) {
-                  setState(() => _isSubmitting = false);
+                if (!context.mounted) return;
+                setState(() => _isSubmitting = false);
+                if (success) {
+                  AppLogger.info('✅ Duplicate bill submitted successfully');
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('❌ Error: ${e.toString()}'),
+                      content: Text(
+                        l10n?.billSubmitted ??
+                            'Bill submitted successfully! Admin will review it.',
+                      ),
+                      backgroundColor: AppColors.success,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                  Future.delayed(const Duration(seconds: 1), () {
+                    if (context.mounted) context.pop();
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n?.billSubmitError ??
+                            'Failed to submit bill. Please try again.',
+                      ),
                       backgroundColor: context.themeError,
                       duration: const Duration(seconds: 3),
                     ),
                   );
                 }
+              } catch (e) {
+                AppLogger.error('Error submitting duplicate bill', e);
+                if (!context.mounted) return;
+                setState(() => _isSubmitting = false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('❌ Error: ${e.toString()}'),
+                    backgroundColor: context.themeError,
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
               }
             },
             style: ElevatedButton.styleFrom(
@@ -755,13 +770,32 @@ class _AddBillPageState extends State<AddBillPage> {
     );
   }
 
-  Widget _sectionLabel(String label) => AppText.label(
-    label,
-    color: context.themePrimary,
-  );
+  Widget _sectionLabel(String label) =>
+      AppText.label(label, color: context.themePrimary);
 
   @override
   Widget build(BuildContext context) {
+    if (_celebrationEnabled == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_celebrationEnabled == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.go('/');
+      });
+      return Scaffold(
+        body: Center(
+          child: Card.filled(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: AppText.body(
+                'Bill submissions are paused for the Diwali celebration.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -897,14 +931,19 @@ class _AddBillPageState extends State<AddBillPage> {
                           final amount = double.tryParse(value.text.trim());
                           if (amount != null && amount > 0) {
                             final estimatedPoints = amount / 1000;
-                            final pointsDisplay = estimatedPoints.toStringAsFixed(2);
+                            final pointsDisplay = estimatedPoints
+                                .toStringAsFixed(2);
                             return Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: context.themePrimary.withValues(alpha: 0.1),
+                                color: context.themePrimary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: AppRadius.md12,
                                 border: Border.all(
-                                  color: context.themePrimary.withValues(alpha: 0.3),
+                                  color: context.themePrimary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Row(
@@ -932,9 +971,7 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 32),
 
                       // Bill Date (Required)
-                      _sectionLabel(
-                        l10n?.billDate ?? 'Bill Date *',
-                      ),
+                      _sectionLabel(l10n?.billDate ?? 'Bill Date *'),
                       const SizedBox(height: 12),
                       GestureDetector(
                         onTap: _selectDate,
@@ -986,9 +1023,7 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 24),
 
                       // Site Name (Required)
-                      _sectionLabel(
-                        'Site Name *',
-                      ),
+                      _sectionLabel('Site Name *'),
                       const SizedBox(height: 12),
                       AppTextField(
                         controller: _siteNameController,
@@ -1006,9 +1041,7 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 24),
 
                       // Vendor Name (Optional)
-                      _sectionLabel(
-                        'Vendor Name (Optional)',
-                      ),
+                      _sectionLabel('Vendor Name (Optional)'),
                       const SizedBox(height: 12),
                       AppTextField(
                         controller: _vendorNameController,

@@ -144,18 +144,19 @@ class AppConstants {
   static const String roleAdmin = 'admin';
   static const String roleCarpenter = 'carpenter';
   static const String roleArchitect = 'architect';
+  static const String roleEngineer = 'engineer';
   static const String roleInteriorDesigner = 'interior_designer';
 
   /// Roles available for selection during branch user registration
   static const List<String> branchRegistrationRoles = [
     roleCarpenter,
     roleArchitect,
+    roleEngineer,
     roleInteriorDesigner,
-    roleAdmin,
   ];
 
   // Platform Super Admin Configuration
-  static const String superAdminEmail = 'aajitechstudio@gmail.com';
+  static const String superAdminEmail = 'aaijitechstudio@gmail.com';
   static const String superAdminPhone = '8947038661';
   static const String superAdminPhoneE164 = '+918947038661';
   static const String googleWebClientId =

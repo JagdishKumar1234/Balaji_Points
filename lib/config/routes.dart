@@ -12,6 +12,9 @@ import 'package:balaji_points/presentation/screens/common/splash/splash_page.dar
 import 'package:balaji_points/presentation/screens/common/auth/login_page.dart';
 import 'package:balaji_points/presentation/screens/common/auth/register_page.dart';
 import 'package:balaji_points/presentation/screens/common/auth/forgot_password_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/pin_login_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/phone_pin_entry_page.dart';
+import 'package:balaji_points/presentation/screens/common/auth/reset_pin_page.dart';
 import 'package:balaji_points/presentation/screens/carpenter/spin/daily_spin_page.dart';
 import 'package:balaji_points/presentation/screens/carpenter/wallet/wallet_page.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_home_page.dart';
@@ -59,6 +62,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/register',
         '/complete-registration',
         '/forgot-password',
+        '/phone-pin-login',
+        '/pin-login',
+        '/pin-reset',
         '/onboarding',
       ];
       if (publicPaths.any((p) => path.startsWith(p))) return null;
@@ -185,6 +191,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/forgot-password',
         builder: (context, state) =>
             ForgotPasswordPage(initialEmail: state.extra as String?),
+      ),
+      GoRoute(
+        path: '/phone-pin-login',
+        builder: (context, _) => const PhonePinEntryPage(),
+      ),
+      GoRoute(
+        path: '/pin-login',
+        builder: (context, state) =>
+            PINLoginPage(phoneNumber: state.uri.queryParameters['phone'] ?? ''),
+      ),
+      GoRoute(
+        path: '/pin-reset',
+        builder: (context, state) =>
+            ResetPINPage(phoneNumber: state.uri.queryParameters['phone'] ?? ''),
       ),
 
       // Carpenter shell with persistent bottom tab bar

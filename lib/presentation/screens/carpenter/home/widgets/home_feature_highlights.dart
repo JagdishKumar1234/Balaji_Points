@@ -22,7 +22,9 @@ class _FeatureHighlight {
 }
 
 class HomeFeatureHighlights extends StatelessWidget {
-  const HomeFeatureHighlights({super.key});
+  const HomeFeatureHighlights({super.key, this.showAddBill = true});
+
+  final bool showAddBill;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +32,14 @@ class HomeFeatureHighlights extends StatelessWidget {
     final cardColor = context.themeSurface;
 
     final features = [
-      _FeatureHighlight(
-        icon: Icons.receipt_long_rounded,
-        label: 'EARN MORE',
-        sublabel: 'Upload Bills\nEarn Points',
-        iconColor: AppColors.warning,
-        onTap: () => context.push('/add-bill'),
-      ),
+      if (showAddBill)
+        _FeatureHighlight(
+          icon: Icons.receipt_long_rounded,
+          label: 'EARN MORE',
+          sublabel: 'Upload Bills\nEarn Points',
+          iconColor: AppColors.warning,
+          onTap: () => context.push('/add-bill'),
+        ),
       _FeatureHighlight(
         icon: Icons.redeem_rounded,
         label: 'REDEEM MORE',
@@ -103,7 +106,9 @@ class _FeatureHighlightItem extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: feature.iconColor.withValues(alpha: 0.12),
                 border: Border.all(
-                    color: feature.iconColor.withValues(alpha: 0.3), width: 1.5),
+                  color: feature.iconColor.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
               ),
               child: Icon(feature.icon, size: 24, color: feature.iconColor),
             ),

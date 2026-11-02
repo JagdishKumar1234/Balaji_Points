@@ -10,6 +10,7 @@ import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
+import 'package:balaji_points/services/auth/role_service.dart';
 import 'package:balaji_points/providers/home_provider.dart';
 import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/core/logger.dart';
@@ -172,7 +173,9 @@ class AuthNotifier extends Notifier<AuthState> {
       final normalizedEmail = email.trim();
       final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: normalizedEmail,
-        password: password.trim(),
+        // Firebase passwords are case- and whitespace-sensitive. Registration
+        // stores the exact submitted password, so login must pass it unchanged.
+        password: password,
       );
 
       final fbUser = userCredential.user;
@@ -194,6 +197,22 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> loginWithGoogle({bool rememberMe = true}) async {
     state = const AuthLoading();
     try {
+      if (kIsWeb) {
+        // google_sign_in_web's legacy signIn() popup flow is deprecated and
+        // can close before returning a token. Firebase Auth owns the web OAuth
+        // popup flow and completes the Firebase credential exchange directly.
+        final provider = firebase_auth.GoogleAuthProvider();
+        final result = await _firebaseAuth.signInWithPopup(provider);
+        final firebaseUser = result.user;
+        if (firebaseUser == null) {
+          state = const AuthError('Google sign in failed.');
+          return;
+        }
+
+        await _finishFirebaseSignIn(firebaseUser, rememberMe: rememberMe);
+        return;
+      }
+
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         state = const AuthUnauthenticated();
@@ -229,6 +248,8 @@ class AuthNotifier extends Notifier<AuthState> {
     required String lastName,
     required String phoneNumber,
     required String role,
+    required String roleName,
+    required String roleAbbreviation,
     required String branchId,
   }) async {
     state = const AuthLoading();
@@ -238,14 +259,9 @@ class AuthNotifier extends Notifier<AuthState> {
         state = const AuthError('Google session expired. Sign in again.');
         return;
       }
-      const selfSelectableRoles = {
-        AppConstants.roleCarpenter,
-        AppConstants.roleArchitect,
-        AppConstants.roleInteriorDesigner,
-      };
-      if (!selfSelectableRoles.contains(role)) {
+      if (!await RoleService().isActiveSignupRole(role)) {
         state = const AuthError(
-          'Branch Admin access must be assigned by a Super Admin.',
+          'This role is no longer available. Choose another role.',
         );
         return;
       }
@@ -265,6 +281,13 @@ class AuthNotifier extends Notifier<AuthState> {
         state = const AuthError('Select an active branch to continue.');
         return;
       }
+      final branchData = branchSnapshot.data()!;
+      final branchCode =
+          (branchData['branchCode'] as String? ?? '').trim().isNotEmpty
+          ? (branchData['branchCode'] as String).trim()
+          : branchId;
+      final branchName = branchData['name'] as String? ?? branchId;
+      final branchShortName = branchData['shortName'] as String? ?? branchName;
 
       final userRef = _firestore.collection('users').doc(firebaseUser.uid);
       final existing = await userRef.get();
@@ -298,7 +321,12 @@ class AuthNotifier extends Notifier<AuthState> {
         'phoneNumber': '+91$normalizedPhone',
         'role': role,
         'roleId': role,
+        'roleName': roleName,
+        'roleAbbreviation': roleAbbreviation,
         'branchId': branchId,
+        'branchCode': branchCode,
+        'branchName': branchName,
+        'branchShortName': branchShortName,
         'status': 'verified',
         'profileCompletedAt': FieldValue.serverTimestamp(),
       };
@@ -326,6 +354,7 @@ class AuthNotifier extends Notifier<AuthState> {
         await pointsRef.set({
           'userId': firebaseUser.uid,
           'branchId': branchId,
+          'branchCode': branchCode,
           'totalPoints': 0,
           'tier': 'Bronze',
           'lastUpdated': FieldValue.serverTimestamp(),
@@ -504,19 +533,16 @@ class AuthNotifier extends Notifier<AuthState> {
     required String password,
     required String phoneNumber,
     required String role,
+    required String roleName,
+    required String roleAbbreviation,
     required String branchId,
   }) async {
     state = const AuthLoading();
     firebase_auth.User? createdUser;
     try {
-      const selfSelectableRoles = {
-        AppConstants.roleCarpenter,
-        AppConstants.roleArchitect,
-        AppConstants.roleInteriorDesigner,
-      };
-      if (!selfSelectableRoles.contains(role)) {
+      if (!await RoleService().isActiveSignupRole(role)) {
         state = const AuthError(
-          'This role must be assigned by a branch administrator.',
+          'This role is no longer available. Choose another role.',
         );
         return;
       }
@@ -535,6 +561,13 @@ class AuthNotifier extends Notifier<AuthState> {
         state = const AuthError('Please select an active branch.');
         return;
       }
+      final branchData = branch.data()!;
+      final branchCode =
+          (branchData['branchCode'] as String? ?? '').trim().isNotEmpty
+          ? (branchData['branchCode'] as String).trim()
+          : branchId;
+      final branchName = branchData['name'] as String? ?? branchId;
+      final branchShortName = branchData['shortName'] as String? ?? branchName;
 
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email.trim(),
@@ -567,7 +600,12 @@ class AuthNotifier extends Notifier<AuthState> {
         'phoneNumber': '+91$normalizedPhone',
         'role': role,
         'roleId': role,
+        'roleName': roleName,
+        'roleAbbreviation': roleAbbreviation,
         'branchId': branchId,
+        'branchCode': branchCode,
+        'branchName': branchName,
+        'branchShortName': branchShortName,
         'status': 'verified',
         'totalPoints': 0,
         'tier': 'Bronze',
@@ -578,6 +616,7 @@ class AuthNotifier extends Notifier<AuthState> {
       batch.set(pointsRef, {
         'userId': registeredUser.uid,
         'branchId': branchId,
+        'branchCode': branchCode,
         'totalPoints': 0,
         'tier': 'Bronze',
         'lastUpdated': FieldValue.serverTimestamp(),
@@ -656,6 +695,26 @@ class AuthNotifier extends Notifier<AuthState> {
     } catch (e) {
       AppLogger.error('Error checking user existence', e);
       state = AuthError('Error checking user: $e');
+    }
+  }
+
+  /// Checks that a legacy account has a PIN before sending it to PIN login.
+  Future<void> checkPinAccount(String phoneNumber) async {
+    final normalized = _pin.normalizePhone(phoneNumber);
+    if (normalized.length != 10) {
+      state = const AuthError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    state = const AuthCheckingUser();
+    try {
+      final hasPin = await _pin.hasPin(normalized);
+      state = hasPin
+          ? AuthUserExists(normalized)
+          : AuthUserNotFound(normalized);
+    } catch (e) {
+      AppLogger.error('Error checking legacy PIN account', e);
+      state = const AuthError('Unable to check this mobile number. Try again.');
     }
   }
 

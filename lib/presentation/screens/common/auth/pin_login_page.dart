@@ -49,7 +49,14 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
 
   Future<void> _onAuthenticated(AuthAuthenticated state) async {
     if (!mounted) return;
-    context.go(state.role.trim().toLowerCase() == 'admin' ? '/admin' : '/');
+    final role = state.role.trim().toLowerCase();
+    context.go(
+      role == 'super_admin'
+          ? '/super-admin'
+          : role == 'admin'
+          ? '/admin'
+          : '/',
+    );
   }
 
   @override

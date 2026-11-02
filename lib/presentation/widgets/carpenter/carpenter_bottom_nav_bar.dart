@@ -12,6 +12,7 @@ class CarpenterBottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTabSelected;
   final VoidCallback onAddBillTap;
   final double bottomInset;
+  final bool showAddBill;
 
   const CarpenterBottomNavBar({
     super.key,
@@ -19,6 +20,7 @@ class CarpenterBottomNavBar extends StatelessWidget {
     required this.onTabSelected,
     required this.onAddBillTap,
     required this.bottomInset,
+    this.showAddBill = true,
   });
 
   factory CarpenterBottomNavBar.fromContext(
@@ -27,6 +29,7 @@ class CarpenterBottomNavBar extends StatelessWidget {
     required int currentIndex,
     required ValueChanged<int> onTabSelected,
     required VoidCallback onAddBillTap,
+    bool showAddBill = true,
   }) {
     return CarpenterBottomNavBar(
       key: key,
@@ -34,6 +37,7 @@ class CarpenterBottomNavBar extends StatelessWidget {
       onTabSelected: onTabSelected,
       onAddBillTap: onAddBillTap,
       bottomInset: CarpenterShellLayout.bottomInset(MediaQuery.of(context)),
+      showAddBill: showAddBill,
     );
   }
 
@@ -81,8 +85,8 @@ class CarpenterBottomNavBar extends StatelessWidget {
                   label: l10n.earn,
                   onTap: onTabSelected,
                 ),
-                // Centre: Add Bill raised button
-                _CenterAddButton(onTap: onAddBillTap, label: l10n.addPoints),
+                if (showAddBill)
+                  _CenterAddButton(onTap: onAddBillTap, label: l10n.addPoints),
                 _NavTab(
                   index: 2,
                   currentIndex: currentIndex,
@@ -165,11 +169,12 @@ class _NavTab extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.caption(
-                color: selected ? activeColor : inactiveColor,
-              ).copyWith(
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-              ),
+              style:
+                  AppTypography.caption(
+                    color: selected ? activeColor : inactiveColor,
+                  ).copyWith(
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                  ),
             ),
           ],
         ),
@@ -209,7 +214,11 @@ class _CenterAddButton extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.add_rounded, color: AppColors.white, size: 24),
+              child: const Icon(
+                Icons.add_rounded,
+                color: AppColors.white,
+                size: 24,
+              ),
             ),
             const SizedBox(height: 1),
             // Label

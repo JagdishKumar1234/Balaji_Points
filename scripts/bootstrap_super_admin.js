@@ -2,7 +2,7 @@
  * Bootstrap Super Admin Script
  *
  * Configures the Platform Super Admin account in Firebase Firestore:
- * - Email: aajitechstudio@gmail.com
+ * - Email: aaijitechstudio@gmail.com
  * - Phone: +918947038661 (8947038661)
  * - Role: super_admin
  *
@@ -14,7 +14,7 @@ const fs = require("fs");
 const path = require("path");
 const admin = require("firebase-admin");
 
-const SUPER_ADMIN_EMAIL = "aajitechstudio@gmail.com";
+const SUPER_ADMIN_EMAIL = "aaijitechstudio@gmail.com";
 const SUPER_ADMIN_PHONE = "+918947038661";
 const SUPER_ADMIN_RAW_PHONE = "8947038661";
 const SUPER_ADMIN_NAME = "Jagdish Kumar";

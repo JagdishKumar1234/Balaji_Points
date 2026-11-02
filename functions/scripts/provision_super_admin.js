@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 
 admin.initializeApp({ projectId: "balajipoints" });
 const db = admin.firestore();
-const email = "aajitechstudio@gmail.com";
+const email = "aaijitechstudio@gmail.com";
 const phone = "8947038661";
 const applyChanges = process.argv.includes("--apply");
 

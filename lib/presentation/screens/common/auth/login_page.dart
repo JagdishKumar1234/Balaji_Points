@@ -222,7 +222,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 ),
                                 const SizedBox(height: AppSpacing.md),
                                 AppButton.secondary(
-                                  label: 'Continue with Google',
+                                  label: 'Login with PIN',
+                                  icon: Icons.dialpad_rounded,
+                                  onPressed: isChecking
+                                      ? null
+                                      : () => context.push('/phone-pin-login'),
+                                ),
+                                const SizedBox(height: AppSpacing.xs),
+                                Text(
+                                  'For existing users with a mobile number and PIN',
+                                  textAlign: TextAlign.center,
+                                  style: AppTypography.bodySmall(
+                                    color: context.themeTextSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: AppSpacing.md),
+                                AppButton.secondary(
+                                  label: 'Sign in with Google',
                                   icon: Icons.g_mobiledata_rounded,
                                   onPressed: isChecking
                                       ? null
