@@ -54,24 +54,34 @@ class HomeTopCarpenters extends StatelessWidget {
                     color: AppColors.warning.withValues(alpha: 0.15),
                     borderRadius: AppRadius.sm8,
                   ),
-                  child: const Icon(Icons.emoji_events_rounded,
-                      size: 18, color: AppColors.warning),
+                  child: const Icon(
+                    Icons.emoji_events_rounded,
+                    size: 18,
+                    color: AppColors.warning,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text('Top Carpenters',
-                      style: AppTypography.h5(color: context.themeTextPrimary)),
+                  child: Text(
+                    AppLocalizations.of(context)!.topCarpentersTitle,
+                    style: AppTypography.h5(color: context.themeTextPrimary),
+                  ),
                 ),
                 GestureDetector(
                   onTap: () => context.push('/notifications'),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AppText.labelSmall('Leaderboard',
-                          color: context.themeContentColor),
+                      AppText.labelSmall(
+                        AppLocalizations.of(context)!.leaderboard,
+                        color: context.themeContentColor,
+                      ),
                       const SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_rounded,
-                          size: 14, color: context.themePrimary),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 14,
+                        color: context.themePrimary,
+                      ),
                     ],
                   ),
                 ),
@@ -99,9 +109,13 @@ class HomeTopCarpenters extends StatelessWidget {
               ),
             )
           else
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(24),
-              child: Center(child: AppText.muted('No ranking data yet')),
+              child: Center(
+                child: AppText.muted(
+                  AppLocalizations.of(context)!.noRankingYet,
+                ),
+              ),
             ),
 
           // Full top-10 list
@@ -165,11 +179,15 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: AppColors.warning.withValues(alpha: 0.12),
                     border: Border.all(
-                        color: AppColors.warning.withValues(alpha: 0.30),
-                        width: 2),
+                      color: AppColors.warning.withValues(alpha: 0.30),
+                      width: 2,
+                    ),
                   ),
-                  child: const Icon(Icons.emoji_events_rounded,
-                      color: AppColors.warning, size: 28),
+                  child: const Icon(
+                    Icons.emoji_events_rounded,
+                    color: AppColors.warning,
+                    size: 28,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -177,20 +195,24 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Today's Winner",
-                        style: AppTypography.overline(color: AppColors.warning)
-                            .copyWith(letterSpacing: 0.8),
+                        AppLocalizations.of(context)!.todaysWinner,
+                        style: AppTypography.overline(
+                          color: AppColors.warning,
+                        ).copyWith(letterSpacing: 0.8),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'No Winner Today',
-                        style: AppTypography.h5(color: context.themeTextPrimary),
+                        AppLocalizations.of(context)!.noWinnerToday,
+                        style: AppTypography.h5(
+                          color: context.themeTextPrimary,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Spin not done yet · $_todayKey',
+                        AppLocalizations.of(context)!.spinNotDoneYet(_todayKey),
                         style: AppTypography.caption(
-                            color: context.themeTextSecondary),
+                          color: context.themeTextSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -201,9 +223,11 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                     color: AppColors.warning.withValues(alpha: 0.10),
                     borderRadius: AppRadius.md12,
                   ),
-                  child: Icon(Icons.hourglass_top_rounded,
-                      color: AppColors.warning.withValues(alpha: 0.60),
-                      size: 22),
+                  child: Icon(
+                    Icons.hourglass_top_rounded,
+                    color: AppColors.warning.withValues(alpha: 0.60),
+                    size: 22,
+                  ),
                 ),
               ],
             ),
@@ -212,7 +236,9 @@ class HomeTodaysWinnerCard extends StatelessWidget {
 
         final name = (data['carpenterName'] as String? ?? '').trim();
         final photo = (data['carpenterPhoto'] as String? ?? '').trim();
-        final displayName = name.isEmpty ? 'Carpenter' : name;
+        final displayName = name.isEmpty
+            ? AppLocalizations.of(context)!.carpenter
+            : name;
         final hasPhoto = photo.isNotEmpty;
 
         return _WinnerCardShell(
@@ -230,8 +256,9 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: AppColors.warning.withValues(alpha: 0.18),
                       border: Border.all(
-                          color: AppColors.warning.withValues(alpha: 0.5),
-                          width: 2),
+                        color: AppColors.warning.withValues(alpha: 0.5),
+                        width: 2,
+                      ),
                     ),
                     child: hasPhoto
                         ? ClipOval(
@@ -254,8 +281,11 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                         color: AppColors.warning,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.emoji_events_rounded,
-                          color: AppColors.white, size: 12),
+                      child: const Icon(
+                        Icons.emoji_events_rounded,
+                        color: AppColors.white,
+                        size: 12,
+                      ),
                     ),
                   ),
                 ],
@@ -269,9 +299,10 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Today's Lucky Winner 🎉",
-                      style: AppTypography.overline(color: AppColors.warning)
-                          .copyWith(letterSpacing: 0.8),
+                      AppLocalizations.of(context)!.todaysLuckyWinner,
+                      style: AppTypography.overline(
+                        color: AppColors.warning,
+                      ).copyWith(letterSpacing: 0.8),
                     ),
                     const SizedBox(height: 3),
                     Text(
@@ -282,9 +313,12 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Selected via daily spin · $_todayKey',
+                      AppLocalizations.of(
+                        context,
+                      )!.selectedViaDailySpin(_todayKey),
                       style: AppTypography.caption(
-                          color: context.themeTextSecondary),
+                        color: context.themeTextSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -297,8 +331,11 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                   color: AppColors.warning.withValues(alpha: 0.14),
                   borderRadius: AppRadius.md12,
                 ),
-                child: const Icon(Icons.workspace_premium_rounded,
-                    color: AppColors.warning, size: 24),
+                child: const Icon(
+                  Icons.workspace_premium_rounded,
+                  color: AppColors.warning,
+                  size: 24,
+                ),
               ),
             ],
           ),
@@ -319,13 +356,7 @@ class _WinnerCardShell extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF2A1F00), const Color(0xFF1A1400)]
-              : [AppColors.goldSoft, AppColors.goldSoft],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: isDark ? AppColors.darkPendingSoft : AppColors.goldSoft,
         borderRadius: AppRadius.all16,
         border: Border.all(
           color: AppColors.warning.withValues(alpha: isDark ? 0.45 : 0.35),
@@ -350,7 +381,8 @@ class _InitialsCircle extends StatelessWidget {
 
   String get _initials {
     final parts = name.trim().split(' ');
-    if (parts.length == 1) return parts[0].isNotEmpty ? parts[0][0].toUpperCase() : '?';
+    if (parts.length == 1)
+      return parts[0].isNotEmpty ? parts[0][0].toUpperCase() : '?';
     return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
   }
 
@@ -359,8 +391,9 @@ class _InitialsCircle extends StatelessWidget {
     return Center(
       child: Text(
         _initials,
-        style: AppTypography.labelLarge(color: AppColors.warning)
-            .copyWith(fontWeight: FontWeight.w900),
+        style: AppTypography.labelLarge(
+          color: AppColors.warning,
+        ).copyWith(fontWeight: FontWeight.w900),
       ),
     );
   }
@@ -372,8 +405,9 @@ class _WinnerShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shimmerColor =
-        isDark ? AppColors.white.withValues(alpha: 0.08) : AppColors.black.withValues(alpha: 0.06);
+    final shimmerColor = isDark
+        ? AppColors.white.withValues(alpha: 0.08)
+        : AppColors.black.withValues(alpha: 0.06);
     return Row(
       children: [
         Container(
@@ -418,22 +452,16 @@ class HomeYourPositionCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Find current user's entry for points display
-    final userEntry = homeState.topCarpenters
-        .cast<CarpenterRank?>()
-        .firstWhere((c) => c?.userId == homeState.userDocId,
-            orElse: () => null);
+    final userEntry = homeState.topCarpenters.cast<CarpenterRank?>().firstWhere(
+      (c) => c?.userId == homeState.userDocId,
+      orElse: () => null,
+    );
     final pts = userEntry?.points ?? homeState.points;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF0D1A3A), const Color(0xFF091226)]
-              : [AppColors.primary, AppColors.primaryLight],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: isDark ? AppColors.darkSurface : AppColors.primary,
         borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
@@ -455,13 +483,16 @@ class HomeYourPositionCard extends StatelessWidget {
                 color: AppColors.white.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
                 border: Border.all(
-                    color: AppColors.warning.withValues(alpha: 0.6), width: 2),
+                  color: AppColors.warning.withValues(alpha: 0.6),
+                  width: 2,
+                ),
               ),
               child: Center(
                 child: Text(
                   '#${homeState.userRank}',
-                  style: AppTypography.h5(color: AppColors.white)
-                      .copyWith(fontWeight: FontWeight.w900),
+                  style: AppTypography.h5(
+                    color: AppColors.white,
+                  ).copyWith(fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -476,8 +507,8 @@ class HomeYourPositionCard extends StatelessWidget {
                   Text(
                     l10n.yourPosition,
                     style: AppTypography.overline(
-                            color: AppColors.white.withValues(alpha: 0.65))
-                        .copyWith(letterSpacing: 0.8),
+                      color: AppColors.white.withValues(alpha: 0.65),
+                    ).copyWith(letterSpacing: 0.8),
                   ),
                   const SizedBox(height: 3),
                   Text(
@@ -489,12 +520,19 @@ class HomeYourPositionCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.stars_rounded,
-                          color: AppColors.warning, size: 14),
+                      const Icon(
+                        Icons.stars_rounded,
+                        color: AppColors.warning,
+                        size: 14,
+                      ),
                       const SizedBox(width: 4),
                       Text(
-                        '${PointsUtils.formatPoints(pts)} pts',
-                        style: AppTypography.labelMedium(color: AppColors.white),
+                        AppLocalizations.of(
+                          context,
+                        )!.ptsValue(PointsUtils.formatPoints(pts)),
+                        style: AppTypography.labelMedium(
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -511,8 +549,11 @@ class HomeYourPositionCard extends StatelessWidget {
                   color: AppColors.white.withValues(alpha: 0.12),
                   borderRadius: AppRadius.md12,
                 ),
-                child: const Icon(Icons.leaderboard_rounded,
-                    color: AppColors.white, size: 22),
+                child: const Icon(
+                  Icons.leaderboard_rounded,
+                  color: AppColors.white,
+                  size: 22,
+                ),
               ),
             ),
           ],

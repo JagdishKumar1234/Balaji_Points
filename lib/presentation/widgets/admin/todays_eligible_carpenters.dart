@@ -1,6 +1,8 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +21,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
 
       // Query bills that were approved today
       final billsQuery = await FirebaseFirestore.instance
-          .collection('bills')
+          .collection('bills').forAdminBranch()
           .where('status', isEqualTo: 'approved')
           .where('approvedDate', isEqualTo: todayStr)
           .get();
@@ -97,13 +99,11 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       }
 
       // Sort by total points descending
-      eligibleCarpenters.sort(
-        (a, b) {
-          final aPoints = (a['totalPoints'] as num?) ?? 0;
-          final bPoints = (b['totalPoints'] as num?) ?? 0;
-          return bPoints.compareTo(aPoints);
-        },
-      );
+      eligibleCarpenters.sort((a, b) {
+        final aPoints = (a['totalPoints'] as num?) ?? 0;
+        final bPoints = (b['totalPoints'] as num?) ?? 0;
+        return bPoints.compareTo(aPoints);
+      });
 
       debugPrint('Returning ${eligibleCarpenters.length} eligible carpenters');
       return eligibleCarpenters;
@@ -159,7 +159,10 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(context.themeSecondary),
           ),
           const SizedBox(height: 16),
-          AppText.body('Loading eligible carpenters...', color: context.themeTextSecondary),
+          AppText.body(
+            AppLocalizations.of(context)!.loadingEligibleCarpenters,
+            color: context.themeTextSecondary,
+          ),
         ],
       ),
     );
@@ -177,11 +180,21 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.error_outline, color: context.themeError, size: 48),
+          Icon(
+            Icons.error_outline_rounded,
+            color: context.themeError,
+            size: 48,
+          ),
           const SizedBox(height: 12),
-          AppText.label('Error loading data', color: context.themeError),
+          AppText.label(
+            AppLocalizations.of(context)!.errorLoadingData,
+            color: context.themeError,
+          ),
           const SizedBox(height: 8),
-          AppText.bodySmall(error, color: context.themeError, textAlign: TextAlign.center,
+          AppText.bodySmall(
+            error,
+            color: context.themeError,
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -212,10 +225,13 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             color: context.themeTextMuted,
           ),
           const SizedBox(height: 16),
-          AppText.label('No Eligible Carpenters Today', textAlign: TextAlign.center),
+          AppText.label(
+            AppLocalizations.of(context)!.noEligibleCarpentersToday,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
           AppText.body(
-            'No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!',
+            AppLocalizations.of(context)!.noCarpentersHaveApprovedBillsToday,
             color: context.themeTextSecondary,
             textAlign: TextAlign.center,
           ),
@@ -224,7 +240,10 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     );
   }
 
-  Widget _buildEligibleCarpentersList(BuildContext context, List<Map<String, dynamic>> carpenters) {
+  Widget _buildEligibleCarpentersList(
+    BuildContext context,
+    List<Map<String, dynamic>> carpenters,
+  ) {
     final todayStr = DateFormat('MMMM d, y').format(DateTime.now());
 
     return Container(
@@ -247,12 +266,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  context.themeSecondary,
-                  context.themeSecondary.withValues(alpha: 0.8),
-                ],
-              ),
+              color: context.themeSecondary,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -267,7 +281,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     borderRadius: AppRadius.md12,
                   ),
                   child: const Icon(
-                    Icons.check_circle,
+                    Icons.check_circle_rounded,
                     color: AppColors.white,
                     size: 28,
                   ),
@@ -277,10 +291,17 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText.label('Today\'s Eligible Carpenters', color: AppColors.white),
+                      AppText.label(
+                        AppLocalizations.of(context)!.todaySEligibleCarpenters,
+                        color: AppColors.white,
+                      ),
                       const SizedBox(height: 4),
-                      AppText.body('$todayStr • ${carpenters.length} eligible',
-                          color: AppColors.white.withValues(alpha: 0.9)),
+                      AppText.body(
+                        AppLocalizations.of(
+                          context,
+                        )!.eligible('$todayStr', '${carpenters.length}'),
+                        color: AppColors.white.withValues(alpha: 0.9),
+                      ),
                     ],
                   ),
                 ),
@@ -305,7 +326,11 @@ class TodaysEligibleCarpenters extends StatelessWidget {
     );
   }
 
-  Widget _buildCarpenterCard(BuildContext context, Map<String, dynamic> carpenter, int rank) {
+  Widget _buildCarpenterCard(
+    BuildContext context,
+    Map<String, dynamic> carpenter,
+    int rank,
+  ) {
     final name = carpenter['name'] as String;
     final phone = carpenter['phone'] as String? ?? 'N/A';
     final billsCount = carpenter['billsCount'] as int;
@@ -332,9 +357,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
               color: context.themeSecondary.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: Center(
-              child: AppText.label('$rank'),
-            ),
+            child: Center(child: AppText.label('$rank')),
           ),
           const SizedBox(width: 16),
 
@@ -358,7 +381,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                         return Container(
                           color: context.themeSecondary.withValues(alpha: 0.1),
                           child: Icon(
-                            Icons.person,
+                            Icons.person_rounded,
                             size: 28,
                             color: context.themeContentColor,
                           ),
@@ -368,7 +391,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   : Container(
                       color: context.themeSecondary.withValues(alpha: 0.1),
                       child: Icon(
-                        Icons.person,
+                        Icons.person_rounded,
                         size: 28,
                         color: context.themeContentColor,
                       ),
@@ -382,11 +405,19 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText.label(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                AppText.label(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.phone, size: 14, color: context.themeTextSecondary),
+                    Icon(
+                      Icons.phone_rounded,
+                      size: 14,
+                      color: context.themeTextSecondary,
+                    ),
                     const SizedBox(width: 4),
                     AppText.body(phone, color: context.themeTextSecondary),
                   ],
@@ -412,7 +443,11 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.receipt, size: 14, color: AppColors.success),
+                    Icon(
+                      Icons.receipt_rounded,
+                      size: 14,
+                      color: AppColors.success,
+                    ),
                     const SizedBox(width: 4),
                     AppText.labelSmall('$billsCount', color: AppColors.white),
                   ],
@@ -433,7 +468,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.monetization_on,
+                      Icons.monetization_on_rounded,
                       size: 14,
                       color: AppColors.warning,
                     ),

@@ -6,33 +6,15 @@ import 'package:balaji_points/core/design/app_colors.dart';
 class AuthBackground extends StatelessWidget {
   final bool isDark;
 
-  const AuthBackground({
-    super.key,
-    this.isDark = false,
-  });
+  const AuthBackground({super.key, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = isDark || Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode =
+        isDark || Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      decoration: BoxDecoration(
-        color: context.themeBackground,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDarkMode
-              ? [
-                  context.themeBackground,
-                  context.themeSoftSurface,
-                ]
-              : [
-                  context.themeSoftSurface,
-                  context.themeBackground,
-                  context.themeSoftSurface,
-                ],
-        ),
-      ),
+      decoration: BoxDecoration(color: context.themeBackground),
       child: Stack(
         children: [
           // Bottom-left curved design
@@ -45,19 +27,9 @@ class AuthBackground extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 height: 250,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDarkMode
-                        ? [
-                            context.themePrimary.withValues(alpha: 0.25),
-                            context.themeSecondary.withValues(alpha: 0.15),
-                          ]
-                        : [
-                            context.themePrimary,
-                            context.themeSecondary,
-                          ],
-                  ),
+                  color: isDarkMode
+                      ? AppColors.primary.withValues(alpha: 0.25)
+                      : AppColors.primary,
                 ),
               ),
             ),
@@ -73,7 +45,9 @@ class AuthBackground extends StatelessWidget {
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(
-                  color: context.themeGold.withValues(alpha: isDarkMode ? 0.08 : 0.15),
+                  color: context.themeGold.withValues(
+                    alpha: isDarkMode ? 0.08 : 0.15,
+                  ),
                 ),
               ),
             ),
@@ -86,16 +60,7 @@ class AuthBackground extends StatelessWidget {
             child: Container(
               width: 3,
               height: 150,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    context.themeGold,
-                    context.themeGold.withValues(alpha: 0),
-                  ],
-                ),
-              ),
+              decoration: BoxDecoration(color: context.themeGold),
             ),
           ),
 
@@ -106,16 +71,7 @@ class AuthBackground extends StatelessWidget {
             child: Container(
               width: 3,
               height: 150,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    context.themeGold,
-                    context.themeGold.withValues(alpha: 0),
-                  ],
-                ),
-              ),
+              decoration: BoxDecoration(color: context.themeGold),
             ),
           ),
         ],

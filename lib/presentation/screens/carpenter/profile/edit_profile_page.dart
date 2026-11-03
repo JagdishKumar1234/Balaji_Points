@@ -13,6 +13,7 @@ import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/platform/storage_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
@@ -57,7 +58,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   Future<void> _loadUserData() async {
     try {
-      final userData = await _userService.getCurrentUserData(forceRefresh: true);
+      final userData = await _userService.getCurrentUserData(
+        forceRefresh: true,
+      );
       if (userData != null && mounted) {
         setState(() {
           _firstNameController.text = userData['firstName'] as String? ?? '';
@@ -88,10 +91,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to pick image: $e'),
-          backgroundColor: context.themeError,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)!.failedToPickImage}: $e',
+            ),
+            backgroundColor: context.themeError,
+          ),
+        );
       }
     }
   }
@@ -112,37 +119,41 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
     try {
       final phoneNumber = await _sessionService.getPhoneNumber();
-      if (phoneNumber == null) throw Exception('No user logged in');
+      if (phoneNumber == null)
+        throw Exception(AppLocalizations.of(context)!.noUserLoggedIn);
 
       final firstName = _firstNameController.text.trim();
       final lastName = _lastNameController.text.trim();
 
       if (firstName.isEmpty || firstName.length < 2) {
-        throw Exception('First name must be at least 2 characters');
+        throw Exception(AppLocalizations.of(context)!.firstNameMustBeAtLeast);
       }
       if (firstName.length > 50) {
-        throw Exception('First name is too long (max 50 characters)');
+        throw Exception(AppLocalizations.of(context)!.firstNameIsTooLongMax);
       }
       if (lastName.isEmpty || lastName.length < 2) {
-        throw Exception('Last name must be at least 2 characters');
+        throw Exception(AppLocalizations.of(context)!.lastNameMustBeAtLeast);
       }
       if (lastName.length > 50) {
-        throw Exception('Last name is too long (max 50 characters)');
+        throw Exception(AppLocalizations.of(context)!.lastNameIsTooLongMax);
       }
 
       final sanitizedFirst = _sanitizeInput(firstName);
       final sanitizedLast = _sanitizeInput(lastName);
 
       // Require a profile image
-      final hasImage = _imageBytes != null ||
+      final hasImage =
+          _imageBytes != null ||
           (_existingImageUrl != null && _existingImageUrl!.isNotEmpty);
       if (!hasImage) {
         setState(() => _isSaving = false);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Please add a profile photo'),
-            backgroundColor: context.themeError,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.addProfilePhoto),
+              backgroundColor: context.themeError,
+            ),
+          );
         }
         return;
       }
@@ -158,7 +169,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             imageBytes: _imageBytes!,
           );
           if (newUrl == null || newUrl.isEmpty) {
-            throw Exception('Failed to upload profile image');
+            throw Exception(
+              AppLocalizations.of(context)!.failedToUploadProfileImage,
+            );
           }
           if (_existingImageUrl != null && _existingImageUrl!.isNotEmpty) {
             oldImageUrlToDelete = _existingImageUrl;
@@ -167,7 +180,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           setState(() => _isUploadingImage = false);
         } catch (e) {
           setState(() => _isUploadingImage = false);
-          throw Exception('Failed to upload profile image: $e');
+          throw Exception(
+            AppLocalizations.of(context)!.failedToUploadProfileImage2('$e'),
+          );
         }
       }
 
@@ -189,8 +204,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
       await canonicalRef.set(updateData, SetOptions(merge: true));
 
-      final verifyDoc =
-          await canonicalRef.get(GetOptions(source: Source.server));
+      final verifyDoc = await canonicalRef.get(
+        GetOptions(source: Source.server),
+      );
       final savedData = verifyDoc.data();
 
       if (savedData == null) {
@@ -214,16 +230,19 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       if (oldImageUrlToDelete != null && oldImageUrlToDelete.isNotEmpty) {
         try {
           await _storageService.deleteOldProfileImageIfExists(
-              oldImageUrlToDelete);
+            oldImageUrlToDelete,
+          );
         } catch (_) {}
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Profile updated successfully'),
-          backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.profileUpdatedSuccess),
+            backgroundColor: AppColors.success,
+            duration: Duration(seconds: 2),
+          ),
+        );
 
         await Future.delayed(const Duration(milliseconds: 1000));
         if (!mounted) return;
@@ -247,14 +266,22 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to update profile: $e'),
-          backgroundColor: context.themeError,
-          duration: const Duration(seconds: 5),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)!.failedToUpdateProfile}: $e',
+            ),
+            backgroundColor: context.themeError,
+            duration: const Duration(seconds: 5),
+          ),
+        );
       }
     } finally {
-      if (mounted) setState(() { _isSaving = false; _isUploadingImage = false; });
+      if (mounted)
+        setState(() {
+          _isSaving = false;
+          _isUploadingImage = false;
+        });
     }
   }
 
@@ -276,13 +303,18 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             return;
           }
           if (widget.isFirstTime) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Please complete your profile'),
-              backgroundColor: AppColors.warning,
-            ));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.pleaseCompleteProfile,
+                ),
+                backgroundColor: AppColors.warning,
+              ),
+            );
           } else if (_hasUnsavedChanges()) {
-            final shouldDiscard =
-                await BackButtonHandler.showDiscardDialog(context);
+            final shouldDiscard = await BackButtonHandler.showDiscardDialog(
+              context,
+            );
             if (shouldDiscard == true && mounted) {
               // ignore: use_build_context_synchronously
               context.pop();
@@ -297,11 +329,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         body: Column(
           children: [
             HomeNavBar(
-              title: widget.isFirstTime ? l10n.completeProfile : l10n.editProfile,
+              title: widget.isFirstTime
+                  ? l10n.completeProfile
+                  : l10n.editProfile,
               showLogo: false,
               showProfileButton: false,
               showBackButton: !widget.isFirstTime,
             ),
+            const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
             Container(height: 1, color: borderColor),
             Expanded(
               child: Container(
@@ -333,8 +368,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: AppColors.black
-                                                .withValues(alpha: 0.1),
+                                            color: AppColors.black.withValues(
+                                              alpha: 0.1,
+                                            ),
                                             blurRadius: 10,
                                             offset: const Offset(0, 4),
                                           ),
@@ -342,58 +378,56 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                       ),
                                       child: ClipOval(
                                         child: _imageBytes != null
-                                            ? Image.memory(_imageBytes!,
-                                                fit: BoxFit.cover)
+                                            ? Image.memory(
+                                                _imageBytes!,
+                                                fit: BoxFit.cover,
+                                              )
                                             : _existingImageUrl != null &&
-                                                    _existingImageUrl!.isNotEmpty
-                                                ? Image.network(
-                                                    _existingImageUrl!,
-                                                    fit: BoxFit.cover,
-                                                    loadingBuilder: (context,
-                                                        child, progress) {
-                                                      if (progress == null) {
-                                                        return child;
-                                                      }
-                                                      return Container(
-                                                        color: context
-                                                            .themeSecondary
-                                                            .withValues(
-                                                                alpha: 0.2),
-                                                        child: Center(
-                                                          child: CircularProgressIndicator(
-                                                            value: progress
-                                                                        .expectedTotalBytes !=
-                                                                    null
-                                                                ? progress
-                                                                        .cumulativeBytesLoaded /
-                                                                    progress
-                                                                        .expectedTotalBytes!
-                                                                : null,
-                                                            valueColor:
-                                                                AlwaysStoppedAnimation<
-                                                                    Color>(
-                                                                  context
-                                                                      .themePrimary,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                    errorBuilder:
-                                                        (context, _, __) =>
-                                                            Icon(
-                                                              Icons.person,
-                                                              size: 60,
-                                                              color: context
-                                                                  .themeSecondary,
+                                                  _existingImageUrl!.isNotEmpty
+                                            ? Image.network(
+                                                _existingImageUrl!,
+                                                fit: BoxFit.cover,
+                                                loadingBuilder: (context, child, progress) {
+                                                  if (progress == null) {
+                                                    return child;
+                                                  }
+                                                  return Container(
+                                                    color: context
+                                                        .themeSecondary
+                                                        .withValues(alpha: 0.2),
+                                                    child: Center(
+                                                      child: CircularProgressIndicator(
+                                                        value:
+                                                            progress.expectedTotalBytes !=
+                                                                null
+                                                            ? progress.cumulativeBytesLoaded /
+                                                                  progress
+                                                                      .expectedTotalBytes!
+                                                            : null,
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                              Color
+                                                            >(
+                                                              context
+                                                                  .themePrimary,
                                                             ),
-                                                  )
-                                                : Icon(
-                                                    Icons.person,
-                                                    size: 60,
-                                                    color:
-                                                        context.themeSecondary,
-                                                  ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                errorBuilder:
+                                                    (context, _, __) => Icon(
+                                                      Icons.person_rounded,
+                                                      size: 60,
+                                                      color: context
+                                                          .themeSecondary,
+                                                    ),
+                                              )
+                                            : Icon(
+                                                Icons.person_rounded,
+                                                size: 60,
+                                                color: context.themeSecondary,
+                                              ),
                                       ),
                                     ),
                                     Positioned(
@@ -410,8 +444,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                             width: 2,
                                           ),
                                         ),
-                                        child: const Icon(Icons.camera_alt,
-                                            size: 18, color: AppColors.white),
+                                        child: const Icon(
+                                          Icons.camera_alt_rounded,
+                                          size: 18,
+                                          color: AppColors.white,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -420,7 +457,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
                               const SizedBox(height: 12),
                               AppText.bodySmall(
-                                'Tap to change photo',
+                                AppLocalizations.of(context)!.tapToChangePhoto,
                                 color: context.themeTextSecondary,
                               ),
 
@@ -429,15 +466,23 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               // First name
                               AppTextField(
                                 controller: _firstNameController,
-                                label: 'First Name *',
-                                hint: 'Enter your first name',
-                                prefixIcon: Icons.person_outline,
+                                label: AppLocalizations.of(
+                                  context,
+                                )!.firstNameRequired,
+                                hint: AppLocalizations.of(
+                                  context,
+                                )!.enterYourFirstName,
+                                prefixIcon: Icons.person_outline_rounded,
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
-                                    return 'Please enter your first name';
+                                    return AppLocalizations.of(
+                                      context,
+                                    )!.pleaseEnterYourFirstName;
                                   }
                                   if (v.trim().length < 2) {
-                                    return 'First name must be at least 2 characters';
+                                    return AppLocalizations.of(
+                                      context,
+                                    )!.firstNameMustBeAtLeast;
                                   }
                                   return null;
                                 },
@@ -448,15 +493,23 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               // Last name
                               AppTextField(
                                 controller: _lastNameController,
-                                label: 'Last Name *',
-                                hint: 'Enter your last name',
-                                prefixIcon: Icons.person_outline,
+                                label: AppLocalizations.of(
+                                  context,
+                                )!.lastNameRequired,
+                                hint: AppLocalizations.of(
+                                  context,
+                                )!.enterYourLastName,
+                                prefixIcon: Icons.person_outline_rounded,
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
-                                    return 'Please enter your last name';
+                                    return AppLocalizations.of(
+                                      context,
+                                    )!.pleaseEnterYourLastName;
                                   }
                                   if (v.trim().length < 2) {
-                                    return 'Last name must be at least 2 characters';
+                                    return AppLocalizations.of(
+                                      context,
+                                    )!.lastNameMustBeAtLeast;
                                   }
                                   return null;
                                 },
@@ -474,7 +527,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                       const AppLoader(size: 16, strokeWidth: 2),
                                       const SizedBox(width: 12),
                                       AppText.bodySmall(
-                                        'Uploading image...',
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.uploadingImage,
                                         color: context.themePrimary,
                                       ),
                                     ],
@@ -484,8 +539,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               // Save button
                               AppButton.secondary(
                                 label: widget.isFirstTime
-                                    ? 'Complete Profile'
-                                    : 'Save Changes',
+                                    ? AppLocalizations.of(
+                                        context,
+                                      )!.completeProfile
+                                    : AppLocalizations.of(context)!.saveChanges,
                                 onPressed: (_isSaving || _isUploadingImage)
                                     ? null
                                     : _saveProfile,
@@ -496,7 +553,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               if (widget.isFirstTime) ...[
                                 const SizedBox(height: 16),
                                 AppText.bodySmall(
-                                  'You need to complete your profile to continue',
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.completeProfileToContinue,
                                   color: context.themeTextSecondary,
                                   textAlign: TextAlign.center,
                                 ),

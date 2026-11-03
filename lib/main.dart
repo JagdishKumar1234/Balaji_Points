@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -50,6 +53,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Nunito ships in assets/google_fonts/ — never download fonts at runtime
+  // (works offline on first launch, no layout jump when the font arrives).
+  GoogleFonts.config.allowRuntimeFetching = false;
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts', 'Nunito'], license);
+  });
 
   // System UI Styling (Status bar)
   SystemChrome.setSystemUIOverlayStyle(

@@ -89,7 +89,7 @@ class BackButtonHandler {
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.warning,
-              foregroundColor: AppColors.white,
+              foregroundColor: AppColors.navigation,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

@@ -1,6 +1,7 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -56,7 +57,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.person_search,
+                        Icons.person_search_rounded,
                         color: AppColors.white,
                         size: 24,
                       ),
@@ -71,7 +72,10 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: AppColors.white),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: AppColors.white,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -95,12 +99,12 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                         color: context.themeTextMuted,
                       ),
                       prefixIcon: Icon(
-                        Icons.search,
+                        Icons.search_rounded,
                         color: context.themeContentColor,
                       ),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear, size: 20),
+                              icon: const Icon(Icons.clear_rounded, size: 20),
                               onPressed: () {
                                 _searchController.clear();
                                 setDialogState(() {
@@ -127,7 +131,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                 Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
-                        .collection('users')
+                        .collection('users').forAdminBranch()
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
@@ -187,7 +191,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.person_off,
+                                Icons.person_off_rounded,
                                 size: 64,
                                 color: context.themeTextMuted,
                               ),
@@ -216,7 +220,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                           final firstName = user['firstName'] ?? '';
                           final lastName = user['lastName'] ?? '';
                           final name = ('$firstName $lastName').trim().isEmpty
-                              ? 'Carpenter'
+                              ? AppLocalizations.of(context)!.carpenter
                               : ('$firstName $lastName').trim();
                           final phone = user['phone'] ?? '';
                           final profileImage = user['profileImage'] as String?;
@@ -285,7 +289,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                               fit: BoxFit.cover,
                                               errorBuilder: (_, __, ___) =>
                                                   Icon(
-                                                    Icons.person,
+                                                    Icons.person_rounded,
                                                     color: context
                                                         .themeContentColor,
                                                     size: 28,
@@ -293,7 +297,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                             ),
                                           )
                                         : Icon(
-                                            Icons.person,
+                                            Icons.person_rounded,
                                             color: context.themeContentColor,
                                             size: 28,
                                           ),
@@ -334,7 +338,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                                 tier,
                                                 style: AppTypography.labelLarge()
                                                     .copyWith(
-                                                      fontSize: 10,
+                                                      fontSize: 12,
                                                       color: context
                                                           .themeContentColor,
                                                     ),
@@ -342,10 +346,12 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
-                                              '$points pts',
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.ptsValue('$points'),
                                               style: AppTypography.bodyMedium()
                                                   .copyWith(
-                                                    fontSize: 11,
+                                                    fontSize: 12,
                                                     color: context
                                                         .themeTextSecondary,
                                                   ),
@@ -357,7 +363,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                                   ),
                                   if (isSelected)
                                     Icon(
-                                      Icons.check_circle,
+                                      Icons.check_circle_rounded,
                                       color: context.themeContentColor,
                                       size: 24,
                                     ),
@@ -399,14 +405,21 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
         ),
         child: Row(
           children: [
-            Icon(Icons.person, color: context.themeContentColor, size: 24),
+            Icon(
+              Icons.person_rounded,
+              color: context.themeContentColor,
+              size: 24,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: selectedCarpenter != null
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AppText.label(selectedCarpenter['name'] ?? 'Carpenter'),
+                        AppText.label(
+                          selectedCarpenter['name'] ??
+                              AppLocalizations.of(context)!.carpenter,
+                        ),
                         const SizedBox(height: 2),
                         Text(
                           selectedCarpenter['phone'] ?? '',
@@ -426,7 +439,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                     ),
             ),
             Icon(
-              Icons.arrow_drop_down,
+              Icons.arrow_drop_down_rounded,
               color: context.themeContentColor,
               size: 24,
             ),

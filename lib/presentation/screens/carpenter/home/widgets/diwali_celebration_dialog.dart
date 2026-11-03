@@ -1,15 +1,16 @@
 import 'dart:math' as math;
 
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
-import 'package:balaji_points/presentation/screens/super_admin/super_admin_loading_view.dart';
 import 'package:balaji_points/services/branch/branch_celebration_service.dart';
 
-class DiwaliCelebrationDialog extends StatelessWidget {
+class DiwaliCelebrationDialog extends StatefulWidget {
   const DiwaliCelebrationDialog({
     super.key,
     required this.branchName,
@@ -17,72 +18,121 @@ class DiwaliCelebrationDialog extends StatelessWidget {
   });
 
   final String branchName;
-  final Future<List<BranchCelebrationEntry>> leaderboard;
+  final List<BranchCelebrationEntry> leaderboard;
+
+  @override
+  State<DiwaliCelebrationDialog> createState() =>
+      _DiwaliCelebrationDialogState();
+}
+
+class _DiwaliCelebrationDialogState extends State<DiwaliCelebrationDialog>
+    with TickerProviderStateMixin {
+  late final AnimationController _entrance;
+  late final AnimationController _fireworks;
+  late final ConfettiController _confetti;
+
+  @override
+  void initState() {
+    super.initState();
+    _entrance = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    )..forward();
+    _fireworks = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat();
+    _confetti = ConfettiController(
+      duration: const Duration(milliseconds: 3600),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _confetti.play();
+    });
+  }
+
+  @override
+  void dispose() {
+    _entrance.dispose();
+    _fireworks.dispose();
+    _confetti.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final size = MediaQuery.sizeOf(context);
-    final isCompact = size.width < 700;
-    final dialogWidth = math.min(size.width - 24, 1040.0);
-    final dialogHeight = math.min(size.height - 32, 900.0);
-
+    final compact = size.width < 700;
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       clipBehavior: Clip.antiAlias,
-      backgroundColor: colors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.all24),
-      child: SizedBox(
-        width: dialogWidth,
-        height: dialogHeight,
-        child: Column(
-          children: [
-            _CelebrationHeader(branchName: branchName),
-            Expanded(
-              child: FutureBuilder<List<BranchCelebrationEntry>>(
-                future: leaderboard,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SuperAdminLoadingView(
-                      label: 'Preparing the branch reward report…',
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return _ReportMessage(
-                      icon: Icons.cloud_off_rounded,
-                      message:
-                          'The carpenter reward report could not be loaded. Close this window and try again.',
-                      isError: true,
-                    );
-                  }
-                  final entries = snapshot.data ?? const [];
-                  if (entries.isEmpty) {
-                    return const _ReportMessage(
-                      icon: Icons.groups_2_outlined,
-                      message:
-                          'No carpenter accounts are listed for this branch yet.',
-                    );
-                  }
-                  return _RewardReportBody(
-                    entries: entries,
-                    compact: isCompact,
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.celebration_rounded),
-                  label: const Text('Continue to Home'),
+      child: ScaleTransition(
+        scale: CurvedAnimation(parent: _entrance, curve: Curves.easeOutBack),
+        child: FadeTransition(
+          opacity: _entrance,
+          child: SizedBox(
+            width: math.min(size.width - 24, 1040.0),
+            height: math.min(size.height - 32, 900.0),
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    _CelebrationHeader(
+                      branchName: widget.branchName,
+                      carpenterCount: widget.leaderboard.length,
+                      animation: _fireworks,
+                    ),
+                    Expanded(
+                      child: widget.leaderboard.isEmpty
+                          ? _ReportMessage(
+                              icon: Icons.groups_2_outlined,
+                              message: AppLocalizations.of(
+                                context,
+                              )!.noCarpenterAccountsAreListedFor,
+                            )
+                          : _RewardReportBody(
+                              entries: widget.leaderboard,
+                              compact: compact,
+                            ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.celebration_rounded),
+                          label: Text(
+                            AppLocalizations.of(context)!.continueToHome,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: ConfettiWidget(
+                      confettiController: _confetti,
+                      blastDirectionality: BlastDirectionality.explosive,
+                      maxBlastForce: 24,
+                      minBlastForce: 8,
+                      emissionFrequency: .025,
+                      numberOfParticles: 34,
+                      gravity: .16,
+                      colors: const [
+                        Color(0xFFFFD166),
+                        Color(0xFFFF8A3D),
+                        Color(0xFFFF4D6D),
+                        Color(0xFFFFF1B8),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -90,106 +140,184 @@ class DiwaliCelebrationDialog extends StatelessWidget {
 }
 
 class _CelebrationHeader extends StatelessWidget {
-  const _CelebrationHeader({required this.branchName});
+  const _CelebrationHeader({
+    required this.branchName,
+    required this.carpenterCount,
+    required this.animation,
+  });
 
   final String branchName;
+  final int carpenterCount;
+  final Animation<double> animation;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Stack(
-      clipBehavior: Clip.hardEdge,
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(22, 20, 12, 18),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                colors.primaryContainer,
-                colors.tertiaryContainer,
-                colors.secondaryContainer,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return SizedBox(
+      height: 190,
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.hardEdge,
+        children: [
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF160D2B),
+                    Color(0xFF3A1535),
+                    Color(0xFF70243A),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: colors.surface.withValues(alpha: .82),
-                  borderRadius: AppRadius.all16,
-                ),
-                child: Icon(
-                  Icons.emoji_events_rounded,
-                  color: colors.primary,
-                  size: 30,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'CARPENTER REWARD & BONUS REPORT',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.h5(color: colors.onPrimaryContainer),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$branchName  ·  Diwali celebration',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.bodySmall(
-                        color: colors.onPrimaryContainer.withValues(alpha: .82),
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      'Generated ${DateFormat('dd/MM/yyyy').format(DateTime.now())}  ·  Base rate ₹10 per point',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.caption(
-                        color: colors.onPrimaryContainer.withValues(alpha: .72),
-                      ),
-                    ),
-                  ],
+          Positioned.fill(
+            child: AnimatedBuilder(
+              animation: animation,
+              builder: (_, __) =>
+                  CustomPaint(painter: _FirecrackerPainter(animation.value)),
+            ),
+          ),
+          Positioned(
+            top: -84,
+            right: -28,
+            child: Container(
+              width: 210,
+              height: 210,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFFFFD166).withValues(alpha: .12),
+                  width: 20,
                 ),
               ),
-              IconButton.filledTonal(
-                tooltip: 'Close report',
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close_rounded),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 72, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const _HeaderTag(),
+                const SizedBox(height: 8),
+                Text(
+                  AppLocalizations.of(context)!.shubhDeepawali,
+                  style: AppTypography.h4(color: const Color(0xFFFFE7A3)),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  AppLocalizations.of(
+                    context,
+                  )!.carpenters('$branchName', '$carpenterCount'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodyMedium(
+                    color: Colors.white.withValues(alpha: .9),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  AppLocalizations.of(context)!.carpenterRewardBonusReport(
+                    DateFormat('dd/MM/yyyy').format(DateTime.now()),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption(color: const Color(0xFFFFD166)),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 12,
+            top: 12,
+            child: IconButton.filledTonal(
+              tooltip: AppLocalizations.of(context)!.closeCelebration,
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white.withValues(alpha: .14),
+                foregroundColor: Colors.white,
               ),
-            ],
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.close_rounded),
+            ),
           ),
-        ),
-        Positioned(
-          right: 64,
-          top: -18,
-          child: Icon(
-            Icons.auto_awesome_rounded,
-            size: 74,
-            color: colors.onPrimaryContainer.withValues(alpha: .08),
+          const Positioned(
+            right: 22,
+            bottom: 18,
+            child: Icon(
+              Icons.auto_awesome_rounded,
+              color: Color(0xFFFFD166),
+              size: 34,
+            ),
           ),
-        ),
-        Positioned(
-          right: 18,
-          bottom: -30,
-          child: Icon(
-            Icons.local_florist_rounded,
-            size: 90,
-            color: colors.onTertiaryContainer.withValues(alpha: .09),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
+}
+
+class _HeaderTag extends StatelessWidget {
+  const _HeaderTag();
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: const Color(0xFFFFD166).withValues(alpha: .17),
+      borderRadius: AppRadius.pill,
+      border: Border.all(color: const Color(0xFFFFD166).withValues(alpha: .55)),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      child: Text(
+        AppLocalizations.of(context)!.deepawaliPrizeNight,
+        style: AppTypography.caption(color: const Color(0xFFFFE7A3)),
+      ),
+    ),
+  );
+}
+
+class _FirecrackerPainter extends CustomPainter {
+  const _FirecrackerPainter(this.progress);
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const colors = [Color(0xFFFFD166), Color(0xFFFF8A3D), Color(0xFFFF4D6D)];
+    final centers = [
+      Offset(size.width * .13, size.height * .27),
+      Offset(size.width * .78, size.height * .28),
+      Offset(size.width * .88, size.height * .82),
+    ];
+    for (var burst = 0; burst < centers.length; burst++) {
+      final phase = (progress + burst * .34) % 1.0;
+      final radius = 7 + 36 * math.sin(phase * math.pi);
+      final opacity = (1 - phase) * .72;
+      final paint = Paint()
+        ..color = colors[burst].withValues(alpha: opacity)
+        ..strokeWidth = 1.5
+        ..strokeCap = StrokeCap.round;
+      for (var ray = 0; ray < 12; ray++) {
+        final angle = ray * math.pi / 6;
+        final start =
+            centers[burst] +
+            Offset(
+              math.cos(angle) * radius * .55,
+              math.sin(angle) * radius * .55,
+            );
+        final end =
+            centers[burst] +
+            Offset(math.cos(angle) * radius, math.sin(angle) * radius);
+        canvas.drawLine(start, end, paint);
+        canvas.drawCircle(end, 1.8, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FirecrackerPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 class _RewardReportBody extends StatelessWidget {
@@ -219,22 +347,22 @@ class _RewardReportBody extends StatelessWidget {
           })
         >[
           (
-            title: 'Top Performers - Gold Tier',
-            subtitle: 'Ranks 1-10',
+            title: AppLocalizations.of(context)!.topPerformersGoldTier,
+            subtitle: AppLocalizations.of(context)!.ranks110,
             rows: entries.where((entry) => entry.rank <= 10).toList(),
             color: const Color(0xFFB77900),
           ),
           (
-            title: 'High Performers - Silver Tier',
-            subtitle: 'Ranks 11-30',
+            title: AppLocalizations.of(context)!.highPerformersSilverTier,
+            subtitle: AppLocalizations.of(context)!.ranks1130,
             rows: entries
                 .where((entry) => entry.rank >= 11 && entry.rank <= 30)
                 .toList(),
             color: Theme.of(context).colorScheme.outline,
           ),
           (
-            title: 'Active Performers - Bronze Tier',
-            subtitle: 'Ranks 31 onwards',
+            title: AppLocalizations.of(context)!.activePerformersBronzeTier,
+            subtitle: AppLocalizations.of(context)!.ranks31Onwards,
             rows: entries.where((entry) => entry.rank >= 31).toList(),
             color: const Color(0xFF9A5B32),
           ),
@@ -244,7 +372,7 @@ class _RewardReportBody extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       children: [
         Text(
-          'Total carpenters: ${entries.length}',
+          AppLocalizations.of(context)!.totalCarpenters('${entries.length}'),
           style: AppTypography.labelLarge(
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -255,17 +383,17 @@ class _RewardReportBody extends StatelessWidget {
           runSpacing: AppSpacing.sm,
           children: [
             _SummaryTile(
-              label: 'Total points',
+              label: AppLocalizations.of(context)!.totalPoints2,
               value: _formatPoints(totalPoints),
               icon: Icons.stars_rounded,
             ),
             _SummaryTile(
-              label: 'Total reward',
+              label: AppLocalizations.of(context)!.totalReward,
               value: _formatCurrency(totalReward),
               icon: Icons.currency_rupee_rounded,
             ),
             _SummaryTile(
-              label: 'Total bonus',
+              label: AppLocalizations.of(context)!.totalBonus,
               value: _formatCurrency(totalBonus),
               icon: Icons.card_giftcard_rounded,
             ),
@@ -298,7 +426,12 @@ class _RewardReportBody extends StatelessWidget {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    '${entries.length} carpenters  ·  ${_formatPoints(totalPoints)} points  ·  ${_formatCurrency(totalReward)} reward  ·  ${_formatCurrency(totalBonus)} bonus',
+                    AppLocalizations.of(context)!.carpentersPointsRewardBonus(
+                      '${entries.length}',
+                      '${_formatPoints(totalPoints)}',
+                      '${_formatCurrency(totalReward)}',
+                      '${_formatCurrency(totalBonus)}',
+                    ),
                     style: AppTypography.labelLarge(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
@@ -354,7 +487,10 @@ class _PrizeHighlights extends StatelessWidget {
                     style: AppTypography.bodyMedium(color: colors.onSurface),
                   ),
                   Text(
-                    '${_formatCurrency(entry.bonusAmount)} bonus  ·  ${entry.giftDetails}',
+                    AppLocalizations.of(context)!.bonus(
+                      '${_formatCurrency(entry.bonusAmount)}',
+                      '${entry.giftDetails}',
+                    ),
                     textAlign: TextAlign.center,
                     style: AppTypography.bodySmall(
                       color: colors.onSurfaceVariant,
@@ -441,7 +577,7 @@ class _CompactReportRow extends StatelessWidget {
               ),
               subtitle: Text(
                 entry.mobileNumber.isEmpty
-                    ? 'Mobile number unavailable'
+                    ? AppLocalizations.of(context)!.mobileNumberUnavailable
                     : entry.mobileNumber,
               ),
               trailing: Column(
@@ -467,18 +603,24 @@ class _CompactReportRow extends StatelessWidget {
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.xs,
               children: [
-                _RowMetric(label: 'Tier', value: entry.tier),
                 _RowMetric(
-                  label: 'Reward',
+                  label: AppLocalizations.of(context)!.homeTierSuffix,
+                  value: entry.tier,
+                ),
+                _RowMetric(
+                  label: AppLocalizations.of(context)!.reward,
                   value: _formatCurrency(entry.rewardAmount),
                 ),
                 _RowMetric(
-                  label: 'Bonus',
+                  label: AppLocalizations.of(context)!.bonus2,
                   value: entry.bonusAmount == 0
-                      ? 'Nil'
+                      ? AppLocalizations.of(context)!.nil
                       : _formatCurrency(entry.bonusAmount),
                 ),
-                _RowMetric(label: 'Gift', value: entry.giftDetails),
+                _RowMetric(
+                  label: AppLocalizations.of(context)!.gift,
+                  value: entry.giftDetails,
+                ),
               ],
             ),
           ],
@@ -508,16 +650,27 @@ class _WideReportTable extends StatelessWidget {
           columnSpacing: 18,
           dataRowMinHeight: 48,
           dataRowMaxHeight: 64,
-          columns: const [
-            DataColumn(label: Text('S.No')),
-            DataColumn(label: Text('Name')),
-            DataColumn(label: Text('Mobile number')),
-            DataColumn(label: Text('Tier')),
-            DataColumn(label: Text('Points'), numeric: true),
-            DataColumn(label: Text('Reward ₹'), numeric: true),
-            DataColumn(label: Text('Bonus ₹'), numeric: true),
-            DataColumn(label: Text('Gift details')),
-            DataColumn(label: Text('Remarks')),
+          columns: [
+            const DataColumn(label: Text('S.No')),
+            DataColumn(label: Text(AppLocalizations.of(context)!.name)),
+            DataColumn(label: Text(AppLocalizations.of(context)!.mobileNumber)),
+            DataColumn(
+              label: Text(AppLocalizations.of(context)!.homeTierSuffix),
+            ),
+            DataColumn(
+              label: Text(AppLocalizations.of(context)!.pointsLabel),
+              numeric: true,
+            ),
+            DataColumn(
+              label: Text(AppLocalizations.of(context)!.reward2),
+              numeric: true,
+            ),
+            DataColumn(
+              label: Text(AppLocalizations.of(context)!.bonus3),
+              numeric: true,
+            ),
+            DataColumn(label: Text(AppLocalizations.of(context)!.giftDetails)),
+            DataColumn(label: Text(AppLocalizations.of(context)!.remarks)),
           ],
           rows: entries
               .map(
@@ -550,7 +703,7 @@ class _WideReportTable extends StatelessWidget {
                     DataCell(
                       Text(
                         entry.bonusAmount == 0
-                            ? 'Nil'
+                            ? AppLocalizations.of(context)!.nil
                             : _formatCurrency(entry.bonusAmount),
                       ),
                     ),
@@ -646,15 +799,10 @@ class _RowMetric extends StatelessWidget {
 }
 
 class _ReportMessage extends StatelessWidget {
-  const _ReportMessage({
-    required this.icon,
-    required this.message,
-    this.isError = false,
-  });
+  const _ReportMessage({required this.icon, required this.message});
 
   final IconData icon;
   final String message;
-  final bool isError;
 
   @override
   Widget build(BuildContext context) {
@@ -665,11 +813,7 @@ class _ReportMessage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 40,
-              color: isError ? colors.error : colors.primary,
-            ),
+            Icon(icon, size: 40, color: colors.primary),
             const SizedBox(height: AppSpacing.sm),
             Text(message, textAlign: TextAlign.center),
           ],

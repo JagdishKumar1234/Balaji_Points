@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
@@ -13,6 +14,7 @@ import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import '../../../../providers/auth_provider.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
@@ -119,17 +121,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedBranchId == null) {
-      _showMessage('Select a branch to continue.');
+      _showMessage(AppLocalizations.of(context)!.selectABranchToContinue);
       return;
     }
     final selectedRole = _selectedRole;
     if (selectedRole == null) {
-      _showMessage('Select a role to continue.');
+      _showMessage(AppLocalizations.of(context)!.selectARoleToContinue);
       return;
     }
     final selectedRoleData = _roles.where((role) => role.id == selectedRole);
     if (selectedRoleData.isEmpty || !selectedRoleData.first.isActive) {
-      _showMessage('Select an active role to continue.');
+      _showMessage(AppLocalizations.of(context)!.selectAnActiveRoleToContinue);
       return;
     }
     final role = selectedRoleData.first;
@@ -209,7 +211,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   constraints: const BoxConstraints(maxWidth: 520),
                   child: ProfessionalAuthCard(
                     isDark: isDark,
-                    securityMessage: 'Your information is protected',
+                    securityMessage: AppLocalizations.of(
+                      context,
+                    )!.yourInformationIsProtected,
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -223,8 +227,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           const SizedBox(height: AppSpacing.md),
                           Text(
                             widget.completeGoogleProfile
-                                ? 'Complete your Google registration'
-                                : 'Create your account',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.completeYourGoogleRegistration
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.createYourAccount,
                             textAlign: TextAlign.center,
                             style: AppTypography.displaySmall(
                               color: context.themeTextPrimary,
@@ -233,8 +241,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           const SizedBox(height: AppSpacing.xs),
                           Text(
                             widget.completeGoogleProfile
-                                ? 'Add your mobile number and choose your branch and role to finish setting up your account.'
-                                : 'Choose your role and the branch you belong to.',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.addYourMobileNumberAndChoose
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.chooseYourRoleAndTheBranch,
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium(
                               color: context.themeTextSecondary,
@@ -243,17 +255,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           const SizedBox(height: AppSpacing.xl2),
                           AppTextField(
                             controller: _fullNameController,
-                            label: 'Full name',
-                            prefixIcon: Icons.person_outline,
+                            label: AppLocalizations.of(context)!.fullName,
+                            prefixIcon: Icons.person_outline_rounded,
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
-                                ? 'Enter your full name'
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.enterYourFullName
                                 : null,
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
                             controller: _emailController,
-                            label: 'Email',
+                            label: AppLocalizations.of(context)!.email,
                             prefixIcon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
                             enabled: !widget.completeGoogleProfile,
@@ -263,65 +277,81 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                     AppConstants.emailRegex,
                                   ).hasMatch(email)
                                   ? null
-                                  : 'Enter a valid email address';
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.enterAValidEmailAddress;
                             },
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField.phone(
                             controller: _phoneController,
-                            label: 'Mobile number',
+                            label: AppLocalizations.of(context)!.mobileNumber,
                             validator: (value) => value?.trim().length == 10
                                 ? null
-                                : 'Enter a valid 10-digit mobile number',
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.enterAValid10DigitMobile,
                           ),
                           const SizedBox(height: AppSpacing.md),
                           if (!widget.completeGoogleProfile) ...[
                             AppTextField(
                               controller: _passwordController,
-                              label: 'Password',
-                              prefixIcon: Icons.lock_outline,
+                              label: AppLocalizations.of(
+                                context,
+                              )!.passwordLabel,
+                              prefixIcon: Icons.lock_outline_rounded,
                               obscureText: !_showPassword,
                               suffix: IconButton(
                                 tooltip: _showPassword
-                                    ? 'Hide password'
-                                    : 'Show password',
+                                    ? AppLocalizations.of(context)!.hidePassword
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.showPassword,
                                 onPressed: () => setState(
                                   () => _showPassword = !_showPassword,
                                 ),
                                 icon: Icon(
                                   _showPassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                      ? Icons.visibility_off_rounded
+                                      : Icons.visibility_rounded,
                                 ),
                               ),
                               validator: (value) => (value?.length ?? 0) >= 6
                                   ? null
-                                  : 'Use at least 6 characters',
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.useAtLeast6Characters,
                             ),
                             const SizedBox(height: AppSpacing.md),
                             AppTextField(
                               controller: _confirmPasswordController,
-                              label: 'Confirm password',
-                              prefixIcon: Icons.lock_outline,
+                              label: AppLocalizations.of(
+                                context,
+                              )!.confirmPasswordLabel,
+                              prefixIcon: Icons.lock_outline_rounded,
                               obscureText: !_showConfirmPassword,
                               suffix: IconButton(
                                 tooltip: _showConfirmPassword
-                                    ? 'Hide password'
-                                    : 'Show password',
+                                    ? AppLocalizations.of(context)!.hidePassword
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.showPassword,
                                 onPressed: () => setState(
                                   () => _showConfirmPassword =
                                       !_showConfirmPassword,
                                 ),
                                 icon: Icon(
                                   _showConfirmPassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                      ? Icons.visibility_off_rounded
+                                      : Icons.visibility_rounded,
                                 ),
                               ),
                               validator: (value) =>
                                   value == _passwordController.text
                                   ? null
-                                  : 'Passwords do not match',
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.passwordsDoNotMatch,
                             ),
                           ],
                           const SizedBox(height: AppSpacing.lg),
@@ -348,7 +378,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           if (!_loadingRoles && _roles.isEmpty) ...[
                             const SizedBox(height: AppSpacing.xs),
                             Text(
-                              'No active roles are available. Contact the Super Admin.',
+                              AppLocalizations.of(context)!.noActiveRoles,
                               style: AppTypography.caption(
                                 color: context.themeError,
                               ),
@@ -357,7 +387,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           if (!_loadingBranches && _branches.isEmpty) ...[
                             const SizedBox(height: AppSpacing.xs),
                             Text(
-                              'No active branches are available. Contact your administrator.',
+                              AppLocalizations.of(context)!.noActiveBranches,
                               style: AppTypography.caption(
                                 color: context.themeError,
                               ),
@@ -367,8 +397,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           Text(
                             widget.googleProfile?['existingRole'] ==
                                     AppConstants.roleAdmin
-                                ? 'Your account already has an Admin role. Ask the Super Admin to assign your branch before continuing.'
-                                : 'Branch Admin access is assigned by a Super Admin.',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.yourAccountAlreadyHasAnAdmin
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.branchAdminAccessIsAssignedBy,
                             style: AppTypography.caption(
                               color: context.themeTextSecondary,
                             ),
@@ -376,8 +410,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           const SizedBox(height: AppSpacing.xl),
                           AppButton.primary(
                             label: widget.completeGoogleProfile
-                                ? 'Complete registration'
-                                : 'Create account',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.completeRegistration
+                                : AppLocalizations.of(context)!.createAccount2,
                             isLoading: _submitting,
                             onPressed:
                                 _submitting ||
@@ -400,7 +436,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               }
                               if (context.mounted) context.go('/login');
                             },
-                            child: const Text('Cancel and return to sign in'),
+                            child: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.cancelReturnToSignIn,
+                            ),
                           ),
                         ],
                       ),
@@ -439,8 +479,10 @@ class _RoleField extends StatelessWidget {
       initialValue: hasSelectedRole ? selectedRoleId : null,
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: 'Select role *',
-        hintText: isLoading ? 'Loading roles…' : 'Choose one role',
+        labelText: AppLocalizations.of(context)!.selectRoleRequired,
+        hintText: isLoading
+            ? AppLocalizations.of(context)!.loadingRoles
+            : AppLocalizations.of(context)!.chooseOneRole,
         prefixIcon: const Icon(Icons.badge_outlined),
         filled: true,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
@@ -453,7 +495,7 @@ class _RoleField extends StatelessWidget {
             (role) => DropdownMenuItem<String>(
               value: role.id,
               child: Text(
-                role.selectionLabel,
+                roleSelectionLabel(context, role),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -461,7 +503,9 @@ class _RoleField extends StatelessWidget {
           )
           .toList(),
       onChanged: !isLoading && enabled && roles.isNotEmpty ? onChanged : null,
-      validator: (value) => value == null ? 'Select a role to continue' : null,
+      validator: (value) => value == null
+          ? AppLocalizations.of(context)!.selectARoleToContinue2
+          : null,
     );
   }
 }
@@ -502,8 +546,10 @@ class _BranchField extends StatelessWidget {
           initialValue: safeSelectedId,
           isExpanded: true,
           decoration: InputDecoration(
-            labelText: 'Branch *',
-            hintText: isLoading ? 'Loading branches…' : 'Select your branch',
+            labelText: AppLocalizations.of(context)!.branchRequired,
+            hintText: isLoading
+                ? AppLocalizations.of(context)!.loadingBranches
+                : AppLocalizations.of(context)!.selectYourBranch,
             prefixIcon: const Icon(Icons.store_rounded),
             filled: true,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
@@ -556,7 +602,9 @@ class _BranchField extends StatelessWidget {
             );
           }).toList(),
           onChanged: isLoading || branches.isEmpty ? null : onChanged,
-          validator: (value) => value == null ? 'Select a branch' : null,
+          validator: (value) => value == null
+              ? AppLocalizations.of(context)!.selectABranch
+              : null,
         ),
         if (selectedFullName != null &&
             selectedShortName != null &&

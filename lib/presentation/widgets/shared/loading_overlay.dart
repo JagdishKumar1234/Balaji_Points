@@ -2,6 +2,7 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../providers/loading_provider.dart';
 
@@ -40,7 +41,7 @@ class LoadingOverlay extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   AppText.body(
-                    'Loading...',
+                    AppLocalizations.of(context)!.loading,
                     color: context.themeTextPrimary,
                   ),
                 ],

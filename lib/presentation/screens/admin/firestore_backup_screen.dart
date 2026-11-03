@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -21,38 +23,30 @@ class _FirestoreBackupScreenState extends State<FirestoreBackupScreen> {
 
     setState(() {
       _isBackingUp = true;
-      _backupStatus = 'Starting backup...';
+      _backupStatus = AppLocalizations.of(context)!.startingBackup;
     });
 
     try {
       final db = FirebaseFirestore.instance;
 
       // Fetch all users
-      final usersSnapshot = await db.collection('users').get();
-      final users = usersSnapshot.docs.map((doc) => {
-        'id': doc.id,
-        ...doc.data(),
-      }).toList();
+      final usersSnapshot = await db.collection('users').forAdminBranch().get();
+      final users = usersSnapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .toList();
 
       // Fetch all bills
-      final billsSnapshot = await db.collection('bills').get();
-      final bills = billsSnapshot.docs.map((doc) => {
-        'id': doc.id,
-        ...doc.data(),
-      }).toList();
+      final billsSnapshot = await db.collection('bills').forAdminBranch().get();
+      final bills = billsSnapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .toList();
 
       // Create backup object
       final backup = {
         'timestamp': DateTime.now().toIso8601String(),
         'collections': {
-          'users': {
-            'count': users.length,
-            'data': users,
-          },
-          'bills': {
-            'count': bills.length,
-            'data': bills,
-          },
+          'users': {'count': users.length, 'data': users},
+          'bills': {'count': bills.length, 'data': bills},
         },
       };
 
@@ -61,8 +55,9 @@ class _FirestoreBackupScreenState extends State<FirestoreBackupScreen> {
 
       // Show summary
       setState(() {
-        _backupStatus = '''
-✅ Backup Complete!
+        _backupStatus =
+            '''
+Backup Complete!
 
 Summary:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -83,10 +78,12 @@ Copy the JSON data below to save as backup file
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Backup exported: ${users.length} users, ${bills.length} bills',
+            AppLocalizations.of(
+              context,
+            )!.backupExportedUsersBills('${users.length}', '${bills.length}'),
           ),
           duration: const Duration(seconds: 5),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.success,
         ),
       );
 
@@ -94,11 +91,11 @@ Copy the JSON data below to save as backup file
       _showBackupPreview(backup, backupJson);
     } catch (e) {
       setState(() {
-        _backupStatus = 'Error: ${e.toString()}';
+        _backupStatus = AppLocalizations.of(context)!.error2('${e.toString()}');
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Backup failed: $e'),
+          content: Text(AppLocalizations.of(context)!.backupFailed('$e')),
           backgroundColor: AppColors.error,
         ),
       );
@@ -113,7 +110,7 @@ Copy the JSON data below to save as backup file
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(
-          'Backup Data',
+          AppLocalizations.of(context)!.backupData,
           style: AppTypography.h3(),
         ),
         content: SingleChildScrollView(
@@ -122,41 +119,51 @@ Copy the JSON data below to save as backup file
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Users (${backup['collections']['users']['count']})',
+                AppLocalizations.of(context)!.backupUsersCount(
+                  '${backup['collections']['users']['count']}',
+                ),
                 style: AppTypography.labelLarge(),
               ),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: AppColors.softSurface,
                   borderRadius: AppRadius.md12,
                 ),
                 constraints: const BoxConstraints(maxHeight: 200),
                 child: SingleChildScrollView(
                   child: SelectableText(
                     jsonEncode(backup['collections']['users']['data'].take(2)),
-                    style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'monospace',
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
               Text(
-                'Bills (${backup['collections']['bills']['count']})',
+                AppLocalizations.of(context)!.backupBillsCount(
+                  '${backup['collections']['bills']['count']}',
+                ),
                 style: AppTypography.labelLarge(),
               ),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: AppColors.softSurface,
                   borderRadius: AppRadius.md12,
                 ),
                 constraints: const BoxConstraints(maxHeight: 200),
                 child: SingleChildScrollView(
                   child: SelectableText(
                     jsonEncode(backup['collections']['bills']['data'].take(2)),
-                    style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'monospace',
+                    ),
                   ),
                 ),
               ),
@@ -164,11 +171,13 @@ Copy the JSON data below to save as backup file
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: AppColors.primarySoft,
                   borderRadius: AppRadius.md12,
                 ),
                 child: SelectableText(
-                  'Total Size: ${(backupJson.length / 1024).toStringAsFixed(2)} KB',
+                  AppLocalizations.of(context)!.totalSizeKb(
+                    '${(backupJson.length / 1024).toStringAsFixed(2)}',
+                  ),
                   style: AppTypography.labelSmall(),
                 ),
               ),
@@ -178,7 +187,7 @@ Copy the JSON data below to save as backup file
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)!.close),
           ),
         ],
       ),
@@ -191,7 +200,7 @@ Copy the JSON data below to save as backup file
       backgroundColor: context.themeBackground,
       appBar: AppBar(
         title: Text(
-          'Firebase Backup',
+          AppLocalizations.of(context)!.firebaseBackup,
           style: AppTypography.h2(),
         ),
         backgroundColor: context.themePrimary,
@@ -203,19 +212,19 @@ Copy the JSON data below to save as backup file
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.cloud_download,
+                Icons.cloud_download_rounded,
                 size: 80,
                 color: context.themePrimary,
               ),
               const SizedBox(height: 24),
               Text(
-                'Database Backup',
+                AppLocalizations.of(context)!.databaseBackup,
                 style: AppTypography.h3(),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
-                'Create a complete backup of all users and bills data from Firebase Firestore.',
+                AppLocalizations.of(context)!.createACompleteBackupOfAll,
                 style: AppTypography.bodyMedium().copyWith(
                   color: context.themeTextMuted,
                 ),
@@ -243,9 +252,9 @@ Copy the JSON data below to save as backup file
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
+                    color: AppColors.success.withValues(alpha: 0.1),
                     border: Border.all(
-                      color: Colors.green.withValues(alpha: 0.3),
+                      color: AppColors.success.withValues(alpha: 0.3),
                     ),
                     borderRadius: AppRadius.md12,
                   ),
@@ -253,14 +262,16 @@ Copy the JSON data below to save as backup file
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '📋 What will be backed up:',
+                        AppLocalizations.of(context)!.whatWillBeBackedUp,
                         style: AppTypography.labelLarge().copyWith(
-                          color: Colors.green[700],
+                          color: AppColors.success,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '• All user accounts (carpenters & admins)\n• All bill records\n• Complete user data with timestamps\n• Firestore metadata',
+                        AppLocalizations.of(
+                          context,
+                        )!.allUserAccountsCarpentersAdminsAll,
                         style: AppTypography.bodySmall().copyWith(
                           color: context.themeTextMuted,
                         ),
@@ -280,42 +291,46 @@ Copy the JSON data below to save as backup file
                           color: context.themeContentColor,
                         ),
                       )
-                    : const Icon(Icons.backup, size: 24),
-                label: Text(_isBackingUp ? 'Backing up...' : 'Start Backup'),
+                    : const Icon(Icons.backup_rounded, size: 24),
+                label: Text(
+                  _isBackingUp
+                      ? AppLocalizations.of(context)!.backingUp
+                      : AppLocalizations.of(context)!.startBackup,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.themePrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 16,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.all16,
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
                 ),
               ),
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
+                  color: AppColors.warning.withValues(alpha: 0.1),
                   border: Border.all(
-                    color: Colors.orange.withValues(alpha: 0.3),
+                    color: AppColors.warning.withValues(alpha: 0.3),
                   ),
                   borderRadius: AppRadius.md12,
                 ),
                 child: Row(
                   children: [
                     Icon(
-                      Icons.info,
-                      color: Colors.orange[700],
+                      Icons.info_rounded,
+                      color: AppColors.warning,
                       size: 20,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Backup is stored in Firebase. No files are saved locally.',
+                        AppLocalizations.of(
+                          context,
+                        )!.backupIsStoredInFirebaseNo,
                         style: AppTypography.bodySmall().copyWith(
-                          color: Colors.orange[700],
+                          color: AppColors.warning,
                         ),
                       ),
                     ),

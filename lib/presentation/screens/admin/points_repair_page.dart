@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -32,7 +33,10 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
         foregroundColor: context.themeTextPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: AppText.h3('Points Repair Tool', color: context.themeTextPrimary),
+        title: AppText.h3(
+          AppLocalizations.of(context)!.pointsRepairTool,
+          color: context.themeTextPrimary,
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -55,18 +59,20 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline, color: context.themePrimary),
+                      Icon(
+                        Icons.info_outline_rounded,
+                        color: context.themePrimary,
+                      ),
                       const SizedBox(width: 8),
-                      AppText.label('Points Data Repair',
-                          color: context.themeTextPrimary),
+                      AppText.label(
+                        AppLocalizations.of(context)!.pointsDataRepair,
+                        color: context.themeTextPrimary,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   AppText.body(
-                    'This tool scans user points data and fixes:\n'
-                    '• Duplicate history entries\n'
-                    '• Inconsistent totalPoints\n'
-                    '• Mismatched tiers',
+                    AppLocalizations.of(context)!.thisToolScansUserPointsData,
                     color: context.themeTextSecondary,
                   ),
                 ],
@@ -86,24 +92,37 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText.h5('Scan Report', color: context.themeTextPrimary),
+                    AppText.h5(
+                      AppLocalizations.of(context)!.scanReport,
+                      color: context.themeTextPrimary,
+                    ),
                     const SizedBox(height: 12),
-                    _buildReportRow('Total users scanned',
-                        '${_report!['totalUsersScanned']}'),
-                    _buildReportRow('Users with issues',
-                        '${_report!['usersWithIssues']}'),
-                    _buildReportRow('Users with duplicates',
-                        '${_report!['usersWithDuplicates']}'),
                     _buildReportRow(
-                        'Total duplicate entries', '${_report!['totalDuplicates']}'),
-                    _buildReportRow('Points mismatches',
-                        '${_report!['pointsMismatches']}'),
+                      AppLocalizations.of(context)!.totalUsersScanned,
+                      '${_report!['totalUsersScanned']}',
+                    ),
+                    _buildReportRow(
+                      AppLocalizations.of(context)!.usersWithIssues,
+                      '${_report!['usersWithIssues']}',
+                    ),
+                    _buildReportRow(
+                      AppLocalizations.of(context)!.usersWithDuplicates,
+                      '${_report!['usersWithDuplicates']}',
+                    ),
+                    _buildReportRow(
+                      AppLocalizations.of(context)!.totalDuplicateEntries,
+                      '${_report!['totalDuplicates']}',
+                    ),
+                    _buildReportRow(
+                      AppLocalizations.of(context)!.pointsMismatches,
+                      '${_report!['pointsMismatches']}',
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
               AppButton(
-                label: 'View Full Scan Details',
+                label: AppLocalizations.of(context)!.viewFullScanDetails,
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) =>
@@ -131,11 +150,16 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.check_circle,
-                            color: AppColors.success, size: 22),
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: AppColors.success,
+                          size: 22,
+                        ),
                         const SizedBox(width: 8),
-                        AppText.h5('Repair Complete',
-                            color: context.themeTextPrimary),
+                        AppText.h5(
+                          AppLocalizations.of(context)!.repairComplete,
+                          color: context.themeTextPrimary,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -146,7 +170,7 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
               const SizedBox(height: 20),
               // View details button
               AppButton(
-                label: 'View Detailed Results',
+                label: AppLocalizations.of(context)!.viewDetailedResults,
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PointsRepairDetailsPage(
@@ -173,7 +197,7 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, color: AppColors.error),
+                    Icon(Icons.error_outline_rounded, color: AppColors.error),
                     const SizedBox(width: 8),
                     Expanded(
                       child: AppText.body(_error!, color: AppColors.error),
@@ -197,7 +221,7 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle, color: AppColors.success),
+                    Icon(Icons.check_circle_rounded, color: AppColors.success),
                     const SizedBox(width: 8),
                     Expanded(
                       child: AppText.body(_success!, color: AppColors.success),
@@ -211,14 +235,16 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
             // Action buttons
             if (!_isLoading) ...[
               AppButton(
-                label: _report == null ? 'Scan for Issues' : 'Scan Again',
+                label: _report == null
+                    ? AppLocalizations.of(context)!.scanForIssues
+                    : AppLocalizations.of(context)!.scanAgain,
                 onPressed: _scanForIssues,
                 variant: AppButtonVariant.primary,
               ),
               const SizedBox(height: 12),
               if (_report != null && _report!['usersWithIssues'] > 0)
                 AppButton(
-                  label: 'Repair All Users',
+                  label: AppLocalizations.of(context)!.repairAllUsers,
                   onPressed: _repairAll,
                   variant: AppButtonVariant.primary,
                 ),
@@ -253,21 +279,21 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildRepairSummaryRow(
-          'Successfully Repaired',
+          AppLocalizations.of(context)!.successfullyRepaired,
           '$repaired/$total',
           AppColors.success,
         ),
         const SizedBox(height: 8),
         _buildRepairSummaryRow(
-          'Duplicates Removed',
+          AppLocalizations.of(context)!.duplicatesRemoved,
           '$duplicatesRemoved',
-          const Color(0xFFFF8A65),
+          AppColors.warning,
         ),
         const SizedBox(height: 8),
         _buildRepairSummaryRow(
-          'Points Adjusted',
+          AppLocalizations.of(context)!.pointsAdjusted,
           '${pointsDiff.toInt()}',
-          const Color(0xFF42A5F5),
+          AppColors.primaryOnDark,
         ),
       ],
     );
@@ -303,12 +329,12 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
         _report = report;
         _isLoading = false;
         if (report['usersWithIssues'] == 0) {
-          _success = 'No issues found! All user data is consistent.';
+          _success = AppLocalizations.of(context)!.noIssuesFoundAllUserData;
         }
       });
     } catch (e) {
       setState(() {
-        _error = 'Scan failed: $e';
+        _error = AppLocalizations.of(context)!.scanFailed('$e');
         _isLoading = false;
       });
     }
@@ -319,22 +345,23 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: AppText.h4('Repair All Users?'),
+        title: AppText.h4(AppLocalizations.of(context)!.repairAllUsers2),
         content: AppText.body(
-          'This will repair ${_report!['usersWithIssues']} users by:\n\n'
-          '• Removing duplicate history entries\n'
-          '• Recalculating correct totals\n'
-          '• Updating tier assignments\n\n'
-          'This action cannot be undone easily.',
+          AppLocalizations.of(
+            context,
+          )!.repairConfirmBody('${_report!['usersWithIssues']}'),
           color: context.themeTextSecondary,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: AppText.body('Cancel', color: context.themeTextSecondary),
+            child: AppText.body(
+              AppLocalizations.of(context)!.cancel,
+              color: context.themeTextSecondary,
+            ),
           ),
           AppButton(
-            label: 'Repair',
+            label: AppLocalizations.of(context)!.repair,
             onPressed: () => Navigator.of(context).pop(true),
             variant: AppButtonVariant.danger,
             fullWidth: false,
@@ -355,8 +382,9 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
       final result = await _repairService.repairAllUsers();
 
       // Verify no points were lost
-      final verificationResult =
-          await _repairService.verifyAllUsersAfterRepair(result);
+      final verificationResult = await _repairService.verifyAllUsersAfterRepair(
+        result,
+      );
 
       setState(() {
         _isLoading = false;
@@ -365,19 +393,22 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
 
           if (verificationResult['allVerified'] == true &&
               verificationResult['noPointsLost'] == true) {
-            _success =
-                'Repaired ${result['repaired']}/${result['total']} users successfully!\n✅ Verified: NO POINTS LOST';
+            _success = AppLocalizations.of(
+              context,
+            )!.repairSuccess('${result['repaired']}', '${result['total']}');
           } else {
-            _success =
-                'Repaired ${result['repaired']}/${result['total']} users.\n⚠️ Some verification issues - check logs';
+            _success = AppLocalizations.of(
+              context,
+            )!.repairPartial('${result['repaired']}', '${result['total']}');
           }
         } else {
-          _error = result['error'] ?? 'Repair failed';
+          _error =
+              result['error'] ?? AppLocalizations.of(context)!.repairFailed;
         }
       });
     } catch (e) {
       setState(() {
-        _error = 'Repair failed: $e';
+        _error = AppLocalizations.of(context)!.repairFailed2('$e');
         _isLoading = false;
       });
     }
@@ -423,12 +454,12 @@ class _PointsRepairPageState extends ConsumerState<PointsRepairPage> {
           ),
           const SizedBox(height: 24),
           AppText.h5(
-            'Scanning for Issues...',
+            AppLocalizations.of(context)!.scanningForIssues,
             color: context.themeTextPrimary,
           ),
           const SizedBox(height: 8),
           AppText.body(
-            'Analyzing all user points data',
+            AppLocalizations.of(context)!.analyzingAllUserPointsData,
             color: context.themeTextSecondary,
           ),
           const SizedBox(height: 24),

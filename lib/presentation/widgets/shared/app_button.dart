@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'app_loader.dart';
 
-/// Balaji Points Design System v2.0 — Button.
+/// Balaji Points Design System v3 — Button (UI spec).
 ///
-/// Variants:
-///   primary  — navy bg, white text   (default)
-///   secondary — transparent, navy border + text
-///   gold     — gold bg, navy text    (redeem / claim only)
-///   danger   — red bg, white text
-///   outline  — alias for secondary
+/// All variants are 48 px pills with a 15/600 label.
+///   primary   — gold fill, navy label. The ONE main action on a screen.
+///   gold      — alias of primary.
+///   secondary — surface fill, 1 px grey outline, brand ink label.
+///   outline   — alias of secondary.
+///   danger    — surface fill, red outline + red label (destructive).
 enum AppButtonVariant { primary, secondary, outline, gold, danger }
 
 class AppButton extends StatelessWidget {
@@ -81,6 +80,17 @@ class AppButton extends StatelessWidget {
     this.verticalPadding = 14,
   }) : variant = AppButtonVariant.gold;
 
+  const AppButton.danger({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.isLoading = false,
+    this.fullWidth = true,
+    this.width,
+    this.icon,
+    this.verticalPadding = 14,
+  }) : variant = AppButtonVariant.danger;
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -103,7 +113,7 @@ class AppButton extends StatelessWidget {
               Flexible(
                 child: Text(
                   label,
-                  style: AppTypography.buttonMedium(color: fg),
+                  style: AppTypography.button(color: fg),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -111,8 +121,7 @@ class AppButton extends StatelessWidget {
             ],
           );
 
-    // Ensure consistent button sizing across platforms
-    final minHeight = 50.0; // Standard touch target size (48dp+)
+    const minHeight = AppSpacing.buttonHeight; // 48 — spec + touch target
 
     final button = ElevatedButton(
       onPressed: disabled ? null : onPressed,
@@ -123,15 +132,9 @@ class AppButton extends StatelessWidget {
         disabledForegroundColor: fg,
         shadowColor: Colors.transparent,
         elevation: 0,
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: verticalPadding.clamp(12.0, 20.0), // Clamp for consistency
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18),
         minimumSize: Size(width ?? 0, minHeight),
-        shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.all16,
-          side: border,
-        ),
+        shape: StadiumBorder(side: border),
       ),
       child: child,
     );
@@ -148,35 +151,29 @@ class AppButton extends StatelessWidget {
   }
 
   Color _bg(BuildContext context, bool isDark, bool disabled) {
-    final a = disabled ? 0.50 : 1.0;
+    if (disabled) return context.themeSoftSurface;
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.action.withValues(alpha: a);
       case AppButtonVariant.gold:
-        return AppColors.gold.withValues(alpha: a);
-      case AppButtonVariant.danger:
-        return AppColors.error.withValues(alpha: a);
+        return AppColors.gold;
       case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
-        return disabled
-            ? (isDark
-                  ? AppColors.darkBorder.withValues(alpha: 0.12)
-                  : AppColors.primary.withValues(alpha: 0.05))
-            : Colors.transparent;
+      case AppButtonVariant.danger:
+        return context.themeSurface;
     }
   }
 
   Color _fg(BuildContext context, bool isDark, bool disabled) {
-    final dimmed = disabled ? 0.45 : 1.0;
+    if (disabled) return context.themeTextMuted;
     switch (variant) {
+      case AppButtonVariant.primary:
       case AppButtonVariant.gold:
-        return AppColors.primary.withValues(alpha: disabled ? 0.5 : 1.0);
+        return AppColors.primary;
       case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
-        return (isDark ? AppColors.darkTextPrimary : AppColors.primary)
-            .withValues(alpha: dimmed);
-      default:
-        return AppColors.white.withValues(alpha: disabled ? 0.65 : 1.0);
+        return context.themeContentColor;
+      case AppButtonVariant.danger:
+        return context.themeError;
     }
   }
 
@@ -185,10 +182,11 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
         return BorderSide(
-          color: (isDark ? AppColors.darkBorder : AppColors.primary).withValues(
-            alpha: disabled ? 0.30 : 1.0,
-          ),
-          width: 1.5,
+          color: disabled ? context.themeBorder : context.themeBorderStrong,
+        );
+      case AppButtonVariant.danger:
+        return BorderSide(
+          color: disabled ? context.themeBorder : context.themeError,
         );
       default:
         return BorderSide.none;

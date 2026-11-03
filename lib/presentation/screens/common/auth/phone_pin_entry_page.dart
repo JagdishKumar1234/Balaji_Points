@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,11 +47,7 @@ class _PhonePinEntryPageState extends ConsumerState<PhonePinEntryPage> {
       } else if (state is AuthUserNotFound) {
         setState(() => _checking = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No PIN account was found for this number. Sign in with email and password or Google.',
-            ),
-          ),
+          SnackBar(content: Text(AppLocalizations.of(context)!.noPinAccount)),
         );
       } else if (state is AuthError) {
         setState(() => _checking = false);
@@ -76,38 +73,44 @@ class _PhonePinEntryPageState extends ConsumerState<PhonePinEntryPage> {
                   constraints: const BoxConstraints(maxWidth: 520),
                   child: ProfessionalAuthCard(
                     isDark: isDark,
-                    securityMessage: 'For current mobile + PIN accounts',
+                    securityMessage: AppLocalizations.of(
+                      context,
+                    )!.forCurrentMobilePinAccounts,
                     child: Form(
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Sign in with mobile number',
+                            AppLocalizations.of(context)!.signInWithMobile,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                           const SizedBox(height: AppSpacing.lg),
                           AppTextField.phone(
                             controller: _phoneController,
-                            label: 'Mobile number',
+                            label: AppLocalizations.of(context)!.mobileNumber,
                             validator: (value) =>
                                 value
                                         ?.replaceAll(RegExp(r'[^0-9]'), '')
                                         .length ==
                                     10
                                 ? null
-                                : 'Enter a valid 10-digit mobile number',
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.enterAValid10DigitMobile,
                           ),
                           const SizedBox(height: AppSpacing.lg),
                           AppButton.primary(
-                            label: 'Continue to PIN',
+                            label: AppLocalizations.of(context)!.continueToPin,
                             isLoading: _checking,
                             onPressed: _checking ? null : _continue,
                           ),
                           TextButton(
                             onPressed: () => context.go('/login'),
-                            child: const Text('Back to other sign-in options'),
+                            child: Text(
+                              AppLocalizations.of(context)!.backToOtherSignIn,
+                            ),
                           ),
                         ],
                       ),

@@ -168,26 +168,34 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           children: [
             ListTile(
               leading: Icon(
-                Icons.photo_library,
+                Icons.photo_library_rounded,
                 color: context.themeContentColor,
               ),
-              title: Text(l10n?.selectImage ?? 'Choose from Gallery'),
+              title: Text(
+                l10n?.selectImage ??
+                    AppLocalizations.of(context)!.chooseFromGallery,
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage();
               },
             ),
             ListTile(
-              leading: Icon(Icons.camera_alt, color: context.themeContentColor),
-              title: Text(l10n?.selectImage ?? 'Take Photo'),
+              leading: Icon(
+                Icons.camera_alt_rounded,
+                color: context.themeContentColor,
+              ),
+              title: Text(
+                l10n?.selectImage ?? AppLocalizations.of(context)!.takePhoto,
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _takePhoto();
               },
             ),
             ListTile(
-              leading: Icon(Icons.cancel, color: context.themeError),
-              title: Text(l10n?.cancel ?? 'Cancel'),
+              leading: Icon(Icons.cancel_rounded, color: context.themeError),
+              title: Text(l10n?.cancel ?? AppLocalizations.of(context)!.cancel),
               onTap: () => Navigator.pop(context),
             ),
           ],
@@ -208,7 +216,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
     if (_selectedCarpenter == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('❌ Please select a carpenter'),
+          content: Text(AppLocalizations.of(context)!.pleaseSelectACarpenter),
           backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
         ),
@@ -220,7 +228,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
     if (siteName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('❌ Site name is required'),
+          content: Text(AppLocalizations.of(context)!.siteNameRequired),
           backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
         ),
@@ -234,7 +242,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: AppText.label(
-            '❌ ${l10n?.enterValidAmount ?? 'Please enter a valid amount'}',
+            '${l10n?.enterValidAmount ?? 'Please enter a valid amount'}',
           ),
           backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
@@ -258,7 +266,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                l10n?.sessionExpired ?? 'Please login to submit bills',
+                l10n?.sessionExpired ??
+                    AppLocalizations.of(context)!.pleaseLoginToSubmitBills,
               ),
               backgroundColor: context.themeError,
               duration: const Duration(seconds: 3),
@@ -290,7 +299,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
 
       // CHECK FOR DUPLICATE BILL - FRONTEND VALIDATION
       AppLogger.info('🔍 Admin: Checking for duplicate bill...');
-      AppLogger.info('   Carpenter: $carpenterId, Site: $siteName, Amount: $amount');
+      AppLogger.info(
+        '   Carpenter: $carpenterId, Site: $siteName, Amount: $amount',
+      );
 
       final duplicateBill = await _billService.checkDuplicateBill(
         carpenterId: carpenterId,
@@ -318,7 +329,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
           return;
         }
 
-        AppLogger.info('✅ No duplicate found, proceeding with admin submission...');
+        AppLogger.info(
+          '✅ No duplicate found, proceeding with admin submission...',
+        );
 
         final success = await _billService.submitBillForCarpenter(
           carpenterId: carpenterId,
@@ -344,7 +357,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               SnackBar(
                 content: Text(
                   l10n?.billSubmitted ??
-                      'Bill submitted successfully! It will be reviewed.',
+                      AppLocalizations.of(
+                        context,
+                      )!.billSubmittedSuccessfullyItWillBe,
                 ),
                 backgroundColor: AppColors.success,
                 duration: const Duration(seconds: 3),
@@ -363,7 +378,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               SnackBar(
                 content: Text(
                   l10n?.billSubmitError ??
-                      'Failed to submit bill. Please try again.',
+                      AppLocalizations.of(context)!.failedToSubmitBillPleaseTry,
                 ),
                 backgroundColor: context.themeError,
                 duration: const Duration(seconds: 3),
@@ -408,9 +423,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             Container(
@@ -420,7 +433,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.warning_amber,
+                Icons.warning_amber_rounded,
                 color: context.themeError,
                 size: 28,
               ),
@@ -428,10 +441,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                '⚠️ Duplicate Bill',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: context.themeError,
-                ),
+                AppLocalizations.of(context)!.duplicateBill,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: context.themeError),
               ),
             ),
           ],
@@ -442,10 +455,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'A bill with the SAME site, amount, and date already exists for this carpenter:',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                AppLocalizations.of(context)!.aBillWithTheSameSite,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 16),
 
@@ -466,7 +479,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.location_on,
+                          Icons.location_on_rounded,
                           size: 16,
                           color: context.themeError,
                         ),
@@ -476,16 +489,16 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Site',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: context.themeTextSecondary,
-                                ),
+                                AppLocalizations.of(context)!.site,
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: context.themeTextSecondary,
+                                    ),
                               ),
                               Text(
                                 siteName,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -496,7 +509,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.currency_rupee,
+                          Icons.currency_rupee_rounded,
                           size: 16,
                           color: AppColors.success,
                         ),
@@ -506,17 +519,19 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Amount',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: context.themeTextSecondary,
-                                ),
+                                AppLocalizations.of(context)!.amountLabel,
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: context.themeTextSecondary,
+                                    ),
                               ),
                               Text(
                                 '₹${duplicateAmount.toStringAsFixed(0)}',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.success,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.success,
+                                    ),
                               ),
                             ],
                           ),
@@ -527,7 +542,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.stars,
+                          Icons.stars_rounded,
                           size: 16,
                           color: context.themePrimary,
                         ),
@@ -537,17 +552,21 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Points',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: context.themeTextSecondary,
-                                ),
+                                AppLocalizations.of(context)!.pointsLabel,
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: context.themeTextSecondary,
+                                    ),
                               ),
                               Text(
-                                '${duplicatePoints.toStringAsFixed(2)} pts',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: context.themePrimary,
+                                AppLocalizations.of(context)!.pts2(
+                                  '${duplicatePoints.toStringAsFixed(2)}',
                                 ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: context.themePrimary,
+                                    ),
                               ),
                             ],
                           ),
@@ -568,14 +587,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.info,
+                      Icons.info_rounded,
                       size: 18,
                       color: AppColors.warning,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Please verify this is not a duplicate entry.',
+                        AppLocalizations.of(context)!.pleaseVerifyThisIsNotA,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.warning,
                         ),
@@ -587,10 +606,10 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
 
               const SizedBox(height: 16),
               Text(
-                'Do you want to add this bill anyway?',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                AppLocalizations.of(context)!.addBillAnywayQuestion,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -602,7 +621,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               Navigator.pop(context);
             },
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: context.themePrimary,
                 fontWeight: FontWeight.w600,
@@ -632,12 +651,16 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 if (mounted) {
                   setState(() => _isSubmitting = false);
                   if (success) {
-                    AppLogger.info('✅ Duplicate bill submitted successfully by admin');
+                    AppLogger.info(
+                      '✅ Duplicate bill submitted successfully by admin',
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
                           l10n?.billSubmitted ??
-                              'Bill submitted successfully! It will be reviewed.',
+                              AppLocalizations.of(
+                                context,
+                              )!.billSubmittedSuccessfullyItWillBe,
                         ),
                         backgroundColor: AppColors.success,
                         duration: const Duration(seconds: 3),
@@ -651,7 +674,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                       SnackBar(
                         content: Text(
                           l10n?.billSubmitError ??
-                              'Failed to submit bill. Please try again.',
+                              AppLocalizations.of(
+                                context,
+                              )!.failedToSubmitBillPleaseTry,
                         ),
                         backgroundColor: context.themeError,
                         duration: const Duration(seconds: 3),
@@ -665,7 +690,9 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                   setState(() => _isSubmitting = false);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('❌ Error: ${e.toString()}'),
+                      content: Text(
+                        AppLocalizations.of(context)!.error2('${e.toString()}'),
+                      ),
                       backgroundColor: context.themeError,
                       duration: const Duration(seconds: 3),
                     ),
@@ -675,12 +702,13 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeSecondary,
+              foregroundColor: context.themeOnSecondary,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
             child: Text(
-              'Add Anyway',
+              AppLocalizations.of(context)!.addAnyway2,
               style: TextStyle(
-                color: AppColors.white,
+                color: context.themeOnSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -707,7 +735,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
               context,
               customMessage:
                   l10n?.discardBillMessage ??
-                  'You have unsaved bill data. Do you want to discard it?',
+                  AppLocalizations.of(context)!.discardBillMessage,
             );
             if (shouldDiscard == true && mounted) {
               context.pop();
@@ -734,7 +762,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                 onPressed: () => context.pop(),
               ),
               title: AppText.label(
-                'Add Bill for Carpenter',
+                AppLocalizations.of(context)!.addBillForCarpenter,
                 color: context.themeContentColor,
               ),
               centerTitle: true,
@@ -752,211 +780,235 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 20),
+                          children: [
+                            const SizedBox(height: 20),
 
-                          // Carpenter Selection
-                          AppText.label(
-                            'Carpenter *',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
-                          CarpenterSelectionWidget(
-                            selectedCarpenter: _selectedCarpenter,
-                            onCarpenterSelected: (carpenter) {
-                              setState(() {
-                                _selectedCarpenter = carpenter;
-                              });
-                            },
-                          ),
-
-                          const SizedBox(height: 32),
-
-                          // Amount Field
-                          AppText.label(
-                            l10n?.billAmount ?? 'Bill Amount (₹) *',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
-
-                          AppTextField(
-                            controller: _amountController,
-                            label: l10n?.enterBillAmount ?? 'Enter bill amount',
-                            keyboardType: TextInputType.number,
-                            onChanged: (_) => setState(() {}),
-                            prefixIcon: Icons.currency_rupee,
-                            suffix: amount > 0
-                                ? Padding(
-                                    padding: const EdgeInsets.only(right: 12),
-                                    child: AppText.labelSmall('${points.toStringAsFixed(2)} pts', color: context.themeContentColor),
-                                  )
-                                : null,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return l10n?.enterBillAmount ??
-                                    'Please enter bill amount';
-                              }
-                              final amount = double.tryParse(value.trim());
-                              if (amount == null || amount <= 0) {
-                                return l10n?.enterValidAmount ??
-                                    'Please enter a valid amount';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 32),
-
-                          // Bill Date Field
-                          AppText.label(
-                            l10n?.billDate ?? 'Bill Date *',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
-
-                          GestureDetector(
-                            onTap: _selectDate,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 18,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.themeSurface,
-                                borderRadius: AppRadius.all16,
-                                border: Border.all(
-                                  color: context.themePrimary.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today,
-                                    color: context.themeContentColor,
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: AppText.body(
-                                      DateFormat(
-                                        'dd MMM yyyy',
-                                      ).format(_billDate),
-                                      color: context.themeContentColor,
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: context.themePrimary.withValues(
-                                      alpha: 0.5,
-                                    ),
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
+                            // Carpenter Selection
+                            AppText.label(
+                              AppLocalizations.of(context)!.carpenter2,
+                              color: context.themeContentColor,
                             ),
-                          ),
+                            const SizedBox(height: 12),
+                            CarpenterSelectionWidget(
+                              selectedCarpenter: _selectedCarpenter,
+                              onCarpenterSelected: (carpenter) {
+                                setState(() {
+                                  _selectedCarpenter = carpenter;
+                                });
+                              },
+                            ),
 
-                          const SizedBox(height: 32),
+                            const SizedBox(height: 32),
 
-                          // Bill Image Section
-                          AppText.label(
-                            l10n?.billImage ?? 'Bill Image (Optional)',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
+                            // Amount Field
+                            AppText.label(
+                              l10n?.billAmount ??
+                                  AppLocalizations.of(context)!.billAmount2,
+                              color: context.themeContentColor,
+                            ),
+                            const SizedBox(height: 12),
 
-                          GestureDetector(
-                            onTap: _showImageSourceDialog,
-                            child: Container(
-                              height: 200,
-                              decoration: BoxDecoration(
-                                color: context.themeSurface,
-                                borderRadius: AppRadius.all16,
-                                border: Border.all(
-                                  color: context.themePrimary.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  width: 2,
-                                  style: BorderStyle.solid,
-                                ),
-                              ),
-                              child: _selectedImageBytes != null
-                                  ? ClipRRect(
-                                      borderRadius: AppRadius.all16,
-                                      child: Image.memory(
-                                        _selectedImageBytes!,
-                                        fit: BoxFit.cover,
+                            AppTextField(
+                              controller: _amountController,
+                              label:
+                                  l10n?.enterBillAmount ??
+                                  AppLocalizations.of(context)!.enterBillAmount,
+                              keyboardType: TextInputType.number,
+                              onChanged: (_) => setState(() {}),
+                              prefixIcon: Icons.currency_rupee_rounded,
+                              suffix: amount > 0
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: AppText.labelSmall(
+                                        AppLocalizations.of(context)!.ptsValue(
+                                          '${points.toStringAsFixed(2)}',
+                                        ),
+                                        color: context.themeContentColor,
                                       ),
                                     )
-                                  : Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.add_photo_alternate,
-                                          size: 64,
-                                          color: context.themeContentColor
-                                              .withValues(alpha: 0.5),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        AppText.bodySmall(
-                                          l10n?.tapToAddBillImage ??
-                                              'Tap to add bill image',
-                                          color: context.themeContentColor
-                                              .withValues(alpha: 0.6),
-                                        ),
-                                      ],
-                                    ),
+                                  : null,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return l10n?.enterBillAmount ??
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.pleaseEnterBillAmount;
+                                }
+                                final amount = double.tryParse(value.trim());
+                                if (amount == null || amount <= 0) {
+                                  return l10n?.enterValidAmount ??
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.invalidAmount;
+                                }
+                                return null;
+                              },
                             ),
-                          ),
 
-                          const SizedBox(height: 32),
+                            const SizedBox(height: 32),
 
-                          // Site Name Field (Required)
-                          AppText.label(
-                            'Site Name *',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
+                            // Bill Date Field
+                            AppText.label(
+                              l10n?.billDate ??
+                                  AppLocalizations.of(context)!.billDate2,
+                              color: context.themeContentColor,
+                            ),
+                            const SizedBox(height: 12),
 
-                          AppTextField(
-                            controller: _siteNameController,
-                            label: 'Site Name',
-                            hint: 'Enter site/location name',
-                            prefixIcon: Icons.location_on,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Site name is required';
-                              }
-                              return null;
-                            },
-                          ),
+                            GestureDetector(
+                              onTap: _selectDate,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 18,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: context.themeSurface,
+                                  borderRadius: AppRadius.all16,
+                                  border: Border.all(
+                                    color: context.themePrimary.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today_rounded,
+                                      color: context.themeContentColor,
+                                      size: 24,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: AppText.body(
+                                        DateFormat(
+                                          'dd MMM yyyy',
+                                        ).format(_billDate),
+                                        color: context.themeContentColor,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      color: context.themePrimary.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                      size: 16,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
 
-                          const SizedBox(height: 24),
+                            const SizedBox(height: 32),
 
-                          // Vendor Name Field (Optional)
-                          AppText.label(
-                            'Vendor Name (Optional)',
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(height: 12),
+                            // Bill Image Section
+                            AppText.label(
+                              l10n?.billImage ??
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.billImageOptional,
+                              color: context.themeContentColor,
+                            ),
+                            const SizedBox(height: 12),
 
-                          AppTextField(
-                            controller: _vendorNameController,
-                            label: 'Vendor Name',
-                            hint: 'Enter vendor/store name (optional)',
-                            prefixIcon: Icons.store,
-                          ),
+                            GestureDetector(
+                              onTap: _showImageSourceDialog,
+                              child: Container(
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  color: context.themeSurface,
+                                  borderRadius: AppRadius.all16,
+                                  border: Border.all(
+                                    color: context.themePrimary.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    width: 2,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                                child: _selectedImageBytes != null
+                                    ? ClipRRect(
+                                        borderRadius: AppRadius.all16,
+                                        child: Image.memory(
+                                          _selectedImageBytes!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add_photo_alternate_rounded,
+                                            size: 64,
+                                            color: context.themeContentColor
+                                                .withValues(alpha: 0.5),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          AppText.bodySmall(
+                                            l10n?.tapToAddBillImage ??
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.tapToAddBillImage,
+                                            color: context.themeContentColor
+                                                .withValues(alpha: 0.6),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
 
-                          const SizedBox(height: 24),
-                        ],
+                            const SizedBox(height: 32),
+
+                            // Site Name Field (Required)
+                            AppText.label(
+                              AppLocalizations.of(context)!.siteName,
+                              color: context.themeContentColor,
+                            ),
+                            const SizedBox(height: 12),
+
+                            AppTextField(
+                              controller: _siteNameController,
+                              label: AppLocalizations.of(context)!.siteName2,
+                              hint: AppLocalizations.of(
+                                context,
+                              )!.enterSiteLocationName,
+                              prefixIcon: Icons.location_on_rounded,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return AppLocalizations.of(
+                                    context,
+                                  )!.siteNameRequired;
+                                }
+                                return null;
+                              },
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // Vendor Name Field (Optional)
+                            AppText.label(
+                              AppLocalizations.of(context)!.vendorNameOptional,
+                              color: context.themeContentColor,
+                            ),
+                            const SizedBox(height: 12),
+
+                            AppTextField(
+                              controller: _vendorNameController,
+                              label: AppLocalizations.of(context)!.vendorName,
+                              hint: AppLocalizations.of(
+                                context,
+                              )!.enterVendorStoreNameOptional,
+                              prefixIcon: Icons.store_rounded,
+                            ),
+
+                            const SizedBox(height: 24),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
                 // Fixed Submit Button at Bottom
                 Container(
@@ -976,7 +1028,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                       maxWidth: 700,
                       padding: EdgeInsets.zero,
                       child: AppButton.primary(
-                        label: 'Submit Bill',
+                        label: AppLocalizations.of(context)!.submitBill,
                         onPressed: _isSubmitting ? null : _submitBill,
                         isLoading: _isSubmitting,
                       ),

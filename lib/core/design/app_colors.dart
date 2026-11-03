@@ -1,61 +1,110 @@
 import 'package:flutter/material.dart';
 
-/// Balaji Points Design System v2.0 — Color tokens.
+/// Balaji Points Design System v3 — Color tokens.
 ///
-/// One primary color (navy), one accent (gold), one success, one error.
-/// No gradients, no neon, no heavy tints.
+/// Source of truth: `docs/Carpenter Rewards App – UI Design.html`.
+/// One brand (navy + gold), one neutral ramp, three status pairs.
+/// No extra palettes, no gradients outside celebration screens.
+///
+/// Every text/icon pair below meets WCAG AA (≥ 4.5:1 for text, ≥ 3:1 for
+/// icons and large text). See `docs/ui_spec_conformance_audit.md` §5.
 class AppColors {
   AppColors._();
 
   // ── Brand ──────────────────────────────────────────────────────────────────
 
-  static const Color primary = Color(0xFF082D6B); // Reference navy
-  static const Color primaryLight = Color(0xFF174A91);
-  static const Color primarySoft = Color(0xFFEAF0FA);
+  /// Navy — headers, sidebar, headings, icon tiles. White on navy = 16:1.
+  static const Color primary = Color(0xFF0B1F3A);
 
-  static const Color gold = Color(0xFFC49143); // HTML reference accent
-  static const Color goldSoft = Color(0xFFFAF1E3);
-  static const Color action = Color(0xFFE52E50); // PDF primary action
-  static const Color navigation = Color(0xFF0B203B); // Desktop role rail
+  /// Navy hover / active sidebar item.
+  static const Color primaryLight = Color(0xFF16325C);
 
-  // ── Status ─────────────────────────────────────────────────────────────────
+  /// Lines and progress tracks drawn on navy.
+  static const Color primaryLine = Color(0xFF2B4570);
 
-  static const Color success = Color(0xFF16A34A); // Blueprint Success #16A34A
-  static const Color error = Color(0xFFEF4444);
-  static const Color warning = Color(0xFFF59E0B); // expiring-soon only
+  /// Very light navy tint for selected rows and soft fills.
+  static const Color primarySoft = Color(0xFFE8EDF5);
 
-  // ── Light theme surfaces ────────────────────────────────────────────────────
+  /// Dark-mode primary: readable as text on dark (3.9:1) and under white
+  /// text (4.8:1). Navy itself is too dark to see on a dark background.
+  static const Color primaryOnDark = Color(0xFF4A74B0);
 
-  static const Color background = Color(0xFFF5F4EF); // Reference canvas
-  static const Color surface = Color(0xFFFFFFFF); // Blueprint Surface #FFFFFF
-  static const Color softSurface = Color(0xFFF1F2F4);
-  static const Color border = Color(0xFFE1E4E9);
+  /// Secondary text on navy surfaces (10.9:1).
+  static const Color onPrimaryMuted = Color(0xFFC9D3E3);
 
-  // ── Light theme text ────────────────────────────────────────────────────────
+  /// Gold accent — main call-to-action fill (navy text on gold = 6.9:1),
+  /// icons on navy, progress. Never use as text on white.
+  static const Color gold = Color(0xFFC9A24B);
+  static const Color goldSoft = Color(0xFFFBF0D3);
 
-  static const Color textPrimary = Color(0xFF1F1E1D); // HTML reference ink
-  static const Color textSecondary = Color(0xFF5F6672);
-  static const Color textMuted = Color(0xFF98A2B3);
+  /// Desktop sidebar / rail background.
+  static const Color navigation = primary;
 
-  // ── Dark theme surfaces ─────────────────────────────────────────────────────
+  // ── Status (single static values that work in light AND dark) ──────────────
 
-  static const Color darkBackground = Color(0xFF0F1115);
-  static const Color darkSurface = Color(0xFF171A22);
-  static const Color darkSoftSurface = Color(0xFF1E2430);
-  static const Color darkBorder = Color(0xFF2B313D);
+  static const Color success = Color(
+    0xFF2F855A,
+  ); // 4.5:1 on white & under white
+  static const Color warning = Color(
+    0xFFA87F1E,
+  ); // dark gold — same hue as brand
+  static const Color error = Color(0xFFB3261E); // 6.5:1 on white & under white
 
-  // ── Dark theme text ─────────────────────────────────────────────────────────
+  // Status chips — tinted background + dark text (spec).
+  static const Color successSoft = Color(0xFFE6F2EA);
+  static const Color successText = Color(0xFF1C5B34);
+  static const Color pendingSoft = goldSoft;
+  static const Color pendingText = Color(0xFF6B4D08);
+  static const Color errorSoft = Color(0xFFF6DCDA);
+  static const Color errorText = Color(0xFF8C1D18);
 
-  static const Color darkTextPrimary = Color(0xFFFFFFFF);
-  static const Color darkTextSecondary = Color(0xFFD1D5DB);
-  static const Color darkTextMuted = Color(0xFF9CA3AF);
+  // ── Light surfaces ──────────────────────────────────────────────────────────
 
-  // ── Loyalty tiers ───────────────────────────────────────────────────────────
+  static const Color background = Color(0xFFF4F5F7);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color softSurface = Color(0xFFEEF0F3);
+  static const Color border = Color(0xFFE3E6EB); // cards, dividers
+  static const Color borderStrong = Color(
+    0xFFCBD1DB,
+  ); // inputs, outline buttons
+  static const Color divider = Color(0xFFEEF0F3); // table rows
 
-  static const Color tierBronze = Color(0xFFCD7F32);
-  static const Color tierSilver = Color(0xFFC0C0C0);
+  // ── Light text ──────────────────────────────────────────────────────────────
+
+  static const Color textPrimary = Color(0xFF1B2433);
+  static const Color textSecondary = Color(0xFF5B6577);
+  static const Color textMuted = Color(0xFF667085); // 5.0:1 — was failing 2.6:1
+
+  // ── Dark surfaces (navy-black ramp from "Wallet dark") ──────────────────────
+
+  static const Color darkBackground = Color(0xFF0B1220);
+  static const Color darkChrome = Color(0xFF121B2D); // app bar, bottom nav
+  static const Color darkSurface = Color(0xFF162033); // cards, sheets
+  static const Color darkSoftSurface = Color(
+    0xFF1F2A40,
+  ); // raised chips, inputs
+  static const Color darkBorder = Color(0xFF26324A);
+
+  // ── Dark text ───────────────────────────────────────────────────────────────
+
+  static const Color darkTextPrimary = Color(0xFFE8ECF3);
+  static const Color darkTextSecondary = Color(0xFFB4BED0);
+  static const Color darkTextMuted = Color(0xFF9AA6BA);
+
+  // Dark status chips.
+  static const Color darkSuccessSoft = Color(0xFF14301F);
+  static const Color darkSuccessText = Color(0xFF7FD39B);
+  static const Color darkPendingSoft = Color(0xFF3A2E0F);
+  static const Color darkPendingText = Color(0xFFE9C46A);
+  static const Color darkErrorSoft = Color(0xFF3B1816);
+  static const Color darkErrorText = Color(0xFFF2A19B);
+
+  // ── Loyalty tiers (kept muted; platinum uses brand blue, not purple) ────────
+
+  static const Color tierBronze = Color(0xFFB0793F);
+  static const Color tierSilver = Color(0xFF9AA6BA);
   static const Color tierGold = gold;
-  static const Color tierPlatinum = Color(0xFF7C3AED);
+  static const Color tierPlatinum = primaryOnDark;
 
   // ── Common ──────────────────────────────────────────────────────────────────
 
@@ -63,25 +112,28 @@ class AppColors {
   static const Color black = Color(0xFF000000);
   static const Color transparent = Colors.transparent;
 
-  // ── Shadow helper ───────────────────────────────────────────────────────────
+  // ── Shadows (navy-tinted, tight — spec) ─────────────────────────────────────
 
-  /// Single shadow level — opacity 0.05, blur 24, offset (0, 8).
+  /// Card shadow: 0 1 2 rgba(11,31,58,.06).
   static List<BoxShadow> get shadowLevel1 => [
     BoxShadow(
-      color: black.withValues(alpha: 0.05),
-      blurRadius: 24,
-      offset: const Offset(0, 8),
+      color: primary.withValues(alpha: 0.06),
+      blurRadius: 2,
+      offset: const Offset(0, 1),
     ),
   ];
 
-  /// Dark-mode variant — slightly stronger.
-  static List<BoxShadow> get shadowLevel1Dark => [
+  /// Hero / points card shadow: 0 2 6 rgba(11,31,58,.10).
+  static List<BoxShadow> get shadowLevel2 => [
     BoxShadow(
-      color: black.withValues(alpha: 0.20),
-      blurRadius: 24,
-      offset: const Offset(0, 8),
+      color: primary.withValues(alpha: 0.10),
+      blurRadius: 6,
+      offset: const Offset(0, 2),
     ),
   ];
+
+  /// Dark mode relies on borders, not shadows.
+  static List<BoxShadow> get shadowLevel1Dark => const [];
 }
 
 // ── BuildContext extensions ──────────────────────────────────────────────────
@@ -91,26 +143,35 @@ extension AppColorsThemeExtension on BuildContext {
 
   // Brand
   Color get themePrimary => Theme.of(this).colorScheme.primary;
+  Color get themeOnPrimary => Theme.of(this).colorScheme.onPrimary;
   Color get themePrimaryLight =>
-      isDarkMode ? AppColors.primaryLight : AppColors.primaryLight;
+      isDarkMode ? AppColors.primaryOnDark : AppColors.primaryLight;
   Color get themePrimarySoft => isDarkMode
-      ? AppColors.primary.withValues(alpha: 0.12)
+      ? AppColors.primaryOnDark.withValues(alpha: 0.16)
       : AppColors.primarySoft;
+
+  /// Navy brand surface (headers, hero cards). Stays navy in both themes.
+  Color get themeBrandSurface => AppColors.primary;
   Color get themeGold => AppColors.gold;
   Color get themeGoldSoft =>
-      isDarkMode ? AppColors.gold.withValues(alpha: 0.15) : AppColors.goldSoft;
-  Color get themeSecondary => Theme.of(this).colorScheme.secondary; // = gold
+      isDarkMode ? AppColors.darkPendingSoft : AppColors.goldSoft;
+  Color get themeSecondary => Theme.of(this).colorScheme.secondary; // gold
+  Color get themeOnSecondary => Theme.of(this).colorScheme.onSecondary;
 
   // Surfaces
   Color get themeBackground => Theme.of(this).scaffoldBackgroundColor;
   Color get themeSurface => Theme.of(this).colorScheme.surface;
+  Color get themeChrome =>
+      isDarkMode ? AppColors.darkChrome : AppColors.surface;
   Color get themeSoftSurface =>
       isDarkMode ? AppColors.darkSoftSurface : AppColors.softSurface;
   Color get themeCard => isDarkMode ? AppColors.darkSurface : AppColors.surface;
   Color get themeBorder => isDarkMode ? AppColors.darkBorder : AppColors.border;
-  Color get themeLineBorder => isDarkMode
-      ? AppColors.white.withValues(alpha: 0.08)
-      : AppColors.black.withValues(alpha: 0.06);
+  Color get themeBorderStrong =>
+      isDarkMode ? AppColors.darkBorder : AppColors.borderStrong;
+  Color get themeDivider =>
+      isDarkMode ? AppColors.darkBorder : AppColors.divider;
+  Color get themeLineBorder => themeBorder;
 
   // Text
   Color get themeTextPrimary => Theme.of(this).colorScheme.onSurface;
@@ -122,86 +183,25 @@ extension AppColorsThemeExtension on BuildContext {
   // Status
   Color get themeError => Theme.of(this).colorScheme.error;
   Color get themeOnError => Theme.of(this).colorScheme.onError;
+  Color get themeSuccessSoft =>
+      isDarkMode ? AppColors.darkSuccessSoft : AppColors.successSoft;
+  Color get themeSuccessText =>
+      isDarkMode ? AppColors.darkSuccessText : AppColors.successText;
+  Color get themePendingSoft =>
+      isDarkMode ? AppColors.darkPendingSoft : AppColors.pendingSoft;
+  Color get themePendingText =>
+      isDarkMode ? AppColors.darkPendingText : AppColors.pendingText;
+  Color get themeErrorSoft =>
+      isDarkMode ? AppColors.darkErrorSoft : AppColors.errorSoft;
+  Color get themeErrorText =>
+      isDarkMode ? AppColors.darkErrorText : AppColors.errorText;
 
-  // Foreground — white in dark (so icons/text never appear as navy on dark bg)
+  /// Foreground for icons/text that should read as "brand" — navy in light,
+  /// light ink in dark.
   Color get themeContentColor =>
       isDarkMode ? AppColors.darkTextPrimary : AppColors.primary;
 
   // Shadow
   List<BoxShadow> get themeShadow =>
       isDarkMode ? AppColors.shadowLevel1Dark : AppColors.shadowLevel1;
-}
-
-// ── Light Material Color Palettes ──────────────────────────────────────────
-
-enum AppColorPalette { navy, emerald, indigo, crimson, teal, orange }
-
-class AppPaletteColors {
-  final Color primary;
-  final Color primaryLight;
-  final Color primarySoft;
-
-  const AppPaletteColors({
-    required this.primary,
-    required this.primaryLight,
-    required this.primarySoft,
-  });
-
-  static AppPaletteColors of(AppColorPalette palette) {
-    switch (palette) {
-      case AppColorPalette.navy:
-        return const AppPaletteColors(
-          primary: AppColors.primary,
-          primaryLight: AppColors.primaryLight,
-          primarySoft: AppColors.primarySoft,
-        );
-      case AppColorPalette.emerald:
-        return const AppPaletteColors(
-          primary: Color(0xFF059669),
-          primaryLight: Color(0xFF10B981),
-          primarySoft: Color(0xFFECFDF5),
-        );
-      case AppColorPalette.indigo:
-        return const AppPaletteColors(
-          primary: Color(0xFF4F46E5),
-          primaryLight: Color(0xFF6366F1),
-          primarySoft: Color(0xFFEEF2FF),
-        );
-      case AppColorPalette.crimson:
-        return const AppPaletteColors(
-          primary: Color(0xFFDC2626),
-          primaryLight: Color(0xFFEF4444),
-          primarySoft: Color(0xFFFEF2F2),
-        );
-      case AppColorPalette.teal:
-        return const AppPaletteColors(
-          primary: Color(0xFF0D9488),
-          primaryLight: Color(0xFF14B8A6),
-          primarySoft: Color(0xFFF0FDFA),
-        );
-      case AppColorPalette.orange:
-        return const AppPaletteColors(
-          primary: Color(0xFFEA580C),
-          primaryLight: Color(0xFFF97316),
-          primarySoft: Color(0xFFFFF7ED),
-        );
-    }
-  }
-
-  static String displayName(AppColorPalette palette) {
-    switch (palette) {
-      case AppColorPalette.navy:
-        return 'Classic Navy';
-      case AppColorPalette.emerald:
-        return 'Emerald Green';
-      case AppColorPalette.indigo:
-        return 'Royal Indigo';
-      case AppColorPalette.crimson:
-        return 'Crimson Red';
-      case AppColorPalette.teal:
-        return 'Ocean Teal';
-      case AppColorPalette.orange:
-        return 'Sunset Orange';
-    }
-  }
 }

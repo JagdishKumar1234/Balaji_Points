@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
@@ -54,10 +55,7 @@ class ProfessionalAuthCard extends StatelessWidget {
               // Security message (if provided)
               if (securityMessage != null) ...[
                 const SizedBox(height: AppSpacing.md),
-                _SecurityMessage(
-                  message: securityMessage!,
-                  isDark: isDark,
-                ),
+                _SecurityMessage(message: securityMessage!, isDark: isDark),
               ],
             ],
           ),
@@ -72,10 +70,7 @@ class _SecurityMessage extends StatelessWidget {
   final String message;
   final bool isDark;
 
-  const _SecurityMessage({
-    required this.message,
-    this.isDark = false,
-  });
+  const _SecurityMessage({required this.message, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
@@ -84,18 +79,12 @@ class _SecurityMessage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.shield_outlined,
-            size: 16,
-            color: context.themePrimary,
-          ),
+          Icon(Icons.shield_outlined, size: 16, color: context.themePrimary),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
               message,
-              style: AppTypography.bodySmall(
-                color: context.themeTextSecondary,
-              ),
+              style: AppTypography.bodySmall(color: context.themeTextSecondary),
               textAlign: TextAlign.center,
             ),
           ),
@@ -140,7 +129,9 @@ class AuthHeader extends StatelessWidget {
           height: logoSize,
           child: Container(
             decoration: BoxDecoration(
-              color: isDark ? context.themePrimary.withValues(alpha: 0.3) : context.themePrimary,
+              color: isDark
+                  ? context.themePrimary.withValues(alpha: 0.3)
+                  : context.themePrimary,
               borderRadius: BorderRadius.circular(logoBorderRadius),
               boxShadow: [
                 BoxShadow(
@@ -212,11 +203,7 @@ class AuthFooter extends StatelessWidget {
   final String companyName;
   final bool isDark;
 
-  const AuthFooter({
-    super.key,
-    required this.companyName,
-    this.isDark = false,
-  });
+  const AuthFooter({super.key, required this.companyName, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
@@ -226,10 +213,8 @@ class AuthFooter extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
 
         Text(
-          'Powered by',
-          style: AppTypography.bodySmall(
-            color: context.themeTextSecondary,
-          ),
+          AppLocalizations.of(context)!.poweredBy,
+          style: AppTypography.bodySmall(color: context.themeTextSecondary),
           textAlign: TextAlign.center,
         ),
 
@@ -256,10 +241,7 @@ class AuthFooter extends StatelessWidget {
                   companyName,
                   style: AppTypography.bodyMedium(
                     color: context.themeTextPrimary,
-                  ).copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.3,
-                  ),
+                  ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.3),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -304,16 +286,9 @@ class AuthTopControls extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(
-            width: 44,
-            height: 44,
-            child: themeToggle,
-          ),
+          SizedBox(width: 44, height: 44, child: themeToggle),
 
-          SizedBox(
-            height: 44,
-            child: languagePicker,
-          ),
+          SizedBox(height: 44, child: languagePicker),
         ],
       ),
     );
@@ -325,11 +300,7 @@ class DividerText extends StatelessWidget {
   final String text;
   final bool isDark;
 
-  const DividerText({
-    super.key,
-    required this.text,
-    this.isDark = false,
-  });
+  const DividerText({super.key, required this.text, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
@@ -339,10 +310,7 @@ class DividerText extends StatelessWidget {
         text.toUpperCase(),
         style: AppTypography.labelSmall(
           color: context.themeGold,
-        ).copyWith(
-          fontWeight: FontWeight.w600,
-          letterSpacing: 1.2,
-        ),
+        ).copyWith(fontWeight: FontWeight.w600, letterSpacing: 1.2),
       ),
     );
   }

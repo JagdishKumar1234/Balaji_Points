@@ -1,5 +1,8 @@
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_table_card.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -32,8 +35,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
   DateTime? _endDate;
   final TextEditingController _carpenterNameController =
       TextEditingController();
-  final TextEditingController _billNumberController =
-      TextEditingController();
+  final TextEditingController _billNumberController = TextEditingController();
   String _carpenterNameFilter = '';
   String _billNumberFilter = '';
   bool _showFilters = false;
@@ -62,7 +64,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.error,
+                              Icons.error_rounded,
                               color: context.themeError,
                               size: 60,
                             ),
@@ -77,7 +79,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.image_not_supported,
+                            Icons.image_not_supported_rounded,
                             size: 60,
                             color: context.themeTextSecondary,
                           ),
@@ -95,7 +97,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
               top: 20,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.white,
+                  size: 30,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -123,27 +129,31 @@ class _PendingBillsListState extends State<PendingBillsList> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: AppText.label('Approve Bill'),
+        title: AppText.label(AppLocalizations.of(context)!.approveBillAction),
         content: AppText.body(
-          'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${(amount / 1000).toStringAsFixed(2)} points will be added to the carpenter.',
+          AppLocalizations.of(context)!.approveThisBillOfPointsWill(
+            '${amount.toStringAsFixed(0)}',
+            '${(amount / 1000).toStringAsFixed(2)}',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: AppText.label('Cancel'),
+            child: AppText.label(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeSecondary,
+              foregroundColor: context.themeOnSecondary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Text(
-              'Approve',
+              AppLocalizations.of(context)!.approve,
               style: AppTypography.labelLarge().copyWith(
-                color: AppColors.white,
+                color: context.themeOnSecondary,
               ),
             ),
           ),
@@ -185,8 +195,10 @@ class _PendingBillsListState extends State<PendingBillsList> {
           backgroundColor: success ? AppColors.success : context.themeError,
           content: Text(
             success
-                ? 'Bill approved and points added successfully'
-                : 'Failed to approve bill',
+                ? AppLocalizations.of(
+                    context,
+                  )!.billApprovedAndPointsAddedSuccessfully
+                : AppLocalizations.of(context)!.failedToApproveBill2,
             style: const TextStyle(color: AppColors.white),
           ),
           duration: const Duration(seconds: 2),
@@ -203,7 +215,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
         SnackBar(
           backgroundColor: context.themeError,
           content: Text(
-            'Error approving bill: ${e.toString()}',
+            AppLocalizations.of(context)!.errorApprovingBill('${e.toString()}'),
             style: const TextStyle(color: AppColors.white),
           ),
         ),
@@ -219,17 +231,19 @@ class _PendingBillsListState extends State<PendingBillsList> {
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Reject Bill',
+          AppLocalizations.of(context)!.rejectBill,
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
             color: context.themeError,
           ),
         ),
-        content: AppText.body('Are you sure you want to reject this bill?'),
+        content: AppText.body(
+          AppLocalizations.of(context)!.rejectBillConfirmation,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: AppText.label('Cancel'),
+            child: AppText.label(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -240,7 +254,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
               ),
             ),
             child: Text(
-              'Reject',
+              AppLocalizations.of(context)!.reject,
               style: AppTypography.labelLarge().copyWith(
                 color: context.themeOnError,
               ),
@@ -265,7 +279,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
         SnackBar(
           backgroundColor: success ? AppColors.warning : context.themeError,
           content: Text(
-            success ? 'Bill rejected successfully' : 'Failed to reject bill',
+            success
+                ? AppLocalizations.of(context)!.billRejected
+                : AppLocalizations.of(context)!.failedToRejectBill2,
             style: const TextStyle(color: AppColors.white),
           ),
           duration: const Duration(seconds: 2),
@@ -279,7 +295,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
         SnackBar(
           backgroundColor: context.themeError,
           content: Text(
-            'Error rejecting bill: ${e.toString()}',
+            AppLocalizations.of(context)!.errorRejectingBill('${e.toString()}'),
             style: const TextStyle(color: AppColors.white),
           ),
         ),
@@ -338,7 +354,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
   }
 
   // Fetch all bills for a carpenter with summary info
-  Future<Map<String, dynamic>> _fetchCarpenterBillsSummary(String carpenterId) async {
+  Future<Map<String, dynamic>> _fetchCarpenterBillsSummary(
+    String carpenterId,
+  ) async {
     try {
       final bills = await _firestore
           .collection('bills')
@@ -511,7 +529,8 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
       // Carpenter name and phone search filter
       if (_carpenterNameFilter.isNotEmpty) {
-        final carpenterPhone = (bill['carpenterPhone'] as String? ?? '').toLowerCase();
+        final carpenterPhone = (bill['carpenterPhone'] as String? ?? '')
+            .toLowerCase();
         // Phone search is exact match for bill phone
         if (!carpenterPhone.contains(_carpenterNameFilter.toLowerCase())) {
           // If phone doesn't match, we'll do name matching in the UI
@@ -576,101 +595,86 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
   // ---------------- DESKTOP DATA TABLE VIEW ----------------
   Widget _buildDesktopDataTable(List<QueryDocumentSnapshot> bills) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        child: DataTable(
-          sortColumnIndex: _sortColumnIndex(),
-          sortAscending: _sortAscending,
-          headingRowColor: WidgetStatePropertyAll(
-            context.themeSurface.withValues(alpha: 0.5),
+    return AppTableCard(
+      sortColumnIndex: _sortColumnIndex(),
+      sortAscending: _sortAscending,
+      columns: [
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.bill,
+            style: AppTypography.label(color: context.themeTextSecondary),
           ),
-          columns: [
-            DataColumn(
-              label: Text(
-                'Bill #',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'billNumber';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Carpenter',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'carpenter';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Amount (₹)',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              numeric: true,
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'amount';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Points',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              numeric: true,
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'points';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Date',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'date';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Status',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Actions',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-            ),
-          ],
-          rows: _buildDataTableRows(bills),
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'billNumber';
+              _sortAscending = ascending;
+            });
+          },
         ),
-      ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.carpenter,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'carpenter';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            'Amount (₹)',
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          numeric: true,
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'amount';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.pointsLabel,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          numeric: true,
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'points';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.dateLabel,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'date';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            'Status',
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+        ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.actions,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+        ),
+      ],
+      rows: _buildDataTableRows(bills),
     );
   }
 
@@ -710,10 +714,10 @@ class _PendingBillsListState extends State<PendingBillsList> {
       String statusLabel = 'N/A';
       if (status == 'approved') {
         statusColor = AppColors.success;
-        statusLabel = 'Approved';
+        statusLabel = AppLocalizations.of(context)!.approvedLabel;
       } else if (status == 'pending') {
         statusColor = context.themeError;
-        statusLabel = 'Pending';
+        statusLabel = AppLocalizations.of(context)!.pendingStatus;
       } else if (status == 'rejected') {
         statusColor = context.themeError.withValues(alpha: 0.6);
         statusLabel = 'Rejected';
@@ -722,21 +726,19 @@ class _PendingBillsListState extends State<PendingBillsList> {
       return DataRow(
         cells: [
           DataCell(
-            Text(
-              bill['billNumber'] ?? 'N/A',
-              style: AppTypography.bodySmall(),
-            ),
+            Text(bill['billNumber'] ?? 'N/A', style: AppTypography.bodySmall()),
           ),
           DataCell(
             FutureBuilder<Map<String, dynamic>?>(
               future: _fetchCarpenterData(carpenterId),
               builder: (context, snap) {
-                String carpenterName = 'Carpenter';
+                String carpenterName = AppLocalizations.of(context)!.carpenter;
                 if (snap.hasData && snap.data != null) {
                   final first = snap.data!['firstName'] ?? '';
                   final last = snap.data!['lastName'] ?? '';
                   carpenterName = '$first $last'.trim();
-                  if (carpenterName.isEmpty) carpenterName = 'Carpenter';
+                  if (carpenterName.isEmpty)
+                    carpenterName = AppLocalizations.of(context)!.carpenter;
                 }
                 return Text(
                   carpenterName,
@@ -754,17 +756,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
             ),
           ),
           DataCell(
-            Text(
-              points.toStringAsFixed(2),
-              style: AppTypography.bodySmall(),
-            ),
+            Text(points.toStringAsFixed(2), style: AppTypography.bodySmall()),
           ),
-          DataCell(
-            Text(
-              dateStr,
-              style: AppTypography.bodySmall(),
-            ),
-          ),
+          DataCell(Text(dateStr, style: AppTypography.bodySmall())),
           DataCell(
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -787,7 +781,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
               children: [
                 IconButton(
                   icon: Icon(
-                    Icons.visibility,
+                    Icons.visibility_rounded,
                     size: 16,
                     color: context.themePrimary,
                   ),
@@ -805,26 +799,26 @@ class _PendingBillsListState extends State<PendingBillsList> {
                       setState(() {});
                     }
                   },
-                  tooltip: 'View Details',
+                  tooltip: AppLocalizations.of(context)!.viewDetails,
                 ),
                 if (status == 'pending') ...[
                   IconButton(
                     icon: Icon(
-                      Icons.check_circle,
+                      Icons.check_circle_rounded,
                       size: 16,
                       color: AppColors.success,
                     ),
                     onPressed: () => _approveBill(bill),
-                    tooltip: 'Approve',
+                    tooltip: AppLocalizations.of(context)!.approve,
                   ),
                   IconButton(
                     icon: Icon(
-                      Icons.cancel,
+                      Icons.cancel_rounded,
                       size: 16,
                       color: context.themeError,
                     ),
                     onPressed: () => _rejectBill(billId),
-                    tooltip: 'Reject',
+                    tooltip: AppLocalizations.of(context)!.reject,
                   ),
                 ],
               ],
@@ -868,20 +862,20 @@ class _PendingBillsListState extends State<PendingBillsList> {
                       ),
                       style: AppTypography.bodyMedium().copyWith(fontSize: 13),
                       decoration: InputDecoration(
-                        hintText: 'Search carpenter...',
+                        hintText: AppLocalizations.of(context)!.searchCarpenter,
                         hintStyle: AppTypography.bodyMedium().copyWith(
                           color: context.themeTextSecondary,
                           fontSize: 13,
                         ),
                         prefixIcon: Icon(
-                          Icons.search,
+                          Icons.search_rounded,
                           color: context.themeTextSecondary,
                           size: 18,
                         ),
                         suffixIcon: _carpenterNameFilter.isNotEmpty
                             ? IconButton(
                                 icon: Icon(
-                                  Icons.clear,
+                                  Icons.clear_rounded,
                                   size: 16,
                                   color: context.themeTextSecondary,
                                 ),
@@ -939,7 +933,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     child: IconButton(
                       icon: Icon(
                         _showFilters
-                            ? Icons.filter_list
+                            ? Icons.filter_list_rounded
                             : Icons.filter_list_outlined,
                         color: _showFilters
                             ? context.themeContentColor
@@ -953,7 +947,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         minWidth: 36,
                         minHeight: 36,
                       ),
-                      tooltip: 'Date Filters',
+                      tooltip: AppLocalizations.of(context)!.dateFilters,
                     ),
                   ),
                 ],
@@ -988,7 +982,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today_rounded,
                                 size: 14,
                                 color: _startDate != null
                                     ? context.themeContentColor
@@ -999,7 +993,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                 child: Text(
                                   _startDate != null
                                       ? DateFormat('dd MMM').format(_startDate!)
-                                      : 'From',
+                                      : AppLocalizations.of(context)!.from,
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
                                     color: _startDate != null
@@ -1013,7 +1007,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                   onTap: () =>
                                       setState(() => _startDate = null),
                                   child: Icon(
-                                    Icons.close,
+                                    Icons.close_rounded,
                                     size: 14,
                                     color: context.themeTextSecondary,
                                   ),
@@ -1048,7 +1042,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.event,
+                                Icons.event_rounded,
                                 size: 14,
                                 color: _endDate != null
                                     ? context.themeContentColor
@@ -1059,7 +1053,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                 child: Text(
                                   _endDate != null
                                       ? DateFormat('dd MMM').format(_endDate!)
-                                      : 'To',
+                                      : AppLocalizations.of(context)!.to,
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
                                     color: _endDate != null
@@ -1072,7 +1066,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                 InkWell(
                                   onTap: () => setState(() => _endDate = null),
                                   child: Icon(
-                                    Icons.close,
+                                    Icons.close_rounded,
                                     size: 14,
                                     color: context.themeTextSecondary,
                                   ),
@@ -1085,7 +1079,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                     if (_hasActiveFilters())
                       IconButton(
                         icon: Icon(
-                          Icons.clear_all,
+                          Icons.clear_all_rounded,
                           size: 18,
                           color: context.themeContentColor,
                         ),
@@ -1095,7 +1089,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           minWidth: 32,
                           minHeight: 32,
                         ),
-                        tooltip: 'Clear Filters',
+                        tooltip: AppLocalizations.of(context)!.clearFilters,
                       ),
                   ],
                 ),
@@ -1109,7 +1103,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
             children: [
               StreamBuilder<QuerySnapshot>(
                 stream: _firestore
-                    .collection('bills')
+                    .collection('bills').forAdminBranch()
                     .where('status', isEqualTo: 'pending')
                     .snapshots(),
                 builder: (context, snap) {
@@ -1131,26 +1125,22 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   bills = _filterBills(bills);
 
                   if (bills.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.filter_alt_off,
-                            size: 64,
-                            color: context.themeTextMuted,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            _hasActiveFilters()
-                                ? 'No bills found matching filters'
-                                : l10n.noPendingBills,
-                            style: AppTypography.bodyMedium().copyWith(
-                              fontSize: 16,
-                              color: context.themeTextSecondary,
-                            ),
-                          ),
-                        ],
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: EmptyState(
+                        icon: _hasActiveFilters()
+                            ? Icons.filter_alt_off_rounded
+                            : Icons.task_alt_rounded,
+                        title: _hasActiveFilters()
+                            ? AppLocalizations.of(
+                                context,
+                              )!.noBillsFoundMatchingFilters
+                            : l10n.noPendingBills,
+                        message: _hasActiveFilters()
+                            ? AppLocalizations.of(context)!.tryChangingFilters
+                            : AppLocalizations.of(
+                                context,
+                              )!.pendingBillsAppearHere,
                       ),
                     );
                   }
@@ -1181,7 +1171,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                         future: _fetchCarpenterData(carpenterId),
                         builder: (context, carpenterSnapshot) {
                           // Get carpenter name and profile image
-                          String carpenterName = "Carpenter";
+                          String carpenterName = AppLocalizations.of(
+                            context,
+                          )!.carpenter;
                           String? profileImageUrl;
 
                           if (carpenterSnapshot.hasData &&
@@ -1191,7 +1183,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                             final lastName = carpenterData['lastName'] ?? '';
                             carpenterName = ('$firstName $lastName').trim();
                             if (carpenterName.isEmpty) {
-                              carpenterName = "Carpenter";
+                              carpenterName = AppLocalizations.of(
+                                context,
+                              )!.carpenter;
                             }
                             profileImageUrl =
                                 carpenterData['profileImage'] as String?;
@@ -1201,10 +1195,12 @@ class _PendingBillsListState extends State<PendingBillsList> {
                           if (_carpenterNameFilter.isNotEmpty) {
                             final fullName = carpenterName.toLowerCase();
                             final carpenterPhone = phone.toLowerCase();
-                            final searchQuery = _carpenterNameFilter.toLowerCase();
+                            final searchQuery = _carpenterNameFilter
+                                .toLowerCase();
 
                             // Search by name or phone
-                            if (!fullName.contains(searchQuery) && !carpenterPhone.contains(searchQuery)) {
+                            if (!fullName.contains(searchQuery) &&
+                                !carpenterPhone.contains(searchQuery)) {
                               return const SizedBox.shrink();
                             }
                           }
@@ -1273,7 +1269,8 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                 color: context.themeContentColor
                                                     .withValues(alpha: 0.1),
                                                 border: Border.all(
-                                                  color: context.themeContentColor
+                                                  color: context
+                                                      .themeContentColor
                                                       .withValues(alpha: 0.3),
                                                   width: 2,
                                                 ),
@@ -1286,8 +1283,13 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                         profileImageUrl,
                                                         fit: BoxFit.cover,
                                                         errorBuilder:
-                                                            (_, __, ___) => Icon(
-                                                              Icons.person,
+                                                            (
+                                                              _,
+                                                              __,
+                                                              ___,
+                                                            ) => Icon(
+                                                              Icons
+                                                                  .person_rounded,
                                                               color: context
                                                                   .themeContentColor,
                                                               size: 28,
@@ -1295,7 +1297,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                       ),
                                                     )
                                                   : Icon(
-                                                      Icons.person,
+                                                      Icons.person_rounded,
                                                       color: context
                                                           .themeContentColor,
                                                       size: 28,
@@ -1324,8 +1326,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   if (phone.isNotEmpty)
                                                     Text(
                                                       phone,
-                                                      style: AppTypography
-                                                          .bodyMedium()
+                                                      style: AppTypography.bodyMedium()
                                                           .copyWith(
                                                             fontSize: 12,
                                                             color: context
@@ -1350,9 +1351,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   decoration: BoxDecoration(
                                                     color: context
                                                         .themeContentColor
-                                                        .withValues(
-                                                          alpha: 0.2,
-                                                        ),
+                                                        .withValues(alpha: 0.2),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           8,
@@ -1371,16 +1370,19 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                         MainAxisSize.min,
                                                     children: [
                                                       Icon(
-                                                        Icons.monetization_on,
+                                                        Icons
+                                                            .monetization_on_rounded,
                                                         size: 18,
                                                         color: context
                                                             .themeSecondary,
                                                       ),
-                                                      const SizedBox(
-                                                        width: 4,
-                                                      ),
+                                                      const SizedBox(width: 4),
                                                       AppText.label(
-                                                        '${(amount / 1000).toStringAsFixed(2)} pts',
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!.pts4(
+                                                          '${(amount / 1000).toStringAsFixed(2)}',
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -1413,13 +1415,13 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   ),
                                                   child: Text(
                                                     '₹${amount.toStringAsFixed(0)}',
-                                                    style: AppTypography
-                                                        .labelLarge()
-                                                        .copyWith(
-                                                          fontSize: 13,
-                                                          color:
-                                                              AppColors.success,
-                                                        ),
+                                                    style:
+                                                        AppTypography.labelLarge()
+                                                            .copyWith(
+                                                              fontSize: 13,
+                                                              color: AppColors
+                                                                  .success,
+                                                            ),
                                                   ),
                                                 ),
                                               ],
@@ -1434,32 +1436,39 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                       if (isExpanded)
                                         FutureBuilder<Map<String, dynamic>>(
                                           future: _fetchCarpenterBillsSummary(
-                                              carpenterId),
+                                            carpenterId,
+                                          ),
                                           builder: (context, historySnapshot) {
-                                            if (historySnapshot.connectionState ==
+                                            if (historySnapshot
+                                                    .connectionState ==
                                                 ConnectionState.waiting) {
                                               return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12),
+                                                padding: const EdgeInsets.all(
+                                                  12,
+                                                ),
                                                 child:
                                                     CircularProgressIndicator(
-                                                  color:
-                                                      context.themePrimary,
-                                                ),
+                                                      color:
+                                                          context.themePrimary,
+                                                    ),
                                               );
                                             }
 
                                             if (!historySnapshot.hasData) {
                                               return Container(
-                                                padding:
-                                                    const EdgeInsets.all(12),
+                                                padding: const EdgeInsets.all(
+                                                  12,
+                                                ),
                                                 decoration: BoxDecoration(
-                                                  color: context.themeSoftSurface,
+                                                  color:
+                                                      context.themeSoftSurface,
                                                   borderRadius:
                                                       BorderRadius.circular(8),
                                                 ),
                                                 child: AppText.caption(
-                                                  'No history available',
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.noHistoryAvailable,
                                                   color: context
                                                       .themeTextSecondary,
                                                 ),
@@ -1468,13 +1477,12 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
                                             final summary =
                                                 historySnapshot.data!;
-                                            final totalPoints = summary[
-                                                    'totalPoints']
-                                                as double? ??
+                                            final totalPoints =
+                                                summary['totalPoints']
+                                                    as double? ??
                                                 0;
                                             final totalBills =
-                                                summary['totalBills']
-                                                    as int? ??
+                                                summary['totalBills'] as int? ??
                                                 0;
                                             final approvedBills =
                                                 summary['approvedBills']
@@ -1484,9 +1492,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                 summary['pendingBills']
                                                     as int? ??
                                                 0;
-                                            final pointsBySite = summary[
-                                                    'pointsBySite']
-                                                as Map<String, dynamic>? ??
+                                            final pointsBySite =
+                                                summary['pointsBySite']
+                                                    as Map<String, dynamic>? ??
                                                 {};
 
                                             return Container(
@@ -1500,8 +1508,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   width: 1,
                                                 ),
                                               ),
-                                              padding:
-                                                  const EdgeInsets.all(12),
+                                              padding: const EdgeInsets.all(12),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -1513,32 +1520,35 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                             .spaceBetween,
                                                     children: [
                                                       AppText.labelSmall(
-                                                        'Carpenter Summary',
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!.carpenterSummary,
                                                         color: context
                                                             .themePrimary,
                                                       ),
                                                       Container(
                                                         padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
+                                                            const EdgeInsets.symmetric(
                                                               horizontal: 8,
                                                               vertical: 4,
                                                             ),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                              color: context
-                                                                  .themePrimary
-                                                                  .withValues(
-                                                                    alpha: 0.1,
-                                                                  ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                        4,
-                                                                      ),
-                                                            ),
+                                                        decoration: BoxDecoration(
+                                                          color: context
+                                                              .themePrimary
+                                                              .withValues(
+                                                                alpha: 0.1,
+                                                              ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                4,
+                                                              ),
+                                                        ),
                                                         child: AppText.caption(
-                                                          'Total: ${totalPoints.toStringAsFixed(0)} pts',
+                                                          AppLocalizations.of(
+                                                            context,
+                                                          )!.totalPts(
+                                                            '${totalPoints.toStringAsFixed(0)}',
+                                                          ),
                                                           color: context
                                                               .themePrimary,
                                                         ),
@@ -1553,22 +1563,23 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                       Expanded(
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                color: context
-                                                                    .themeSurface,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                          6,
-                                                                        ),
+                                                              const EdgeInsets.all(
+                                                                8,
                                                               ),
+                                                          decoration: BoxDecoration(
+                                                            color: context
+                                                                .themeSurface,
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  6,
+                                                                ),
+                                                          ),
                                                           child: Column(
                                                             children: [
                                                               AppText.caption(
-                                                                'Total Bills',
+                                                                AppLocalizations.of(
+                                                                  context,
+                                                                )!.totalBills,
                                                                 color: context
                                                                     .themeTextSecondary,
                                                               ),
@@ -1585,26 +1596,26 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                       Expanded(
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                color: AppColors
-                                                                    .success
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.1,
-                                                                    ),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                          6,
-                                                                        ),
+                                                              const EdgeInsets.all(
+                                                                8,
                                                               ),
+                                                          decoration: BoxDecoration(
+                                                            color: AppColors
+                                                                .success
+                                                                .withValues(
+                                                                  alpha: 0.1,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  6,
+                                                                ),
+                                                          ),
                                                           child: Column(
                                                             children: [
                                                               AppText.caption(
-                                                                'Approved',
+                                                                AppLocalizations.of(
+                                                                  context,
+                                                                )!.approvedLabel,
                                                                 color: AppColors
                                                                     .success,
                                                               ),
@@ -1621,26 +1632,26 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                       Expanded(
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                color: context
-                                                                    .themeError
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.1,
-                                                                    ),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                          6,
-                                                                        ),
+                                                              const EdgeInsets.all(
+                                                                8,
                                                               ),
+                                                          decoration: BoxDecoration(
+                                                            color: context
+                                                                .themeError
+                                                                .withValues(
+                                                                  alpha: 0.1,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  6,
+                                                                ),
+                                                          ),
                                                           child: Column(
                                                             children: [
                                                               AppText.caption(
-                                                                'Pending',
+                                                                AppLocalizations.of(
+                                                                  context,
+                                                                )!.pendingStatus,
                                                                 color: context
                                                                     .themeError,
                                                               ),
@@ -1661,7 +1672,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   if (pointsBySite
                                                       .isNotEmpty) ...[
                                                     AppText.labelSmall(
-                                                      'Points by Site',
+                                                      AppLocalizations.of(
+                                                        context,
+                                                      )!.pointsBySite,
                                                       color: context
                                                           .themeTextSecondary,
                                                     ),
@@ -1675,8 +1688,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                           .map(
                                                             (entry) => Padding(
                                                               padding:
-                                                                  const EdgeInsets
-                                                                      .only(
+                                                                  const EdgeInsets.only(
                                                                     bottom: 4,
                                                                   ),
                                                               child: Row(
@@ -1685,10 +1697,10 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                                         .spaceBetween,
                                                                 children: [
                                                                   Expanded(
-                                                                    child: AppText
-                                                                        .caption(
+                                                                    child: AppText.caption(
                                                                       entry.key,
-                                                                      maxLines: 1,
+                                                                      maxLines:
+                                                                          1,
                                                                       overflow:
                                                                           TextOverflow
                                                                               .ellipsis,
@@ -1697,31 +1709,30 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                                     ),
                                                                   ),
                                                                   Container(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .symmetric(
-                                                                          horizontal:
-                                                                              6,
-                                                                          vertical:
-                                                                              2,
-                                                                        ),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                          color: context
-                                                                              .themeContentColor
-                                                                              .withValues(
-                                                                                alpha:
-                                                                                    0.1,
-                                                                              ),
-                                                                          borderRadius:
-                                                                              BorderRadius
-                                                                                  .circular(
-                                                                                    3,
-                                                                                  ),
-                                                                        ),
-                                                                    child: AppText
-                                                                        .caption(
-                                                                      '${(entry.value as num).toStringAsFixed(0)} pts',
+                                                                    padding: const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          6,
+                                                                      vertical:
+                                                                          2,
+                                                                    ),
+                                                                    decoration: BoxDecoration(
+                                                                      color: context
+                                                                          .themeContentColor
+                                                                          .withValues(
+                                                                            alpha:
+                                                                                0.1,
+                                                                          ),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                            3,
+                                                                          ),
+                                                                    ),
+                                                                    child: AppText.caption(
+                                                                      AppLocalizations.of(
+                                                                        context,
+                                                                      )!.pts5(
+                                                                        '${(entry.value as num).toStringAsFixed(0)}',
+                                                                      ),
                                                                       color: context
                                                                           .themeContentColor,
                                                                     ),
@@ -1738,19 +1749,24 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                   // ----------- BILL HISTORY TABLE -----------
                                                   _BillHistoryFilteredList(
                                                     carpenterId: carpenterId,
-                                                    billsList: (summary[
-                                                            'billsList'] as List?)
-                                                        ?.cast<
-                                                            Map<String, dynamic>>()
-                                                        .toList() ??
+                                                    billsList:
+                                                        (summary['billsList']
+                                                                as List?)
+                                                            ?.cast<
+                                                              Map<
+                                                                String,
+                                                                dynamic
+                                                              >
+                                                            >()
+                                                            .toList() ??
                                                         [],
-                                                    allSites: (summary[
-                                                            'allSites'] as List?)
-                                                        ?.cast<String>()
-                                                        .toList() ??
+                                                    allSites:
+                                                        (summary['allSites']
+                                                                as List?)
+                                                            ?.cast<String>()
+                                                            .toList() ??
                                                         [],
                                                   ),
-
                                                 ],
                                               ),
                                             );
@@ -1760,19 +1776,22 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                       const SizedBox(height: 10),
 
                                       // ------------ SITE NAME ROW (NEW) -------------
-                                      if ((bill['siteName'] as String?)?.isNotEmpty ?? false)
+                                      if ((bill['siteName'] as String?)
+                                              ?.isNotEmpty ??
+                                          false)
                                         Row(
                                           children: [
                                             Icon(
-                                              Icons.location_on,
+                                              Icons.location_on_rounded,
                                               size: 14,
                                               color: context.themeContentColor,
                                             ),
                                             const SizedBox(width: 6),
                                             AppText.caption(
-                                              'Site: ',
-                                              color:
-                                                  context.themeTextSecondary,
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.site2,
+                                              color: context.themeTextSecondary,
                                             ),
                                             Expanded(
                                               child: AppText.labelSmall(
@@ -1781,8 +1800,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                 color:
                                                     context.themeContentColor,
                                                 maxLines: 1,
-                                                overflow:
-                                                    TextOverflow.ellipsis,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
                                           ],
@@ -1800,14 +1818,16 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                             Row(
                                               children: [
                                                 Icon(
-                                                  Icons.receipt_long,
+                                                  Icons.receipt_long_rounded,
                                                   size: 14,
                                                   color:
                                                       context.themeContentColor,
                                                 ),
                                                 const SizedBox(width: 6),
                                                 AppText.caption(
-                                                  'Bill Date: ',
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.billDate3,
                                                   color: context
                                                       .themeTextSecondary,
                                                 ),
@@ -1827,13 +1847,15 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                             Row(
                                               children: [
                                                 Icon(
-                                                  Icons.check_circle,
+                                                  Icons.check_circle_rounded,
                                                   size: 14,
                                                   color: AppColors.success,
                                                 ),
                                                 const SizedBox(width: 6),
                                                 AppText.caption(
-                                                  'Approved: ',
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.approved2,
                                                   color: context
                                                       .themeTextSecondary,
                                                 ),
@@ -1852,14 +1874,16 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                             Row(
                                               children: [
                                                 Icon(
-                                                  Icons.schedule,
+                                                  Icons.schedule_rounded,
                                                   size: 14,
                                                   color: context
                                                       .themeTextSecondary,
                                                 ),
                                                 const SizedBox(width: 6),
                                                 AppText.caption(
-                                                  'Submitted: ',
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.submitted2,
                                                   color: context
                                                       .themeTextSecondary,
                                                 ),
@@ -1890,33 +1914,31 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                               height: 170,
                                               width: double.infinity,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) =>
-                                                  Container(
-                                                    height: 170,
-                                                    color: context.themeBorder,
-                                                    child: Center(
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Icon(
-                                                            Icons.error_outline,
-                                                            color: context
-                                                                .themeTextMuted,
-                                                            size: 40,
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 8,
-                                                          ),
-                                                          AppText.caption(
-                                                            l10n.failedToLoadImage,
-                                                            color: context
-                                                                .themeTextMuted,
-                                                          ),
-                                                        ],
+                                              errorBuilder: (_, __, ___) => Container(
+                                                height: 170,
+                                                color: context.themeBorder,
+                                                child: Center(
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .error_outline_rounded,
+                                                        color: context
+                                                            .themeTextMuted,
+                                                        size: 40,
                                                       ),
-                                                    ),
+                                                      const SizedBox(height: 8),
+                                                      AppText.caption(
+                                                        l10n.failedToLoadImage,
+                                                        color: context
+                                                            .themeTextMuted,
+                                                      ),
+                                                    ],
                                                   ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -1943,7 +1965,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                     ),
                                               ),
                                               icon: Icon(
-                                                Icons.close,
+                                                Icons.close_rounded,
                                                 color: context.themeOnError,
                                                 size: 18,
                                               ),
@@ -1973,7 +1995,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                     ),
                                               ),
                                               icon: const Icon(
-                                                Icons.check,
+                                                Icons.check_rounded,
                                                 size: 18,
                                               ),
                                               label: Text(
@@ -2009,9 +2031,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   backgroundColor: context.themePrimary,
                   foregroundColor: AppColors.white,
                   shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-                  icon: const Icon(Icons.add, color: AppColors.white),
+                  icon: const Icon(Icons.add_rounded, color: AppColors.white),
                   label: Text(
-                    'Add Bill',
+                    AppLocalizations.of(context)!.addBill,
                     style: AppTypography.labelLarge().copyWith(
                       color: AppColors.white,
                       fontSize: 16,
@@ -2040,7 +2062,8 @@ class _BillHistoryFilteredList extends StatefulWidget {
   });
 
   @override
-  State<_BillHistoryFilteredList> createState() => _BillHistoryFilteredListState();
+  State<_BillHistoryFilteredList> createState() =>
+      _BillHistoryFilteredListState();
 }
 
 class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
@@ -2060,11 +2083,15 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
       if (billDate != null) {
         final date = billDate.toDate();
         if (_dateFrom != null &&
-            date.isBefore(DateTime(_dateFrom!.year, _dateFrom!.month, _dateFrom!.day))) {
+            date.isBefore(
+              DateTime(_dateFrom!.year, _dateFrom!.month, _dateFrom!.day),
+            )) {
           return false;
         }
         if (_dateTo != null &&
-            date.isAfter(DateTime(_dateTo!.year, _dateTo!.month, _dateTo!.day, 23, 59, 59))) {
+            date.isAfter(
+              DateTime(_dateTo!.year, _dateTo!.month, _dateTo!.day, 23, 59, 59),
+            )) {
           return false;
         }
       }
@@ -2095,7 +2122,7 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppText.labelSmall(
-                'All Bills History',
+                AppLocalizations.of(context)!.allBillsHistory,
                 color: context.themePrimary,
               ),
               Container(
@@ -2105,7 +2132,9 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: AppText.caption(
-                  '${filtered.length}/${widget.billsList.length} bills',
+                  AppLocalizations.of(
+                    context,
+                  )!.bills('${filtered.length}', '${widget.billsList.length}'),
                   color: context.themePrimary,
                 ),
               ),
@@ -2121,16 +2150,25 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                 child: DropdownButton<String?>(
                   value: _selectedSite,
                   isExpanded: true,
-                  hint: AppText.caption('Filter by Site', color: context.themeTextSecondary),
+                  hint: AppText.caption(
+                    AppLocalizations.of(context)!.filterBySite,
+                    color: context.themeTextSecondary,
+                  ),
                   items: [
                     DropdownMenuItem<String?>(
                       value: null,
-                      child: AppText.caption('All Sites', color: context.themeTextPrimary),
+                      child: AppText.caption(
+                        AppLocalizations.of(context)!.allSites,
+                        color: context.themeTextPrimary,
+                      ),
                     ),
                     ...widget.allSites.map(
                       (site) => DropdownMenuItem<String?>(
                         value: site,
-                        child: AppText.caption(site, color: context.themeTextPrimary),
+                        child: AppText.caption(
+                          site,
+                          color: context.themeTextPrimary,
+                        ),
                       ),
                     ),
                   ],
@@ -2156,7 +2194,10 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                     if (picked != null) setState(() => _dateFrom = picked);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: context.themeSurface,
                       borderRadius: BorderRadius.circular(6),
@@ -2166,7 +2207,9 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                       ),
                     ),
                     child: AppText.caption(
-                      _dateFrom == null ? 'From' : '${_dateFrom!.day}/${_dateFrom!.month}',
+                      _dateFrom == null
+                          ? AppLocalizations.of(context)!.from
+                          : '${_dateFrom!.day}/${_dateFrom!.month}',
                       color: _dateFrom == null
                           ? context.themeTextSecondary
                           : context.themePrimary,
@@ -2189,7 +2232,10 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                     if (picked != null) setState(() => _dateTo = picked);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: context.themeSurface,
                       borderRadius: BorderRadius.circular(6),
@@ -2199,8 +2245,12 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                       ),
                     ),
                     child: AppText.caption(
-                      _dateTo == null ? 'To' : '${_dateTo!.day}/${_dateTo!.month}',
-                      color: _dateTo == null ? context.themeTextSecondary : context.themePrimary,
+                      _dateTo == null
+                          ? AppLocalizations.of(context)!.to
+                          : '${_dateTo!.day}/${_dateTo!.month}',
+                      color: _dateTo == null
+                          ? context.themeTextSecondary
+                          : context.themePrimary,
                     ),
                   ),
                 ),
@@ -2216,7 +2266,7 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                     _dateTo = null;
                   }),
                   child: Icon(
-                    Icons.close,
+                    Icons.close_rounded,
                     size: 18,
                     color: context.themeError,
                   ),
@@ -2231,7 +2281,7 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: AppText.caption(
-                  'No bills found',
+                  AppLocalizations.of(context)!.noBillsFoundHistory,
                   color: context.themeTextSecondary,
                 ),
               ),
@@ -2248,7 +2298,8 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                   final billNum = bill['billNumber'] as String? ?? 'N/A';
                   final site = bill['siteName'] as String? ?? 'N/A';
                   final amount = bill['amount'] as num? ?? 0;
-                  final pts = (bill['points'] as num?)?.toStringAsFixed(1) ?? '0';
+                  final pts =
+                      (bill['points'] as num?)?.toStringAsFixed(1) ?? '0';
                   final status = bill['status'] as String? ?? 'pending';
                   final billDate = bill['billDate'] as Timestamp?;
                   final createdAt = bill['createdAt'] as Timestamp?;
@@ -2263,10 +2314,10 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                   String statusLabel = 'N/A';
                   if (status == 'approved') {
                     statusColor = AppColors.success;
-                    statusLabel = 'Approved';
+                    statusLabel = AppLocalizations.of(context)!.approvedLabel;
                   } else if (status == 'pending') {
                     statusColor = context.themeError;
-                    statusLabel = 'Pending';
+                    statusLabel = AppLocalizations.of(context)!.pendingStatus;
                   } else if (status == 'rejected') {
                     statusColor = context.themeError.withValues(alpha: 0.6);
                     statusLabel = 'Rejected';
@@ -2292,7 +2343,9 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               AppText.label(
-                                '#$index - Bill ID: $billNum',
+                                AppLocalizations.of(
+                                  context,
+                                )!.billId2('$index', '$billNum'),
                                 color: context.themePrimary,
                               ),
                               Container(
@@ -2321,7 +2374,7 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     AppText.caption(
-                                      'Site',
+                                      AppLocalizations.of(context)!.site,
                                       color: context.themeTextSecondary,
                                     ),
                                     AppText.bodyLarge(
@@ -2336,7 +2389,7 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     AppText.caption(
-                                      'Amount',
+                                      AppLocalizations.of(context)!.amountLabel,
                                       color: context.themeTextSecondary,
                                     ),
                                     AppText.label(
@@ -2351,11 +2404,13 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     AppText.caption(
-                                      'Points',
+                                      AppLocalizations.of(context)!.pointsLabel,
                                       color: context.themeTextSecondary,
                                     ),
                                     AppText.label(
-                                      '$pts pts',
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.pts6('$pts'),
                                       color: context.themePrimary,
                                     ),
                                   ],
@@ -2369,7 +2424,7 @@ class _BillHistoryFilteredListState extends State<_BillHistoryFilteredList> {
                           Row(
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today_rounded,
                                 size: 14,
                                 color: context.themeTextSecondary,
                               ),

@@ -56,7 +56,7 @@
   "invalidPin": "Invalid PIN",
   "createPinTitle": "Create your 4-digit PIN",
   "createPinSubtitle": "This PIN will be used for login",
-  "mobileNumber": "Mobile Number",
+  "mobileNumber": "Mobile number",
   "firstName": "First Name",
   "firstNameRequired": "First Name *",
   "lastName": "Last Name",
@@ -182,7 +182,7 @@
   },
   "profile": "Profile",
   "editProfile": "Edit Profile",
-  "completeProfile": "Complete Your Profile",
+  "completeProfile": "Complete Profile",
   "profileIncomplete": "Profile Incomplete",
   "completeProfileMessage": "Please complete your profile to start adding bills and earning points",
   "completeProfileDetails": "Add your first name, last name, and profile picture to continue",
@@ -199,7 +199,6 @@
   "role": "Role",
   "memberSince": "Member Since",
   "totalPoints": "Total Points",
-  "verified": "Verified",
   "notVerified": "Not Verified",
   "needHelp": "Need Help?",
   "contactSupport": "Contact our support team for any queries or issues.",
@@ -212,7 +211,7 @@
   "addBill": "Add Bill",
   "billDetails": "Bill Details",
   "billNumber": "Bill Number",
-  "billAmount": "Bill Amount",
+  "billAmount": "Bill Amount (₹)",
   "billDate": "Bill Date",
   "uploadBillImage": "Upload Bill Image",
   "selectImage": "Select Image",
@@ -228,7 +227,7 @@
     }
   },
   "enterBillNumber": "Please enter bill number",
-  "enterBillAmount": "Please enter bill amount",
+  "enterBillAmount": "Enter bill amount",
   "enterValidAmount": "Please enter a valid amount",
   "selectBillDate": "Please select bill date",
   "uploadBillPhoto": "Please upload bill photo",
@@ -442,7 +441,7 @@
   "offerCreatedSuccess": "Offer created successfully",
   "failedToSaveOffer": "Failed to save offer",
   "failedToPickImage": "Failed to pick image",
-  "searchByNameOrPhone": "Search by name or phone...",
+  "searchByNameOrPhone": "Search by name or phone",
   "add": "Add",
   "all": "All",
   "platinum": "Platinum",
@@ -467,11 +466,9 @@
   "deleteCarpenterWarning": "Deleting a carpenter will permanently remove all their data from the system. This action cannot be undone.",
   "carpenterDeletedSuccess": "Carpenter deleted successfully",
   "failedToDeleteCarpenter": "Failed to delete carpenter",
-  "viewDetails": "View Details",
   "dangerZone": "Danger Zone",
   "phoneNumberLabel": "Phone number",
   "phoneNumberHint": "e.g. 9876543210 (no +91)",
-  "sendOTP": "Send OTP",
   "enterOTP": "Enter OTP",
   "verifyAndCreate": "Verify & Create",
   "adminSignOutNote": "Note: The app will sign in as the verified carpenter temporarily during OTP verification and then sign out. The admin must sign in again.",
@@ -516,18 +513,18 @@
       }
     }
   },
-  "hoursAgo": "{hours}h ago",
+  "hoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
   "@hoursAgo": {
     "placeholders": {
-      "hours": {
+      "count": {
         "type": "int"
       }
     }
   },
-  "daysAgo": "{days}d ago",
+  "daysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
   "@daysAgo": {
     "placeholders": {
-      "days": {
+      "count": {
         "type": "int"
       }
     }
@@ -550,21 +547,17 @@
   "pleaseCompleteProfile": "Please complete your profile",
   "rewardsLoyaltyProgram": "Rewards & Loyalty Program",
   "billImage": "Bill Image",
-  "billAmount": "Bill Amount (₹)",
   "billDateOptional": "Bill Date (Optional)",
   "storeVendorNameOptional": "Store/Vendor Name (Optional)",
   "billInvoiceNumberOptional": "Bill/Invoice Number (Optional)",
   "notesOptional": "Notes (Optional)",
   "tapToAddBillImage": "Tap to add bill image",
-  "enterBillAmount": "Enter bill amount",
   "selectBillDateOptional": "Select bill date (optional)",
   "enterStoreOrVendorNameOptional": "Enter store or vendor name (optional)",
   "enterBillOrInvoiceNumberOptional": "Enter bill or invoice number (optional)",
   "addAnyAdditionalNotes": "Add any additional notes...",
   "submitBill": "Submit Bill",
-  "completeProfile": "Complete Profile",
   "saveChanges": "Save Changes",
-  "discardBillMessage": "You have unsaved bill data. Do you want to discard it?",
   "withdrawBill": "Withdraw Bill",
   "withdrawBillConfirmation": "Are you sure you want to withdraw this approved bill? This will reverse the points awarded to the carpenter.",
   "withdraw": "Withdraw",
@@ -575,7 +568,6 @@
   "approveBillAction": "Approve Bill",
   "awardPointsAndMarkAsApproved": "Award points & mark as approved",
   "selectCarpenter": "Select Carpenter",
-  "searchByNameOrPhone": "Search by name or phone",
   "errorLoadingCarpenters": "Error loading carpenters",
   "noCarpentersFound": "No carpenters found",
   "noCarpentersAvailable": "No carpenters available",
@@ -618,5 +610,1828 @@
   "onboardingSlide2Title": "Track your rewards",
   "onboardingSlide2Body": "See your balance, tier, and leaderboard rank. Browse offers made for carpenters like you.",
   "onboardingSlide3Title": "Stay in the loop",
-  "onboardingSlide3Body": "Get notified when bills are approved or rejected. Manage your profile and preferences anytime."
+  "onboardingSlide3Body": "Get notified when bills are approved or rejected. Manage your profile and preferences anytime.",
+  "errorWithDetails": "Error: {details}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "siteNameRequired": "Site name is required",
+  "billDateFuture": "Bill date cannot be in the future",
+  "duplicateBillDetected": "Duplicate bill detected",
+  "duplicateBillIntro": "A bill with the same site, amount and date already exists:",
+  "siteNameLabel": "Site name",
+  "amountLabel": "Amount",
+  "pointsLabel": "Points",
+  "dateLabel": "Date",
+  "ptsValue": "{points} pts",
+  "@ptsValue": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateBillVerify": "This might be a duplicate entry. Please check before adding.",
+  "addBillAnywayQuestion": "Do you want to add this bill anyway?",
+  "addAnyway": "Add anyway",
+  "billsPausedDiwali": "Bill submissions are paused for the Diwali celebration.",
+  "earnPointsWhenApproved": "You will earn {points} points when approved",
+  "@earnPointsWhenApproved": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "vendorNameLabel": "Vendor name",
+  "menu": "Menu",
+  "diwaliPrizeLoadFailed": "Could not load the Diwali prize list. Please try again.",
+  "featureEarnMore": "EARN MORE",
+  "featureEarnBody": "Upload Bills\nEarn Points",
+  "featureRedeemMore": "REDEEM MORE",
+  "featureRedeemBody": "Exciting Rewards\n& Gifts",
+  "featureGrowMore": "GROW MORE",
+  "featureGrowBody": "Climb Leaderboard\nBe a Top Carpenter",
+  "featureExclusive": "EXCLUSIVE",
+  "featureExclusiveBody": "Special Benefits\nJust for You",
+  "newAnnouncement": "New announcement",
+  "ptsToNextLabel": "{points} pts to {tier}",
+  "@ptsToNextLabel": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "platinumHighestTier": "Platinum — highest tier!",
+  "topCarpentersTitle": "Top carpenters",
+  "noRankingYet": "No ranking data yet",
+  "noWinnerToday": "No winner today",
+  "spinNotDoneYet": "Spin not done yet · {date}",
+  "@spinNotDoneYet": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "todaysLuckyWinner": "Today's lucky winner",
+  "selectedViaDailySpin": "Selected via daily spin · {date}",
+  "@selectedViaDailySpin": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationDeleted": "Notification deleted",
+  "deleteAllNotifications": "Delete all notifications",
+  "deleteAllNotificationsConfirm": "Are you sure you want to delete all notifications? This cannot be undone.",
+  "deleteAll": "Delete all",
+  "notificationsDeleted": "{count} notifications deleted",
+  "@notificationsDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "unableToLoadNotifications": "Unable to load notifications",
+  "errorLoadingNotifications": "Error loading notifications",
+  "noNotificationsTitle": "No notifications",
+  "noNotificationsYet": "You don't have any notifications yet",
+  "deleteNotification": "Delete notification",
+  "deleteNotificationConfirm": "Are you sure you want to delete this notification?",
+  "addProfilePhoto": "Please add a profile photo",
+  "profileUpdatedSuccess": "Profile updated successfully",
+  "failedToUpdateProfile": "Failed to update profile",
+  "tapToChangePhoto": "Tap to change photo",
+  "lastNameRequired": "Last Name *",
+  "uploadingImage": "Uploading image...",
+  "completeProfileToContinue": "You need to complete your profile to continue",
+  "couldNotMakeCall": "Could not make call",
+  "themeLabel": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "youWonLabel": "You won",
+  "pointsWon": "{points} points!",
+  "@pointsWon": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsAddedToAccount": "Points have been added to your account.",
+  "great": "Great!",
+  "spinAndWin": "Spin & win points!",
+  "spinAndWinSubtitle": "Get your daily spin and win exciting points",
+  "alreadySpunToday": "You've already spun today!\nCome back tomorrow for another chance.",
+  "nextTierLabel": "Next tier: {tier}",
+  "@nextTierLabel": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "ptsToNextTier": "{points} pts to next tier",
+  "@ptsToNextTier": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "platinumMaxLevel": "Platinum tier — maximum level",
+  "filterLabel": "Filter",
+  "totalApprovedPoints": "Total approved points",
+  "billsCount": "{count} bills",
+  "@billsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "billAttachment": "Bill attachment",
+  "pendingApproval": "Pending approval",
+  "backToSignIn": "Back to sign in",
+  "noPinAccount": "No PIN account was found for this number. Sign in with email and password or Google.",
+  "signInWithMobile": "Sign in with mobile number",
+  "continueToPin": "Continue to PIN",
+  "backToOtherSignIn": "Back to other sign-in options",
+  "branchHasAdminDefaulted": "Selected branch already has an Admin. Role set to Carpenter.",
+  "selectBranchToContinue": "Please select a branch to continue.",
+  "oneAdminPerBranch": "This branch already has an Admin. Only one Admin is allowed per branch.",
+  "branchRequired": "Branch *",
+  "selectYourBranch": "Select your branch",
+  "userRoleRequired": "User role *",
+  "roleCarpenterWoodworker": "Carpenter / Woodworker",
+  "roleArchitect": "Architect",
+  "roleInteriorDesigner": "Interior designer",
+  "fullName": "Full name",
+  "passwordLabel": "Password",
+  "confirmPasswordLabel": "Confirm password",
+  "noActiveRoles": "No active roles are available. Contact the Super Admin.",
+  "noActiveBranches": "No active branches are available. Contact your administrator.",
+  "cancelReturnToSignIn": "Cancel and return to sign in",
+  "selectRoleRequired": "Select role *",
+  "previousPage": "Previous",
+  "tablePageInfo": "Page {page} of {pages} · {from}–{to} of {total}",
+  "@tablePageInfo": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "pages": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "noRows": "No rows",
+  "updateNow": "Update now",
+  "maybeLater": "Maybe later",
+  "requiredLabel": "Required",
+  "installedLabel": "Installed",
+  "updateMandatory": "This update is required to keep using the app.",
+  "signOut": "Sign out",
+  "billsAppearHere": "Bills you submit will appear here.",
+  "pendingBillsAppearHere": "New bills from carpenters will appear here for approval.",
+  "tryChangingFilters": "Try changing or clearing the filters.",
+  "carpentersAppearHere": "Registered carpenters will appear here.",
+  "statCarpenters": "Carpenters",
+  "statPendingBills": "Pending bills",
+  "statAwaitingReview": "Awaiting review",
+  "statBillsThisMonth": "Bills this month",
+  "statApprovedThisMonth": "{count} approved",
+  "@statApprovedThisMonth": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "statPointsIssued": "Points issued",
+  "statThisMonth": "This month",
+  "statRegistered": "Registered",
+  "version": "Version {version} ({buildNumber})",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "buildNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "switchToLight": "Switch to Light",
+  "switchToDark": "Switch to Dark",
+  "max": "Max",
+  "status": "Status",
+  "to2": "To {nextLabel}",
+  "@to2": {
+    "placeholders": {
+      "nextLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "spinNow2": "Spin Now!",
+  "pleaseCompleteYourProfileFirstName": "Please complete your profile (first name, last name, and profile picture) to add bills and earn points.",
+  "goBack": "Go Back",
+  "chooseFromGallery": "Choose from Gallery",
+  "takePhoto": "Take Photo",
+  "pleaseLoginToSubmitBills": "Please login to submit bills",
+  "billSubmittedSuccessfullyAdminWillReview": "Bill submitted successfully! Admin will review it.",
+  "failedToSubmitBillPleaseTry": "Failed to submit bill. Please try again.",
+  "pleaseEnterBillAmount": "Please enter bill amount",
+  "billDate2": "Bill Date *",
+  "selectBillDate2": "Select bill date",
+  "siteName": "Site Name *",
+  "enterSiteLocationName": "Enter site/location name",
+  "vendorNameOptional": "Vendor Name (Optional)",
+  "enterVendorStoreNameOptional": "Enter vendor/store name (optional)",
+  "noUserLoggedIn": "No user logged in",
+  "firstNameMustBeAtLeast": "First name must be at least 2 characters",
+  "firstNameIsTooLongMax": "First name is too long (max 50 characters)",
+  "lastNameMustBeAtLeast": "Last name must be at least 2 characters",
+  "lastNameIsTooLongMax": "Last name is too long (max 50 characters)",
+  "failedToUploadProfileImage": "Failed to upload profile image",
+  "failedToUploadProfileImage2": "Failed to upload profile image: {e}",
+  "@failedToUploadProfileImage2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "enterYourFirstName": "Enter your first name",
+  "pleaseEnterYourFirstName": "Please enter your first name",
+  "enterYourLastName": "Enter your last name",
+  "pleaseEnterYourLastName": "Please enter your last name",
+  "user": "User",
+  "language": "Language",
+  "trackYourPointsAndManageYour": "Track your points and manage your bills",
+  "mAgo": "{inMinutes}m ago",
+  "@mAgo": {
+    "placeholders": {
+      "inMinutes": {
+        "type": "String"
+      }
+    }
+  },
+  "hAgo": "{inHours}h ago",
+  "@hAgo": {
+    "placeholders": {
+      "inHours": {
+        "type": "String"
+      }
+    }
+  },
+  "dAgo": "{inDays}d ago",
+  "@dAgo": {
+    "placeholders": {
+      "inDays": {
+        "type": "String"
+      }
+    }
+  },
+  "notification": "Notification",
+  "noCarpenterAccountsAreListedFor": "No carpenter accounts are listed for this branch yet.",
+  "continueToHome": "Continue to Home",
+  "shubhDeepawali": "Shubh Deepawali!",
+  "carpenters": "{branchName}  ·  {carpenterCount} carpenters",
+  "@carpenters": {
+    "placeholders": {
+      "branchName": {
+        "type": "String"
+      },
+      "carpenterCount": {
+        "type": "String"
+      }
+    }
+  },
+  "carpenterRewardBonusReport": "CARPENTER REWARD & BONUS REPORT  ·  {dateFormat}",
+  "@carpenterRewardBonusReport": {
+    "placeholders": {
+      "dateFormat": {
+        "type": "String"
+      }
+    }
+  },
+  "closeCelebration": "Close celebration",
+  "deepawaliPrizeNight": "✦  DEEPAWALI PRIZE NIGHT  ✦",
+  "topPerformersGoldTier": "Top Performers - Gold Tier",
+  "ranks110": "Ranks 1-10",
+  "highPerformersSilverTier": "High Performers - Silver Tier",
+  "ranks1130": "Ranks 11-30",
+  "activePerformersBronzeTier": "Active Performers - Bronze Tier",
+  "ranks31Onwards": "Ranks 31 onwards",
+  "totalCarpenters": "Total carpenters: {entries}",
+  "@totalCarpenters": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "totalPoints2": "Total points",
+  "totalReward": "Total reward",
+  "totalBonus": "Total bonus",
+  "carpentersPointsRewardBonus": "{entries} carpenters  ·  {totalPoints} points  ·  {totalReward} reward  ·  {totalBonus} bonus",
+  "@carpentersPointsRewardBonus": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      },
+      "totalPoints": {
+        "type": "String"
+      },
+      "totalReward": {
+        "type": "String"
+      },
+      "totalBonus": {
+        "type": "String"
+      }
+    }
+  },
+  "bonus": "{bonusAmount} bonus  ·  {giftDetails}",
+  "@bonus": {
+    "placeholders": {
+      "bonusAmount": {
+        "type": "String"
+      },
+      "giftDetails": {
+        "type": "String"
+      }
+    }
+  },
+  "mobileNumberUnavailable": "Mobile number unavailable",
+  "reward": "Reward",
+  "bonus2": "Bonus",
+  "nil": "Nil",
+  "gift": "Gift",
+  "reward2": "Reward ₹",
+  "bonus3": "Bonus ₹",
+  "giftDetails": "Gift details",
+  "remarks": "Remarks",
+  "verifyYourIdentityToOpenBalaji": "Verify your identity to open Balaji Points",
+  "passwordResetLinksAreSentSecurely": "Password reset links are sent securely by Firebase.",
+  "checkYourEmail": "Check your email",
+  "forgotPassword": "Forgot password?",
+  "ifAnAccountExistsForThis": "If an account exists for this address, Firebase has sent password reset instructions. Check your inbox and spam folder.",
+  "enterTheEmailAddressLinkedTo": "Enter the email address linked to your account. We’ll send you a secure link to choose a new password.",
+  "enterAValidEmailAddress": "Enter a valid email address",
+  "sendAnotherResetLink": "Send another reset link",
+  "sendResetLink": "Send reset link",
+  "welcomeBack2": "Welcome back",
+  "signInToContinueTo": "Sign in to continue to {appName}",
+  "@signInToContinueTo": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "signIn": "Sign in",
+  "useYourEmailAndPasswordOr": "Use your email and password, or sign in with your PIN.",
+  "pleaseEnterAValidEmailAddress": "Please enter a valid email address",
+  "passwordMustBeAtLeast6": "Password must be at least 6 characters",
+  "loginWithPin": "Login with PIN",
+  "newToBalajiPoints": "New to Balaji Points? ",
+  "createAccount2": "Create account",
+  "designedAndDevelopedBy": "Designed and developed by {companyName}",
+  "@designedAndDevelopedBy": {
+    "placeholders": {
+      "companyName": {
+        "type": "String"
+      }
+    }
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "hindi": "Hindi",
+  "tamil": "Tamil",
+  "forCurrentMobilePinAccounts": "For current mobile + PIN accounts",
+  "enterAValid10DigitMobile": "Enter a valid 10-digit mobile number",
+  "yourDataIs100SecureWith": "Your data is 100% secure with us",
+  "userAlreadyExists": "User already exists",
+  "permissionDeniedPleaseCheckFirebaseConfiguration": "Permission denied. Please check Firebase configuration.",
+  "branchAdminAlreadyAssigned": "Branch Admin (Already Assigned)",
+  "branchAdmin1PerBranch": "Branch Admin (1 per branch)",
+  "selectABranchToContinue": "Select a branch to continue.",
+  "selectARoleToContinue": "Select a role to continue.",
+  "selectAnActiveRoleToContinue": "Select an active role to continue.",
+  "yourInformationIsProtected": "Your information is protected",
+  "completeYourGoogleRegistration": "Complete your Google registration",
+  "createYourAccount": "Create your account",
+  "addYourMobileNumberAndChoose": "Add your mobile number and choose your branch and role to finish setting up your account.",
+  "chooseYourRoleAndTheBranch": "Choose your role and the branch you belong to.",
+  "enterYourFullName": "Enter your full name",
+  "hidePassword": "Hide password",
+  "showPassword": "Show password",
+  "useAtLeast6Characters": "Use at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "yourAccountAlreadyHasAnAdmin": "Your account already has an Admin role. Ask the Super Admin to assign your branch before continuing.",
+  "branchAdminAccessIsAssignedBy": "Branch Admin access is assigned by a Super Admin.",
+  "completeRegistration": "Complete registration",
+  "loadingRoles": "Loading roles…",
+  "chooseOneRole": "Choose one role",
+  "selectARoleToContinue2": "Select a role to continue",
+  "loadingBranches": "Loading branches…",
+  "selectABranch": "Select a branch",
+  "cannotMakePhoneCallTo": "Cannot make phone call to {phoneNumber}",
+  "@cannotMakePhoneCallTo": {
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "errorMakingPhoneCall": "Error making phone call: {e}",
+  "@errorMakingPhoneCall": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "member": "Member",
+  "updateRequired": "Update required",
+  "newVersionAvailable": "New version available",
+  "latest": "Latest",
+  "completed": "Completed",
+  "processing": "Processing",
+  "installLatestToContinue": "Please install the latest version of {appName} to continue.",
+  "@installLatestToContinue": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "newerVersionReady": "A newer version is ready with improvements and fixes.",
+  "pleaseSelectACarpenter": "Please select a carpenter",
+  "billSubmittedSuccessfullyItWillBe": "Bill submitted successfully! It will be reviewed.",
+  "duplicateBill": "Duplicate Bill",
+  "aBillWithTheSameSite": "A bill with the SAME site, amount, and date already exists for this carpenter:",
+  "site": "Site",
+  "pts2": "{duplicatePoints} pts",
+  "@pts2": {
+    "placeholders": {
+      "duplicatePoints": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseVerifyThisIsNotA": "Please verify this is not a duplicate entry.",
+  "error2": "Error: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addAnyway2": "Add Anyway",
+  "addBillForCarpenter": "Add Bill for Carpenter",
+  "carpenter2": "Carpenter *",
+  "billAmount2": "Bill Amount (₹) *",
+  "billImageOptional": "Bill Image (Optional)",
+  "siteName2": "Site Name",
+  "vendorName": "Vendor Name",
+  "pendingApproval2": "PENDING APPROVAL",
+  "areYouSureYouWantTo": "Are you sure you want to approve this bill?\n\n₹{billData} will be processed.",
+  "@areYouSureYouWantTo": {
+    "placeholders": {
+      "billData": {
+        "type": "String"
+      }
+    }
+  },
+  "billRejected2": "Bill rejected",
+  "share": "Share",
+  "billNotFound": "Bill not found",
+  "billId": "Bill ID",
+  "submitted": "Submitted {createdAt}",
+  "@submitted": {
+    "placeholders": {
+      "createdAt": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedOn": "Submitted On",
+  "store": "Store",
+  "carpenterInfo": "Carpenter Info",
+  "viewProfile": "View Profile",
+  "pts3": "{totalPoints} pts",
+  "@pts3": {
+    "placeholders": {
+      "totalPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "billSummary": "Bill Summary",
+  "billAmount3": "Bill Amount",
+  "pointsToCredit": "Points to Credit",
+  "billNo": "Bill No.",
+  "pointsRate": "Points Rate",
+  "t1Pt1000": "1 pt / ₹1000",
+  "billType": "Bill Type",
+  "purchase": "Purchase",
+  "billAttachment2": "Bill Attachment",
+  "viewFullSize": "View Full Size",
+  "downloadImage": "Download Image",
+  "generatePdf": "Generate PDF",
+  "timeline": "Timeline",
+  "billCreated": "Bill Created",
+  "waitingForApproval": "Waiting for Approval",
+  "pendingActionFromAdmin": "Pending action from admin",
+  "justNow2": "just now",
+  "minAgo": "{inMinutes} min ago",
+  "@minAgo": {
+    "placeholders": {
+      "inMinutes": {
+        "type": "String"
+      }
+    }
+  },
+  "billDetails2": "Bill Details - {billId}",
+  "@billDetails2": {
+    "placeholders": {
+      "billId": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingBillDetails": "Error loading bill details",
+  "noBillFound": "No bill found",
+  "totalInstances": "Total Instances",
+  "billEntries": "Bill Entries",
+  "instance": "Instance {index}",
+  "@instance": {
+    "placeholders": {
+      "index": {
+        "type": "String"
+      }
+    }
+  },
+  "time": "Time",
+  "noBillsToExportApplyFilters": "No bills to export. Apply filters or wait for data.",
+  "preparingPdf": "Preparing PDF...",
+  "noBillsMatchCurrentFiltersFor": "No bills match current filters for export.",
+  "exportFailed": "Export failed: {e}",
+  "@exportFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "bill": "Bill #",
+  "approvedDate": "Approved Date",
+  "actions": "Actions",
+  "exportAllBillsToPdf": "Export all bills to PDF",
+  "approveThisBillOfPointsWill": "Approve this bill of ₹{amount}?\n\n{amount2} points will be added to the carpenter.",
+  "@approveThisBillOfPointsWill": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "amount2": {
+        "type": "String"
+      }
+    }
+  },
+  "billApprovedAndPointsAddedSuccessfully": "Bill approved and points added successfully",
+  "failedToApproveBill2": "Failed to approve bill",
+  "errorApprovingBill": "Error approving bill: {e}",
+  "@errorApprovingBill": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRejectBill2": "Failed to reject bill",
+  "errorRejectingBill": "Error rejecting bill: {e}",
+  "@errorRejectingBill": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "dateFilters": "Date Filters",
+  "clearFilters": "Clear Filters",
+  "pts4": "{amount} pts",
+  "@pts4": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "noHistoryAvailable": "No history available",
+  "carpenterSummary": "Carpenter Summary",
+  "totalPts": "Total: {totalPoints} pts",
+  "@totalPts": {
+    "placeholders": {
+      "totalPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "totalBills": "Total Bills",
+  "pointsBySite": "Points by Site",
+  "pts5": "{num} pts",
+  "@pts5": {
+    "placeholders": {
+      "num": {
+        "type": "String"
+      }
+    }
+  },
+  "site2": "Site: ",
+  "billDate3": "Bill Date: ",
+  "approved2": "Approved: ",
+  "submitted2": "Submitted: ",
+  "allBillsHistory": "All Bills History",
+  "bills": "{filtered}/{billsList} bills",
+  "@bills": {
+    "placeholders": {
+      "filtered": {
+        "type": "String"
+      },
+      "billsList": {
+        "type": "String"
+      }
+    }
+  },
+  "filterBySite": "Filter by Site",
+  "allSites": "All Sites",
+  "billId2": "#{index} - Bill ID: {billNum}",
+  "@billId2": {
+    "placeholders": {
+      "index": {
+        "type": "String"
+      },
+      "billNum": {
+        "type": "String"
+      }
+    }
+  },
+  "pts6": "{pts} pts",
+  "@pts6": {
+    "placeholders": {
+      "pts": {
+        "type": "String"
+      }
+    }
+  },
+  "transactions": "Transactions",
+  "rewards": "Rewards",
+  "deleteAllNotifications2": "Delete All Notifications",
+  "areYouSureYouWantTo2": "Are you sure you want to delete all admin notifications?",
+  "notificationSDeleted": "{docs} notification(s) deleted",
+  "@notificationSDeleted": {
+    "placeholders": {
+      "docs": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailed": "Delete failed: {e}",
+  "@deleteFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "balajiPointsAdminPanel": "Balaji Points - Admin Panel",
+  "branchAdmin": "Branch admin",
+  "spin": "Spin",
+  "pointsRepair": "Points Repair",
+  "duplicateAccounts": "Duplicate Accounts",
+  "exportUsers": "Export Users",
+  "cleanUp": "Clean Up",
+  "backupDatabase": "Backup Database",
+  "checkFirebaseDuplicates": "Check Firebase Duplicates",
+  "smartCleanup": "Smart Cleanup",
+  "sendGreeting": "Send Greeting",
+  "users2": "Users - ...",
+  "users3": "Users - {count}",
+  "@users3": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterPinInBothFields": "Please enter PIN in both fields",
+  "pinMustBe46Digits": "PIN must be 4-6 digits",
+  "pinMustContainOnlyNumbers": "PIN must contain only numbers",
+  "pinResetSuccessfully": "PIN reset successfully",
+  "errorResettingPin": "Error resetting PIN: {e}",
+  "@errorResettingPin": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "resetPinFor": "Reset PIN for: {carpenterName}",
+  "@resetPinFor": {
+    "placeholders": {
+      "carpenterName": {
+        "type": "String"
+      }
+    }
+  },
+  "phone2": "Phone: {carpenterPhone}",
+  "@phone2": {
+    "placeholders": {
+      "carpenterPhone": {
+        "type": "String"
+      }
+    }
+  },
+  "carpenterWillNeedToUseThis": "Carpenter will need to use this new PIN to login. Make sure to communicate it securely.",
+  "newPin46Digits": "New PIN (4-6 digits)",
+  "carpenterDetails": "Carpenter Details",
+  "carpenterNotFound": "Carpenter not found",
+  "carpenterInformation": "Carpenter Information",
+  "branch": "Branch",
+  "completeHistory": "Complete History",
+  "clearAll": "Clear All",
+  "fromDate": "From Date",
+  "toDate": "To Date",
+  "editCarpenter": "Edit Carpenter",
+  "changingPhoneNumberWillUpdateLogin": "Changing phone number will update login credentials",
+  "branchId": "Branch ID",
+  "phoneNumberCannotBeEmpty": "Phone number cannot be empty",
+  "carpenterUpdatedSuccessfully": "Carpenter updated successfully",
+  "errorUpdatingCarpenter": "Error updating carpenter: {e}",
+  "@errorUpdatingCarpenter": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "update": "Update",
+  "pendingBillRequests": "Pending Bill Requests",
+  "siteMaterialPurchase": "Site Material Purchase",
+  "billNo2": "Bill No. {billNumber}",
+  "@billNo2": {
+    "placeholders": {
+      "billNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "site3": "Site: {siteName}",
+  "@site3": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "pts7": "+{amount} pts",
+  "@pts7": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "approveThisBillOfPointsWill2": "Approve this bill of ₹{amount}?\n\n{amount2} points will be added.",
+  "@approveThisBillOfPointsWill2": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "amount2": {
+        "type": "String"
+      }
+    }
+  },
+  "noHistoryFound": "No history found",
+  "pointsAwarded": "Points awarded",
+  "pinMustBeAtLeast4": "PIN must be at least 4 digits",
+  "carpenterCreatedSuccessfully": "Carpenter created successfully!",
+  "failedToCreateCarpenter": "Failed to create carpenter",
+  "pin46Digits": "PIN (4-6 digits)",
+  "enterPin": "Enter PIN",
+  "firstNameOptional": "First Name (Optional)",
+  "enterFirstName": "Enter first name",
+  "lastNameOptional": "Last Name (Optional)",
+  "enterLastName": "Enter last name",
+  "create": "Create",
+  "preparingCarpenterListPdf": "Preparing carpenter list PDF...",
+  "noCarpentersToExportForCurrent": "No carpenters to export for current filters.",
+  "carpenterListExportedSuccessfully": "Carpenter list exported successfully!",
+  "errorExportingPdf": "Error exporting PDF: {e}",
+  "@errorExportingPdf": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "exportCarpenterListToPdf": "Export carpenter list to PDF",
+  "sortByPoints": "Sort by Points",
+  "sortByName": "Sort by Name",
+  "recentJoins": "Recent Joins",
+  "tier": "Tier: {tier}",
+  "@tier": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneTierPoints": "Phone: {phone}\nTier: {tier}\nPoints: {totalPoints}",
+  "@phoneTierPoints": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      },
+      "totalPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "points2": "{num} Points",
+  "@points2": {
+    "placeholders": {
+      "num": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAll2": "Delete All",
+  "unableToLoadAdminNotifications": "Unable to load admin notifications",
+  "noNotifications": "No Notifications",
+  "youDonTHaveAnyAdmin": "You don't have any admin notifications yet",
+  "deleteNotification2": "Delete Notification",
+  "dailySpinHistory": "Daily Spin History",
+  "text": "{month} {year}",
+  "@text": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "mon": "Mon",
+  "tue": "Tue",
+  "wed": "Wed",
+  "thu": "Thu",
+  "fri": "Fri",
+  "sat": "Sat",
+  "spinned": "Spinned",
+  "noSpin": "No Spin",
+  "unknown": "Unknown",
+  "spinWinner": "Spin Winner",
+  "winnerName": "Winner Name",
+  "failedToFetchCarpenters": "Failed to fetch carpenters: {e}",
+  "@failedToFetchCarpenters": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPickImage2": "Failed to pick image: {e}",
+  "@failedToPickImage2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCaptureImage": "Failed to capture image: {e}",
+  "@failedToCaptureImage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadImage": "Failed to upload image: {e}",
+  "@failedToUploadImage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationSentToCarpenters": "Notification sent to {notificationCount} carpenters",
+  "@notificationSentToCarpenters": {
+    "placeholders": {
+      "notificationCount": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendNotifications": "Failed to send notifications: {e}",
+  "@failedToSendNotifications": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterAMessage": "Please enter a message",
+  "pleaseSelectAtLeastOneChannel": "Please select at least one channel",
+  "notAuthenticated": "Not authenticated",
+  "showInApp": "Show in App",
+  "greetingSentSuccessfully": "Greeting sent successfully!",
+  "sendingGreeting": "Sending greeting...",
+  "composeMessage": "Compose Message",
+  "enterGreetingMessageForAllCarpenters": "Enter greeting message for all carpenters",
+  "imageOptional": "Image (Optional)",
+  "pickFromGallery": "Pick from Gallery",
+  "orEnterImageUrl": "Or enter image URL:",
+  "enterImageUrlJpgPng": "Enter image URL (JPG/PNG)",
+  "invalidImageUrl": "Invalid image URL",
+  "selectChannels": "Select Channels",
+  "showInAppHomeBanner": "Show in App (Home Banner)",
+  "bannerOnCarpenterHomeScreen": "Banner on carpenter home screen",
+  "whatsapp": "WhatsApp",
+  "manualSendViaWhatsappApp": "Manual send via WhatsApp app",
+  "manualSendViaSmsApp": "Manual send via SMS app",
+  "noteWhatsappAndSmsUseDevice": "Note: WhatsApp and SMS use device-assisted flow. Admin must confirm each message in the native app.",
+  "whatsappNotAvailableFor": "WhatsApp not available for {name}",
+  "@whatsappNotAvailableFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "smsNotAvailableFor": "SMS not available for {name}",
+  "@smsNotAvailableFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sendToAll": "Send to All?",
+  "continueLabel": "Continue",
+  "progress": "Progress: {i}/{carpenters}",
+  "@progress": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      },
+      "carpenters": {
+        "type": "String"
+      }
+    }
+  },
+  "opened": "Opened: {name}\n{phone}",
+  "@opened": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "tapSendInTheAppThen": "Tap Send in the app, then tap OK here to continue.",
+  "sentToAllCarpenters": "Sent to all {sentCount} carpenters",
+  "@sentToAllCarpenters": {
+    "placeholders": {
+      "sentCount": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmSend": "Confirm Send",
+  "sendAll": "Send All",
+  "sendViaWhatsapp": "Send via WhatsApp",
+  "sendViaSms": "Send via SMS",
+  "pleaseWait24HoursFromThe": "Please wait 24 hours from the last spin",
+  "noCarpentersWithApprovedBillsToday": "No carpenters with approved bills today",
+  "noEligibleCarpentersFound": "No eligible carpenters found",
+  "isTodaySWinner": "{carpenterName} is today's winner!",
+  "@isTodaySWinner": {
+    "placeholders": {
+      "carpenterName": {
+        "type": "String"
+      }
+    }
+  },
+  "selectALuckyWinner": "Select a lucky winner",
+  "viewSpinHistory": "View Spin History",
+  "winner2": "Winner: {winnerName}",
+  "@winner2": {
+    "placeholders": {
+      "winnerName": {
+        "type": "String"
+      }
+    }
+  },
+  "noPreviousSpins": "No previous spins",
+  "readyToSpin": "Ready to spin!",
+  "nextSpinInHM": "Next spin in: {hoursRemaining}h {minutesRemaining}m",
+  "@nextSpinInHM": {
+    "placeholders": {
+      "hoursRemaining": {
+        "type": "String"
+      },
+      "minutesRemaining": {
+        "type": "String"
+      }
+    }
+  },
+  "todaySWinners": "Today's Winners",
+  "noWinnersYetToday": "No winners yet today",
+  "monthlyWinners": "Monthly Winners",
+  "fullHistory": "Full History",
+  "noWinnersThisMonthYet": "No winners this month yet",
+  "untitled": "Untitled",
+  "pleaseEnterAValidNumberFor": "Please enter a valid number for points",
+  "pleaseUploadABannerImage": "Please upload a banner image",
+  "failedToUploadBannerImage": "Failed to upload banner image",
+  "loadingEligibleCarpenters": "Loading eligible carpenters...",
+  "errorLoadingData": "Error loading data",
+  "noEligibleCarpentersToday": "No Eligible Carpenters Today",
+  "noCarpentersHaveApprovedBillsToday": "No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!",
+  "todaySEligibleCarpenters": "Today's Eligible Carpenters",
+  "eligible": "{todayStr} • {carpenters} eligible",
+  "@eligible": {
+    "placeholders": {
+      "todayStr": {
+        "type": "String"
+      },
+      "carpenters": {
+        "type": "String"
+      }
+    }
+  },
+  "branchAdminAccounts": "Branch admin accounts",
+  "reviewEachAdminAndTheBranch": "Review each admin and the branch they manage. Reset passwords or remove an account.",
+  "searchByNameEmailOrBranch": "Search by name, email or branch",
+  "clearSearch": "Clear search",
+  "loadingBranchAdminAccounts": "Loading branch admin accounts…",
+  "noBranchAdminAccountsYet": "No branch admin accounts yet.",
+  "loadingBranchNames": "Loading branch names…",
+  "noEmail": "No email",
+  "noAdminAccountsMatch": "No admin accounts match “{search}”.",
+  "@noAdminAccountsMatch": {
+    "placeholders": {
+      "search": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAccounts": "Admin accounts",
+  "passwordUpdatedFor": "Password updated for {email}.",
+  "@passwordUpdatedFor": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteBranchAdmin": "Delete branch admin?",
+  "deleteForTheyWillLoseSign": "Delete {email} for {branchName}? They will lose sign-in access. Branch members and their points will be kept.",
+  "@deleteForTheyWillLoseSign": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      },
+      "branchName": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAdmin": "Delete admin",
+  "adminAccountDeleted": "Admin account deleted.",
+  "changePassword": "Change password",
+  "deleteAccount": "Delete account",
+  "changeAdminPassword": "Change admin password",
+  "newPassword": "New password",
+  "useAtLeast8Characters": "Use at least 8 characters",
+  "confirmNewPassword": "Confirm new password",
+  "updatePassword": "Update password",
+  "tryAgain": "Try again",
+  "branchManagement": "Branch management",
+  "branchesManageBranchAccessAndStatus": "{docs} branches · manage branch access and status",
+  "@branchesManageBranchAccessAndStatus": {
+    "placeholders": {
+      "docs": {
+        "type": "String"
+      }
+    }
+  },
+  "addBranch": "Add branch",
+  "noBranchesYet": "No branches yet.",
+  "branchesCouldNotBeLoaded": "Branches could not be loaded.",
+  "diwaliCelebrationEnabledAddBillIs": "Diwali celebration enabled. Add Bill is hidden for this branch.",
+  "diwaliCelebrationDisabledAddBillIs": "Diwali celebration disabled. Add Bill is available for this branch.",
+  "unableToUpdateTheBranchCelebration": "Unable to update the branch celebration setting.",
+  "codeId": "Code: {branchCode}  ·  ID: {branchId}",
+  "@codeId": {
+    "placeholders": {
+      "branchCode": {
+        "type": "String"
+      },
+      "branchId": {
+        "type": "String"
+      }
+    }
+  },
+  "diwaliCelebrationOnHome": "Diwali celebration on Home",
+  "showsTheBranchPrizeListAnd": "Shows the branch prize list and hides Add Bill.",
+  "offNoPopupAddBillRemains": "Off: no popup; Add Bill remains available.",
+  "branchDeactivated": "Branch deactivated.",
+  "branchActivated": "Branch activated.",
+  "unableToUpdateTheBranch": "Unable to update the branch.",
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "branchCreated": "Branch created ({id})",
+  "@branchCreated": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateBranch": "Failed to create branch",
+  "newBranch": "New Branch",
+  "branchFullName": "Branch Full Name *",
+  "shortName": "Short Name *",
+  "enterAShortBranchName": "Enter a short branch name",
+  "branchCode": "Branch Code *",
+  "use216LettersNumbersOr": "Use 2–16 letters, numbers or hyphens",
+  "address": "Address",
+  "shareTheTemporaryPasswordSecurelyThe": "Share the temporary password securely. The admin can change it after their first sign-in.",
+  "adminCreatedForTheyCanSign": "Admin {email} created for {branchName}. They can sign in with email and password.",
+  "@adminCreatedForTheyCanSign": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      },
+      "branchName": {
+        "type": "String"
+      }
+    }
+  },
+  "selectABranchFirst": "Select a branch first.",
+  "adminDetails": "Admin Details",
+  "mobileNumber10Digits": "Mobile number * (10 digits)",
+  "enterValid10DigitPhone": "Enter valid 10-digit phone",
+  "emailAndPasswordLogin": "Email and password login",
+  "emailAddress": "Email address *",
+  "temporaryPassword8CharactersMinimum": "Temporary password * (8 characters minimum)",
+  "confirmPassword": "Confirm password *",
+  "assignBranch": "Assign Branch",
+  "loadingActiveBranches": "Loading active branches…",
+  "noActiveBranchesFoundCreateOr": "No active branches found. Create or activate a branch before adding an admin.",
+  "selectBranch": "Select branch",
+  "creatingAccount": "Creating account…",
+  "createAdminAccount": "Create admin account",
+  "signOutOfSuperAdmin": "Sign out of super admin?",
+  "superAdmin": "Super Admin",
+  "superAdminConsole": "Super Admin Console",
+  "branchesAdministratorsAndPoints": "Branches, administrators and points",
+  "branches": "Branches",
+  "createAdmin": "Create Admin",
+  "roles": "Roles",
+  "superAdmin2": "Super admin",
+  "createAdmin2": "Create admin",
+  "pointsReset": "Points reset",
+  "onlyPointsTiersAndPointsHistory": "Only points, tiers and points history for carpenters, architects and interior designers are cleared. User accounts, login access, branch admins and bills stay unchanged.",
+  "afterPrizeDistributionStartAFresh": "After prize distribution, start a fresh points season for one branch.",
+  "resetUsersAndDeletedHistoryRecords": "{branchName}: reset {usersReset} users and deleted {historyDocumentsDeleted} history records. Accounts and bills were kept.",
+  "@resetUsersAndDeletedHistoryRecords": {
+    "placeholders": {
+      "branchName": {
+        "type": "String"
+      },
+      "usersReset": {
+        "type": "String"
+      },
+      "historyDocumentsDeleted": {
+        "type": "String"
+      }
+    }
+  },
+  "thisPermanentlyClearsPointsAndPoints": "This permanently clears points and points history for carpenters, architects and interior designers in this branch. User accounts, branch admins and bills are kept.",
+  "hasEligibleUsersPointsAndHistory": "{branchName} has {eligibleUsers} eligible users, {currentPoints} points and {historyDocuments} history items.",
+  "@hasEligibleUsersPointsAndHistory": {
+    "placeholders": {
+      "branchName": {
+        "type": "String"
+      },
+      "eligibleUsers": {
+        "type": "String"
+      },
+      "currentPoints": {
+        "type": "String"
+      },
+      "historyDocuments": {
+        "type": "String"
+      }
+    }
+  },
+  "resetBranchPoints": "Reset branch points?",
+  "typeToConfirm": "Type {branchId} to confirm",
+  "@typeToConfirm": {
+    "placeholders": {
+      "branchId": {
+        "type": "String"
+      }
+    }
+  },
+  "resetPointsAndHistory": "Reset points and history",
+  "couldNotLoadBranchesForPoints": "Could not load branches for points cleanup.",
+  "annualPointsReset": "Annual points reset",
+  "branchToReset": "Branch to reset",
+  "checkingBranch": "Checking branch…",
+  "previewReset": "Preview reset",
+  "createABranchBeforeResettingPoints": "Create a branch before resetting points.",
+  "cleanupPreview": "Cleanup preview · {branchName}",
+  "@cleanupPreview": {
+    "placeholders": {
+      "branchName": {
+        "type": "String"
+      }
+    }
+  },
+  "eligibleUsers": "Eligible users",
+  "currentPoints": "Current points",
+  "historyItems": "History items",
+  "resettingBranchPoints": "Resetting branch points…",
+  "couldNotLoadSavedRolesShowing": "Could not load saved roles. Showing the four built-in roles. {loadError}",
+  "@couldNotLoadSavedRolesShowing": {
+    "placeholders": {
+      "loadError": {
+        "type": "String"
+      }
+    }
+  },
+  "roleIdsAreStoredWithUser": "Role IDs are stored with user accounts. Deleting a role removes it from new registrations and preserves existing accounts.",
+  "willBeRemovedFromNewRegistration": "{name} will be removed from new registration. Existing users keep their role and account data.",
+  "@willBeRemovedFromNewRegistration": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "roleCreated": "Role created: {name} ({id}).",
+  "@roleCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreRole": "Restore role?",
+  "deleteRole": "Delete role?",
+  "willBeAvailableForNewAccount": "{name} will be available for new account registration.",
+  "@willBeAvailableForNewAccount": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreRole2": "Restore role",
+  "deleteRole2": "Delete role",
+  "accountRoles": "Account roles",
+  "manageTheRolesShownInCreate": "Manage the roles shown in create account.",
+  "addRole": "Add role",
+  "loadingAccountRoles": "Loading account roles…",
+  "noRolesFound": "No roles found.",
+  "roleId": "Role ID: {id}",
+  "@roleId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "restore": "Restore",
+  "deleted": "Deleted",
+  "addAccountRole": "Add account role",
+  "roleName": "Role name *",
+  "enterAtLeast2Characters": "Enter at least 2 characters",
+  "shortFormOptional": "Short form (optional)",
+  "exampleAr": "Example: Ar.",
+  "use10CharactersOrLess": "Use 10 characters or less",
+  "saving": "Saving…",
+  "saveRole": "Save role",
+  "cleanUpDuplicates": "Clean Up Duplicates",
+  "error3": "Error: {error}",
+  "@error3": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicatesFound": "Duplicates Found",
+  "accountsAcrossPhoneNumbers": "{duplicateCount} accounts across {duplicates} phone numbers",
+  "@accountsAcrossPhoneNumbers": {
+    "placeholders": {
+      "duplicateCount": {
+        "type": "String"
+      },
+      "duplicates": {
+        "type": "String"
+      }
+    }
+  },
+  "noDuplicatesFound": "No Duplicates Found!",
+  "allCarpenterAccountsAreUnique": "All carpenter accounts are unique.",
+  "duplicateGroups": "Duplicate Groups",
+  "phoneAccounts": "{groupIndex}. Phone: {phone} ({users} accounts)",
+  "@phoneAccounts": {
+    "placeholders": {
+      "groupIndex": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      },
+      "users": {
+        "type": "String"
+      }
+    }
+  },
+  "keep": "Keep",
+  "reviewOnly": "Review only",
+  "diagnosticUser": "Diagnostic: User {phoneNumber}",
+  "@diagnosticUser": {
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "noData": "No data",
+  "phoneNumberInformation": "Phone Number Information",
+  "originalPhone": "Original Phone",
+  "normalizedPhone": "Normalized Phone",
+  "match": "Match",
+  "userDocumentStatus": "User Document Status",
+  "existsByDocumentId": "Exists (by Document ID)",
+  "documentId": "Document ID",
+  "phoneFieldInData": "Phone Field (in data)",
+  "existsByPhoneFieldQuery": "Exists (by Phone Field Query)",
+  "documentIdFromQuery": "Document ID (from query)",
+  "issueDetected": "ISSUE DETECTED",
+  "documentIdMismatch": "Document ID mismatch!",
+  "userDocumentFound": "User document found",
+  "userDocumentNotFound": "User document NOT FOUND",
+  "billsCollectionStatus": "Bills Collection Status",
+  "phoneFormatMismatchInBills": "Phone format mismatch in bills!",
+  "phoneFormatConsistent": "Phone format consistent",
+  "pendingBillsStatus": "Pending Bills Status",
+  "totalPendingBills": "Total Pending Bills",
+  "matchingBillsFound": "Matching Bills Found",
+  "noPendingBillsFoundForThis": "No pending bills found for this user!",
+  "carpenterId": "Carpenter ID",
+  "carpenterPhone": "Carpenter Phone",
+  "isToday": "Is Today",
+  "createdAt": "Created At",
+  "thisBillWonTShowIn": "This bill won't show in default admin view (not today)",
+  "totalAccounts": "Total Accounts",
+  "duplicatePhones": "Duplicate Phones",
+  "affectedAccounts": "Affected Accounts",
+  "noDuplicateAccountsFound": "No duplicate accounts found!",
+  "duplicatePhoneNumbers": "Duplicate Phone Numbers",
+  "account": "Account {idx}",
+  "@account": {
+    "placeholders": {
+      "idx": {
+        "type": "String"
+      }
+    }
+  },
+  "review": "Review",
+  "preparingUserBackupPdf": "Preparing user backup PDF...",
+  "noCarpentersFound2": "No carpenters found.",
+  "userBackupExportedSuccessfullyCarpenters": "User backup exported successfully! ({users} carpenters)",
+  "@userBackupExportedSuccessfullyCarpenters": {
+    "placeholders": {
+      "users": {
+        "type": "String"
+      }
+    }
+  },
+  "exportUsersBackup": "Export Users Backup",
+  "createUserBackup": "Create User Backup",
+  "exportAllCarpentersWithTheirPoints": "Export all carpenters with their points and phone numbers before cleanup.",
+  "exporting": "Exporting...",
+  "exportToPdf": "Export to PDF",
+  "pdfWillInclude": "PDF will include:",
+  "carpenterNameAndPhoneNumberTotal": "• Carpenter name and phone number\n• Total points and earned points\n• Account creation date\n• Summary with total carpenters and gross points",
+  "firebaseDuplicateCheck": "Firebase Duplicate Check",
+  "firebaseDatabaseSummary": "Firebase Database Summary",
+  "totalCarpenters2": "Total Carpenters:",
+  "uniquePhoneNumbers": "Unique Phone Numbers:",
+  "duplicatePhoneNumbers2": "Duplicate Phone Numbers:",
+  "totalDuplicateAccounts": "Total Duplicate Accounts:",
+  "allPhoneNumbersAreUnique": "All phone numbers are unique.",
+  "duplicateMobileNumbers": "Duplicate Mobile Numbers",
+  "mobile2": "{groupIndex}/{totalGroups} - Mobile: {phone}",
+  "@mobile2": {
+    "placeholders": {
+      "groupIndex": {
+        "type": "String"
+      },
+      "totalGroups": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsWithSamePhoneNumber": "{users} accounts with same phone number",
+  "@accountsWithSamePhoneNumber": {
+    "placeholders": {
+      "users": {
+        "type": "String"
+      }
+    }
+  },
+  "main": "Main",
+  "duplicate": "Duplicate",
+  "startingBackup": "Starting backup...",
+  "backupExportedUsersBills": "Backup exported: {users} users, {bills} bills",
+  "@backupExportedUsersBills": {
+    "placeholders": {
+      "users": {
+        "type": "String"
+      },
+      "bills": {
+        "type": "String"
+      }
+    }
+  },
+  "backupFailed": "Backup failed: {e}",
+  "@backupFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "backupData": "Backup Data",
+  "totalSizeKb": "Total Size: {backupJson} KB",
+  "@totalSizeKb": {
+    "placeholders": {
+      "backupJson": {
+        "type": "String"
+      }
+    }
+  },
+  "firebaseBackup": "Firebase Backup",
+  "databaseBackup": "Database Backup",
+  "createACompleteBackupOfAll": "Create a complete backup of all users and bills data from Firebase Firestore.",
+  "whatWillBeBackedUp": "What will be backed up:",
+  "allUserAccountsCarpentersAdminsAll": "• All user accounts (carpenters & admins)\n• All bill records\n• Complete user data with timestamps\n• Firestore metadata",
+  "backingUp": "Backing up...",
+  "startBackup": "Start Backup",
+  "backupIsStoredInFirebaseNo": "Backup is stored in Firebase. No files are saved locally.",
+  "repairDetails": "Repair Details",
+  "verificationComplete": "Verification Complete",
+  "noPointsLostAllUsersVerified": "NO POINTS LOST\nAll users verified\nData consistent",
+  "userWiseRepairResults": "User-wise Repair Results",
+  "noRepairsCompleted": "No repairs completed",
+  "repairComplete": "Repair Complete",
+  "successfullyRepaired": "Successfully Repaired",
+  "failed": "Failed",
+  "duplicatesRemoved": "Duplicates Removed",
+  "pointsAdjusted": "Points Adjusted",
+  "before": "Before",
+  "after": "After",
+  "repairFailed": "Repair failed",
+  "thisToolScansUserPointsData": "This tool scans user points data and fixes:\n• Duplicate history entries\n• Inconsistent totalPoints\n• Mismatched tiers",
+  "pointsRepairTool": "Points Repair Tool",
+  "pointsDataRepair": "Points Data Repair",
+  "scanReport": "Scan Report",
+  "totalUsersScanned": "Total users scanned",
+  "usersWithIssues": "Users with issues",
+  "usersWithDuplicates": "Users with duplicates",
+  "totalDuplicateEntries": "Total duplicate entries",
+  "pointsMismatches": "Points mismatches",
+  "viewFullScanDetails": "View Full Scan Details",
+  "viewDetailedResults": "View Detailed Results",
+  "scanForIssues": "Scan for Issues",
+  "scanAgain": "Scan Again",
+  "repairAllUsers": "Repair All Users",
+  "noIssuesFoundAllUserData": "No issues found! All user data is consistent.",
+  "scanFailed": "Scan failed: {e}",
+  "@scanFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "repairAllUsers2": "Repair All Users?",
+  "repair": "Repair",
+  "repairFailed2": "Repair failed: {e}",
+  "@repairFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningForIssues": "Scanning for Issues...",
+  "analyzingAllUserPointsData": "Analyzing all user points data",
+  "scanResultsFullDetails": "Scan Results - Full Details",
+  "usersWithIssues2": "Users with Issues",
+  "noUsersWithIssuesFound": "No users with issues found",
+  "scanSummary": "Scan Summary",
+  "totalUsersScanned2": "Total Users Scanned",
+  "totalDuplicateEntries2": "Total Duplicate Entries",
+  "totalPointsDifference": "Total Points Difference",
+  "duplicates": "{duplicateCount} duplicates",
+  "@duplicates": {
+    "placeholders": {
+      "duplicateCount": {
+        "type": "String"
+      }
+    }
+  },
+  "historySum": "History Sum",
+  "difference": "Difference",
+  "totalEntries": "Total Entries",
+  "uniqueBills": "Unique Bills",
+  "duplicateBills": "Duplicate Bills:",
+  "smartDuplicateCleanup": "Smart Duplicate Cleanup",
+  "allCarpentersHaveUniquePhoneNumbers": "All carpenters have unique phone numbers.",
+  "potentialDuplicateAccountsReviewRequired": "Potential duplicate accounts — review required",
+  "foundDuplicateMobileNumbers": "Found {duplicateGroups} duplicate mobile numbers",
+  "@foundDuplicateMobileNumbers": {
+    "placeholders": {
+      "duplicateGroups": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsToReview": "Accounts to review: {totalForReview}",
+  "@accountsToReview": {
+    "placeholders": {
+      "totalForReview": {
+        "type": "String"
+      }
+    }
+  },
+  "allRecordsAreRetainedTheHighest": "All records are retained. The highest-points profile is only a suggested primary account.",
+  "potentialDuplicateGroups": "Potential duplicate groups ({duplicateGroups})",
+  "@potentialDuplicateGroups": {
+    "placeholders": {
+      "duplicateGroups": {
+        "type": "String"
+      }
+    }
+  },
+  "mobile3": "{groupIndex}. Mobile: {phone}",
+  "@mobile3": {
+    "placeholders": {
+      "groupIndex": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "similarAccountsPointsDiff": "{reviewUsers} similar accounts | Points diff: {pointsDiff}",
+  "@similarAccountsPointsDiff": {
+    "placeholders": {
+      "reviewUsers": {
+        "type": "String"
+      },
+      "pointsDiff": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestedPrimaryAccountHighestPoints": "Suggested primary account (highest points)",
+  "otherMatchingAccountsManualReviewRequired": "Other matching accounts — manual review required",
+  "repairConfirmBody": "This will repair {count} users by:\n\n• Removing duplicate history entries\n• Recalculating correct totals\n• Updating tier assignments\n\nThis action cannot be undone easily.",
+  "@repairConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "repairSuccess": "Repaired {repaired}/{total} users successfully!\nVerified: no points lost",
+  "@repairSuccess": {
+    "placeholders": {
+      "repaired": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "repairPartial": "Repaired {repaired}/{total} users.\nSome verification issues - check logs",
+  "@repairPartial": {
+    "placeholders": {
+      "repaired": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "backupUsersCount": "Users ({count})",
+  "@backupUsersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "backupBillsCount": "Bills ({count})",
+  "@backupBillsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "openAppForEachCarpenter": "This will open {app} for each carpenter.\n\nYou must manually tap Send in each app.\n\nContinue?",
+  "@openAppForEachCarpenter": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "roleIdPreview": "Role ID: {id}",
+  "@roleIdPreview": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "winnersCount": "{count, plural, =1{1 winner} other{{count} winners}}",
+  "@winnersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roleRestored": "Role {name} restored.",
+  "@roleRestored": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "roleDeleted": "Role {name} deleted.",
+  "@roleDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "permissionDeniedSuperAdmin": "Permission denied. Check that Firestore rules are published and the signed-in account is the configured super admin.",
+  "roleEngineer": "Engineer",
+  "roleBuiltInBadge": "Built-in",
+  "roleCustomBadge": "Custom",
+  "roleProtectedTooltip": "Carpenter is the main role and can’t be deleted",
+  "rolesSummary": "{active, plural, other{{active} active}} · {deleted, plural, other{{deleted} deleted}}",
+  "@rolesSummary": {
+    "placeholders": {
+      "active": {
+        "type": "int"
+      },
+      "deleted": {
+        "type": "int"
+      }
+    }
+  },
+  "rolesLiveSync": "Changes sync instantly to registration on every device.",
+  "roleIdHelp": "Created from the name. It can’t be changed later.",
+  "roleErrInvalidName": "Use 2–40 characters with at least two English letters or numbers.",
+  "roleErrReserved": "This name is reserved for administrator accounts.",
+  "roleErrBuiltIn": "This matches a built-in role. Restore it from the list instead.",
+  "roleErrDuplicate": "A role with this ID already exists.",
+  "roleErrProtected": "Carpenter is the main role and can’t be deleted.",
+  "roleShowAll": "All",
+  "roleShowActive": "Active",
+  "roleShowDeleted": "Deleted",
+  "noRolesInFilter": "No roles in this view.",
+  "deactivateBranchTitle": "Deactivate {name}?",
+  "@deactivateBranchTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deactivateBranchBody": "New users can’t pick this branch and its members can’t sign in until you activate it again. No data is deleted.",
+  "activateBranchTitle": "Activate {name}?",
+  "@activateBranchTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activateBranchBody": "The branch will be available for registration and sign-in again.",
+  "branchActions": "Branch actions",
+  "copyBranchId": "Copy branch ID",
+  "branchIdCopied": "Branch ID copied",
+  "celebrationOn": "On",
+  "celebrationOff": "Off",
+  "createAdminSubtitle": "Add a branch admin who reviews bills and carpenters for one branch.",
+  "selectBranchRequired": "Select a branch",
+  "addAdmin": "Add admin",
+  "branchAdminsTitle": "Branch admins",
+  "adminsNav": "Admins",
+  "adminsCount": "{count, plural, =1{1 admin} other{{count} admins}}",
+  "@adminsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminActions": "Admin actions",
+  "editBranch": "Edit branch",
+  "branchUpdated": "Branch updated",
+  "branchCodeLocked": "The code can’t change — existing members are registered with it.",
+  "editLabel": "Edit",
+  "editRole": "Edit role",
+  "roleUpdated": "Role {name} updated.",
+  "@roleUpdated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "roleIdLocked": "The role ID can’t change — it is stored with user accounts.",
+  "roleActions": "Role actions",
+  "editAdmin": "Edit admin",
+  "editDetails": "Edit details",
+  "adminUpdated": "Admin {email} updated.",
+  "@adminUpdated": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminBranchChangeNote": "Moving an admin to another branch removes their access to the current one. A branch can have only one admin.",
+  "editsSyncNote": "Name changes are copied to every member’s profile automatically.",
+  "noBranchAssigned": "Your account is not linked to a branch yet. Ask the super admin to assign your branch.",
+  "loadingBranch": "Loading your branch…"
 }

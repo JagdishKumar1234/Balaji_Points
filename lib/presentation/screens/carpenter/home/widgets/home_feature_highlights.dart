@@ -1,5 +1,6 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -35,30 +36,30 @@ class HomeFeatureHighlights extends StatelessWidget {
       if (showAddBill)
         _FeatureHighlight(
           icon: Icons.receipt_long_rounded,
-          label: 'EARN MORE',
-          sublabel: 'Upload Bills\nEarn Points',
+          label: AppLocalizations.of(context)!.featureEarnMore,
+          sublabel: AppLocalizations.of(context)!.featureEarnBody,
           iconColor: AppColors.warning,
           onTap: () => context.push('/add-bill'),
         ),
       _FeatureHighlight(
         icon: Icons.redeem_rounded,
-        label: 'REDEEM MORE',
-        sublabel: 'Exciting Rewards\n& Gifts',
+        label: AppLocalizations.of(context)!.featureRedeemMore,
+        sublabel: AppLocalizations.of(context)!.featureRedeemBody,
         iconColor: AppColors.tierPlatinum,
         onTap: () => context.push('/notifications'),
       ),
       _FeatureHighlight(
         icon: Icons.leaderboard_rounded,
-        label: 'GROW MORE',
-        sublabel: 'Climb Leaderboard\nBe a Top Carpenter',
+        label: AppLocalizations.of(context)!.featureGrowMore,
+        sublabel: AppLocalizations.of(context)!.featureGrowBody,
         iconColor: AppColors.warning,
         onTap: () => context.push('/notifications'),
       ),
       _FeatureHighlight(
         icon: Icons.workspace_premium_rounded,
-        label: 'EXCLUSIVE',
-        sublabel: 'Special Benefits\nJust for You',
-        iconColor: const Color(0xFF0891B2),
+        label: AppLocalizations.of(context)!.featureExclusive,
+        sublabel: AppLocalizations.of(context)!.featureExclusiveBody,
+        iconColor: AppColors.primaryOnDark,
         onTap: () => context.push('/notifications'),
       ),
     ];

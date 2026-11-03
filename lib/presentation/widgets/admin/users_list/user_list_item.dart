@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -15,13 +16,13 @@ class UserListItem extends StatelessWidget {
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
       case 'platinum':
-        return const Color(0xFFE5E4E2);
+        return AppColors.tierPlatinum;
       case 'gold':
-        return const Color(0xFFFFD700);
+        return AppColors.tierGold;
       case 'silver':
-        return const Color(0xFFC0C0C0);
+        return AppColors.tierSilver;
       case 'bronze':
-        return const Color(0xFFCD7F32);
+        return AppColors.tierBronze;
       default:
         return AppColors.textSecondary;
     }
@@ -76,7 +77,7 @@ class UserListItem extends StatelessWidget {
                                   alpha: 0.1,
                                 ),
                                 child: Icon(
-                                  Icons.person,
+                                  Icons.person_rounded,
                                   size: 24,
                                   color: context.themeContentColor,
                                 ),
@@ -108,7 +109,7 @@ class UserListItem extends StatelessWidget {
                               alpha: 0.1,
                             ),
                             child: Icon(
-                              Icons.person,
+                              Icons.person_rounded,
                               size: 24,
                               color: context.themeContentColor,
                             ),
@@ -159,7 +160,7 @@ class UserListItem extends StatelessWidget {
                     child: Text(
                       tier,
                       style: AppTypography.labelLarge().copyWith(
-                        fontSize: 11,
+                        fontSize: 12,
                         color: AppColors.white,
                       ),
                     ),
@@ -171,14 +172,16 @@ class UserListItem extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.stars,
+                          Icons.stars_rounded,
                           size: 16,
                           color: context.themeContentColor,
                         ),
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
-                            '${(totalPoints as num).toStringAsFixed(2)} Points',
+                            AppLocalizations.of(context)!.points2(
+                              '${(totalPoints as num).toStringAsFixed(2)}',
+                            ),
                             style: AppTypography.labelLarge().copyWith(
                               fontSize: 14,
                               color: context.themeContentColor,
@@ -198,7 +201,7 @@ class UserListItem extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.calendar_today,
+                            Icons.calendar_today_rounded,
                             size: 14,
                             color: context.themeTextSecondary,
                           ),

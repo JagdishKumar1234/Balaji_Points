@@ -3,6 +3,7 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/models/greeting_model.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 
 class HomeGreetingBanner extends StatefulWidget {
@@ -52,17 +53,22 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
 
   @override
   Widget build(BuildContext context) {
-    final hasImage = widget.greeting.imageUrl != null &&
+    final hasImage =
+        widget.greeting.imageUrl != null &&
         widget.greeting.imageUrl!.isNotEmpty;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, -0.15),
-        end: const Offset(0, 0),
-      ).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-      ),
+      position:
+          Tween<Offset>(
+            begin: const Offset(0, -0.15),
+            end: const Offset(0, 0),
+          ).animate(
+            CurvedAnimation(
+              parent: _animationController,
+              curve: Curves.easeOut,
+            ),
+          ),
       child: FadeTransition(
         opacity: _slideAnimation,
         child: Padding(
@@ -70,14 +76,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
           child: Container(
             decoration: BoxDecoration(
               borderRadius: AppRadius.all24,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  context.themePrimary.withValues(alpha: 0.12),
-                  context.themePrimary.withValues(alpha: 0.04),
-                ],
-              ),
+              color: AppColors.primary.withValues(alpha: 0.12),
               border: Border.all(
                 color: context.themePrimary.withValues(alpha: 0.2),
                 width: 1.5,
@@ -112,7 +111,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
             Container(
               width: double.infinity,
               height: 180,
-              color: Colors.grey.withValues(alpha: 0.1),
+              color: AppColors.textMuted.withValues(alpha: 0.1),
               child: Image.network(
                 widget.greeting.imageUrl!,
                 fit: BoxFit.cover,
@@ -122,7 +121,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                     child: CircularProgressIndicator(
                       value: loadingProgress.expectedTotalBytes != null
                           ? loadingProgress.cumulativeBytesLoaded /
-                              (loadingProgress.expectedTotalBytes ?? 1)
+                                (loadingProgress.expectedTotalBytes ?? 1)
                           : null,
                       color: context.themePrimary,
                     ),
@@ -142,7 +141,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                           ),
                           const SizedBox(height: 8),
                           AppText.labelSmall(
-                            'Image failed to load',
+                            AppLocalizations.of(context)!.failedToLoadImage,
                             color: context.themeTextSecondary,
                           ),
                         ],
@@ -163,7 +162,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                 ),
                 child: IconButton(
                   icon: const Icon(
-                    Icons.close,
+                    Icons.close_rounded,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -195,7 +194,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                       borderRadius: AppRadius.md12,
                     ),
                     child: Icon(
-                      Icons.campaign,
+                      Icons.campaign_rounded,
                       color: context.themePrimary,
                       size: 20,
                     ),
@@ -206,7 +205,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AppText.labelSmall(
-                          '📢 New Announcement',
+                          AppLocalizations.of(context)!.newAnnouncement,
                           color: context.themePrimary,
                         ),
                         const SizedBox(height: 4),
@@ -254,7 +253,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     AppText.labelSmall(
-                      '📢 New Announcement',
+                      AppLocalizations.of(context)!.newAnnouncement,
                       color: context.themePrimary,
                     ),
                     const SizedBox(height: 8),
@@ -274,10 +273,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                 ),
                 onPressed: _handleDismiss,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 36,
-                  minHeight: 36,
-                ),
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -85,8 +86,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   constraints: const BoxConstraints(maxWidth: 520),
                   child: ProfessionalAuthCard(
                     isDark: isDark,
-                    securityMessage:
-                        'Password reset links are sent securely by Firebase.',
+                    securityMessage: AppLocalizations.of(
+                      context,
+                    )!.passwordResetLinksAreSentSecurely,
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -95,7 +97,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: IconButton(
-                              tooltip: 'Back to sign in',
+                              tooltip: AppLocalizations.of(
+                                context,
+                              )!.backToSignIn,
                               onPressed: () => context.go('/login'),
                               icon: const Icon(Icons.arrow_back_rounded),
                             ),
@@ -113,8 +117,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                           const SizedBox(height: AppSpacing.md),
                           Text(
                             _emailSent
-                                ? 'Check your email'
-                                : 'Forgot password?',
+                                ? AppLocalizations.of(context)!.checkYourEmail
+                                : AppLocalizations.of(context)!.forgotPassword,
                             textAlign: TextAlign.center,
                             style: AppTypography.displaySmall(
                               color: context.themeTextPrimary,
@@ -123,8 +127,12 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                           const SizedBox(height: AppSpacing.sm),
                           Text(
                             _emailSent
-                                ? 'If an account exists for this address, Firebase has sent password reset instructions. Check your inbox and spam folder.'
-                                : 'Enter the email address linked to your account. We’ll send you a secure link to choose a new password.',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.ifAnAccountExistsForThis
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.enterTheEmailAddressLinkedTo,
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium(
                               color: context.themeTextSecondary,
@@ -133,7 +141,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                           const SizedBox(height: AppSpacing.xl2),
                           AppTextField(
                             controller: _emailController,
-                            label: 'Email',
+                            label: AppLocalizations.of(context)!.email,
                             prefixIcon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
@@ -141,7 +149,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                               if (!RegExp(
                                 r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
                               ).hasMatch(email)) {
-                                return 'Enter a valid email address';
+                                return AppLocalizations.of(
+                                  context,
+                                )!.enterAValidEmailAddress;
                               }
                               return null;
                             },
@@ -149,15 +159,19 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                           const SizedBox(height: AppSpacing.lg),
                           AppButton.primary(
                             label: _emailSent
-                                ? 'Send another reset link'
-                                : 'Send reset link',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.sendAnotherResetLink
+                                : AppLocalizations.of(context)!.sendResetLink,
                             isLoading: _isSubmitting,
                             onPressed: _isSubmitting ? null : _sendResetEmail,
                           ),
                           const SizedBox(height: AppSpacing.md),
                           TextButton(
                             onPressed: () => context.go('/login'),
-                            child: const Text('Back to sign in'),
+                            child: Text(
+                              AppLocalizations.of(context)!.backToSignIn,
+                            ),
                           ),
                         ],
                       ),

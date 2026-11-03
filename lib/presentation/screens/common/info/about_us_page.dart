@@ -8,6 +8,7 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 
 /// Carpenter-facing About screen — copy is store-agnostic for multi-tenant SaaS.
 class AboutUsPage extends StatelessWidget {
@@ -48,6 +49,7 @@ class AboutUsPage extends StatelessWidget {
             showProfileButton: false,
             showBackButton: true,
           ),
+          const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, scrollBottomPadding),
@@ -57,97 +59,90 @@ class AboutUsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          context.themePrimary.withValues(alpha: 0.12),
-                          context.themeSecondary.withValues(alpha: 0.08),
-                        ],
-                      ),
-                      borderRadius: AppRadius.forCard,
-                      border: Border.all(
-                        color: context.themePrimary.withValues(alpha: 0.2),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.volunteer_activism_rounded,
-                          color: context.themePrimary,
-                          size: 40,
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: AppRadius.forCard,
+                        border: Border.all(
+                          color: context.themePrimary.withValues(alpha: 0.2),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            l10n.rewardsLoyaltyProgram,
-                            style: AppTypography.buttonMedium().copyWith(
-                              fontSize: 18,
-                              color: theme.colorScheme.onSurface,
-                              height: 1.25,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.volunteer_activism_rounded,
+                            color: context.themePrimary,
+                            size: 40,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              l10n.rewardsLoyaltyProgram,
+                              style: AppTypography.buttonMedium().copyWith(
+                                fontSize: 18,
+                                color: theme.colorScheme.onSurface,
+                                height: 1.25,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  _AboutSection(
-                    title: l10n.aboutUsOverviewTitle,
-                    body: l10n.aboutUsOverviewBody,
-                    titleStyle: titleStyle,
-                    bodyStyle: bodyStyle,
-                  ),
-                  const SizedBox(height: _sectionGap),
-                  _AboutSection(
-                    title: l10n.aboutUsEarningTitle,
-                    body: l10n.aboutUsEarningBody,
-                    titleStyle: titleStyle,
-                    bodyStyle: bodyStyle,
-                  ),
-                  const SizedBox(height: _sectionGap),
-                  _AboutSection(
-                    title: l10n.aboutUsOffersTitle,
-                    body: l10n.aboutUsOffersBody,
-                    titleStyle: titleStyle,
-                    bodyStyle: bodyStyle,
-                  ),
-                  const SizedBox(height: _sectionGap),
-                  _AboutSection(
-                    title: l10n.aboutUsFairnessTitle,
-                    body: l10n.aboutUsFairnessBody,
-                    titleStyle: titleStyle,
-                    bodyStyle: bodyStyle,
-                  ),
-                  const SizedBox(height: _sectionGap),
-                  _AboutSection(
-                    title: l10n.aboutUsStoresTitle,
-                    body: l10n.aboutUsStoresBody,
-                    titleStyle: titleStyle,
-                    bodyStyle: bodyStyle,
-                  ),
-                  const SizedBox(height: 28),
-                  Text(
-                    l10n.aboutUsClosing,
-                    style: AppTypography.labelLarge().copyWith(
-                      fontSize: 16,
-                      height: 1.5,
-                      color: context.themePrimary,
+                    const SizedBox(height: 24),
+                    _AboutSection(
+                      title: l10n.aboutUsOverviewTitle,
+                      body: l10n.aboutUsOverviewBody,
+                      titleStyle: titleStyle,
+                      bodyStyle: bodyStyle,
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  const Divider(),
-                  const SizedBox(height: 20),
-                  _AboutDeveloperCredits(theme: theme, l10n: l10n),
-                ],
+                    const SizedBox(height: _sectionGap),
+                    _AboutSection(
+                      title: l10n.aboutUsEarningTitle,
+                      body: l10n.aboutUsEarningBody,
+                      titleStyle: titleStyle,
+                      bodyStyle: bodyStyle,
+                    ),
+                    const SizedBox(height: _sectionGap),
+                    _AboutSection(
+                      title: l10n.aboutUsOffersTitle,
+                      body: l10n.aboutUsOffersBody,
+                      titleStyle: titleStyle,
+                      bodyStyle: bodyStyle,
+                    ),
+                    const SizedBox(height: _sectionGap),
+                    _AboutSection(
+                      title: l10n.aboutUsFairnessTitle,
+                      body: l10n.aboutUsFairnessBody,
+                      titleStyle: titleStyle,
+                      bodyStyle: bodyStyle,
+                    ),
+                    const SizedBox(height: _sectionGap),
+                    _AboutSection(
+                      title: l10n.aboutUsStoresTitle,
+                      body: l10n.aboutUsStoresBody,
+                      titleStyle: titleStyle,
+                      bodyStyle: bodyStyle,
+                    ),
+                    const SizedBox(height: 28),
+                    Text(
+                      l10n.aboutUsClosing,
+                      style: AppTypography.labelLarge().copyWith(
+                        fontSize: 16,
+                        height: 1.5,
+                        color: context.themePrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    const Divider(),
+                    const SizedBox(height: 20),
+                    _AboutDeveloperCredits(theme: theme, l10n: l10n),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
         ],
       ),
     );

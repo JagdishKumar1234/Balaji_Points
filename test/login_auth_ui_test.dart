@@ -1,3 +1,4 @@
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/common/auth/login_page.dart';
 import 'package:balaji_points/presentation/screens/common/auth/phone_pin_entry_page.dart';
 import 'package:flutter/material.dart';
@@ -9,22 +10,30 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: LoginPage())),
+      const ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginPage(),
+        ),
+      ),
     );
 
     expect(find.text('Sign in with Google'), findsOneWidget);
     expect(find.text('Login with PIN'), findsOneWidget);
-    expect(
-      find.text('For existing users with a mobile number and PIN'),
-      findsOneWidget,
-    );
     expect(find.text('Email'), findsOneWidget);
     expect(find.text('Forgot password?'), findsOneWidget);
   });
 
   testWidgets('legacy PIN entry asks for a mobile number', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: PhonePinEntryPage())),
+      const ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: PhonePinEntryPage(),
+        ),
+      ),
     );
 
     expect(find.text('Sign in with mobile number'), findsOneWidget);

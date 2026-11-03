@@ -156,6 +156,7 @@ class BillService {
             carpenterPhone: carpenterPhone,
             amount: amount,
             billId: billId,
+            branchId: userData?['branchId'] as String?,
           );
           AppLogger.info('✅ Admin notification sent for new pending bill');
         } catch (e) {

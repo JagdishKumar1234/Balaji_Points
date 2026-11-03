@@ -85,23 +85,14 @@ class _OffersCarouselState extends State<OffersCarousel> {
                   width: double.infinity,
                   height: double.infinity,
                   errorBuilder: (context, error, stackTrace) {
-                    return ColoredBox(color: const Color(0xFFBA68C8));
+                    return ColoredBox(color: AppColors.primaryLight);
                   },
                 ),
               )
             else
               Positioned.fill(
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF8E24AA),
-                        const Color(0xFFBA68C8),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
+                  decoration: BoxDecoration(color: AppColors.primary),
                 ),
               ),
             Positioned.fill(
@@ -175,7 +166,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
                                         height: 220.0,
                                         child: Center(
                                           child: Icon(
-                                            Icons.broken_image,
+                                            Icons.broken_image_rounded,
                                             size: 40.0,
                                             color: context.themeTextSecondary,
                                           ),
@@ -204,7 +195,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
                         child: Text(
                           offer.actionText,
                           style: AppTypography.buttonMedium().copyWith(
-                            color: const Color(0xFF7B1FA2),
+                            color: AppColors.primary,
                             fontSize: 14.0,
                           ),
                         ),

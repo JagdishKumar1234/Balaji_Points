@@ -55,7 +55,9 @@ class _SearchHeaderState extends State<SearchHeader> {
 
     setState(() => _isExporting = true);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Preparing carpenter list PDF...')),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.preparingCarpenterListPdf),
+      ),
     );
 
     try {
@@ -77,15 +79,19 @@ class _SearchHeaderState extends State<SearchHeader> {
         final data = doc.data();
         final firstName = (data['firstName'] ?? '').toString().toLowerCase();
         final lastName = (data['lastName'] ?? '').toString().toLowerCase();
-        final phone = (data['phoneNumber'] ?? data['phone'] ?? '').toString().toLowerCase();
+        final phone = (data['phoneNumber'] ?? data['phone'] ?? '')
+            .toString()
+            .toLowerCase();
         final tier = data['tier'] ?? 'Bronze';
 
-        final matchesSearch = widget.searchQuery.isEmpty ||
+        final matchesSearch =
+            widget.searchQuery.isEmpty ||
             firstName.contains(widget.searchQuery) ||
             lastName.contains(widget.searchQuery) ||
             phone.contains(widget.searchQuery);
 
-        final matchesTier = widget.selectedTier == 'All' || tier == widget.selectedTier;
+        final matchesTier =
+            widget.selectedTier == 'All' || tier == widget.selectedTier;
 
         return matchesSearch && matchesTier;
       }).toList();
@@ -93,7 +99,11 @@ class _SearchHeaderState extends State<SearchHeader> {
       if (users.isEmpty) {
         setState(() => _isExporting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No carpenters to export for current filters.')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.noCarpentersToExportForCurrent,
+            ),
+          ),
         );
         return;
       }
@@ -133,8 +143,10 @@ class _SearchHeaderState extends State<SearchHeader> {
 
       // Sort users by points (descending)
       users.sort((a, b) {
-        final pointsA = carpenterBillData[a.id]?['totalEarnedPoints'] ?? 0.0 as num;
-        final pointsB = carpenterBillData[b.id]?['totalEarnedPoints'] ?? 0.0 as num;
+        final pointsA =
+            carpenterBillData[a.id]?['totalEarnedPoints'] ?? 0.0 as num;
+        final pointsB =
+            carpenterBillData[b.id]?['totalEarnedPoints'] ?? 0.0 as num;
         return pointsB.compareTo(pointsA);
       });
 
@@ -148,17 +160,27 @@ class _SearchHeaderState extends State<SearchHeader> {
               level: 0,
               child: pw.Text(
                 'Carpenter List Report',
-                style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
             ),
             pw.SizedBox(height: 10),
             pw.Text(
               'Generated on: ${DateFormat('dd/MM/yyyy, hh:mm a').format(DateTime.now())}',
-              style: pw.TextStyle(fontSize: 10),
+              style: pw.TextStyle(fontSize: 12),
             ),
             pw.SizedBox(height: 20),
             pw.TableHelper.fromTextArray(
-              headers: ['Name', 'Phone', 'Tier', 'Total Bills (₹)', 'Earned Points', 'Status'],
+              headers: [
+                'Name',
+                'Phone',
+                'Tier',
+                'Total Bills (₹)',
+                'Earned Points',
+                'Status',
+              ],
               data: users.map((doc) {
                 final data = doc.data();
                 final firstName = data['firstName'] ?? '';
@@ -167,8 +189,13 @@ class _SearchHeaderState extends State<SearchHeader> {
                 final tier = data['tier'] ?? 'Bronze';
                 final isActive = data['isActive'] ?? true;
                 final billData = carpenterBillData[doc.id] ?? {};
-                final totalBillAmount = (billData['totalBillAmount'] ?? 0.0 as num).toStringAsFixed(0);
-                final earnedPoints = (billData['totalEarnedPoints'] ?? 0.0 as num).toStringAsFixed(2);
+                final totalBillAmount =
+                    (billData['totalBillAmount'] ?? 0.0 as num).toStringAsFixed(
+                      0,
+                    );
+                final earnedPoints =
+                    (billData['totalEarnedPoints'] ?? 0.0 as num)
+                        .toStringAsFixed(2);
 
                 return [
                   '$firstName $lastName',
@@ -213,18 +240,25 @@ class _SearchHeaderState extends State<SearchHeader> {
 
       await Printing.sharePdf(
         bytes: await pdf.save(),
-        filename: 'carpenter_list_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.pdf',
+        filename:
+            'carpenter_list_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.pdf',
       );
 
       setState(() => _isExporting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Carpenter list exported successfully!')),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.carpenterListExportedSuccessfully,
+          ),
+        ),
       );
     } catch (e) {
       setState(() => _isExporting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error exporting PDF: ${e.toString()}'),
+          content: Text(
+            AppLocalizations.of(context)!.errorExportingPdf('${e.toString()}'),
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -254,7 +288,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                       color: context.themeTextMuted,
                     ),
                     prefixIcon: Icon(
-                      Icons.search,
+                      Icons.search_rounded,
                       size: 20,
                       color: context.themeContentColor,
                     ),
@@ -275,14 +309,15 @@ class _SearchHeaderState extends State<SearchHeader> {
               const SizedBox(width: 8),
               ElevatedButton.icon(
                 onPressed: widget.onAddPressed,
-                icon: const Icon(Icons.add, size: 18),
+                icon: const Icon(Icons.add_rounded, size: 18),
                 label: Text(l10n.add, style: const TextStyle(fontSize: 13)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.themePrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.md12,
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   minimumSize: const Size(0, 36),
                 ),
               ),
@@ -305,14 +340,19 @@ class _SearchHeaderState extends State<SearchHeader> {
                           ),
                         )
                       : Icon(
-                          Icons.picture_as_pdf,
+                          Icons.picture_as_pdf_rounded,
                           color: context.themeContentColor,
                           size: 22,
                         ),
                   onPressed: _isExporting ? null : _exportUsersToPdf,
                   padding: const EdgeInsets.all(8),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  tooltip: 'Export carpenter list to PDF',
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 36,
+                  ),
+                  tooltip: AppLocalizations.of(
+                    context,
+                  )!.exportCarpenterListToPdf,
                 ),
               ),
             ],
@@ -325,7 +365,10 @@ class _SearchHeaderState extends State<SearchHeader> {
               children: [
                 // Sort Dropdown
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: context.themeSoftSurface,
                     borderRadius: AppRadius.md12,
@@ -338,7 +381,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                     child: DropdownButton<String>(
                       value: widget.selectedSort,
                       icon: Icon(
-                        Icons.arrow_drop_down,
+                        Icons.arrow_drop_down_rounded,
                         color: context.themeContentColor,
                       ),
                       style: AppTypography.labelLarge().copyWith(
@@ -349,21 +392,21 @@ class _SearchHeaderState extends State<SearchHeader> {
                         DropdownMenuItem(
                           value: 'points',
                           child: Text(
-                            'Sort by Points',
+                            AppLocalizations.of(context)!.sortByPoints,
                             style: TextStyle(color: context.themeTextPrimary),
                           ),
                         ),
                         DropdownMenuItem(
                           value: 'name',
                           child: Text(
-                            'Sort by Name',
+                            AppLocalizations.of(context)!.sortByName,
                             style: TextStyle(color: context.themeTextPrimary),
                           ),
                         ),
                         DropdownMenuItem(
                           value: 'recent',
                           child: Text(
-                            'Recent Joins',
+                            AppLocalizations.of(context)!.recentJoins,
                             style: TextStyle(color: context.themeTextPrimary),
                           ),
                         ),
@@ -376,7 +419,10 @@ class _SearchHeaderState extends State<SearchHeader> {
                 // Tier Filter
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: context.themeSoftSurface,
                       borderRadius: AppRadius.md12,
@@ -389,7 +435,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                       child: DropdownButton<String>(
                         value: widget.selectedTier,
                         icon: Icon(
-                          Icons.arrow_drop_down,
+                          Icons.arrow_drop_down_rounded,
                           color: context.themeContentColor,
                         ),
                         style: AppTypography.labelLarge().copyWith(
@@ -398,13 +444,17 @@ class _SearchHeaderState extends State<SearchHeader> {
                         ),
                         isExpanded: true,
                         items: widget.tiers
-                            .map((tier) => DropdownMenuItem(
-                                  value: tier,
-                                  child: Text(
-                                    'Tier: $tier',
-                                    style: TextStyle(color: context.themeTextPrimary),
+                            .map(
+                              (tier) => DropdownMenuItem(
+                                value: tier,
+                                child: Text(
+                                  AppLocalizations.of(context)!.tier('$tier'),
+                                  style: TextStyle(
+                                    color: context.themeTextPrimary,
                                   ),
-                                ))
+                                ),
+                              ),
+                            )
                             .toList(),
                         onChanged: widget.onTierChanged,
                       ),

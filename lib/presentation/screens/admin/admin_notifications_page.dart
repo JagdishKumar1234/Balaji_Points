@@ -3,6 +3,8 @@ import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:intl/intl.dart';
@@ -60,17 +62,15 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: const Text('Delete All Notifications'),
-        content: const Text(
-          'Are you sure you want to delete all admin notifications?',
-        ),
+        title: Text(AppLocalizations.of(context)!.deleteAllNotifications2),
+        content: Text(AppLocalizations.of(context)!.areYouSureYouWantTo2),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           AppButton(
-            label: "action",
+            label: AppLocalizations.of(context)!.deleteAll,
             onPressed: () => Navigator.of(context).pop(true),
             variant: AppButtonVariant.danger,
             fullWidth: false,
@@ -94,7 +94,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           .where('type', whereIn: _adminNotificationTypes)
           .get();
 
-      final docs = snapshot.docs;
+      final docs = snapshot.docs.inAdminBranch();
       if (docs.isEmpty) {
         if (context.mounted) Navigator.of(context).pop();
         return;
@@ -118,7 +118,11 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${docs.length} notification(s) deleted'),
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.notificationSDeleted('${docs.length}'),
+            ),
             backgroundColor: context.themePrimary,
             behavior: SnackBarBehavior.floating,
           ),
@@ -128,7 +132,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
       if (context.mounted) Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Delete failed: $e'),
+          content: Text(AppLocalizations.of(context)!.deleteFailed('$e')),
           backgroundColor: context.themeError,
           behavior: SnackBarBehavior.floating,
         ),
@@ -137,7 +141,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
   }
 
   String _formatTimestamp(Timestamp? timestamp) {
-    if (timestamp == null) return 'Just now';
+    if (timestamp == null) return AppLocalizations.of(context)!.justNow;
 
     final date = timestamp.toDate();
     final now = DateTime.now();
@@ -145,14 +149,15 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
 
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) return 'Just now';
-        return '${difference.inMinutes}m ago';
+        if (difference.inMinutes == 0)
+          return AppLocalizations.of(context)!.justNow;
+        return AppLocalizations.of(context)!.mAgo('${difference.inMinutes}');
       }
-      return '${difference.inHours}h ago';
+      return AppLocalizations.of(context)!.hAgo('${difference.inHours}');
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return AppLocalizations.of(context)!.yesterday;
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return AppLocalizations.of(context)!.dAgo('${difference.inDays}');
     }
 
     return DateFormat('MMM dd, yyyy').format(date);
@@ -161,11 +166,11 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
   IconData _getNotificationIcon(String? type) {
     switch (type) {
       case 'newPendingBill':
-        return Icons.receipt_long;
+        return Icons.receipt_long_rounded;
       case 'newUserRegistered':
-        return Icons.person_add;
+        return Icons.person_add_rounded;
       default:
-        return Icons.notifications;
+        return Icons.notifications_rounded;
     }
   }
 
@@ -195,7 +200,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
             builder: (context, snapshot) {
               final notificationCount = snapshot.hasError
                   ? 0
-                  : snapshot.data?.docs.length ?? 0;
+                  : snapshot.data?.docs.inAdminBranch().length ?? 0;
 
               if (widget.embedded) {
                 // Parent `AdminHomePage` already provides the top AppBar.
@@ -203,18 +208,20 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
               }
 
               return HomeNavBar(
-                title: 'Notifications',
+                title: AppLocalizations.of(context)!.notifications,
                 showLogo: false,
                 showProfileButton: false,
                 showBackButton: true,
                 onBackTap: () => context.go('/admin'),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.delete_outline, size: 22),
+                    icon: const Icon(Icons.delete_outline_rounded, size: 22),
                     onPressed: notificationCount > 0
                         ? _deleteAllNotifications
                         : null,
-                    tooltip: notificationCount > 0 ? 'Delete All' : null,
+                    tooltip: notificationCount > 0
+                        ? AppLocalizations.of(context)!.deleteAll2
+                        : null,
                   ),
                 ],
               );
@@ -222,13 +229,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           ),
           Container(
             height: 1,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [context.themePrimary, context.themeSecondary],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-            ),
+            decoration: BoxDecoration(color: AppColors.primary),
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -242,24 +243,31 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                   debugPrint(
                     'AdminNotificationsPage: stream error: ${snapshot.error}',
                   );
-                  return const Center(
-                    child: Text('Unable to load admin notifications'),
+                  return Center(
+                    child: Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.unableToLoadAdminNotifications,
+                    ),
                   );
                 }
 
                 final notifications =
-                    snapshot.data?.docs ??
-                    const <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+                    (snapshot.data?.docs ??
+                            const <QueryDocumentSnapshot<Map<String, dynamic>>>[])
+                        .inAdminBranch();
 
                 if (notifications.isEmpty) {
                   return ListView(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     children: [
                       const SizedBox(height: 24),
-                      AppText.label('No Notifications'),
+                      AppText.label(
+                        AppLocalizations.of(context)!.noNotifications,
+                      ),
                       const SizedBox(height: 8),
                       Text(
-                        'You don\'t have any admin notifications yet',
+                        AppLocalizations.of(context)!.youDonTHaveAnyAdmin,
                         style: AppTypography.bodyMedium().copyWith(
                           fontSize: 16,
                           color: context.themeTextSecondary,
@@ -299,7 +307,9 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                       final data = doc.data();
 
                       final type = _asString(data['type']);
-                      final title = _asString(data['title']) ?? 'Notification';
+                      final title =
+                          _asString(data['title']) ??
+                          AppLocalizations.of(context)!.notification;
                       final body = _asString(data['body']) ?? '';
                       final sentAtValue = data['sentAt'];
                       final Timestamp? sentAt = _asTimestamp(sentAtValue);
@@ -331,15 +341,23 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: AppRadius.all16,
                                   ),
-                                  title: const Text('Delete Notification'),
-                                  content: const Text(
-                                    'Are you sure you want to delete this notification?',
+                                  title: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.deleteNotification2,
+                                  ),
+                                  content: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.deleteNotificationConfirm,
                                   ),
                                   actions: [
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.of(context).pop(false),
-                                      child: const Text('Cancel'),
+                                      child: Text(
+                                        AppLocalizations.of(context)!.cancel,
+                                      ),
                                     ),
                                     AppButton(
                                       label: "action",
@@ -394,17 +412,8 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          notificationColor.withValues(
-                                            alpha: 0.2,
-                                          ),
-                                          notificationColor.withValues(
-                                            alpha: 0.1,
-                                          ),
-                                        ],
+                                      color: notificationColor.withValues(
+                                        alpha: 0.2,
                                       ),
                                       borderRadius: AppRadius.md12,
                                     ),

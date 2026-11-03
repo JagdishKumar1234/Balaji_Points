@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
@@ -30,38 +30,25 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
   int _tab = 0; // branches, create admin, points reset, roles
 
   Future<void> _logout() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
-        title: Text(
-          'Logout',
-          style: AppTypography.h5(color: context.themePrimary),
-        ),
-        content: Text(
-          'Sign out of super admin?',
-          style: AppTypography.bodyMedium(color: context.themeTextSecondary),
-        ),
+      builder: (dialogContext) => AlertDialog(
+        icon: const Icon(Icons.logout_rounded),
+        title: Text(l10n.logout),
+        content: Text(l10n.signOutOfSuperAdmin),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.labelLarge(
-                color: context.themeTextSecondary,
-              ),
-            ),
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: FilledButton.styleFrom(
               backgroundColor: context.themeError,
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.forButton),
+              foregroundColor: context.themeOnError,
             ),
-            child: Text(
-              'Logout',
-              style: AppTypography.labelLarge(color: AppColors.white),
-            ),
+            child: Text(l10n.logout),
           ),
         ],
       ),
@@ -90,94 +77,105 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
       child: Scaffold(
         backgroundColor: context.themeBackground,
         appBar: AppBar(
-          backgroundColor: context.themePrimary,
+          // Brand navy in light AND dark (themePrimary turns blue in dark).
+          backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
+          iconTheme: const IconThemeData(color: AppColors.white),
+          actionsIconTheme: const IconThemeData(color: AppColors.white),
+          shape: const Border(),
           elevation: 0,
           title: Row(
             children: [
               const Icon(Icons.admin_panel_settings_rounded, size: 24),
               const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    compactTitle ? 'Super Admin' : 'Super Admin Console',
-                    style: AppTypography.h5(color: AppColors.white),
-                  ),
-                  if (!compactTitle)
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Text(
-                      'Branches, administrators and points',
-                      style: AppTypography.caption(
-                        color: AppColors.white.withValues(alpha: 0.78),
-                      ),
+                      compactTitle
+                          ? AppLocalizations.of(context)!.superAdmin
+                          : AppLocalizations.of(context)!.superAdminConsole,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.h5(color: AppColors.white),
                     ),
-                ],
+                    if (!compactTitle)
+                      Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.branchesAdministratorsAndPoints,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.caption(
+                          color: AppColors.onPrimaryMuted,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ],
           ),
           actions: [
             _ThemeToggleButton(),
             IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: 'Logout',
+              icon: const Icon(Icons.logout_rounded),
+              tooltip: AppLocalizations.of(context)!.logout,
               onPressed: _logout,
             ),
           ],
-          bottom: context.isWideScreen
-              ? null
-              : PreferredSize(
-                  preferredSize: const Size.fromHeight(48),
-                  child: Row(
-                    children: [
-                      _TabBtn(
-                        label: 'Branches',
-                        index: 0,
-                        current: _tab,
-                        onTap: () => setState(() => _tab = 0),
-                      ),
-                      _TabBtn(
-                        label: 'Create Admin',
-                        index: 1,
-                        current: _tab,
-                        onTap: () => setState(() => _tab = 1),
-                      ),
-                      _TabBtn(
-                        label: 'Points',
-                        index: 2,
-                        current: _tab,
-                        onTap: () => setState(() => _tab = 2),
-                      ),
-                      _TabBtn(
-                        label: 'Roles',
-                        index: 3,
-                        current: _tab,
-                        onTap: () => setState(() => _tab = 3),
-                      ),
-                    ],
-                  ),
-                ),
         ),
+        // Phones / small tablets: Material 3 navigation bar (labels, focus,
+        // screen-reader states). Wide screens use the navy side rail.
+        bottomNavigationBar: context.isWideScreen
+            ? null
+            : NavigationBar(
+                selectedIndex: _tab,
+                onDestinationSelected: (index) => setState(() => _tab = index),
+                destinations: [
+                  NavigationDestination(
+                    icon: const Icon(Icons.store_outlined),
+                    selectedIcon: const Icon(Icons.store_rounded),
+                    label: AppLocalizations.of(context)!.branches,
+                  ),
+                  NavigationDestination(
+                    icon: const Icon(Icons.manage_accounts_outlined),
+                    selectedIcon: const Icon(Icons.manage_accounts_rounded),
+                    label: AppLocalizations.of(context)!.adminsNav,
+                  ),
+                  NavigationDestination(
+                    icon: const Icon(Icons.cleaning_services_outlined),
+                    selectedIcon: const Icon(Icons.cleaning_services_rounded),
+                    label: AppLocalizations.of(context)!.pointsLabel,
+                  ),
+                  NavigationDestination(
+                    icon: const Icon(Icons.badge_outlined),
+                    selectedIcon: const Icon(Icons.badge_rounded),
+                    label: AppLocalizations.of(context)!.roles,
+                  ),
+                ],
+              ),
         body: ResponsiveRoleNavigation(
-          roleLabel: 'Super admin',
-          items: const [
+          roleLabel: AppLocalizations.of(context)!.superAdmin2,
+          items: [
             RoleNavigationItem(
-              label: 'Branches',
+              label: AppLocalizations.of(context)!.branches,
               icon: Icons.store_outlined,
               selectedIcon: Icons.store_rounded,
             ),
             RoleNavigationItem(
-              label: 'Create admin',
-              icon: Icons.admin_panel_settings_outlined,
-              selectedIcon: Icons.admin_panel_settings_rounded,
+              label: AppLocalizations.of(context)!.adminsNav,
+              icon: Icons.manage_accounts_outlined,
+              selectedIcon: Icons.manage_accounts_rounded,
             ),
             RoleNavigationItem(
-              label: 'Points reset',
+              label: AppLocalizations.of(context)!.pointsLabel,
               icon: Icons.cleaning_services_outlined,
               selectedIcon: Icons.cleaning_services_rounded,
             ),
             RoleNavigationItem(
-              label: 'Roles',
+              label: AppLocalizations.of(context)!.roles,
               icon: Icons.badge_outlined,
               selectedIcon: Icons.badge_rounded,
             ),
@@ -187,7 +185,13 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
           onLogout: _logout,
           child: ResponsiveContainer(
             maxWidth: 1200,
-            padding: const EdgeInsets.all(AppSpacing.md),
+            alignment: Alignment.topCenter,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              0,
+            ),
             child: switch (_tab) {
               0 => const SuperAdminBranchesTab(),
               1 => const SuperAdminCreateAdminTab(),
@@ -210,60 +214,18 @@ class _ThemeToggleButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return IconButton(
-      tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+      tooltip: isDark
+          ? AppLocalizations.of(context)!.switchToLight
+          : AppLocalizations.of(context)!.switchToDark,
       onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 250),
         transitionBuilder: (child, anim) =>
             RotationTransition(turns: anim, child: child),
         child: Icon(
-          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round_rounded,
           key: ValueKey(isDark),
           color: AppColors.white,
-        ),
-      ),
-    );
-  }
-}
-
-// ── Tab button ─────────────────────────────────────────────────────────────────
-
-class _TabBtn extends StatelessWidget {
-  final String label;
-  final int index, current;
-  final VoidCallback onTap;
-  const _TabBtn({
-    required this.label,
-    required this.index,
-    required this.current,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final active = index == current;
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 48,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: active ? context.themeSecondary : AppColors.transparent,
-                width: 3,
-              ),
-            ),
-          ),
-          child: Text(
-            label,
-            style: AppTypography.labelLarge(
-              color: active
-                  ? AppColors.white
-                  : AppColors.white.withValues(alpha: 0.70),
-            ),
-          ),
         ),
       ),
     );

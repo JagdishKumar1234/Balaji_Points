@@ -125,7 +125,6 @@ class AppConstants {
   static const String keyUserId = 'userId';
   static const String keyUserRole = 'userRole';
   static const String keyThemeMode = 'themeMode';
-  static const String keyThemeColorPalette = 'themeColorPalette';
   static const String keyLanguage = 'language';
 
   // Deep Link Routes

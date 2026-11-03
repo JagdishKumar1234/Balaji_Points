@@ -1,6 +1,8 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,12 +83,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(
+            content: Row(
               children: [
-                Icon(Icons.schedule, color: AppColors.white),
-                SizedBox(width: 12),
+                Icon(Icons.schedule_rounded, color: context.themeOnSecondary),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Text('Please wait 24 hours from the last spin'),
+                  child: Text(
+                    AppLocalizations.of(context)!.pleaseWait24HoursFromThe,
+                    style: TextStyle(color: context.themeOnSecondary),
+                  ),
                 ),
               ],
             ),
@@ -115,7 +120,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
 
       // Query bills that were approved today
       final billsQuery = await FirebaseFirestore.instance
-          .collection('bills')
+          .collection('bills').forAdminBranch()
           .where('status', isEqualTo: 'approved')
           .where('approvedDate', isEqualTo: todayStr)
           .get();
@@ -124,12 +129,20 @@ class _DailySpinManagementState extends State<DailySpinManagement>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Row(
+              content: Row(
                 children: [
-                  Icon(Icons.error_outline, color: AppColors.white),
-                  SizedBox(width: 12),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    color: context.themeOnSecondary,
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Text('No carpenters with approved bills today'),
+                    child: Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.noCarpentersWithApprovedBillsToday,
+                      style: TextStyle(color: context.themeOnSecondary),
+                    ),
                   ),
                 ],
               ),
@@ -157,11 +170,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Row(
+              content: Row(
                 children: [
-                  Icon(Icons.error_outline, color: AppColors.white),
+                  Icon(Icons.error_outline_rounded, color: AppColors.white),
                   SizedBox(width: 12),
-                  Expanded(child: Text('No eligible carpenters found')),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context)!.noEligibleCarpentersFound,
+                    ),
+                  ),
                 ],
               ),
               backgroundColor: context.themeError,
@@ -185,13 +202,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           .doc(selectedCarpenterId)
           .get();
 
-      if (!carpenterDoc.exists) throw Exception('Carpenter not found');
+      if (!carpenterDoc.exists)
+        throw Exception(AppLocalizations.of(context)!.carpenterNotFound);
 
       final carpenterData = carpenterDoc.data()!;
       final firstName = carpenterData['firstName'] ?? '';
       final lastName = carpenterData['lastName'] ?? '';
       final carpenterName = '$firstName $lastName'.trim().isEmpty
-          ? 'Unknown'
+          ? AppLocalizations.of(context)!.unknown
           : '$firstName $lastName'.trim();
       final carpenterPhoto = carpenterData['profileImage'] ?? '';
 
@@ -228,11 +246,13 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.celebration, color: AppColors.white),
+                const Icon(Icons.celebration_rounded, color: AppColors.white),
                 const SizedBox(width: 12),
                 Expanded(
                   child: AppText.section(
-                    '🎉 $carpenterName is today\'s winner!',
+                    AppLocalizations.of(
+                      context,
+                    )!.isTodaySWinner('$carpenterName'),
                     color: AppColors.white,
                   ),
                 ),
@@ -251,9 +271,13 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.error, color: AppColors.white),
+                const Icon(Icons.error_rounded, color: AppColors.white),
                 const SizedBox(width: 12),
-                Expanded(child: Text('Error: ${e.toString()}')),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.error2('${e.toString()}'),
+                  ),
+                ),
               ],
             ),
             backgroundColor: context.themeError,
@@ -300,7 +324,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                               borderRadius: AppRadius.all16,
                             ),
                             child: const Icon(
-                              Icons.casino,
+                              Icons.casino_rounded,
                               color: AppColors.white,
                               size: 32,
                             ),
@@ -310,12 +334,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const AppText.hero(
-                                  'Daily Spin',
+                                AppText.hero(
+                                  AppLocalizations.of(context)!.dailySpin,
                                   color: AppColors.white,
                                 ),
                                 AppText.body(
-                                  'Select a lucky winner',
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.selectALuckyWinner,
                                   color: AppColors.white.withValues(alpha: 0.9),
                                 ),
                               ],
@@ -323,12 +349,16 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           ),
                           IconButton(
                             icon: const Icon(
-                              Icons.history,
+                              Icons.history_rounded,
                               color: AppColors.white,
                               size: 24,
                             ),
-                            onPressed: () => GoRouter.of(context).push('/admin/spin-history'),
-                            tooltip: 'View Spin History',
+                            onPressed: () => GoRouter.of(
+                              context,
+                            ).push('/admin/spin-history'),
+                            tooltip: AppLocalizations.of(
+                              context,
+                            )!.viewSpinHistory,
                           ),
                         ],
                       ),
@@ -459,12 +489,12 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                                 child: Center(
                                   child: _isSpinning
                                       ? const Icon(
-                                          Icons.autorenew,
+                                          Icons.autorenew_rounded,
                                           size: 48,
                                           color: AppColors.warning,
                                         )
                                       : Icon(
-                                          Icons.stars,
+                                          Icons.stars_rounded,
                                           size: 56,
                                           color: AppColors.warning,
                                         ),
@@ -511,13 +541,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                         child: Column(
                           children: [
                             const Icon(
-                              Icons.celebration,
+                              Icons.celebration_rounded,
                               size: 48,
                               color: AppColors.warning,
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Winner: $_winnerName',
+                              AppLocalizations.of(
+                                context,
+                              )!.winner2('$_winnerName'),
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -543,7 +575,9 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                     .limit(1)
                     .get(),
                 builder: (context, lastSpinSnapshot) {
-                  String statusText = 'No previous spins';
+                  String statusText = AppLocalizations.of(
+                    context,
+                  )!.noPreviousSpins;
                   if (lastSpinSnapshot.hasData &&
                       lastSpinSnapshot.data!.docs.isNotEmpty) {
                     final lastSpinData =
@@ -563,8 +597,11 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           nextSpinTime.difference(DateTime.now()).inMinutes %
                           60;
                       statusText = canSpin
-                          ? 'Ready to spin!'
-                          : 'Next spin in: ${hoursRemaining}h ${minutesRemaining}m';
+                          ? AppLocalizations.of(context)!.readyToSpin
+                          : AppLocalizations.of(context)!.nextSpinInHM(
+                              '$hoursRemaining',
+                              '$minutesRemaining',
+                            );
                     }
                   }
 
@@ -589,7 +626,9 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          canSpin ? Icons.check_circle : Icons.schedule,
+                          canSpin
+                              ? Icons.check_circle_rounded
+                              : Icons.schedule_rounded,
                           color: canSpin
                               ? AppColors.success
                               : context.themeSecondary,
@@ -626,6 +665,8 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                               ? context.themePrimary
                               : context.themeTextSecondary,
                           foregroundColor: AppColors.white,
+                          disabledBackgroundColor: context.themeSoftSurface,
+                          disabledForegroundColor: context.themeTextSecondary,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 48,
                             vertical: 20,
@@ -642,21 +683,23 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (_isSpinning)
-                              const SizedBox(
+                              SizedBox(
                                 width: 24,
                                 height: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
+                                    context.themeTextSecondary,
                                   ),
                                 ),
                               )
                             else
-                              const Icon(Icons.casino, size: 28),
+                              const Icon(Icons.casino_rounded, size: 28),
                             const SizedBox(width: 12),
                             Text(
-                              _isSpinning ? 'Spinning...' : 'SPIN NOW',
+                              _isSpinning
+                                  ? AppLocalizations.of(context)!.spinning
+                                  : AppLocalizations.of(context)!.spinNow,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -673,8 +716,10 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 ElevatedButton(
                   onPressed: null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.themeTextSecondary,
-                    foregroundColor: AppColors.white,
+                    backgroundColor: context.themeSoftSurface,
+                    foregroundColor: context.themeTextSecondary,
+                    disabledBackgroundColor: context.themeSoftSurface,
+                    disabledForegroundColor: context.themeTextSecondary,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 48,
                       vertical: 20,
@@ -683,13 +728,13 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                       borderRadius: AppRadius.all16,
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.casino, size: 28),
+                      Icon(Icons.casino_rounded, size: 28),
                       SizedBox(width: 12),
                       Text(
-                        'Loading...',
+                        AppLocalizations.of(context)!.loading,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -730,10 +775,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
         children: [
           Row(
             children: [
-              Icon(Icons.today, color: context.themeContentColor, size: 24),
+              Icon(
+                Icons.today_rounded,
+                color: context.themeContentColor,
+                size: 24,
+              ),
               const SizedBox(width: 12),
               Text(
-                'Today\'s Winners',
+                AppLocalizations.of(context)!.todaySWinners,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -767,7 +816,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                   ),
                   child: Center(
                     child: AppText.body(
-                      'No winners yet today',
+                      AppLocalizations.of(context)!.noWinnersYetToday,
                       color: context.themeTextSecondary,
                     ),
                   ),
@@ -808,7 +857,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                               data['carpenterPhoto'] == null ||
                                   data['carpenterPhoto'].toString().isEmpty
                               ? Icon(
-                                  Icons.person,
+                                  Icons.person_rounded,
                                   color: context.themeTextSecondary,
                                 )
                               : null,
@@ -816,7 +865,8 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
-                            data['carpenterName'] ?? 'Unknown',
+                            data['carpenterName'] ??
+                                AppLocalizations.of(context)!.unknown,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -825,7 +875,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           ),
                         ),
                         const Icon(
-                          Icons.emoji_events,
+                          Icons.emoji_events_rounded,
                           color: AppColors.warning,
                           size: 32,
                         ),
@@ -870,13 +920,13 @@ class _DailySpinManagementState extends State<DailySpinManagement>
               Row(
                 children: [
                   Icon(
-                    Icons.calendar_month,
+                    Icons.calendar_month_rounded,
                     color: context.themeContentColor,
                     size: 24,
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Monthly Winners',
+                    AppLocalizations.of(context)!.monthlyWinners,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -886,18 +936,20 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 ],
               ),
               ElevatedButton.icon(
-                onPressed: () => GoRouter.of(context).push('/admin/spin-history'),
+                onPressed: () =>
+                    GoRouter.of(context).push('/admin/spin-history'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.themePrimary,
                   foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.md12,
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
-                icon: const Icon(Icons.history, size: 18),
-                label: const Text(
-                  'Full History',
+                icon: const Icon(Icons.history_rounded, size: 18),
+                label: Text(
+                  AppLocalizations.of(context)!.fullHistory,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -929,7 +981,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                   ),
                   child: Center(
                     child: Text(
-                      'No winners this month yet',
+                      AppLocalizations.of(context)!.noWinnersThisMonthYet,
                       style: TextStyle(color: context.themeTextSecondary),
                     ),
                   ),
@@ -973,7 +1025,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           borderRadius: AppRadius.sm8,
                         ),
                         child: Icon(
-                          Icons.calendar_today,
+                          Icons.calendar_today_rounded,
                           color: context.themeContentColor,
                           size: 20,
                         ),
@@ -983,7 +1035,9 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                         color: context.themeTextPrimary,
                       ),
                       subtitle: AppText.body(
-                        '${winners.length} winner${winners.length > 1 ? 's' : ''}',
+                        AppLocalizations.of(
+                          context,
+                        )!.winnersCount(winners.length),
                         color: context.themeTextSecondary,
                       ),
                       children: winners.map((winner) {
@@ -1001,16 +1055,17 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                                 winner['carpenterPhoto']?.toString().isEmpty ??
                                     true
                                 ? Icon(
-                                    Icons.person,
+                                    Icons.person_rounded,
                                     color: context.themeTextSecondary,
                                   )
                                 : null,
                           ),
                           title: AppText.label(
-                            winner['carpenterName'] ?? 'Unknown',
+                            winner['carpenterName'] ??
+                                AppLocalizations.of(context)!.unknown,
                           ),
                           trailing: const Icon(
-                            Icons.emoji_events,
+                            Icons.emoji_events_rounded,
                             color: AppColors.warning,
                           ),
                         );
@@ -1027,19 +1082,19 @@ class _DailySpinManagementState extends State<DailySpinManagement>
   }
 
   String _getMonthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+    final months = [
+      AppLocalizations.of(context)!.jan,
+      AppLocalizations.of(context)!.feb,
+      AppLocalizations.of(context)!.mar,
+      AppLocalizations.of(context)!.apr,
+      AppLocalizations.of(context)!.may,
+      AppLocalizations.of(context)!.jun,
+      AppLocalizations.of(context)!.jul,
+      AppLocalizations.of(context)!.aug,
+      AppLocalizations.of(context)!.sep,
+      AppLocalizations.of(context)!.oct,
+      AppLocalizations.of(context)!.nov,
+      AppLocalizations.of(context)!.dec,
     ];
     return months[month - 1];
   }

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 
-/// Balaji Points Design System v2.0 — Card.
+/// Balaji Points Design System v3 — Card (UI spec).
 ///
-/// Default  : white surface, 1px border, Level 1 shadow (opacity 0.05).
-/// Primary  : navy background, white child (wallet card, balance card).
+/// Default  : surface, 1px border, tight navy-tinted shadow, radius 16.
+/// Primary  : brand navy in both themes, white child (wallet / balance card).
 /// Flat     : surface color, no border, no shadow.
 class AppCard extends StatelessWidget {
   final Widget child;
@@ -38,10 +38,10 @@ class AppCard extends StatelessWidget {
     this.margin,
     this.borderRadius = AppRadius.r16,
     this.onTap,
-  })  : color = AppColors.primary,
-        showBorder = false,
-        showShadow = true,
-        _type = _CardType.primary;
+  }) : color = null,
+       showBorder = false,
+       showShadow = true,
+       _type = _CardType.primary;
 
   /// No border, no shadow — nested inner card.
   const AppCard.flat({
@@ -52,35 +52,33 @@ class AppCard extends StatelessWidget {
     this.borderRadius = AppRadius.r16,
     this.color,
     this.onTap,
-  })  : showBorder = false,
-        showShadow = false,
-        _type = _CardType.flat;
+  }) : showBorder = false,
+       showShadow = false,
+       _type = _CardType.flat;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final bg = color ??
-        (_type == _CardType.primary
-            ? AppColors.primary
-            : (isDark ? AppColors.darkSurface : AppColors.surface));
+    final bg =
+        color ??
+        (_type == _CardType.primary ? AppColors.primary : context.themeCard);
 
     final radius = BorderRadius.circular(borderRadius);
 
     Widget card = Container(
-      margin:  margin,
+      margin: margin,
       padding: padding,
       decoration: BoxDecoration(
-        color:        bg,
+        color: bg,
         borderRadius: radius,
         border: showBorder
-            ? Border.all(
-                color: isDark ? AppColors.darkBorder : AppColors.border,
-                width: 1,
-              )
+            ? Border.all(color: context.themeBorder, width: 1)
             : null,
         boxShadow: showShadow
-            ? (isDark ? AppColors.shadowLevel1Dark : AppColors.shadowLevel1)
+            ? (_type == _CardType.primary && !isDark
+                  ? AppColors.shadowLevel2
+                  : context.themeShadow)
             : null,
       ),
       child: child,
@@ -88,13 +86,9 @@ class AppCard extends StatelessWidget {
 
     if (onTap != null) {
       return Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: radius,
-        child: InkWell(
-          onTap:        onTap,
-          borderRadius: radius,
-          child: card,
-        ),
+        child: InkWell(onTap: onTap, borderRadius: radius, child: card),
       );
     }
     return card;

@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -222,15 +223,21 @@ class HomeNotifier extends Notifier<HomeState> {
           .collection('greetings')
           .where('active', isEqualTo: true)
           .orderBy('createdAt', descending: true)
-          .limit(1)
+          .limit(10)
           .get();
+      // Newest greeting for this carpenter's branch (or an all-branch one).
+      final branchId = await CurrentBranchService().resolveBranchId();
+      final match = snap.docs.where((doc) {
+        final b = doc.data()['branchId'];
+        return b == null || b == '' || b == branchId;
+      });
 
-      if (snap.docs.isEmpty) {
+      if (match.isEmpty) {
         state = state.copyWith(greeting: null, greetingLoading: false);
         return;
       }
 
-      final greeting = GreetingItem.fromFirestore(snap.docs.first);
+      final greeting = GreetingItem.fromFirestore(match.first);
       state = state.copyWith(greeting: greeting, greetingLoading: false);
     } catch (e, st) {
       AppLogger.error('HomeNotifier greeting load failed', e, st);
@@ -263,7 +270,14 @@ class HomeNotifier extends Notifier<HomeState> {
   }
 
   Future<List<CarpenterRank>> _fetchRanked() async {
-    final qs = await _firestore.collection('users').get();
+    // Leaderboard is per branch: carpenters compete within their own store.
+    final branchId = await CurrentBranchService().resolveBranchId();
+    final qs = branchId == null
+        ? await _firestore.collection('users').get()
+        : await _firestore
+              .collection('users')
+              .where('branchId', isEqualTo: branchId)
+              .get();
     final docId = state.userDocId;
 
     final carpenters = <CarpenterRank>[];

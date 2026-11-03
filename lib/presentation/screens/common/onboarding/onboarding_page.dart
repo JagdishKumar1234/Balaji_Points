@@ -86,21 +86,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
             // Professional gradient background (works on web & mobile)
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? [
-                          const Color(0xFF1A237E).withValues(alpha: 0.95),
-                          const Color(0xFF0D47A1).withValues(alpha: 0.95),
-                        ]
-                      : [
-                          const Color(0xFFF5F7FA),
-                          const Color(0xFFFFFFFF),
-                          const Color(0xFFF0F4F8),
-                        ],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
+                color: isDark
+                    ? AppColors.primary.withValues(alpha: 0.95)
+                    : AppColors.background,
               ),
             ),
 

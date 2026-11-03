@@ -19,13 +19,13 @@ class UserDetailsScreen extends StatelessWidget {
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
       case 'platinum':
-        return const Color(0xFFE5E4E2);
+        return AppColors.tierPlatinum;
       case 'gold':
-        return const Color(0xFFFFD700);
+        return AppColors.tierGold;
       case 'silver':
-        return const Color(0xFFC0C0C0);
+        return AppColors.tierSilver;
       case 'bronze':
-        return const Color(0xFFCD7F32);
+        return AppColors.tierBronze;
       default:
         return AppColors.textSecondary;
     }
@@ -58,7 +58,10 @@ class UserDetailsScreen extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: AppColors.white),
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: AppColors.white,
+                  ),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 ClipOval(
@@ -74,7 +77,7 @@ class UserDetailsScreen extends StatelessWidget {
                               height: 60,
                               color: AppColors.white.withValues(alpha: 0.20),
                               child: const Icon(
-                                Icons.person,
+                                Icons.person_rounded,
                                 size: 35,
                                 color: AppColors.white,
                               ),
@@ -86,7 +89,7 @@ class UserDetailsScreen extends StatelessWidget {
                           height: 60,
                           color: AppColors.white.withValues(alpha: 0.20),
                           child: const Icon(
-                            Icons.person,
+                            Icons.person_rounded,
                             size: 35,
                             color: AppColors.white,
                           ),
@@ -157,7 +160,7 @@ class UserDetailsScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.stars,
+                                  Icons.stars_rounded,
                                   size: 32,
                                   color: context.themeContentColor,
                                 ),
@@ -216,17 +219,25 @@ class UserDetailsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Icon(
-                              Icons.info_outline,
+                              Icons.info_outline_rounded,
                               color: context.themeContentColor,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
-                            AppText.label('Carpenter Information'),
+                            AppText.label(
+                              AppLocalizations.of(
+                                context,
+                              )!.carpenterInformation,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Phone: $phone\nTier: $tier\nPoints: ${totalPoints.toString()}',
+                          AppLocalizations.of(context)!.phoneTierPoints(
+                            '$phone',
+                            '$tier',
+                            '${totalPoints.toString()}',
+                          ),
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 13,
                             color: context.themeTextSecondary,

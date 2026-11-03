@@ -1188,13 +1188,25 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
-  String hoursAgo(int hours) {
-    return '$hours மணி முன்பு';
+  String hoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count மணி நேரம் முன்',
+      one: '1 மணி நேரம் முன்',
+    );
+    return '$_temp0';
   }
 
   @override
-  String daysAgo(int days) {
-    return '$days நாள் முன்பு';
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count நாட்கள் முன்',
+      one: '1 நாள் முன்',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1285,82 +1297,82 @@ class AppLocalizationsTa extends AppLocalizations {
   String get saveChanges => 'மாற்றங்களை சேமிக்கவும்';
 
   @override
-  String get withdrawBill => 'Withdraw Bill';
+  String get withdrawBill => 'பில்லைத் திரும்பப் பெறு';
 
   @override
-  String get withdrawBillConfirmation => 'Are you sure you want to withdraw this approved bill? This will reverse the points awarded to the carpenter.';
+  String get withdrawBillConfirmation => 'அனுமதிக்கப்பட்ட இந்த பில்லைத் திரும்பப் பெற வேண்டுமா? தச்சருக்கு வழங்கிய புள்ளிகள் திருப்பப்படும்.';
 
   @override
-  String get withdraw => 'Withdraw';
+  String get withdraw => 'திரும்பப் பெறு';
 
   @override
-  String get billWithdrawnSuccess => 'Bill withdrawn successfully. Points have been reversed.';
+  String get billWithdrawnSuccess => 'பில் திரும்பப் பெறப்பட்டது. புள்ளிகள் திருப்பப்பட்டன.';
 
   @override
-  String get failedToWithdrawBill => 'Failed to withdraw bill';
+  String get failedToWithdrawBill => 'பில்லைத் திரும்பப் பெற முடியவில்லை';
 
   @override
-  String get withdrawApproval => 'Withdraw Approval';
+  String get withdrawApproval => 'அனுமதியைத் திரும்பப் பெறு';
 
   @override
-  String get reversePointsAndUndoApproval => 'Reverse points & undo approval';
+  String get reversePointsAndUndoApproval => 'புள்ளிகளைத் திருப்பி அனுமதியை ரத்துசெய்';
 
   @override
-  String get approveBillAction => 'Approve Bill';
+  String get approveBillAction => 'பில்லை அனுமதி';
 
   @override
-  String get awardPointsAndMarkAsApproved => 'Award points & mark as approved';
+  String get awardPointsAndMarkAsApproved => 'புள்ளிகள் வழங்கி அனுமதித்ததாகக் குறி';
 
   @override
-  String get selectCarpenter => 'Select Carpenter';
+  String get selectCarpenter => 'தச்சரைத் தேர்ந்தெடு';
 
   @override
-  String get errorLoadingCarpenters => 'Error loading carpenters';
+  String get errorLoadingCarpenters => 'தச்சர்களை ஏற்றுவதில் பிழை';
 
   @override
-  String get noCarpentersFound => 'No carpenters found';
+  String get noCarpentersFound => 'தச்சர்கள் இல்லை';
 
   @override
-  String get noCarpentersAvailable => 'No carpenters available';
+  String get noCarpentersAvailable => 'தச்சர்கள் கிடைக்கவில்லை';
 
   @override
-  String get billHistory => 'Bill History';
+  String get billHistory => 'பில் வரலாறு';
 
   @override
-  String get filters => 'Filters';
+  String get filters => 'வடிகட்டிகள்';
 
   @override
-  String get from => 'From';
+  String get from => 'இருந்து';
 
   @override
-  String get to => 'To';
+  String get to => 'வரை';
 
   @override
-  String get searchCarpenter => 'Search carpenter...';
+  String get searchCarpenter => 'தச்சரைத் தேடு...';
 
   @override
-  String get errorLoadingBillHistory => 'Error loading bills';
+  String get errorLoadingBillHistory => 'பில்களை ஏற்றுவதில் பிழை';
 
   @override
-  String get noBillsFoundMatchingFilters => 'No bills found matching filters';
+  String get noBillsFoundMatchingFilters => 'வடிகட்டிக்குப் பொருந்தும் பில்கள் இல்லை';
 
   @override
-  String get noBillsFoundHistory => 'No bills found';
+  String get noBillsFoundHistory => 'பில்கள் இல்லை';
 
   @override
-  String get billDateLabel => 'Bill Date';
+  String get billDateLabel => 'பில் தேதி';
 
   @override
-  String get submittedLabel => 'Submitted';
+  String get submittedLabel => 'சமர்ப்பிக்கப்பட்டது';
 
   @override
-  String get approvedLabel => 'Approved';
+  String get approvedLabel => 'அனுமதிக்கப்பட்டது';
 
   @override
-  String get rejectedLabel => 'Rejected';
+  String get rejectedLabel => 'நிராகரிக்கப்பட்டது';
 
   @override
-  String get pts => 'pts';
+  String get pts => 'புள்ளிகள்';
 
   @override
   String get languageEnglish => 'English';
@@ -1442,4 +1454,2656 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get onboardingSlide3Body => 'பில்கள் ஒப்புதல் அல்லது நிராகரிப்பு பற்றி அறிவிப்புகளைப் பெறுங்கள். சுயவிவரம் மற்றும் விருப்பங்களை எப்போதும் மேலாண்மை செய்யுங்கள்.';
+
+  @override
+  String errorWithDetails(String details) {
+    return 'பிழை: $details';
+  }
+
+  @override
+  String get siteNameRequired => 'தளத்தின் பெயர் அவசியம்';
+
+  @override
+  String get billDateFuture => 'பில் தேதி எதிர்காலமாக இருக்கக்கூடாது';
+
+  @override
+  String get duplicateBillDetected => 'நகல் பில் கண்டறியப்பட்டது';
+
+  @override
+  String get duplicateBillIntro => 'இதே தளம், தொகை, தேதியுடன் ஒரு பில் ஏற்கனவே உள்ளது:';
+
+  @override
+  String get siteNameLabel => 'தளத்தின் பெயர்';
+
+  @override
+  String get amountLabel => 'தொகை';
+
+  @override
+  String get pointsLabel => 'புள்ளிகள்';
+
+  @override
+  String get dateLabel => 'தேதி';
+
+  @override
+  String ptsValue(String points) {
+    return '$points புள்ளிகள்';
+  }
+
+  @override
+  String get duplicateBillVerify => 'இது நகல் பதிவாக இருக்கலாம். சேர்க்கும் முன் சரிபார்க்கவும்.';
+
+  @override
+  String get addBillAnywayQuestion => 'இருந்தாலும் இந்த பில்லைச் சேர்க்க வேண்டுமா?';
+
+  @override
+  String get addAnyway => 'இருந்தாலும் சேர்';
+
+  @override
+  String get billsPausedDiwali => 'தீபாவளி கொண்டாட்டத்திற்காக பில் சமர்ப்பிப்பு நிறுத்தப்பட்டுள்ளது.';
+
+  @override
+  String earnPointsWhenApproved(String points) {
+    return 'அனுமதிக்கப்பட்டதும் $points புள்ளிகள் கிடைக்கும்';
+  }
+
+  @override
+  String get vendorNameLabel => 'விற்பனையாளர் பெயர்';
+
+  @override
+  String get menu => 'மெனு';
+
+  @override
+  String get diwaliPrizeLoadFailed => 'தீபாவளி பரிசுப் பட்டியலை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get featureEarnMore => 'அதிகம் சம்பாதி';
+
+  @override
+  String get featureEarnBody => 'பில் பதிவேற்று\nபுள்ளிகள் பெறு';
+
+  @override
+  String get featureRedeemMore => 'அதிகம் பெறு';
+
+  @override
+  String get featureRedeemBody => 'அருமையான வெகுமதிகள்\n& பரிசுகள்';
+
+  @override
+  String get featureGrowMore => 'முன்னேறு';
+
+  @override
+  String get featureGrowBody => 'தரவரிசையில் உயரு\nசிறந்த தச்சராகு';
+
+  @override
+  String get featureExclusive => 'சிறப்பு';
+
+  @override
+  String get featureExclusiveBody => 'சிறப்பு நன்மைகள்\nஉங்களுக்காக மட்டும்';
+
+  @override
+  String get newAnnouncement => 'புதிய அறிவிப்பு';
+
+  @override
+  String ptsToNextLabel(String points, String tier) {
+    return '$tier வரை $points புள்ளிகள்';
+  }
+
+  @override
+  String get platinumHighestTier => 'பிளாட்டினம் — உச்ச நிலை!';
+
+  @override
+  String get topCarpentersTitle => 'சிறந்த தச்சர்கள்';
+
+  @override
+  String get noRankingYet => 'இன்னும் தரவரிசை தரவு இல்லை';
+
+  @override
+  String get noWinnerToday => 'இன்று வெற்றியாளர் இல்லை';
+
+  @override
+  String spinNotDoneYet(String date) {
+    return 'இன்னும் சுழற்றவில்லை · $date';
+  }
+
+  @override
+  String get todaysLuckyWinner => 'இன்றைய அதிர்ஷ்ட வெற்றியாளர்';
+
+  @override
+  String selectedViaDailySpin(String date) {
+    return 'தினசரி சுழற்சி மூலம் தேர்வு · $date';
+  }
+
+  @override
+  String get notificationDeleted => 'அறிவிப்பு நீக்கப்பட்டது';
+
+  @override
+  String get deleteAllNotifications => 'எல்லா அறிவிப்புகளையும் நீக்கு';
+
+  @override
+  String get deleteAllNotificationsConfirm => 'எல்லா அறிவிப்புகளையும் நீக்க வேண்டுமா? இதைத் திரும்பப் பெற முடியாது.';
+
+  @override
+  String get deleteAll => 'அனைத்தையும் நீக்கு';
+
+  @override
+  String notificationsDeleted(String count) {
+    return '$count அறிவிப்புகள் நீக்கப்பட்டன';
+  }
+
+  @override
+  String get unableToLoadNotifications => 'அறிவிப்புகளை ஏற்ற முடியவில்லை';
+
+  @override
+  String get errorLoadingNotifications => 'அறிவிப்புகளை ஏற்றுவதில் பிழை';
+
+  @override
+  String get noNotificationsTitle => 'அறிவிப்புகள் இல்லை';
+
+  @override
+  String get noNotificationsYet => 'உங்களுக்கு இன்னும் அறிவிப்புகள் இல்லை';
+
+  @override
+  String get deleteNotification => 'அறிவிப்பை நீக்கு';
+
+  @override
+  String get deleteNotificationConfirm => 'இந்த அறிவிப்பை நீக்க வேண்டுமா?';
+
+  @override
+  String get addProfilePhoto => 'சுயவிவரப் படத்தைச் சேர்க்கவும்';
+
+  @override
+  String get profileUpdatedSuccess => 'சுயவிவரம் புதுப்பிக்கப்பட்டது';
+
+  @override
+  String get failedToUpdateProfile => 'சுயவிவரத்தைப் புதுப்பிக்க முடியவில்லை';
+
+  @override
+  String get tapToChangePhoto => 'படத்தை மாற்ற தட்டவும்';
+
+  @override
+  String get lastNameRequired => 'குடும்பப் பெயர் *';
+
+  @override
+  String get uploadingImage => 'படம் பதிவேற்றப்படுகிறது...';
+
+  @override
+  String get completeProfileToContinue => 'தொடர உங்கள் சுயவிவரத்தை நிறைவு செய்யவும்';
+
+  @override
+  String get couldNotMakeCall => 'அழைக்க முடியவில்லை';
+
+  @override
+  String get themeLabel => 'தீம்';
+
+  @override
+  String get themeLight => 'ஒளி';
+
+  @override
+  String get themeDark => 'இருள்';
+
+  @override
+  String get youWonLabel => 'நீங்கள் வென்றது';
+
+  @override
+  String pointsWon(String points) {
+    return '$points புள்ளிகள்!';
+  }
+
+  @override
+  String get pointsAddedToAccount => 'புள்ளிகள் உங்கள் கணக்கில் சேர்க்கப்பட்டன.';
+
+  @override
+  String get great => 'அருமை!';
+
+  @override
+  String get spinAndWin => 'சுழற்றி புள்ளிகளை வெல்லுங்கள்!';
+
+  @override
+  String get spinAndWinSubtitle => 'தினமும் சுழற்றி அருமையான புள்ளிகளை வெல்லுங்கள்';
+
+  @override
+  String get alreadySpunToday => 'இன்று ஏற்கனவே சுழற்றிவிட்டீர்கள்!\nநாளை மீண்டும் வாருங்கள்.';
+
+  @override
+  String nextTierLabel(String tier) {
+    return 'அடுத்த நிலை: $tier';
+  }
+
+  @override
+  String ptsToNextTier(String points) {
+    return 'அடுத்த நிலைக்கு $points புள்ளிகள்';
+  }
+
+  @override
+  String get platinumMaxLevel => 'பிளாட்டினம் நிலை — அதிகபட்சம்';
+
+  @override
+  String get filterLabel => 'வடிகட்டு';
+
+  @override
+  String get totalApprovedPoints => 'மொத்த அனுமதிக்கப்பட்ட புள்ளிகள்';
+
+  @override
+  String billsCount(String count) {
+    return '$count பில்கள்';
+  }
+
+  @override
+  String get billAttachment => 'பில் இணைப்பு';
+
+  @override
+  String get pendingApproval => 'அனுமதி நிலுவையில்';
+
+  @override
+  String get backToSignIn => 'உள்நுழைவுக்குத் திரும்பு';
+
+  @override
+  String get noPinAccount => 'இந்த எண்ணுக்கு PIN கணக்கு இல்லை. மின்னஞ்சல், கடவுச்சொல் அல்லது Google மூலம் உள்நுழையவும்.';
+
+  @override
+  String get signInWithMobile => 'மொபைல் எண் மூலம் உள்நுழை';
+
+  @override
+  String get continueToPin => 'PIN-க்குத் தொடர்';
+
+  @override
+  String get backToOtherSignIn => 'பிற உள்நுழைவு வழிகளுக்குத் திரும்பு';
+
+  @override
+  String get branchHasAdminDefaulted => 'தேர்ந்தெடுத்த கிளையில் ஏற்கனவே நிர்வாகி உள்ளார். பங்கு தச்சர் என அமைக்கப்பட்டது.';
+
+  @override
+  String get selectBranchToContinue => 'தொடர ஒரு கிளையைத் தேர்ந்தெடுக்கவும்.';
+
+  @override
+  String get oneAdminPerBranch => 'இந்தக் கிளைக்கு ஏற்கனவே நிர்வாகி உள்ளார். ஒரு கிளைக்கு ஒரு நிர்வாகி மட்டுமே.';
+
+  @override
+  String get branchRequired => 'கிளை *';
+
+  @override
+  String get selectYourBranch => 'உங்கள் கிளையைத் தேர்ந்தெடு';
+
+  @override
+  String get userRoleRequired => 'பயனர் பங்கு *';
+
+  @override
+  String get roleCarpenterWoodworker => 'தச்சர் / மரவேலையாளர்';
+
+  @override
+  String get roleArchitect => 'கட்டடக் கலைஞர்';
+
+  @override
+  String get roleInteriorDesigner => 'உள்ளக வடிவமைப்பாளர்';
+
+  @override
+  String get fullName => 'முழுப் பெயர்';
+
+  @override
+  String get passwordLabel => 'கடவுச்சொல்';
+
+  @override
+  String get confirmPasswordLabel => 'கடவுச்சொல்லை உறுதிப்படுத்து';
+
+  @override
+  String get noActiveRoles => 'செயலில் உள்ள பங்குகள் இல்லை. சூப்பர் நிர்வாகியைத் தொடர்பு கொள்ளவும்.';
+
+  @override
+  String get noActiveBranches => 'செயலில் உள்ள கிளைகள் இல்லை. உங்கள் நிர்வாகியைத் தொடர்பு கொள்ளவும்.';
+
+  @override
+  String get cancelReturnToSignIn => 'ரத்துசெய்து உள்நுழைவுக்குத் திரும்பு';
+
+  @override
+  String get selectRoleRequired => 'பங்கைத் தேர்ந்தெடு *';
+
+  @override
+  String get previousPage => 'முந்தைய';
+
+  @override
+  String tablePageInfo(String page, String pages, String from, String to, String total) {
+    return 'பக்கம் $page/$pages · $total-இல் $from–$to';
+  }
+
+  @override
+  String get noRows => 'வரிசைகள் இல்லை';
+
+  @override
+  String get updateNow => 'இப்போது புதுப்பி';
+
+  @override
+  String get maybeLater => 'பிறகு';
+
+  @override
+  String get requiredLabel => 'அவசியம்';
+
+  @override
+  String get installedLabel => 'நிறுவப்பட்டது';
+
+  @override
+  String get updateMandatory => 'ஆப்பைத் தொடர்ந்து பயன்படுத்த இந்தப் புதுப்பிப்பு அவசியம்.';
+
+  @override
+  String get signOut => 'வெளியேறு';
+
+  @override
+  String get billsAppearHere => 'நீங்கள் சமர்ப்பிக்கும் பில்கள் இங்கே தெரியும்.';
+
+  @override
+  String get pendingBillsAppearHere => 'தச்சர்களின் புதிய பில்கள் அனுமதிக்காக இங்கே தெரியும்.';
+
+  @override
+  String get tryChangingFilters => 'வடிகட்டிகளை மாற்றி அல்லது நீக்கிப் பாருங்கள்.';
+
+  @override
+  String get carpentersAppearHere => 'பதிவுசெய்த தச்சர்கள் இங்கே தெரியும்.';
+
+  @override
+  String get statCarpenters => 'தச்சர்கள்';
+
+  @override
+  String get statPendingBills => 'நிலுவை பில்கள்';
+
+  @override
+  String get statAwaitingReview => 'சரிபார்ப்புக்குக் காத்திருக்கிறது';
+
+  @override
+  String get statBillsThisMonth => 'இந்த மாத பில்கள்';
+
+  @override
+  String statApprovedThisMonth(String count) {
+    return '$count அனுமதிக்கப்பட்டது';
+  }
+
+  @override
+  String get statPointsIssued => 'வழங்கிய புள்ளிகள்';
+
+  @override
+  String get statThisMonth => 'இந்த மாதம்';
+
+  @override
+  String get statRegistered => 'பதிவுசெய்தவர்கள்';
+
+  @override
+  String version(String version, String buildNumber) {
+    return 'பதிப்பு $version ($buildNumber)';
+  }
+
+  @override
+  String get switchToLight => 'ஒளி பயன்முறைக்கு மாற்று';
+
+  @override
+  String get switchToDark => 'இருள் பயன்முறைக்கு மாற்று';
+
+  @override
+  String get max => 'அதிகபட்சம்';
+
+  @override
+  String get status => 'நிலை';
+
+  @override
+  String to2(String nextLabel) {
+    return '$nextLabel வரை';
+  }
+
+  @override
+  String get spinNow2 => 'இப்போது சுழற்று!';
+
+  @override
+  String get pleaseCompleteYourProfileFirstName => 'பில்களைச் சேர்த்து புள்ளிகள் பெற உங்கள் சுயவிவரத்தை (முதல் பெயர், குடும்பப் பெயர், சுயவிவரப் படம்) நிறைவு செய்யவும்.';
+
+  @override
+  String get goBack => 'பின்செல்';
+
+  @override
+  String get chooseFromGallery => 'கேலரியிலிருந்து தேர்ந்தெடு';
+
+  @override
+  String get takePhoto => 'படம் எடு';
+
+  @override
+  String get pleaseLoginToSubmitBills => 'பில்களைச் சமர்ப்பிக்க உள்நுழையவும்';
+
+  @override
+  String get billSubmittedSuccessfullyAdminWillReview => 'பில் சமர்ப்பிக்கப்பட்டது! நிர்வாகி சரிபார்ப்பார்.';
+
+  @override
+  String get failedToSubmitBillPleaseTry => 'பில்லைச் சமர்ப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get pleaseEnterBillAmount => 'பில் தொகையை உள்ளிடவும்';
+
+  @override
+  String get billDate2 => 'பில் தேதி *';
+
+  @override
+  String get selectBillDate2 => 'பில் தேதியைத் தேர்ந்தெடு';
+
+  @override
+  String get siteName => 'தளத்தின் பெயர் *';
+
+  @override
+  String get enterSiteLocationName => 'தளம்/இடத்தின் பெயரை உள்ளிடவும்';
+
+  @override
+  String get vendorNameOptional => 'விற்பனையாளர் பெயர் (விருப்பம்)';
+
+  @override
+  String get enterVendorStoreNameOptional => 'விற்பனையாளர்/கடையின் பெயர் (விருப்பம்)';
+
+  @override
+  String get noUserLoggedIn => 'பயனர் உள்நுழையவில்லை';
+
+  @override
+  String get firstNameMustBeAtLeast => 'முதல் பெயர் குறைந்தது 2 எழுத்துகள் இருக்க வேண்டும்';
+
+  @override
+  String get firstNameIsTooLongMax => 'முதல் பெயர் மிக நீளம் (அதிகபட்சம் 50 எழுத்துகள்)';
+
+  @override
+  String get lastNameMustBeAtLeast => 'குடும்பப் பெயர் குறைந்தது 2 எழுத்துகள் இருக்க வேண்டும்';
+
+  @override
+  String get lastNameIsTooLongMax => 'குடும்பப் பெயர் மிக நீளம் (அதிகபட்சம் 50 எழுத்துகள்)';
+
+  @override
+  String get failedToUploadProfileImage => 'சுயவிவரப் படத்தைப் பதிவேற்ற முடியவில்லை';
+
+  @override
+  String failedToUploadProfileImage2(String e) {
+    return 'சுயவிவரப் படத்தைப் பதிவேற்ற முடியவில்லை: $e';
+  }
+
+  @override
+  String get enterYourFirstName => 'உங்கள் முதல் பெயரை உள்ளிடவும்';
+
+  @override
+  String get pleaseEnterYourFirstName => 'தயவுசெய்து உங்கள் முதல் பெயரை உள்ளிடவும்';
+
+  @override
+  String get enterYourLastName => 'உங்கள் குடும்பப் பெயரை உள்ளிடவும்';
+
+  @override
+  String get pleaseEnterYourLastName => 'தயவுசெய்து உங்கள் குடும்பப் பெயரை உள்ளிடவும்';
+
+  @override
+  String get user => 'பயனர்';
+
+  @override
+  String get language => 'மொழி';
+
+  @override
+  String get trackYourPointsAndManageYour => 'உங்கள் புள்ளிகளையும் பில்களையும் நிர்வகிக்கவும்';
+
+  @override
+  String mAgo(String inMinutes) {
+    return '$inMinutes நிமி. முன்';
+  }
+
+  @override
+  String hAgo(String inHours) {
+    return '$inHours மணி. முன்';
+  }
+
+  @override
+  String dAgo(String inDays) {
+    return '$inDays நாள் முன்';
+  }
+
+  @override
+  String get notification => 'அறிவிப்பு';
+
+  @override
+  String get noCarpenterAccountsAreListedFor => 'இந்தக் கிளையில் இன்னும் தச்சர் கணக்குகள் இல்லை.';
+
+  @override
+  String get continueToHome => 'முகப்புக்குச் செல்';
+
+  @override
+  String get shubhDeepawali => 'இனிய தீபாவளி!';
+
+  @override
+  String carpenters(String branchName, String carpenterCount) {
+    return '$branchName  ·  $carpenterCount தச்சர்கள்';
+  }
+
+  @override
+  String carpenterRewardBonusReport(String dateFormat) {
+    return 'தச்சர் வெகுமதி & போனஸ் அறிக்கை  ·  $dateFormat';
+  }
+
+  @override
+  String get closeCelebration => 'கொண்டாட்டத்தை மூடு';
+
+  @override
+  String get deepawaliPrizeNight => '✦  தீபாவளி பரிசு இரவு  ✦';
+
+  @override
+  String get topPerformersGoldTier => 'சிறந்தவர்கள் — தங்க நிலை';
+
+  @override
+  String get ranks110 => 'தரவரிசை 1-10';
+
+  @override
+  String get highPerformersSilverTier => 'உயர் செயல்திறன் — வெள்ளி நிலை';
+
+  @override
+  String get ranks1130 => 'தரவரிசை 11-30';
+
+  @override
+  String get activePerformersBronzeTier => 'செயலில் உள்ளவர்கள் — வெண்கல நிலை';
+
+  @override
+  String get ranks31Onwards => 'தரவரிசை 31 முதல்';
+
+  @override
+  String totalCarpenters(String entries) {
+    return 'மொத்த தச்சர்கள்: $entries';
+  }
+
+  @override
+  String get totalPoints2 => 'மொத்த புள்ளிகள்';
+
+  @override
+  String get totalReward => 'மொத்த வெகுமதி';
+
+  @override
+  String get totalBonus => 'மொத்த போனஸ்';
+
+  @override
+  String carpentersPointsRewardBonus(String entries, String totalPoints, String totalReward, String totalBonus) {
+    return '$entries தச்சர்கள்  ·  $totalPoints புள்ளிகள்  ·  $totalReward வெகுமதி  ·  $totalBonus போனஸ்';
+  }
+
+  @override
+  String bonus(String bonusAmount, String giftDetails) {
+    return '$bonusAmount போனஸ்  ·  $giftDetails';
+  }
+
+  @override
+  String get mobileNumberUnavailable => 'மொபைல் எண் கிடைக்கவில்லை';
+
+  @override
+  String get reward => 'வெகுமதி';
+
+  @override
+  String get bonus2 => 'போனஸ்';
+
+  @override
+  String get nil => 'இல்லை';
+
+  @override
+  String get gift => 'பரிசு';
+
+  @override
+  String get reward2 => 'வெகுமதி ₹';
+
+  @override
+  String get bonus3 => 'போனஸ் ₹';
+
+  @override
+  String get giftDetails => 'பரிசு விவரம்';
+
+  @override
+  String get remarks => 'குறிப்பு';
+
+  @override
+  String get verifyYourIdentityToOpenBalaji => 'Balaji Points-ஐத் திறக்க உங்கள் அடையாளத்தைச் சரிபார்க்கவும்';
+
+  @override
+  String get passwordResetLinksAreSentSecurely => 'கடவுச்சொல் மீட்டமைப்பு இணைப்புகள் பாதுகாப்பாக அனுப்பப்படும்.';
+
+  @override
+  String get checkYourEmail => 'உங்கள் மின்னஞ்சலைப் பாருங்கள்';
+
+  @override
+  String get forgotPassword => 'கடவுச்சொல் மறந்துவிட்டதா?';
+
+  @override
+  String get ifAnAccountExistsForThis => 'இந்த முகவரிக்கு கணக்கு இருந்தால், கடவுச்சொல் மீட்டமைப்பு வழிமுறைகள் அனுப்பப்பட்டுள்ளன. இன்பாக்ஸ் மற்றும் ஸ்பேம் கோப்புறையைப் பாருங்கள்.';
+
+  @override
+  String get enterTheEmailAddressLinkedTo => 'உங்கள் கணக்குடன் இணைந்த மின்னஞ்சலை உள்ளிடவும். புதிய கடவுச்சொல்லுக்கு பாதுகாப்பான இணைப்பை அனுப்புவோம்.';
+
+  @override
+  String get enterAValidEmailAddress => 'சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்';
+
+  @override
+  String get sendAnotherResetLink => 'மற்றொரு மீட்டமைப்பு இணைப்பை அனுப்பு';
+
+  @override
+  String get sendResetLink => 'மீட்டமைப்பு இணைப்பை அனுப்பு';
+
+  @override
+  String get welcomeBack2 => 'மீண்டும் வருக';
+
+  @override
+  String signInToContinueTo(String appName) {
+    return '$appName-இல் தொடர உள்நுழையவும்';
+  }
+
+  @override
+  String get signIn => 'உள்நுழை';
+
+  @override
+  String get useYourEmailAndPasswordOr => 'மின்னஞ்சல், கடவுச்சொல் அல்லது உங்கள் PIN மூலம் உள்நுழையவும்.';
+
+  @override
+  String get pleaseEnterAValidEmailAddress => 'தயவுசெய்து சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்';
+
+  @override
+  String get passwordMustBeAtLeast6 => 'கடவுச்சொல் குறைந்தது 6 எழுத்துகள் இருக்க வேண்டும்';
+
+  @override
+  String get loginWithPin => 'PIN மூலம் உள்நுழை';
+
+  @override
+  String get newToBalajiPoints => 'Balaji Points-க்கு புதியவரா? ';
+
+  @override
+  String get createAccount2 => 'கணக்கை உருவாக்கு';
+
+  @override
+  String designedAndDevelopedBy(String companyName) {
+    return '$companyName வடிவமைத்து உருவாக்கியது';
+  }
+
+  @override
+  String get signInWithGoogle => 'Google மூலம் உள்நுழை';
+
+  @override
+  String get hindi => 'இந்தி';
+
+  @override
+  String get tamil => 'தமிழ்';
+
+  @override
+  String get forCurrentMobilePinAccounts => 'தற்போதைய மொபைல் + PIN கணக்குகளுக்கு';
+
+  @override
+  String get enterAValid10DigitMobile => 'சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்';
+
+  @override
+  String get yourDataIs100SecureWith => 'உங்கள் தரவு எங்களிடம் 100% பாதுகாப்பாக உள்ளது';
+
+  @override
+  String get userAlreadyExists => 'பயனர் ஏற்கனவே உள்ளார்';
+
+  @override
+  String get permissionDeniedPleaseCheckFirebaseConfiguration => 'அனுமதி மறுக்கப்பட்டது. நிர்வாகியைத் தொடர்பு கொள்ளவும்.';
+
+  @override
+  String get branchAdminAlreadyAssigned => 'கிளை நிர்வாகி (ஏற்கனவே ஒதுக்கப்பட்டது)';
+
+  @override
+  String get branchAdmin1PerBranch => 'கிளை நிர்வாகி (கிளைக்கு 1)';
+
+  @override
+  String get selectABranchToContinue => 'தொடர ஒரு கிளையைத் தேர்ந்தெடுக்கவும்.';
+
+  @override
+  String get selectARoleToContinue => 'தொடர ஒரு பங்கைத் தேர்ந்தெடுக்கவும்.';
+
+  @override
+  String get selectAnActiveRoleToContinue => 'தொடர செயலில் உள்ள பங்கைத் தேர்ந்தெடுக்கவும்.';
+
+  @override
+  String get yourInformationIsProtected => 'உங்கள் தகவல் பாதுகாக்கப்பட்டுள்ளது';
+
+  @override
+  String get completeYourGoogleRegistration => 'உங்கள் Google பதிவை நிறைவு செய்யவும்';
+
+  @override
+  String get createYourAccount => 'உங்கள் கணக்கை உருவாக்கவும்';
+
+  @override
+  String get addYourMobileNumberAndChoose => 'கணக்கை அமைக்க உங்கள் மொபைல் எண்ணைச் சேர்த்து, கிளை மற்றும் பங்கைத் தேர்ந்தெடுக்கவும்.';
+
+  @override
+  String get chooseYourRoleAndTheBranch => 'உங்கள் பங்கையும் கிளையையும் தேர்ந்தெடுக்கவும்.';
+
+  @override
+  String get enterYourFullName => 'உங்கள் முழுப் பெயரை உள்ளிடவும்';
+
+  @override
+  String get hidePassword => 'கடவுச்சொல்லை மறை';
+
+  @override
+  String get showPassword => 'கடவுச்சொல்லைக் காட்டு';
+
+  @override
+  String get useAtLeast6Characters => 'குறைந்தது 6 எழுத்துகள் பயன்படுத்தவும்';
+
+  @override
+  String get passwordsDoNotMatch => 'கடவுச்சொற்கள் பொருந்தவில்லை';
+
+  @override
+  String get yourAccountAlreadyHasAnAdmin => 'உங்கள் கணக்கில் ஏற்கனவே நிர்வாகி பங்கு உள்ளது. தொடர்வதற்கு முன் சூப்பர் நிர்வாகியிடம் கிளையை ஒதுக்கச் சொல்லுங்கள்.';
+
+  @override
+  String get branchAdminAccessIsAssignedBy => 'கிளை நிர்வாகி அனுமதியை சூப்பர் நிர்வாகி வழங்குவார்.';
+
+  @override
+  String get completeRegistration => 'பதிவை நிறைவு செய்';
+
+  @override
+  String get loadingRoles => 'பங்குகள் ஏற்றப்படுகின்றன…';
+
+  @override
+  String get chooseOneRole => 'ஒரு பங்கைத் தேர்ந்தெடு';
+
+  @override
+  String get selectARoleToContinue2 => 'தொடர ஒரு பங்கைத் தேர்ந்தெடு';
+
+  @override
+  String get loadingBranches => 'கிளைகள் ஏற்றப்படுகின்றன…';
+
+  @override
+  String get selectABranch => 'கிளையைத் தேர்ந்தெடு';
+
+  @override
+  String cannotMakePhoneCallTo(String phoneNumber) {
+    return '$phoneNumber-க்கு அழைக்க முடியவில்லை';
+  }
+
+  @override
+  String errorMakingPhoneCall(String e) {
+    return 'அழைப்பதில் பிழை: $e';
+  }
+
+  @override
+  String get member => 'உறுப்பினர்';
+
+  @override
+  String get updateRequired => 'புதுப்பிப்பு அவசியம்';
+
+  @override
+  String get newVersionAvailable => 'புதிய பதிப்பு கிடைக்கிறது';
+
+  @override
+  String get latest => 'சமீபத்தியது';
+
+  @override
+  String get completed => 'முடிந்தது';
+
+  @override
+  String get processing => 'செயலாக்கத்தில்';
+
+  @override
+  String installLatestToContinue(String appName) {
+    return 'தொடர $appName-இன் சமீபத்திய பதிப்பை நிறுவவும்.';
+  }
+
+  @override
+  String get newerVersionReady => 'மேம்பாடுகள் மற்றும் திருத்தங்களுடன் புதிய பதிப்பு தயார்.';
+
+  @override
+  String get pleaseSelectACarpenter => 'தயவுசெய்து தச்சரைத் தேர்ந்தெடுக்கவும்';
+
+  @override
+  String get billSubmittedSuccessfullyItWillBe => 'பில் சமர்ப்பிக்கப்பட்டது! சரிபார்க்கப்படும்.';
+
+  @override
+  String get duplicateBill => 'நகல் பில்';
+
+  @override
+  String get aBillWithTheSameSite => 'இந்தத் தச்சருக்கு இதே தளம், தொகை, தேதியுடன் ஒரு பில் ஏற்கனவே உள்ளது:';
+
+  @override
+  String get site => 'தளம்';
+
+  @override
+  String pts2(String duplicatePoints) {
+    return '$duplicatePoints புள்ளிகள்';
+  }
+
+  @override
+  String get pleaseVerifyThisIsNotA => 'இது நகல் பதிவு அல்ல என்பதைச் சரிபார்க்கவும்.';
+
+  @override
+  String error2(String e) {
+    return 'பிழை: $e';
+  }
+
+  @override
+  String get addAnyway2 => 'இருந்தாலும் சேர்';
+
+  @override
+  String get addBillForCarpenter => 'தச்சருக்கான பில்லைச் சேர்';
+
+  @override
+  String get carpenter2 => 'தச்சர் *';
+
+  @override
+  String get billAmount2 => 'பில் தொகை (₹) *';
+
+  @override
+  String get billImageOptional => 'பில் படம் (விருப்பம்)';
+
+  @override
+  String get siteName2 => 'தளத்தின் பெயர்';
+
+  @override
+  String get vendorName => 'விற்பனையாளர் பெயர்';
+
+  @override
+  String get pendingApproval2 => 'அனுமதி நிலுவையில்';
+
+  @override
+  String areYouSureYouWantTo(String billData) {
+    return 'இந்த பில்லை அனுமதிக்க வேண்டுமா?\n\n₹$billData செயலாக்கப்படும்.';
+  }
+
+  @override
+  String get billRejected2 => 'பில் நிராகரிக்கப்பட்டது';
+
+  @override
+  String get share => 'பகிர்';
+
+  @override
+  String get billNotFound => 'பில் கிடைக்கவில்லை';
+
+  @override
+  String get billId => 'பில் ஐடி';
+
+  @override
+  String submitted(String createdAt) {
+    return 'சமர்ப்பித்தது $createdAt';
+  }
+
+  @override
+  String get submittedOn => 'சமர்ப்பித்த தேதி';
+
+  @override
+  String get store => 'கடை';
+
+  @override
+  String get carpenterInfo => 'தச்சர் தகவல்';
+
+  @override
+  String get viewProfile => 'சுயவிவரத்தைப் பார்';
+
+  @override
+  String pts3(String totalPoints) {
+    return '$totalPoints புள்ளிகள்';
+  }
+
+  @override
+  String get billSummary => 'பில் சுருக்கம்';
+
+  @override
+  String get billAmount3 => 'பில் தொகை';
+
+  @override
+  String get pointsToCredit => 'வரவு வைக்கும் புள்ளிகள்';
+
+  @override
+  String get billNo => 'பில் எண்';
+
+  @override
+  String get pointsRate => 'புள்ளி விகிதம்';
+
+  @override
+  String get t1Pt1000 => '1 புள்ளி / ₹1000';
+
+  @override
+  String get billType => 'பில் வகை';
+
+  @override
+  String get purchase => 'கொள்முதல்';
+
+  @override
+  String get billAttachment2 => 'பில் இணைப்பு';
+
+  @override
+  String get viewFullSize => 'முழு அளவில் பார்';
+
+  @override
+  String get downloadImage => 'படத்தைப் பதிவிறக்கு';
+
+  @override
+  String get generatePdf => 'PDF உருவாக்கு';
+
+  @override
+  String get timeline => 'காலவரிசை';
+
+  @override
+  String get billCreated => 'பில் உருவாக்கப்பட்டது';
+
+  @override
+  String get waitingForApproval => 'அனுமதிக்காகக் காத்திருக்கிறது';
+
+  @override
+  String get pendingActionFromAdmin => 'நிர்வாகியின் நடவடிக்கை நிலுவையில்';
+
+  @override
+  String get justNow2 => 'இப்போது';
+
+  @override
+  String minAgo(String inMinutes) {
+    return '$inMinutes நிமி. முன்';
+  }
+
+  @override
+  String billDetails2(String billId) {
+    return 'பில் விவரம் - $billId';
+  }
+
+  @override
+  String get errorLoadingBillDetails => 'பில் விவரங்களை ஏற்றுவதில் பிழை';
+
+  @override
+  String get noBillFound => 'பில் கிடைக்கவில்லை';
+
+  @override
+  String get totalInstances => 'மொத்த பதிவுகள்';
+
+  @override
+  String get billEntries => 'பில் பதிவுகள்';
+
+  @override
+  String instance(String index) {
+    return 'பதிவு $index';
+  }
+
+  @override
+  String get time => 'நேரம்';
+
+  @override
+  String get noBillsToExportApplyFilters => 'ஏற்றுமதிக்கு பில்கள் இல்லை. வடிகட்டியைப் பயன்படுத்துங்கள் அல்லது காத்திருங்கள்.';
+
+  @override
+  String get preparingPdf => 'PDF தயாராகிறது...';
+
+  @override
+  String get noBillsMatchCurrentFiltersFor => 'தற்போதைய வடிகட்டிக்குப் பொருந்தும் பில்கள் இல்லை.';
+
+  @override
+  String exportFailed(String e) {
+    return 'ஏற்றுமதி தோல்வி: $e';
+  }
+
+  @override
+  String get bill => 'பில் #';
+
+  @override
+  String get approvedDate => 'அனுமதி தேதி';
+
+  @override
+  String get actions => 'செயல்கள்';
+
+  @override
+  String get exportAllBillsToPdf => 'எல்லா பில்களையும் PDF-ஆக ஏற்றுமதி செய்';
+
+  @override
+  String approveThisBillOfPointsWill(String amount, String amount2) {
+    return '₹$amount பில்லை அனுமதிக்கவா?\n\nதச்சருக்கு $amount2 புள்ளிகள் சேர்க்கப்படும்.';
+  }
+
+  @override
+  String get billApprovedAndPointsAddedSuccessfully => 'பில் அனுமதிக்கப்பட்டு புள்ளிகள் சேர்க்கப்பட்டன';
+
+  @override
+  String get failedToApproveBill2 => 'பில்லை அனுமதிக்க முடியவில்லை';
+
+  @override
+  String errorApprovingBill(String e) {
+    return 'பில்லை அனுமதிப்பதில் பிழை: $e';
+  }
+
+  @override
+  String get failedToRejectBill2 => 'பில்லை நிராகரிக்க முடியவில்லை';
+
+  @override
+  String errorRejectingBill(String e) {
+    return 'பில்லை நிராகரிப்பதில் பிழை: $e';
+  }
+
+  @override
+  String get dateFilters => 'தேதி வடிகட்டிகள்';
+
+  @override
+  String get clearFilters => 'வடிகட்டிகளை அழி';
+
+  @override
+  String pts4(String amount) {
+    return '$amount புள்ளிகள்';
+  }
+
+  @override
+  String get noHistoryAvailable => 'வரலாறு இல்லை';
+
+  @override
+  String get carpenterSummary => 'தச்சர் சுருக்கம்';
+
+  @override
+  String totalPts(String totalPoints) {
+    return 'மொத்தம்: $totalPoints புள்ளிகள்';
+  }
+
+  @override
+  String get totalBills => 'மொத்த பில்கள்';
+
+  @override
+  String get pointsBySite => 'தளவாரியான புள்ளிகள்';
+
+  @override
+  String pts5(String num) {
+    return '$num புள்ளிகள்';
+  }
+
+  @override
+  String get site2 => 'தளம்: ';
+
+  @override
+  String get billDate3 => 'பில் தேதி: ';
+
+  @override
+  String get approved2 => 'அனுமதி: ';
+
+  @override
+  String get submitted2 => 'சமர்ப்பிப்பு: ';
+
+  @override
+  String get allBillsHistory => 'அனைத்து பில் வரலாறு';
+
+  @override
+  String bills(String filtered, String billsList) {
+    return '$filtered/$billsList பில்கள்';
+  }
+
+  @override
+  String get filterBySite => 'தளத்தால் வடிகட்டு';
+
+  @override
+  String get allSites => 'அனைத்து தளங்கள்';
+
+  @override
+  String billId2(String index, String billNum) {
+    return '#$index - பில் ஐடி: $billNum';
+  }
+
+  @override
+  String pts6(String pts) {
+    return '$pts புள்ளிகள்';
+  }
+
+  @override
+  String get transactions => 'பரிவர்த்தனைகள்';
+
+  @override
+  String get rewards => 'வெகுமதிகள்';
+
+  @override
+  String get deleteAllNotifications2 => 'எல்லா அறிவிப்புகளையும் நீக்கு';
+
+  @override
+  String get areYouSureYouWantTo2 => 'எல்லா நிர்வாக அறிவிப்புகளையும் நீக்க வேண்டுமா?';
+
+  @override
+  String notificationSDeleted(String docs) {
+    return '$docs அறிவிப்புகள் நீக்கப்பட்டன';
+  }
+
+  @override
+  String deleteFailed(String e) {
+    return 'நீக்குதல் தோல்வி: $e';
+  }
+
+  @override
+  String get balajiPointsAdminPanel => 'Balaji Points - நிர்வாகப் பலகை';
+
+  @override
+  String get branchAdmin => 'கிளை நிர்வாகி';
+
+  @override
+  String get spin => 'சுழற்சி';
+
+  @override
+  String get pointsRepair => 'புள்ளி சரிசெய்தல்';
+
+  @override
+  String get duplicateAccounts => 'நகல் கணக்குகள்';
+
+  @override
+  String get exportUsers => 'பயனர்களை ஏற்றுமதி செய்';
+
+  @override
+  String get cleanUp => 'சுத்தம் செய்';
+
+  @override
+  String get backupDatabase => 'தரவுத்தள காப்புப்பிரதி';
+
+  @override
+  String get checkFirebaseDuplicates => 'தரவுத்தள நகல்களைச் சரிபார்';
+
+  @override
+  String get smartCleanup => 'ஸ்மார்ட் சுத்தம்';
+
+  @override
+  String get sendGreeting => 'வாழ்த்து அனுப்பு';
+
+  @override
+  String get users2 => 'பயனர்கள் - ...';
+
+  @override
+  String users3(String count) {
+    return 'பயனர்கள் - $count';
+  }
+
+  @override
+  String get pleaseEnterPinInBothFields => 'இரு புலங்களிலும் PIN-ஐ உள்ளிடவும்';
+
+  @override
+  String get pinMustBe46Digits => 'PIN 4-6 இலக்கங்களாக இருக்க வேண்டும்';
+
+  @override
+  String get pinMustContainOnlyNumbers => 'PIN-இல் எண்கள் மட்டுமே இருக்க வேண்டும்';
+
+  @override
+  String get pinResetSuccessfully => 'PIN மீட்டமைக்கப்பட்டது';
+
+  @override
+  String errorResettingPin(String e) {
+    return 'PIN மீட்டமைப்பதில் பிழை: $e';
+  }
+
+  @override
+  String resetPinFor(String carpenterName) {
+    return 'இவரின் PIN-ஐ மீட்டமை: $carpenterName';
+  }
+
+  @override
+  String phone2(String carpenterPhone) {
+    return 'தொலைபேசி: $carpenterPhone';
+  }
+
+  @override
+  String get carpenterWillNeedToUseThis => 'தச்சர் இந்தப் புதிய PIN மூலம் உள்நுழைய வேண்டும். அதைப் பாதுகாப்பாகத் தெரிவிக்கவும்.';
+
+  @override
+  String get newPin46Digits => 'புதிய PIN (4-6 இலக்கங்கள்)';
+
+  @override
+  String get carpenterDetails => 'தச்சர் விவரங்கள்';
+
+  @override
+  String get carpenterNotFound => 'தச்சர் கிடைக்கவில்லை';
+
+  @override
+  String get carpenterInformation => 'தச்சர் தகவல்';
+
+  @override
+  String get branch => 'கிளை';
+
+  @override
+  String get completeHistory => 'முழு வரலாறு';
+
+  @override
+  String get clearAll => 'அனைத்தையும் அழி';
+
+  @override
+  String get fromDate => 'தொடக்கத் தேதி';
+
+  @override
+  String get toDate => 'இறுதித் தேதி';
+
+  @override
+  String get editCarpenter => 'தச்சரைத் திருத்து';
+
+  @override
+  String get changingPhoneNumberWillUpdateLogin => 'தொலைபேசி எண்ணை மாற்றினால் உள்நுழைவு விவரம் மாறும்';
+
+  @override
+  String get branchId => 'கிளை ஐடி';
+
+  @override
+  String get phoneNumberCannotBeEmpty => 'தொலைபேசி எண் காலியாக இருக்கக்கூடாது';
+
+  @override
+  String get carpenterUpdatedSuccessfully => 'தச்சர் புதுப்பிக்கப்பட்டார்';
+
+  @override
+  String errorUpdatingCarpenter(String e) {
+    return 'தச்சரைப் புதுப்பிப்பதில் பிழை: $e';
+  }
+
+  @override
+  String get update => 'புதுப்பி';
+
+  @override
+  String get pendingBillRequests => 'நிலுவை பில் கோரிக்கைகள்';
+
+  @override
+  String get siteMaterialPurchase => 'தளப் பொருள் கொள்முதல்';
+
+  @override
+  String billNo2(String billNumber) {
+    return 'பில் எண் $billNumber';
+  }
+
+  @override
+  String site3(String siteName) {
+    return 'தளம்: $siteName';
+  }
+
+  @override
+  String pts7(String amount) {
+    return '+$amount புள்ளிகள்';
+  }
+
+  @override
+  String approveThisBillOfPointsWill2(String amount, String amount2) {
+    return '₹$amount பில்லை அனுமதிக்கவா?\n\n$amount2 புள்ளிகள் சேர்க்கப்படும்.';
+  }
+
+  @override
+  String get noHistoryFound => 'வரலாறு கிடைக்கவில்லை';
+
+  @override
+  String get pointsAwarded => 'புள்ளிகள் வழங்கப்பட்டன';
+
+  @override
+  String get pinMustBeAtLeast4 => 'PIN குறைந்தது 4 இலக்கங்கள் இருக்க வேண்டும்';
+
+  @override
+  String get carpenterCreatedSuccessfully => 'தச்சர் உருவாக்கப்பட்டார்!';
+
+  @override
+  String get failedToCreateCarpenter => 'தச்சரை உருவாக்க முடியவில்லை';
+
+  @override
+  String get pin46Digits => 'PIN (4-6 இலக்கங்கள்)';
+
+  @override
+  String get enterPin => 'PIN-ஐ உள்ளிடவும்';
+
+  @override
+  String get firstNameOptional => 'முதல் பெயர் (விருப்பம்)';
+
+  @override
+  String get enterFirstName => 'முதல் பெயரை உள்ளிடவும்';
+
+  @override
+  String get lastNameOptional => 'குடும்பப் பெயர் (விருப்பம்)';
+
+  @override
+  String get enterLastName => 'குடும்பப் பெயரை உள்ளிடவும்';
+
+  @override
+  String get create => 'உருவாக்கு';
+
+  @override
+  String get preparingCarpenterListPdf => 'தச்சர் பட்டியல் PDF தயாராகிறது...';
+
+  @override
+  String get noCarpentersToExportForCurrent => 'தற்போதைய வடிகட்டியில் ஏற்றுமதிக்கு தச்சர்கள் இல்லை.';
+
+  @override
+  String get carpenterListExportedSuccessfully => 'தச்சர் பட்டியல் ஏற்றுமதி செய்யப்பட்டது!';
+
+  @override
+  String errorExportingPdf(String e) {
+    return 'PDF ஏற்றுமதியில் பிழை: $e';
+  }
+
+  @override
+  String get exportCarpenterListToPdf => 'தச்சர் பட்டியலை PDF-ஆக ஏற்றுமதி செய்';
+
+  @override
+  String get sortByPoints => 'புள்ளிகளால் வரிசைப்படுத்து';
+
+  @override
+  String get sortByName => 'பெயரால் வரிசைப்படுத்து';
+
+  @override
+  String get recentJoins => 'சமீபத்தில் சேர்ந்தவர்கள்';
+
+  @override
+  String tier(String tier) {
+    return 'நிலை: $tier';
+  }
+
+  @override
+  String phoneTierPoints(String phone, String tier, String totalPoints) {
+    return 'தொலைபேசி: $phone\nநிலை: $tier\nபுள்ளிகள்: $totalPoints';
+  }
+
+  @override
+  String points2(String num) {
+    return '$num புள்ளிகள்';
+  }
+
+  @override
+  String get deleteAll2 => 'அனைத்தையும் நீக்கு';
+
+  @override
+  String get unableToLoadAdminNotifications => 'நிர்வாக அறிவிப்புகளை ஏற்ற முடியவில்லை';
+
+  @override
+  String get noNotifications => 'அறிவிப்புகள் இல்லை';
+
+  @override
+  String get youDonTHaveAnyAdmin => 'இன்னும் நிர்வாக அறிவிப்புகள் இல்லை';
+
+  @override
+  String get deleteNotification2 => 'அறிவிப்பை நீக்கு';
+
+  @override
+  String get dailySpinHistory => 'தினசரி சுழற்சி வரலாறு';
+
+  @override
+  String text(String month, String year) {
+    return '$month $year';
+  }
+
+  @override
+  String get mon => 'திங்';
+
+  @override
+  String get tue => 'செவ்';
+
+  @override
+  String get wed => 'புத';
+
+  @override
+  String get thu => 'வியா';
+
+  @override
+  String get fri => 'வெள்';
+
+  @override
+  String get sat => 'சனி';
+
+  @override
+  String get spinned => 'சுழற்றப்பட்டது';
+
+  @override
+  String get noSpin => 'சுழற்சி இல்லை';
+
+  @override
+  String get unknown => 'தெரியவில்லை';
+
+  @override
+  String get spinWinner => 'சுழற்சி வெற்றியாளர்';
+
+  @override
+  String get winnerName => 'வெற்றியாளர் பெயர்';
+
+  @override
+  String failedToFetchCarpenters(String e) {
+    return 'தச்சர்களைப் பெற முடியவில்லை: $e';
+  }
+
+  @override
+  String failedToPickImage2(String e) {
+    return 'படத்தைத் தேர்ந்தெடுக்க முடியவில்லை: $e';
+  }
+
+  @override
+  String failedToCaptureImage(String e) {
+    return 'படம் எடுக்க முடியவில்லை: $e';
+  }
+
+  @override
+  String failedToUploadImage(String e) {
+    return 'படத்தைப் பதிவேற்ற முடியவில்லை: $e';
+  }
+
+  @override
+  String notificationSentToCarpenters(String notificationCount) {
+    return '$notificationCount தச்சர்களுக்கு அறிவிப்பு அனுப்பப்பட்டது';
+  }
+
+  @override
+  String failedToSendNotifications(String e) {
+    return 'அறிவிப்புகளை அனுப்ப முடியவில்லை: $e';
+  }
+
+  @override
+  String get pleaseEnterAMessage => 'தயவுசெய்து செய்தியை உள்ளிடவும்';
+
+  @override
+  String get pleaseSelectAtLeastOneChannel => 'குறைந்தது ஒரு வழியைத் தேர்ந்தெடுக்கவும்';
+
+  @override
+  String get notAuthenticated => 'அங்கீகரிக்கப்படவில்லை';
+
+  @override
+  String get showInApp => 'ஆப்பில் காட்டு';
+
+  @override
+  String get greetingSentSuccessfully => 'வாழ்த்து அனுப்பப்பட்டது!';
+
+  @override
+  String get sendingGreeting => 'வாழ்த்து அனுப்பப்படுகிறது...';
+
+  @override
+  String get composeMessage => 'செய்தியை எழுது';
+
+  @override
+  String get enterGreetingMessageForAllCarpenters => 'எல்லா தச்சர்களுக்குமான வாழ்த்துச் செய்தியை உள்ளிடவும்';
+
+  @override
+  String get imageOptional => 'படம் (விருப்பம்)';
+
+  @override
+  String get pickFromGallery => 'கேலரியிலிருந்து தேர்ந்தெடு';
+
+  @override
+  String get orEnterImageUrl => 'அல்லது பட URL-ஐ உள்ளிடவும்:';
+
+  @override
+  String get enterImageUrlJpgPng => 'பட URL-ஐ உள்ளிடவும் (JPG/PNG)';
+
+  @override
+  String get invalidImageUrl => 'தவறான பட URL';
+
+  @override
+  String get selectChannels => 'வழிகளைத் தேர்ந்தெடு';
+
+  @override
+  String get showInAppHomeBanner => 'ஆப்பில் காட்டு (முகப்பு பேனர்)';
+
+  @override
+  String get bannerOnCarpenterHomeScreen => 'தச்சர் முகப்புத் திரையில் பேனர்';
+
+  @override
+  String get whatsapp => 'WhatsApp';
+
+  @override
+  String get manualSendViaWhatsappApp => 'WhatsApp ஆப் மூலம் கைமுறையாக அனுப்பு';
+
+  @override
+  String get manualSendViaSmsApp => 'SMS ஆப் மூலம் கைமுறையாக அனுப்பு';
+
+  @override
+  String get noteWhatsappAndSmsUseDevice => 'குறிப்பு: WhatsApp மற்றும் SMS சாதன ஆப் மூலம் அனுப்பப்படும். ஒவ்வொரு செய்தியையும் நிர்வாகி அந்த ஆப்பில் உறுதிப்படுத்த வேண்டும்.';
+
+  @override
+  String whatsappNotAvailableFor(String name) {
+    return '$name-க்கு WhatsApp கிடைக்கவில்லை';
+  }
+
+  @override
+  String smsNotAvailableFor(String name) {
+    return '$name-க்கு SMS கிடைக்கவில்லை';
+  }
+
+  @override
+  String get sendToAll => 'அனைவருக்கும் அனுப்பவா?';
+
+  @override
+  String get continueLabel => 'தொடர்';
+
+  @override
+  String progress(String i, String carpenters) {
+    return 'முன்னேற்றம்: $i/$carpenters';
+  }
+
+  @override
+  String opened(String name, String phone) {
+    return 'திறக்கப்பட்டது: $name\n$phone';
+  }
+
+  @override
+  String get tapSendInTheAppThen => 'ஆப்பில் அனுப்பு தட்டி, தொடர இங்கே OK தட்டவும்.';
+
+  @override
+  String sentToAllCarpenters(String sentCount) {
+    return 'அனைத்து $sentCount தச்சர்களுக்கும் அனுப்பப்பட்டது';
+  }
+
+  @override
+  String get confirmSend => 'அனுப்புவதை உறுதிப்படுத்து';
+
+  @override
+  String get sendAll => 'அனைத்தையும் அனுப்பு';
+
+  @override
+  String get sendViaWhatsapp => 'WhatsApp மூலம் அனுப்பு';
+
+  @override
+  String get sendViaSms => 'SMS மூலம் அனுப்பு';
+
+  @override
+  String get pleaseWait24HoursFromThe => 'கடைசி சுழற்சியிலிருந்து 24 மணிநேரம் காத்திருக்கவும்';
+
+  @override
+  String get noCarpentersWithApprovedBillsToday => 'இன்று அனுமதிக்கப்பட்ட பில்களுடன் தச்சர்கள் இல்லை';
+
+  @override
+  String get noEligibleCarpentersFound => 'தகுதியான தச்சர்கள் இல்லை';
+
+  @override
+  String isTodaySWinner(String carpenterName) {
+    return '$carpenterName இன்றைய வெற்றியாளர்!';
+  }
+
+  @override
+  String get selectALuckyWinner => 'அதிர்ஷ்ட வெற்றியாளரைத் தேர்ந்தெடு';
+
+  @override
+  String get viewSpinHistory => 'சுழற்சி வரலாற்றைப் பார்';
+
+  @override
+  String winner2(String winnerName) {
+    return 'வெற்றியாளர்: $winnerName';
+  }
+
+  @override
+  String get noPreviousSpins => 'முந்தைய சுழற்சிகள் இல்லை';
+
+  @override
+  String get readyToSpin => 'சுழற்றத் தயார்!';
+
+  @override
+  String nextSpinInHM(String hoursRemaining, String minutesRemaining) {
+    return 'அடுத்த சுழற்சி: $hoursRemainingம $minutesRemainingநி-இல்';
+  }
+
+  @override
+  String get todaySWinners => 'இன்றைய வெற்றியாளர்கள்';
+
+  @override
+  String get noWinnersYetToday => 'இன்று இன்னும் வெற்றியாளர்கள் இல்லை';
+
+  @override
+  String get monthlyWinners => 'மாதாந்திர வெற்றியாளர்கள்';
+
+  @override
+  String get fullHistory => 'முழு வரலாறு';
+
+  @override
+  String get noWinnersThisMonthYet => 'இந்த மாதம் இன்னும் வெற்றியாளர்கள் இல்லை';
+
+  @override
+  String get untitled => 'தலைப்பில்லை';
+
+  @override
+  String get pleaseEnterAValidNumberFor => 'புள்ளிகளுக்குச் சரியான எண்ணை உள்ளிடவும்';
+
+  @override
+  String get pleaseUploadABannerImage => 'பேனர் படத்தைப் பதிவேற்றவும்';
+
+  @override
+  String get failedToUploadBannerImage => 'பேனர் படத்தைப் பதிவேற்ற முடியவில்லை';
+
+  @override
+  String get loadingEligibleCarpenters => 'தகுதியான தச்சர்கள் ஏற்றப்படுகின்றனர்...';
+
+  @override
+  String get errorLoadingData => 'தரவை ஏற்றுவதில் பிழை';
+
+  @override
+  String get noEligibleCarpentersToday => 'இன்று தகுதியான தச்சர்கள் இல்லை';
+
+  @override
+  String get noCarpentersHaveApprovedBillsToday => 'இன்று எந்தத் தச்சருக்கும் பில் அனுமதிக்கப்படவில்லை.\nதினசரி சுழற்சிக்குத் தகுதிபெற பில்களை அனுமதிக்கவும்!';
+
+  @override
+  String get todaySEligibleCarpenters => 'இன்றைய தகுதியான தச்சர்கள்';
+
+  @override
+  String eligible(String todayStr, String carpenters) {
+    return '$todayStr • $carpenters தகுதியானவர்கள்';
+  }
+
+  @override
+  String get branchAdminAccounts => 'கிளை நிர்வாகி கணக்குகள்';
+
+  @override
+  String get reviewEachAdminAndTheBranch => 'ஒவ்வொரு நிர்வாகியையும் அவரது கிளையையும் பாருங்கள். கடவுச்சொல்லை மாற்றலாம் அல்லது கணக்கை நீக்கலாம்.';
+
+  @override
+  String get searchByNameEmailOrBranch => 'பெயர், மின்னஞ்சல் அல்லது கிளை மூலம் தேடு';
+
+  @override
+  String get clearSearch => 'தேடலை அழி';
+
+  @override
+  String get loadingBranchAdminAccounts => 'கிளை நிர்வாகி கணக்குகள் ஏற்றப்படுகின்றன…';
+
+  @override
+  String get noBranchAdminAccountsYet => 'இன்னும் கிளை நிர்வாகி கணக்குகள் இல்லை.';
+
+  @override
+  String get loadingBranchNames => 'கிளைப் பெயர்கள் ஏற்றப்படுகின்றன…';
+
+  @override
+  String get noEmail => 'மின்னஞ்சல் இல்லை';
+
+  @override
+  String noAdminAccountsMatch(String search) {
+    return '“$search”-க்குப் பொருந்தும் நிர்வாகக் கணக்குகள் இல்லை.';
+  }
+
+  @override
+  String get adminAccounts => 'நிர்வாகக் கணக்குகள்';
+
+  @override
+  String passwordUpdatedFor(String email) {
+    return '$email-இன் கடவுச்சொல் புதுப்பிக்கப்பட்டது.';
+  }
+
+  @override
+  String get deleteBranchAdmin => 'கிளை நிர்வாகியை நீக்கவா?';
+
+  @override
+  String deleteForTheyWillLoseSign(String email, String branchName) {
+    return '$branchName-க்கான $email-ஐ நீக்கவா? அவர் உள்நுழைய முடியாது. கிளை உறுப்பினர்களும் அவர்களின் புள்ளிகளும் இருக்கும்.';
+  }
+
+  @override
+  String get deleteAdmin => 'நிர்வாகியை நீக்கு';
+
+  @override
+  String get adminAccountDeleted => 'நிர்வாகக் கணக்கு நீக்கப்பட்டது.';
+
+  @override
+  String get changePassword => 'கடவுச்சொல்லை மாற்று';
+
+  @override
+  String get deleteAccount => 'கணக்கை நீக்கு';
+
+  @override
+  String get changeAdminPassword => 'நிர்வாகி கடவுச்சொல்லை மாற்று';
+
+  @override
+  String get newPassword => 'புதிய கடவுச்சொல்';
+
+  @override
+  String get useAtLeast8Characters => 'குறைந்தது 8 எழுத்துகள் பயன்படுத்தவும்';
+
+  @override
+  String get confirmNewPassword => 'புதிய கடவுச்சொல்லை உறுதிப்படுத்து';
+
+  @override
+  String get updatePassword => 'கடவுச்சொல்லைப் புதுப்பி';
+
+  @override
+  String get tryAgain => 'மீண்டும் முயற்சி';
+
+  @override
+  String get branchManagement => 'கிளை மேலாண்மை';
+
+  @override
+  String branchesManageBranchAccessAndStatus(String docs) {
+    return '$docs கிளைகள் · கிளை அணுகல் மற்றும் நிலையை நிர்வகி';
+  }
+
+  @override
+  String get addBranch => 'கிளையைச் சேர்';
+
+  @override
+  String get noBranchesYet => 'இன்னும் கிளைகள் இல்லை.';
+
+  @override
+  String get branchesCouldNotBeLoaded => 'கிளைகளை ஏற்ற முடியவில்லை.';
+
+  @override
+  String get diwaliCelebrationEnabledAddBillIs => 'தீபாவளி கொண்டாட்டம் இயக்கப்பட்டது. இந்தக் கிளையில் பில் சேர் மறைக்கப்பட்டது.';
+
+  @override
+  String get diwaliCelebrationDisabledAddBillIs => 'தீபாவளி கொண்டாட்டம் முடக்கப்பட்டது. இந்தக் கிளையில் பில் சேர் கிடைக்கிறது.';
+
+  @override
+  String get unableToUpdateTheBranchCelebration => 'கிளை கொண்டாட்ட அமைப்பைப் புதுப்பிக்க முடியவில்லை.';
+
+  @override
+  String codeId(String branchCode, String branchId) {
+    return 'குறியீடு: $branchCode  ·  ஐடி: $branchId';
+  }
+
+  @override
+  String get diwaliCelebrationOnHome => 'முகப்பில் தீபாவளி கொண்டாட்டம்';
+
+  @override
+  String get showsTheBranchPrizeListAnd => 'கிளைப் பரிசுப் பட்டியலைக் காட்டி பில் சேர்-ஐ மறைக்கும்.';
+
+  @override
+  String get offNoPopupAddBillRemains => 'முடக்கம்: பாப்அப் இல்லை; பில் சேர் கிடைக்கும்.';
+
+  @override
+  String get branchDeactivated => 'கிளை செயலிழக்கப்பட்டது.';
+
+  @override
+  String get branchActivated => 'கிளை செயல்படுத்தப்பட்டது.';
+
+  @override
+  String get unableToUpdateTheBranch => 'கிளையைப் புதுப்பிக்க முடியவில்லை.';
+
+  @override
+  String get deactivate => 'செயலிழக்கச் செய்';
+
+  @override
+  String get activate => 'செயல்படுத்து';
+
+  @override
+  String branchCreated(String id) {
+    return 'கிளை உருவாக்கப்பட்டது ($id)';
+  }
+
+  @override
+  String get failedToCreateBranch => 'கிளையை உருவாக்க முடியவில்லை';
+
+  @override
+  String get newBranch => 'புதிய கிளை';
+
+  @override
+  String get branchFullName => 'கிளையின் முழுப் பெயர் *';
+
+  @override
+  String get shortName => 'சுருக்கப் பெயர் *';
+
+  @override
+  String get enterAShortBranchName => 'கிளையின் சுருக்கப் பெயரை உள்ளிடவும்';
+
+  @override
+  String get branchCode => 'கிளைக் குறியீடு *';
+
+  @override
+  String get use216LettersNumbersOr => '2–16 எழுத்துகள், எண்கள் அல்லது இடைக்கோடுகள்';
+
+  @override
+  String get address => 'முகவரி';
+
+  @override
+  String get shareTheTemporaryPasswordSecurelyThe => 'தற்காலிக கடவுச்சொல்லைப் பாதுகாப்பாகப் பகிருங்கள். முதல் உள்நுழைவுக்குப் பின் நிர்வாகி அதை மாற்றலாம்.';
+
+  @override
+  String adminCreatedForTheyCanSign(String email, String branchName) {
+    return '$branchName-க்கு நிர்வாகி $email உருவாக்கப்பட்டார். மின்னஞ்சல், கடவுச்சொல் மூலம் உள்நுழையலாம்.';
+  }
+
+  @override
+  String get selectABranchFirst => 'முதலில் கிளையைத் தேர்ந்தெடுக்கவும்.';
+
+  @override
+  String get adminDetails => 'நிர்வாகி விவரங்கள்';
+
+  @override
+  String get mobileNumber10Digits => 'மொபைல் எண் * (10 இலக்கங்கள்)';
+
+  @override
+  String get enterValid10DigitPhone => 'சரியான 10 இலக்க தொலைபேசி எண்';
+
+  @override
+  String get emailAndPasswordLogin => 'மின்னஞ்சல், கடவுச்சொல் உள்நுழைவு';
+
+  @override
+  String get emailAddress => 'மின்னஞ்சல் முகவரி *';
+
+  @override
+  String get temporaryPassword8CharactersMinimum => 'தற்காலிக கடவுச்சொல் * (குறைந்தது 8 எழுத்துகள்)';
+
+  @override
+  String get confirmPassword => 'கடவுச்சொல்லை உறுதிப்படுத்து *';
+
+  @override
+  String get assignBranch => 'கிளையை ஒதுக்கு';
+
+  @override
+  String get loadingActiveBranches => 'செயலில் உள்ள கிளைகள் ஏற்றப்படுகின்றன…';
+
+  @override
+  String get noActiveBranchesFoundCreateOr => 'செயலில் உள்ள கிளைகள் இல்லை. நிர்வாகியைச் சேர்க்கும் முன் கிளையை உருவாக்கவும் அல்லது செயல்படுத்தவும்.';
+
+  @override
+  String get selectBranch => 'கிளையைத் தேர்ந்தெடு';
+
+  @override
+  String get creatingAccount => 'கணக்கு உருவாக்கப்படுகிறது…';
+
+  @override
+  String get createAdminAccount => 'நிர்வாகக் கணக்கை உருவாக்கு';
+
+  @override
+  String get signOutOfSuperAdmin => 'சூப்பர் நிர்வாகியிலிருந்து வெளியேறவா?';
+
+  @override
+  String get superAdmin => 'சூப்பர் நிர்வாகி';
+
+  @override
+  String get superAdminConsole => 'சூப்பர் நிர்வாகக் கன்சோல்';
+
+  @override
+  String get branchesAdministratorsAndPoints => 'கிளைகள், நிர்வாகிகள், புள்ளிகள்';
+
+  @override
+  String get branches => 'கிளைகள்';
+
+  @override
+  String get createAdmin => 'நிர்வாகியை உருவாக்கு';
+
+  @override
+  String get roles => 'பங்குகள்';
+
+  @override
+  String get superAdmin2 => 'சூப்பர் நிர்வாகி';
+
+  @override
+  String get createAdmin2 => 'நிர்வாகியை உருவாக்கு';
+
+  @override
+  String get pointsReset => 'புள்ளி மீட்டமைப்பு';
+
+  @override
+  String get onlyPointsTiersAndPointsHistory => 'தச்சர்கள், கட்டடக் கலைஞர்கள், உள்ளக வடிவமைப்பாளர்களின் புள்ளிகள், நிலைகள், வரலாறு மட்டுமே அழிக்கப்படும். கணக்குகள், உள்நுழைவு, கிளை நிர்வாகிகள், பில்கள் மாறாது.';
+
+  @override
+  String get afterPrizeDistributionStartAFresh => 'பரிசு வழங்கிய பின் ஒரு கிளைக்குப் புதிய புள்ளிப் பருவத்தைத் தொடங்குங்கள்.';
+
+  @override
+  String resetUsersAndDeletedHistoryRecords(String branchName, String usersReset, String historyDocumentsDeleted) {
+    return '$branchName: $usersReset பயனர்கள் மீட்டமைக்கப்பட்டு $historyDocumentsDeleted வரலாற்றுப் பதிவுகள் நீக்கப்பட்டன. கணக்குகளும் பில்களும் உள்ளன.';
+  }
+
+  @override
+  String get thisPermanentlyClearsPointsAndPoints => 'இது இந்தக் கிளையின் தச்சர்கள், கட்டடக் கலைஞர்கள், உள்ளக வடிவமைப்பாளர்களின் புள்ளிகளையும் வரலாற்றையும் நிரந்தரமாக அழிக்கும். பயனர் கணக்குகள், கிளை நிர்வாகிகள், பில்கள் இருக்கும்.';
+
+  @override
+  String hasEligibleUsersPointsAndHistory(String branchName, String eligibleUsers, String currentPoints, String historyDocuments) {
+    return '$branchName-இல் $eligibleUsers தகுதியான பயனர்கள், $currentPoints புள்ளிகள், $historyDocuments வரலாற்றுப் பதிவுகள் உள்ளன.';
+  }
+
+  @override
+  String get resetBranchPoints => 'கிளைப் புள்ளிகளை மீட்டமைக்கவா?';
+
+  @override
+  String typeToConfirm(String branchId) {
+    return 'உறுதிப்படுத்த $branchId என தட்டச்சு செய்யவும்';
+  }
+
+  @override
+  String get resetPointsAndHistory => 'புள்ளிகளையும் வரலாற்றையும் மீட்டமை';
+
+  @override
+  String get couldNotLoadBranchesForPoints => 'புள்ளி சுத்தத்திற்கான கிளைகளை ஏற்ற முடியவில்லை.';
+
+  @override
+  String get annualPointsReset => 'வருடாந்திர புள்ளி மீட்டமைப்பு';
+
+  @override
+  String get branchToReset => 'மீட்டமைக்க வேண்டிய கிளை';
+
+  @override
+  String get checkingBranch => 'கிளை சரிபார்க்கப்படுகிறது…';
+
+  @override
+  String get previewReset => 'மீட்டமைப்பு முன்னோட்டம்';
+
+  @override
+  String get createABranchBeforeResettingPoints => 'புள்ளிகளை மீட்டமைக்கும் முன் கிளையை உருவாக்கவும்.';
+
+  @override
+  String cleanupPreview(String branchName) {
+    return 'சுத்த முன்னோட்டம் · $branchName';
+  }
+
+  @override
+  String get eligibleUsers => 'தகுதியான பயனர்கள்';
+
+  @override
+  String get currentPoints => 'தற்போதைய புள்ளிகள்';
+
+  @override
+  String get historyItems => 'வரலாற்றுப் பதிவுகள்';
+
+  @override
+  String get resettingBranchPoints => 'கிளைப் புள்ளிகள் மீட்டமைக்கப்படுகின்றன…';
+
+  @override
+  String couldNotLoadSavedRolesShowing(String loadError) {
+    return 'சேமித்த பங்குகளை ஏற்ற முடியவில்லை. நான்கு இயல்பு பங்குகள் காட்டப்படுகின்றன. $loadError';
+  }
+
+  @override
+  String get roleIdsAreStoredWithUser => 'பங்கு ஐடிகள் பயனர் கணக்குகளுடன் சேமிக்கப்படும். பங்கை நீக்கினால் புதிய பதிவுகளிலிருந்து நீங்கும்; தற்போதைய கணக்குகள் இருக்கும்.';
+
+  @override
+  String willBeRemovedFromNewRegistration(String name) {
+    return '$name புதிய பதிவிலிருந்து நீக்கப்படும். தற்போதைய பயனர்களின் பங்கும் தரவும் இருக்கும்.';
+  }
+
+  @override
+  String roleCreated(String name, String id) {
+    return 'பங்கு உருவாக்கப்பட்டது: $name ($id).';
+  }
+
+  @override
+  String get restoreRole => 'பங்கை மீட்டெடுக்கவா?';
+
+  @override
+  String get deleteRole => 'பங்கை நீக்கவா?';
+
+  @override
+  String willBeAvailableForNewAccount(String name) {
+    return '$name புதிய கணக்குப் பதிவுக்குக் கிடைக்கும்.';
+  }
+
+  @override
+  String get restoreRole2 => 'பங்கை மீட்டெடு';
+
+  @override
+  String get deleteRole2 => 'பங்கை நீக்கு';
+
+  @override
+  String get accountRoles => 'கணக்குப் பங்குகள்';
+
+  @override
+  String get manageTheRolesShownInCreate => 'கணக்கு உருவாக்கத்தில் காட்டப்படும் பங்குகளை நிர்வகி.';
+
+  @override
+  String get addRole => 'பங்கைச் சேர்';
+
+  @override
+  String get loadingAccountRoles => 'கணக்குப் பங்குகள் ஏற்றப்படுகின்றன…';
+
+  @override
+  String get noRolesFound => 'பங்குகள் இல்லை.';
+
+  @override
+  String roleId(String id) {
+    return 'பங்கு ஐடி: $id';
+  }
+
+  @override
+  String get restore => 'மீட்டெடு';
+
+  @override
+  String get deleted => 'நீக்கப்பட்டது';
+
+  @override
+  String get addAccountRole => 'கணக்குப் பங்கைச் சேர்';
+
+  @override
+  String get roleName => 'பங்கின் பெயர் *';
+
+  @override
+  String get enterAtLeast2Characters => 'குறைந்தது 2 எழுத்துகள் உள்ளிடவும்';
+
+  @override
+  String get shortFormOptional => 'சுருக்க வடிவம் (விருப்பம்)';
+
+  @override
+  String get exampleAr => 'எ.கா: Ar.';
+
+  @override
+  String get use10CharactersOrLess => '10 அல்லது குறைவான எழுத்துகள்';
+
+  @override
+  String get saving => 'சேமிக்கப்படுகிறது…';
+
+  @override
+  String get saveRole => 'பங்கைச் சேமி';
+
+  @override
+  String get cleanUpDuplicates => 'நகல்களைச் சுத்தம் செய்';
+
+  @override
+  String error3(String error) {
+    return 'பிழை: $error';
+  }
+
+  @override
+  String get duplicatesFound => 'நகல்கள் கண்டறியப்பட்டன';
+
+  @override
+  String accountsAcrossPhoneNumbers(String duplicateCount, String duplicates) {
+    return '$duplicates தொலைபேசி எண்களில் $duplicateCount கணக்குகள்';
+  }
+
+  @override
+  String get noDuplicatesFound => 'நகல்கள் இல்லை!';
+
+  @override
+  String get allCarpenterAccountsAreUnique => 'எல்லா தச்சர் கணக்குகளும் தனித்துவமானவை.';
+
+  @override
+  String get duplicateGroups => 'நகல் குழுக்கள்';
+
+  @override
+  String phoneAccounts(String groupIndex, String phone, String users) {
+    return '$groupIndex. தொலைபேசி: $phone ($users கணக்குகள்)';
+  }
+
+  @override
+  String get keep => 'வைத்திரு';
+
+  @override
+  String get reviewOnly => 'சரிபார்ப்பு மட்டும்';
+
+  @override
+  String diagnosticUser(String phoneNumber) {
+    return 'சோதனை: பயனர் $phoneNumber';
+  }
+
+  @override
+  String get noData => 'தரவு இல்லை';
+
+  @override
+  String get phoneNumberInformation => 'தொலைபேசி எண் தகவல்';
+
+  @override
+  String get originalPhone => 'அசல் தொலைபேசி';
+
+  @override
+  String get normalizedPhone => 'தரப்படுத்திய தொலைபேசி';
+
+  @override
+  String get match => 'பொருத்தம்';
+
+  @override
+  String get userDocumentStatus => 'பயனர் ஆவண நிலை';
+
+  @override
+  String get existsByDocumentId => 'உள்ளது (ஆவண ஐடி மூலம்)';
+
+  @override
+  String get documentId => 'ஆவண ஐடி';
+
+  @override
+  String get phoneFieldInData => 'தொலைபேசி புலம் (தரவில்)';
+
+  @override
+  String get existsByPhoneFieldQuery => 'உள்ளது (தொலைபேசி தேடல் மூலம்)';
+
+  @override
+  String get documentIdFromQuery => 'ஆவண ஐடி (தேடலிலிருந்து)';
+
+  @override
+  String get issueDetected => 'சிக்கல் கண்டறியப்பட்டது';
+
+  @override
+  String get documentIdMismatch => 'ஆவண ஐடி பொருந்தவில்லை!';
+
+  @override
+  String get userDocumentFound => 'பயனர் ஆவணம் கிடைத்தது';
+
+  @override
+  String get userDocumentNotFound => 'பயனர் ஆவணம் கிடைக்கவில்லை';
+
+  @override
+  String get billsCollectionStatus => 'பில் தொகுப்பு நிலை';
+
+  @override
+  String get phoneFormatMismatchInBills => 'பில்களில் தொலைபேசி வடிவம் பொருந்தவில்லை!';
+
+  @override
+  String get phoneFormatConsistent => 'தொலைபேசி வடிவம் சரியாக உள்ளது';
+
+  @override
+  String get pendingBillsStatus => 'நிலுவை பில்களின் நிலை';
+
+  @override
+  String get totalPendingBills => 'மொத்த நிலுவை பில்கள்';
+
+  @override
+  String get matchingBillsFound => 'பொருந்தும் பில்கள்';
+
+  @override
+  String get noPendingBillsFoundForThis => 'இந்தப் பயனருக்கு நிலுவை பில்கள் இல்லை!';
+
+  @override
+  String get carpenterId => 'தச்சர் ஐடி';
+
+  @override
+  String get carpenterPhone => 'தச்சர் தொலைபேசி';
+
+  @override
+  String get isToday => 'இன்றையதா';
+
+  @override
+  String get createdAt => 'உருவாக்கியது';
+
+  @override
+  String get thisBillWonTShowIn => 'இந்த பில் இயல்பு நிர்வாகப் பார்வையில் தெரியாது (இன்றையது அல்ல)';
+
+  @override
+  String get totalAccounts => 'மொத்த கணக்குகள்';
+
+  @override
+  String get duplicatePhones => 'நகல் தொலைபேசிகள்';
+
+  @override
+  String get affectedAccounts => 'பாதிக்கப்பட்ட கணக்குகள்';
+
+  @override
+  String get noDuplicateAccountsFound => 'நகல் கணக்குகள் இல்லை!';
+
+  @override
+  String get duplicatePhoneNumbers => 'நகல் தொலைபேசி எண்கள்';
+
+  @override
+  String account(String idx) {
+    return 'கணக்கு $idx';
+  }
+
+  @override
+  String get review => 'சரிபார்';
+
+  @override
+  String get preparingUserBackupPdf => 'பயனர் காப்புப்பிரதி PDF தயாராகிறது...';
+
+  @override
+  String get noCarpentersFound2 => 'தச்சர்கள் இல்லை.';
+
+  @override
+  String userBackupExportedSuccessfullyCarpenters(String users) {
+    return 'பயனர் காப்புப்பிரதி ஏற்றுமதி செய்யப்பட்டது! ($users தச்சர்கள்)';
+  }
+
+  @override
+  String get exportUsersBackup => 'பயனர் காப்புப்பிரதி ஏற்றுமதி';
+
+  @override
+  String get createUserBackup => 'பயனர் காப்புப்பிரதியை உருவாக்கு';
+
+  @override
+  String get exportAllCarpentersWithTheirPoints => 'சுத்தத்திற்கு முன் எல்லா தச்சர்களையும் புள்ளிகள், தொலைபேசி எண்களுடன் ஏற்றுமதி செய்.';
+
+  @override
+  String get exporting => 'ஏற்றுமதி செய்யப்படுகிறது...';
+
+  @override
+  String get exportToPdf => 'PDF-ஆக ஏற்றுமதி செய்';
+
+  @override
+  String get pdfWillInclude => 'PDF-இல் இருக்கும்:';
+
+  @override
+  String get carpenterNameAndPhoneNumberTotal => '• தச்சர் பெயர், தொலைபேசி எண்\n• மொத்த மற்றும் பெற்ற புள்ளிகள்\n• கணக்கு உருவாக்கிய தேதி\n• மொத்த தச்சர்கள், மொத்தப் புள்ளிகள் சுருக்கம்';
+
+  @override
+  String get firebaseDuplicateCheck => 'தரவுத்தள நகல் சோதனை';
+
+  @override
+  String get firebaseDatabaseSummary => 'தரவுத்தள சுருக்கம்';
+
+  @override
+  String get totalCarpenters2 => 'மொத்த தச்சர்கள்:';
+
+  @override
+  String get uniquePhoneNumbers => 'தனித்துவமான தொலைபேசி எண்கள்:';
+
+  @override
+  String get duplicatePhoneNumbers2 => 'நகல் தொலைபேசி எண்கள்:';
+
+  @override
+  String get totalDuplicateAccounts => 'மொத்த நகல் கணக்குகள்:';
+
+  @override
+  String get allPhoneNumbersAreUnique => 'எல்லா தொலைபேசி எண்களும் தனித்துவமானவை.';
+
+  @override
+  String get duplicateMobileNumbers => 'நகல் மொபைல் எண்கள்';
+
+  @override
+  String mobile2(String groupIndex, String totalGroups, String phone) {
+    return '$groupIndex/$totalGroups - மொபைல்: $phone';
+  }
+
+  @override
+  String accountsWithSamePhoneNumber(String users) {
+    return 'ஒரே தொலைபேசி எண்ணுடன் $users கணக்குகள்';
+  }
+
+  @override
+  String get main => 'முதன்மை';
+
+  @override
+  String get duplicate => 'நகல்';
+
+  @override
+  String get startingBackup => 'காப்புப்பிரதி தொடங்குகிறது...';
+
+  @override
+  String backupExportedUsersBills(String users, String bills) {
+    return 'காப்புப்பிரதி ஏற்றுமதி: $users பயனர்கள், $bills பில்கள்';
+  }
+
+  @override
+  String backupFailed(String e) {
+    return 'காப்புப்பிரதி தோல்வி: $e';
+  }
+
+  @override
+  String get backupData => 'காப்புப்பிரதி தரவு';
+
+  @override
+  String totalSizeKb(String backupJson) {
+    return 'மொத்த அளவு: $backupJson KB';
+  }
+
+  @override
+  String get firebaseBackup => 'தரவுத்தள காப்புப்பிரதி';
+
+  @override
+  String get databaseBackup => 'தரவுத்தள காப்புப்பிரதி';
+
+  @override
+  String get createACompleteBackupOfAll => 'எல்லா பயனர்கள் மற்றும் பில் தரவின் முழு காப்புப்பிரதியை உருவாக்கவும்.';
+
+  @override
+  String get whatWillBeBackedUp => 'காப்புப்பிரதியில் இருப்பவை:';
+
+  @override
+  String get allUserAccountsCarpentersAdminsAll => '• எல்லா பயனர் கணக்குகளும் (தச்சர்கள் & நிர்வாகிகள்)\n• எல்லா பில் பதிவுகளும்\n• நேரத்துடன் முழு பயனர் தரவு\n• தரவுத்தள மெட்டாடேட்டா';
+
+  @override
+  String get backingUp => 'காப்புப்பிரதி எடுக்கப்படுகிறது...';
+
+  @override
+  String get startBackup => 'காப்புப்பிரதியைத் தொடங்கு';
+
+  @override
+  String get backupIsStoredInFirebaseNo => 'காப்புப்பிரதி சர்வரில் சேமிக்கப்படும். சாதனத்தில் கோப்புகள் சேமிக்கப்படாது.';
+
+  @override
+  String get repairDetails => 'சரிசெய்தல் விவரம்';
+
+  @override
+  String get verificationComplete => 'சரிபார்ப்பு முடிந்தது';
+
+  @override
+  String get noPointsLostAllUsersVerified => 'புள்ளிகள் இழக்கப்படவில்லை\nஎல்லா பயனர்களும் சரிபார்க்கப்பட்டனர்\nதரவு சரியாக உள்ளது';
+
+  @override
+  String get userWiseRepairResults => 'பயனர்வாரி சரிசெய்தல் முடிவுகள்';
+
+  @override
+  String get noRepairsCompleted => 'சரிசெய்தல்கள் இல்லை';
+
+  @override
+  String get repairComplete => 'சரிசெய்தல் முடிந்தது';
+
+  @override
+  String get successfullyRepaired => 'வெற்றிகரமாகச் சரிசெய்யப்பட்டது';
+
+  @override
+  String get failed => 'தோல்வி';
+
+  @override
+  String get duplicatesRemoved => 'நகல்கள் நீக்கப்பட்டன';
+
+  @override
+  String get pointsAdjusted => 'புள்ளிகள் சரிசெய்யப்பட்டன';
+
+  @override
+  String get before => 'முன்';
+
+  @override
+  String get after => 'பின்';
+
+  @override
+  String get repairFailed => 'சரிசெய்தல் தோல்வி';
+
+  @override
+  String get thisToolScansUserPointsData => 'இந்தக் கருவி புள்ளித் தரவைச் சரிபார்த்துச் சரிசெய்யும்:\n• நகல் வரலாற்றுப் பதிவுகள்\n• பொருந்தாத மொத்தப் புள்ளிகள்\n• தவறான நிலைகள்';
+
+  @override
+  String get pointsRepairTool => 'புள்ளி சரிசெய்தல் கருவி';
+
+  @override
+  String get pointsDataRepair => 'புள்ளித் தரவு சரிசெய்தல்';
+
+  @override
+  String get scanReport => 'ஸ்கேன் அறிக்கை';
+
+  @override
+  String get totalUsersScanned => 'ஸ்கேன் செய்த மொத்த பயனர்கள்';
+
+  @override
+  String get usersWithIssues => 'சிக்கல் உள்ள பயனர்கள்';
+
+  @override
+  String get usersWithDuplicates => 'நகல் உள்ள பயனர்கள்';
+
+  @override
+  String get totalDuplicateEntries => 'மொத்த நகல் பதிவுகள்';
+
+  @override
+  String get pointsMismatches => 'புள்ளி பொருத்தமின்மைகள்';
+
+  @override
+  String get viewFullScanDetails => 'முழு ஸ்கேன் விவரம் பார்';
+
+  @override
+  String get viewDetailedResults => 'விரிவான முடிவுகளைப் பார்';
+
+  @override
+  String get scanForIssues => 'சிக்கல்களை ஸ்கேன் செய்';
+
+  @override
+  String get scanAgain => 'மீண்டும் ஸ்கேன் செய்';
+
+  @override
+  String get repairAllUsers => 'எல்லா பயனர்களையும் சரிசெய்';
+
+  @override
+  String get noIssuesFoundAllUserData => 'சிக்கல்கள் இல்லை! எல்லாத் தரவும் சரியாக உள்ளது.';
+
+  @override
+  String scanFailed(String e) {
+    return 'ஸ்கேன் தோல்வி: $e';
+  }
+
+  @override
+  String get repairAllUsers2 => 'எல்லா பயனர்களையும் சரிசெய்யவா?';
+
+  @override
+  String get repair => 'சரிசெய்';
+
+  @override
+  String repairFailed2(String e) {
+    return 'சரிசெய்தல் தோல்வி: $e';
+  }
+
+  @override
+  String get scanningForIssues => 'சிக்கல்கள் ஸ்கேன் செய்யப்படுகின்றன...';
+
+  @override
+  String get analyzingAllUserPointsData => 'எல்லா பயனர் புள்ளித் தரவும் பகுப்பாய்வு செய்யப்படுகிறது';
+
+  @override
+  String get scanResultsFullDetails => 'ஸ்கேன் முடிவுகள் - முழு விவரம்';
+
+  @override
+  String get usersWithIssues2 => 'சிக்கல் உள்ள பயனர்கள்';
+
+  @override
+  String get noUsersWithIssuesFound => 'சிக்கல் உள்ள பயனர்கள் இல்லை';
+
+  @override
+  String get scanSummary => 'ஸ்கேன் சுருக்கம்';
+
+  @override
+  String get totalUsersScanned2 => 'ஸ்கேன் செய்த மொத்த பயனர்கள்';
+
+  @override
+  String get totalDuplicateEntries2 => 'மொத்த நகல் பதிவுகள்';
+
+  @override
+  String get totalPointsDifference => 'மொத்தப் புள்ளி வேறுபாடு';
+
+  @override
+  String duplicates(String duplicateCount) {
+    return '$duplicateCount நகல்கள்';
+  }
+
+  @override
+  String get historySum => 'வரலாற்றுக் கூட்டுத்தொகை';
+
+  @override
+  String get difference => 'வேறுபாடு';
+
+  @override
+  String get totalEntries => 'மொத்த பதிவுகள்';
+
+  @override
+  String get uniqueBills => 'தனித்துவமான பில்கள்';
+
+  @override
+  String get duplicateBills => 'நகல் பில்கள்:';
+
+  @override
+  String get smartDuplicateCleanup => 'ஸ்மார்ட் நகல் சுத்தம்';
+
+  @override
+  String get allCarpentersHaveUniquePhoneNumbers => 'எல்லா தச்சர்களுக்கும் தனித்துவமான தொலைபேசி எண்கள் உள்ளன.';
+
+  @override
+  String get potentialDuplicateAccountsReviewRequired => 'சாத்தியமான நகல் கணக்குகள் — சரிபார்ப்பு தேவை';
+
+  @override
+  String foundDuplicateMobileNumbers(String duplicateGroups) {
+    return '$duplicateGroups நகல் மொபைல் எண்கள் கண்டறியப்பட்டன';
+  }
+
+  @override
+  String accountsToReview(String totalForReview) {
+    return 'சரிபார்க்க வேண்டிய கணக்குகள்: $totalForReview';
+  }
+
+  @override
+  String get allRecordsAreRetainedTheHighest => 'எல்லாப் பதிவுகளும் வைக்கப்படும். அதிகப் புள்ளிகள் உள்ள சுயவிவரம் பரிந்துரைக்கப்பட்ட முதன்மைக் கணக்கு மட்டுமே.';
+
+  @override
+  String potentialDuplicateGroups(String duplicateGroups) {
+    return 'சாத்தியமான நகல் குழுக்கள் ($duplicateGroups)';
+  }
+
+  @override
+  String mobile3(String groupIndex, String phone) {
+    return '$groupIndex. மொபைல்: $phone';
+  }
+
+  @override
+  String similarAccountsPointsDiff(String reviewUsers, String pointsDiff) {
+    return '$reviewUsers ஒத்த கணக்குகள் | புள்ளி வேறுபாடு: $pointsDiff';
+  }
+
+  @override
+  String get suggestedPrimaryAccountHighestPoints => 'பரிந்துரைக்கப்பட்ட முதன்மைக் கணக்கு (அதிகப் புள்ளிகள்)';
+
+  @override
+  String get otherMatchingAccountsManualReviewRequired => 'பிற பொருந்தும் கணக்குகள் — கைமுறைச் சரிபார்ப்பு தேவை';
+
+  @override
+  String repairConfirmBody(String count) {
+    return 'இது $count பயனர்களைச் சரிசெய்யும்:\n\n• நகல் வரலாற்றுப் பதிவுகள் நீக்கப்படும்\n• சரியான மொத்தம் மீண்டும் கணக்கிடப்படும்\n• நிலைகள் புதுப்பிக்கப்படும்\n\nஇதை எளிதில் திரும்பப் பெற முடியாது.';
+  }
+
+  @override
+  String repairSuccess(String repaired, String total) {
+    return '$repaired/$total பயனர்கள் வெற்றிகரமாகச் சரிசெய்யப்பட்டனர்!\nசரிபார்க்கப்பட்டது: புள்ளிகள் இழக்கப்படவில்லை';
+  }
+
+  @override
+  String repairPartial(String repaired, String total) {
+    return '$repaired/$total பயனர்கள் சரிசெய்யப்பட்டனர்.\nசில சரிபார்ப்புச் சிக்கல்கள் - பதிவுகளைப் பாருங்கள்';
+  }
+
+  @override
+  String backupUsersCount(String count) {
+    return 'பயனர்கள் ($count)';
+  }
+
+  @override
+  String backupBillsCount(String count) {
+    return 'பில்கள் ($count)';
+  }
+
+  @override
+  String openAppForEachCarpenter(String app) {
+    return 'இது ஒவ்வொரு தச்சருக்கும் $app-ஐத் திறக்கும்.\n\nஒவ்வொரு ஆப்பிலும் அனுப்பு என்பதைத் தட்ட வேண்டும்.\n\nதொடரவா?';
+  }
+
+  @override
+  String roleIdPreview(String id) {
+    return 'பங்கு ஐடி: $id';
+  }
+
+  @override
+  String winnersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count வெற்றியாளர்கள்',
+      one: '1 வெற்றியாளர்',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String roleRestored(String name) {
+    return 'பங்கு $name மீட்டெடுக்கப்பட்டது.';
+  }
+
+  @override
+  String roleDeleted(String name) {
+    return 'பங்கு $name நீக்கப்பட்டது.';
+  }
+
+  @override
+  String get permissionDeniedSuperAdmin => 'அனுமதி மறுக்கப்பட்டது. தரவுத்தள விதிகள் வெளியிடப்பட்டுள்ளனவா, சரியான சூப்பர் நிர்வாகிக் கணக்கில் உள்நுழைந்துள்ளீர்களா எனச் சரிபார்க்கவும்.';
+
+  @override
+  String get roleEngineer => 'பொறியாளர்';
+
+  @override
+  String get roleBuiltInBadge => 'இயல்பு';
+
+  @override
+  String get roleCustomBadge => 'தனிப்பயன்';
+
+  @override
+  String get roleProtectedTooltip => 'தச்சர் முதன்மைப் பங்கு, நீக்க முடியாது';
+
+  @override
+  String rolesSummary(int active, int deleted) {
+    return '$active செயலில் · $deleted நீக்கப்பட்டவை';
+  }
+
+  @override
+  String get rolesLiveSync => 'மாற்றங்கள் எல்லா சாதனங்களின் பதிவிலும் உடனே தெரியும்.';
+
+  @override
+  String get roleIdHelp => 'பெயரிலிருந்து உருவாகும். பின்னர் மாற்ற முடியாது.';
+
+  @override
+  String get roleErrInvalidName => '2–40 எழுத்துகள், குறைந்தது இரண்டு ஆங்கில எழுத்து அல்லது எண்கள் இருக்க வேண்டும்.';
+
+  @override
+  String get roleErrReserved => 'இந்தப் பெயர் நிர்வாகக் கணக்குகளுக்கு ஒதுக்கப்பட்டது.';
+
+  @override
+  String get roleErrBuiltIn => 'இது இயல்பு பங்குடன் பொருந்துகிறது. பட்டியலிலிருந்து மீட்டெடுக்கவும்.';
+
+  @override
+  String get roleErrDuplicate => 'இந்த ஐடியுடன் ஒரு பங்கு ஏற்கனவே உள்ளது.';
+
+  @override
+  String get roleErrProtected => 'தச்சர் முதன்மைப் பங்கு, நீக்க முடியாது.';
+
+  @override
+  String get roleShowAll => 'அனைத்தும்';
+
+  @override
+  String get roleShowActive => 'செயலில்';
+
+  @override
+  String get roleShowDeleted => 'நீக்கப்பட்டவை';
+
+  @override
+  String get noRolesInFilter => 'இந்தப் பார்வையில் பங்குகள் இல்லை.';
+
+  @override
+  String deactivateBranchTitle(String name) {
+    return '$name-ஐ செயலிழக்கச் செய்யவா?';
+  }
+
+  @override
+  String get deactivateBranchBody => 'மீண்டும் செயல்படுத்தும் வரை புதிய பயனர்கள் இந்தக் கிளையைத் தேர்வு செய்ய முடியாது, உறுப்பினர்கள் உள்நுழைய முடியாது. எந்தத் தரவும் நீக்கப்படாது.';
+
+  @override
+  String activateBranchTitle(String name) {
+    return '$name-ஐ செயல்படுத்தவா?';
+  }
+
+  @override
+  String get activateBranchBody => 'கிளை மீண்டும் பதிவுக்கும் உள்நுழைவுக்கும் கிடைக்கும்.';
+
+  @override
+  String get branchActions => 'கிளைச் செயல்கள்';
+
+  @override
+  String get copyBranchId => 'கிளை ஐடியை நகலெடு';
+
+  @override
+  String get branchIdCopied => 'கிளை ஐடி நகலெடுக்கப்பட்டது';
+
+  @override
+  String get celebrationOn => 'இயக்கம்';
+
+  @override
+  String get celebrationOff => 'முடக்கம்';
+
+  @override
+  String get createAdminSubtitle => 'ஒரு கிளையின் பில்களையும் தச்சர்களையும் நிர்வகிக்கும் கிளை நிர்வாகியைச் சேர்க்கவும்.';
+
+  @override
+  String get selectBranchRequired => 'கிளையைத் தேர்ந்தெடுக்கவும்';
+
+  @override
+  String get addAdmin => 'நிர்வாகியைச் சேர்';
+
+  @override
+  String get branchAdminsTitle => 'கிளை நிர்வாகிகள்';
+
+  @override
+  String get adminsNav => 'நிர்வாகிகள்';
+
+  @override
+  String adminsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count நிர்வாகிகள்',
+      one: '1 நிர்வாகி',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminActions => 'நிர்வாகிச் செயல்கள்';
+
+  @override
+  String get editBranch => 'கிளையைத் திருத்து';
+
+  @override
+  String get branchUpdated => 'கிளை புதுப்பிக்கப்பட்டது';
+
+  @override
+  String get branchCodeLocked => 'குறியீட்டை மாற்ற முடியாது — தற்போதைய உறுப்பினர்கள் இதனுடன் பதிவுசெய்துள்ளனர்.';
+
+  @override
+  String get editLabel => 'திருத்து';
+
+  @override
+  String get editRole => 'பங்கைத் திருத்து';
+
+  @override
+  String roleUpdated(String name) {
+    return 'பங்கு $name புதுப்பிக்கப்பட்டது.';
+  }
+
+  @override
+  String get roleIdLocked => 'பங்கு ஐடியை மாற்ற முடியாது — இது பயனர் கணக்குகளில் சேமிக்கப்பட்டுள்ளது.';
+
+  @override
+  String get roleActions => 'பங்குச் செயல்கள்';
+
+  @override
+  String get editAdmin => 'நிர்வாகியைத் திருத்து';
+
+  @override
+  String get editDetails => 'விவரங்களைத் திருத்து';
+
+  @override
+  String adminUpdated(String email) {
+    return 'நிர்வாகி $email புதுப்பிக்கப்பட்டார்.';
+  }
+
+  @override
+  String get adminBranchChangeNote => 'நிர்வாகியை வேறு கிளைக்கு மாற்றினால் தற்போதைய கிளையின் அணுகல் நீங்கும். ஒரு கிளைக்கு ஒரு நிர்வாகி மட்டுமே.';
+
+  @override
+  String get editsSyncNote => 'பெயர் மாற்றங்கள் ஒவ்வொரு உறுப்பினரின் சுயவிவரத்திலும் தானாக நகலெடுக்கப்படும்.';
+
+  @override
+  String get noBranchAssigned => 'உங்கள் கணக்கு இன்னும் எந்தக் கிளையுடனும் இணைக்கப்படவில்லை. சூப்பர் நிர்வாகியிடம் கிளையை ஒதுக்கச் சொல்லுங்கள்.';
+
+  @override
+  String get loadingBranch => 'உங்கள் கிளை ஏற்றப்படுகிறது…';
 }

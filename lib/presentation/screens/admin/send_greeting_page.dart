@@ -6,6 +6,8 @@ import 'package:balaji_points/core/models/greeting_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io' show Platform, File;
@@ -52,7 +54,7 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
 
     try {
       final snapshot = await _firestore
-          .collection('users')
+          .collection('users').forAdminBranch()
           .where('role', isNotEqualTo: 'admin')
           .get();
 
@@ -61,7 +63,8 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
             final data = doc.data();
             return CarpenterInfo(
               id: doc.id,
-              name: data['displayName'] ?? 'Unknown',
+              name:
+                  data['displayName'] ?? AppLocalizations.of(context)!.unknown,
               phone: data['phone'] as String? ?? '',
             );
           })
@@ -77,7 +80,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to fetch carpenters: $e'),
+            content: Text(
+              AppLocalizations.of(context)!.failedToFetchCarpenters('$e'),
+            ),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -100,7 +105,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: Text(
+              AppLocalizations.of(context)!.failedToPickImage2('$e'),
+            ),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -123,7 +130,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to capture image: $e'),
+            content: Text(
+              AppLocalizations.of(context)!.failedToCaptureImage('$e'),
+            ),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -152,7 +161,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to upload image: $e'),
+            content: Text(
+              AppLocalizations.of(context)!.failedToUploadImage('$e'),
+            ),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -163,11 +174,13 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
   }
 
   Future<void> _sendGreetingNotificationToCarpenters(
-      String message, String greetingId) async {
+    String message,
+    String greetingId,
+  ) async {
     try {
       // Fetch all carpenters with FCM tokens
       final snapshot = await _firestore
-          .collection('users')
+          .collection('users').forAdminBranch()
           .where('role', isNotEqualTo: 'admin')
           .get();
 
@@ -186,7 +199,7 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
               'userId': userId,
               'fcmToken': fcmToken,
               'type': 'greeting',
-              'title': '📢 New Announcement',
+              'title': 'New Announcement',
               'body': message.length > 100
                   ? message.substring(0, 100) + '...'
                   : message,
@@ -195,22 +208,29 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
               'data': {
                 'greetingId': greetingId,
                 'screen': '/home', // Deep link to home screen
-              }
+              },
             });
             notificationCount++;
           } catch (e) {
-            AppLogger.warning('Failed to queue notification for user $userId: $e');
+            AppLogger.warning(
+              'Failed to queue notification for user $userId: $e',
+            );
           }
         }
       }
 
       AppLogger.info(
-          '✅ Greeting notifications queued for $notificationCount carpenters');
+        '✅ Greeting notifications queued for $notificationCount carpenters',
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Notification sent to $notificationCount carpenters'),
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.notificationSentToCarpenters('$notificationCount'),
+            ),
             backgroundColor: context.themePrimary,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
@@ -222,7 +242,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to send notifications: $e'),
+            content: Text(
+              AppLocalizations.of(context)!.failedToSendNotifications('$e'),
+            ),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -235,9 +257,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
     final message = _messageController.text.trim();
     if (message.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a message'),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseEnterAMessage),
+          backgroundColor: AppColors.warning,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -246,9 +268,11 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
 
     if (!_showInApp && !_sendWhatsapp && !_sendSms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select at least one channel'),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.pleaseSelectAtLeastOneChannel,
+          ),
+          backgroundColor: AppColors.warning,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -260,7 +284,8 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
     try {
       // Get current admin user ID from session
       final currentUserId = await _session.getUserId();
-      if (currentUserId == null) throw Exception('Not authenticated');
+      if (currentUserId == null)
+        throw Exception(AppLocalizations.of(context)!.notAuthenticated);
 
       // Handle image: upload file or use URL
       String? finalImageUrl;
@@ -285,7 +310,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
 
         final batch = _firestore.batch();
 
-        for (final doc in previousActive.docs) {
+        // Only replace this branch's greeting (and legacy all-branch ones);
+        // other branches keep theirs.
+        for (final doc in previousActive.docs.inAdminBranch()) {
           batch.update(doc.reference, {'active': false});
         }
 
@@ -295,7 +322,8 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
           message: message,
           createdAt: DateTime.now(),
           createdBy: currentUserId,
-          active: _showInApp, // Only active if "Show in App" is checked
+          active:
+              _showInApp, // Only active if AppLocalizations.of(context)!.showInApp is checked
           expiresAt: null,
           imageUrl: finalImageUrl,
         );
@@ -306,9 +334,12 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
           'message': newGreeting.message,
           'createdAt': Timestamp.now(),
           'createdBy': currentUserId,
-          'active': _showInApp, // Only active if "Show in App" is checked
+          'active':
+              _showInApp, // Only active if AppLocalizations.of(context)!.showInApp is checked
           'expiresAt': null,
           'imageUrl': finalImageUrl,
+          // Shown only to carpenters of this admin's branch.
+          'branchId': CurrentBranchService.adminBranchId,
         });
 
         await batch.commit();
@@ -341,7 +372,9 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Greeting sent successfully!'),
+            content: Text(
+              AppLocalizations.of(context)!.greetingSentSuccessfully,
+            ),
             backgroundColor: context.themePrimary,
             behavior: SnackBarBehavior.floating,
           ),
@@ -360,7 +393,7 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text(AppLocalizations.of(context)!.error2('$e')),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -375,7 +408,7 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Send Greeting'),
+        title: Text(AppLocalizations.of(context)!.sendGreeting),
         centerTitle: true,
         elevation: 0,
         backgroundColor: context.themePrimary.withValues(alpha: 0.1),
@@ -387,7 +420,7 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
                 children: [
                   const CircularProgressIndicator(),
                   const SizedBox(height: 16),
-                  const Text('Sending greeting...'),
+                  Text(AppLocalizations.of(context)!.sendingGreeting),
                 ],
               ),
             )
@@ -398,154 +431,182 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
                 padding: EdgeInsets.zero,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppText.h4('Compose Message'),
-                  const SizedBox(height: AppSpacing.md),
-                  TextField(
-                    controller: _messageController,
-                    maxLines: 6,
-                    maxLength: 500,
-                    decoration: InputDecoration(
-                      hintText: 'Enter greeting message for all carpenters',
-                      border: OutlineInputBorder(
-                        borderRadius: AppRadius.md12,
-                      ),
-                      contentPadding: const EdgeInsets.all(AppSpacing.md),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  AppText.h4('Image (Optional)'),
-                  const SizedBox(height: AppSpacing.md),
-                  // Image upload/URL options
-                  if (_selectedImageFile == null && _imageUrlController.text.isEmpty)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppButton(
-                            label: 'Pick from Gallery',
-                            onPressed: _pickImageFromGallery,
-                            variant: AppButtonVariant.secondary,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: AppButton(
-                            label: 'Take Photo',
-                            onPressed: _pickImageFromCamera,
-                            variant: AppButtonVariant.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  // Show preview if file selected
-                  if (_selectedImageFile != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: AppSpacing.md),
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: AppRadius.md12,
-                            child: Image.file(
-                              _selectedImageFile!,
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: IconButton(
-                              icon: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withValues(alpha: 0.6),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.close, color: Colors.white),
-                              ),
-                              onPressed: _clearImage,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  else ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    AppText.label('Or enter image URL:', color: context.themeTextSecondary),
-                    const SizedBox(height: AppSpacing.sm),
+                  children: [
+                    AppText.h4(AppLocalizations.of(context)!.composeMessage),
+                    const SizedBox(height: AppSpacing.md),
                     TextField(
-                      controller: _imageUrlController,
-                      maxLines: 1,
+                      controller: _messageController,
+                      maxLines: 6,
+                      maxLength: 500,
                       decoration: InputDecoration(
-                        hintText: 'Enter image URL (JPG/PNG)',
+                        hintText: AppLocalizations.of(
+                          context,
+                        )!.enterGreetingMessageForAllCarpenters,
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.md12,
                         ),
                         contentPadding: const EdgeInsets.all(AppSpacing.md),
                       ),
-                      onChanged: (val) => setState(() {}),
                     ),
-                    if (_imageUrlController.text.isNotEmpty)
+                    const SizedBox(height: AppSpacing.lg),
+                    AppText.h4(AppLocalizations.of(context)!.imageOptional),
+                    const SizedBox(height: AppSpacing.md),
+                    // Image upload/URL options
+                    if (_selectedImageFile == null &&
+                        _imageUrlController.text.isEmpty)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppButton(
+                              label: AppLocalizations.of(
+                                context,
+                              )!.pickFromGallery,
+                              onPressed: _pickImageFromGallery,
+                              variant: AppButtonVariant.secondary,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: AppButton(
+                              label: AppLocalizations.of(context)!.takePhoto,
+                              onPressed: _pickImageFromCamera,
+                              variant: AppButtonVariant.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    // Show preview if file selected
+                    if (_selectedImageFile != null)
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.md),
-                        child: ClipRRect(
-                          borderRadius: AppRadius.md12,
-                          child: Image.network(
-                            _imageUrlController.text,
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: AppRadius.md12,
+                              child: Image.file(
+                                _selectedImageFile!,
                                 height: 200,
-                                color: Colors.grey.withValues(alpha: 0.2),
-                                child: const Center(
-                                  child: Text('Invalid image URL'),
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: IconButton(
+                                icon: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.6),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close_rounded,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              );
-                            },
+                                onPressed: _clearImage,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      AppText.label(
+                        AppLocalizations.of(context)!.orEnterImageUrl,
+                        color: context.themeTextSecondary,
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      TextField(
+                        controller: _imageUrlController,
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(
+                            context,
+                          )!.enterImageUrlJpgPng,
+                          border: OutlineInputBorder(
+                            borderRadius: AppRadius.md12,
+                          ),
+                          contentPadding: const EdgeInsets.all(AppSpacing.md),
+                        ),
+                        onChanged: (val) => setState(() {}),
+                      ),
+                      if (_imageUrlController.text.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.md),
+                          child: ClipRRect(
+                            borderRadius: AppRadius.md12,
+                            child: Image.network(
+                              _imageUrlController.text,
+                              height: 200,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 200,
+                                  color: AppColors.textMuted.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.invalidImageUrl,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.lg),
+                    AppText.h4(AppLocalizations.of(context)!.selectChannels),
+                    const SizedBox(height: AppSpacing.md),
+                    _buildChannelCheckbox(
+                      label: AppLocalizations.of(context)!.showInAppHomeBanner,
+                      value: _showInApp,
+                      onChanged: (val) =>
+                          setState(() => _showInApp = val ?? false),
+                      description: AppLocalizations.of(
+                        context,
+                      )!.bannerOnCarpenterHomeScreen,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _buildChannelCheckbox(
+                      label: AppLocalizations.of(context)!.whatsapp,
+                      value: _sendWhatsapp,
+                      onChanged: (val) =>
+                          setState(() => _sendWhatsapp = val ?? false),
+                      description: AppLocalizations.of(
+                        context,
+                      )!.manualSendViaWhatsappApp,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _buildChannelCheckbox(
+                      label: 'SMS',
+                      value: _sendSms,
+                      onChanged: (val) =>
+                          setState(() => _sendSms = val ?? false),
+                      description: AppLocalizations.of(
+                        context,
+                      )!.manualSendViaSmsApp,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton(
+                      label: AppLocalizations.of(context)!.sendGreeting,
+                      onPressed: _sendGreeting,
+                      fullWidth: true,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      AppLocalizations.of(context)!.noteWhatsappAndSmsUseDevice,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ],
-                  const SizedBox(height: AppSpacing.lg),
-                  AppText.h4('Select Channels'),
-                  const SizedBox(height: AppSpacing.md),
-                  _buildChannelCheckbox(
-                    label: 'Show in App (Home Banner)',
-                    value: _showInApp,
-                    onChanged: (val) => setState(() => _showInApp = val ?? false),
-                    description: 'Banner on carpenter home screen',
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _buildChannelCheckbox(
-                    label: 'WhatsApp',
-                    value: _sendWhatsapp,
-                    onChanged: (val) => setState(() => _sendWhatsapp = val ?? false),
-                    description: 'Manual send via WhatsApp app',
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _buildChannelCheckbox(
-                    label: 'SMS',
-                    value: _sendSms,
-                    onChanged: (val) => setState(() => _sendSms = val ?? false),
-                    description: 'Manual send via SMS app',
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  AppButton(
-                    label: 'Send Greeting',
-                    onPressed: _sendGreeting,
-                    fullWidth: true,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Note: WhatsApp and SMS use device-assisted flow. Admin must confirm each message in the native app.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
     );
   }
 
@@ -559,7 +620,10 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
       child: CheckboxListTile(
         title: AppText.body(label),
-        subtitle: Text(description, style: Theme.of(context).textTheme.bodySmall),
+        subtitle: Text(
+          description,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
         value: value,
         onChanged: onChanged,
         controlAffinity: ListTileControlAffinity.leading,
@@ -595,7 +659,8 @@ class GreetingConfirmationScreen extends StatefulWidget {
       _GreetingConfirmationScreenState();
 }
 
-class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen> {
+class _GreetingConfirmationScreenState
+    extends State<GreetingConfirmationScreen> {
   late PageController _pageController;
   int _currentIndex = 0;
   int _sentCount = 0;
@@ -632,8 +697,12 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('WhatsApp not available for ${carpenter.name}'),
-              backgroundColor: Colors.orange,
+              content: Text(
+                AppLocalizations.of(
+                  context,
+                )!.whatsappNotAvailableFor('${carpenter.name}'),
+              ),
+              backgroundColor: AppColors.warning,
             ),
           );
         }
@@ -642,7 +711,7 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
       AppLogger.error('WhatsApp launch failed', e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.error2('$e'))),
         );
       }
     }
@@ -663,8 +732,12 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('SMS not available for ${carpenter.name}'),
-              backgroundColor: Colors.orange,
+              content: Text(
+                AppLocalizations.of(
+                  context,
+                )!.smsNotAvailableFor('${carpenter.name}'),
+              ),
+              backgroundColor: AppColors.warning,
             ),
           );
         }
@@ -673,7 +746,7 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
       AppLogger.error('SMS launch failed', e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.error2('$e'))),
         );
       }
     }
@@ -684,17 +757,19 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: const Text('Send to All?'),
+        title: Text(AppLocalizations.of(context)!.sendToAll),
         content: Text(
-          'This will open ${widget.sendWhatsapp ? 'WhatsApp' : 'SMS'} for each carpenter.\n\nYou must manually tap Send in each app.\n\nContinue?',
+          AppLocalizations.of(
+            context,
+          )!.openAppForEachCarpenter(widget.sendWhatsapp ? 'WhatsApp' : 'SMS'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           AppButton(
-            label: 'Continue',
+            label: AppLocalizations.of(context)!.continueLabel,
             onPressed: () => Navigator.pop(context, true),
             fullWidth: false,
           ),
@@ -724,20 +799,26 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
         barrierDismissible: true,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-          title: Text('Progress: ${i + 1}/${widget.carpenters.length}'),
+          title: Text(
+            AppLocalizations.of(
+              context,
+            )!.progress('${i + 1}', '${widget.carpenters.length}'),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Opened: ${carpenter.name}\n${carpenter.phone}',
+                AppLocalizations.of(
+                  context,
+                )!.opened('${carpenter.name}', '${carpenter.phone}'),
               ),
               const SizedBox(height: AppSpacing.md),
-              const Text('Tap Send in the app, then tap OK here to continue.'),
+              Text(AppLocalizations.of(context)!.tapSendInTheAppThen),
             ],
           ),
           actions: [
             AppButton(
-              label: 'Next',
+              label: AppLocalizations.of(context)!.next,
               onPressed: () => Navigator.pop(context),
               fullWidth: false,
             ),
@@ -751,7 +832,9 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Sent to all $_sentCount carpenters'),
+          content: Text(
+            AppLocalizations.of(context)!.sentToAllCarpenters('$_sentCount'),
+          ),
           backgroundColor: context.themePrimary,
         ),
       );
@@ -762,16 +845,18 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
   Widget build(BuildContext context) {
     if (widget.carpenters.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Confirm Send')),
-        body: const Center(
-          child: Text('No carpenters found'),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.confirmSend)),
+        body: Center(
+          child: Text(AppLocalizations.of(context)!.noCarpentersFound),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.sendWhatsapp ? "WhatsApp" : "SMS"} - Carpenter ${_currentIndex + 1}/${widget.carpenters.length}'),
+        title: Text(
+          '${widget.sendWhatsapp ? "WhatsApp" : "SMS"} - Carpenter ${_currentIndex + 1}/${widget.carpenters.length}',
+        ),
         centerTitle: true,
         elevation: 0,
       ),
@@ -791,7 +876,7 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
             children: [
               Expanded(
                 child: AppButton(
-                  label: 'Send All',
+                  label: AppLocalizations.of(context)!.sendAll,
                   onPressed: _sendAll,
                   variant: AppButtonVariant.primary,
                 ),
@@ -818,9 +903,11 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: context.themePrimary.withValues(alpha: 0.2),
+                    backgroundColor: context.themePrimary.withValues(
+                      alpha: 0.2,
+                    ),
                     child: Icon(
-                      Icons.person,
+                      Icons.person_rounded,
                       size: 40,
                       color: context.themePrimary,
                     ),
@@ -828,14 +915,19 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
                   const SizedBox(height: AppSpacing.lg),
                   AppText.h3(carpenter.name),
                   const SizedBox(height: AppSpacing.sm),
-                  AppText.body(carpenter.phone, color: context.themeTextSecondary),
+                  AppText.body(
+                    carpenter.phone,
+                    color: context.themeTextSecondary,
+                  ),
                   const SizedBox(height: AppSpacing.lg),
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
                       color: context.themeBackground,
                       borderRadius: AppRadius.md12,
-                      border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: AppColors.textMuted.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Text(
                       widget.message,
@@ -845,7 +937,9 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   AppButton(
-                    label: widget.sendWhatsapp ? 'Send via WhatsApp' : 'Send via SMS',
+                    label: widget.sendWhatsapp
+                        ? AppLocalizations.of(context)!.sendViaWhatsapp
+                        : AppLocalizations.of(context)!.sendViaSms,
                     onPressed: () async {
                       if (widget.sendWhatsapp) {
                         await _sendWhatsapp(carpenter);
@@ -864,22 +958,22 @@ class _GreetingConfirmationScreenState extends State<GreetingConfirmationScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppButton(
-                label: 'Previous',
+                label: AppLocalizations.of(context)!.previousPage,
                 onPressed: _currentIndex > 0
                     ? () => _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        )
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      )
                     : null,
                 variant: AppButtonVariant.secondary,
               ),
               AppButton(
-                label: 'Next',
+                label: AppLocalizations.of(context)!.next,
                 onPressed: _currentIndex < widget.carpenters.length - 1
                     ? () => _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        )
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      )
                     : null,
                 variant: AppButtonVariant.secondary,
               ),

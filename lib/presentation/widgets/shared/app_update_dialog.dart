@@ -2,6 +2,7 @@ import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 
 /// Branded force / optional update prompt matching Balaji Points theme.
@@ -87,8 +88,10 @@ class AppUpdateDialog extends StatelessWidget {
                       children: [
                         Text(
                           forceUpdate
-                              ? 'Update required'
-                              : 'New version available',
+                              ? AppLocalizations.of(context)!.updateRequired
+                              : AppLocalizations.of(
+                                  context,
+                                )!.newVersionAvailable,
                           textAlign: TextAlign.center,
                           style: AppTypography.buttonMedium().copyWith(
                             fontSize: 22,
@@ -99,10 +102,10 @@ class AppUpdateDialog extends StatelessWidget {
                         const SizedBox(height: AppSpacing.sm),
                         Text(
                           forceUpdate
-                              ? 'Please install the latest version of '
-                                    '${AppConstants.appName} to continue.'
-                              : 'A newer version is ready with improvements '
-                                    'and fixes.',
+                              ? AppLocalizations.of(
+                                  context,
+                                )!.installLatestToContinue(AppConstants.appName)
+                              : AppLocalizations.of(context)!.newerVersionReady,
                           textAlign: TextAlign.center,
                           style: AppTypography.bodyMedium().copyWith(
                             fontSize: 15,
@@ -114,7 +117,9 @@ class AppUpdateDialog extends StatelessWidget {
                         _VersionRow(
                           current: currentVersion,
                           target: target.isNotEmpty ? target : '—',
-                          targetLabel: forceUpdate ? 'Required' : 'Latest',
+                          targetLabel: forceUpdate
+                              ? AppLocalizations.of(context)!.requiredLabel
+                              : AppLocalizations.of(context)!.latest,
                         ),
                         if (forceUpdate) ...[
                           const SizedBox(height: AppSpacing.lg),
@@ -122,7 +127,7 @@ class AppUpdateDialog extends StatelessWidget {
                         ],
                         const SizedBox(height: AppSpacing.xl2),
                         _PrimaryButton(
-                          label: 'Update now',
+                          label: AppLocalizations.of(context)!.updateNow,
                           onPressed: onUpdate,
                         ),
                         if (!forceUpdate && onLater != null) ...[
@@ -137,7 +142,7 @@ class AppUpdateDialog extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              'Maybe later',
+                              AppLocalizations.of(context)!.maybeLater,
                               style: AppTypography.labelLarge().copyWith(
                                 fontSize: 15,
                               ),
@@ -170,15 +175,7 @@ class _Header extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [context.themePrimary, context.themeSecondary],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
+          Container(decoration: BoxDecoration(color: AppColors.primary)),
           Positioned(
             top: -28,
             right: -20,
@@ -236,9 +233,9 @@ class _Header extends StatelessWidget {
                   ],
                 ),
                 child: Text(
-                  'Required',
+                  AppLocalizations.of(context)!.requiredLabel,
                   style: AppTypography.buttonMedium().copyWith(
-                    fontSize: 11,
+                    fontSize: 12,
                     color: AppColors.white,
                     letterSpacing: 0.6,
                   ),
@@ -323,7 +320,7 @@ class _VersionRow extends StatelessWidget {
         children: [
           Expanded(
             child: _VersionChip(
-              label: 'Installed',
+              label: AppLocalizations.of(context)!.installedLabel,
               version: current,
               emphasized: false,
             ),
@@ -369,7 +366,7 @@ class _VersionChip extends StatelessWidget {
         Text(
           label,
           style: AppTypography.bodyMedium().copyWith(
-            fontSize: 11,
+            fontSize: 12,
             color: context.themeTextMuted,
             letterSpacing: 0.4,
           ),
@@ -412,7 +409,7 @@ class _RequiredBanner extends StatelessWidget {
         vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFE3F2FD),
+        color: AppColors.primarySoft,
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(color: context.themePrimary.withValues(alpha: 0.12)),
       ),
@@ -426,7 +423,7 @@ class _RequiredBanner extends StatelessWidget {
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              'This update is mandatory to keep using the app.',
+              AppLocalizations.of(context)!.updateMandatory,
               style: AppTypography.bodyMedium().copyWith(
                 fontSize: 13,
                 height: 1.35,
@@ -453,11 +450,7 @@ class _PrimaryButton extends StatelessWidget {
       height: 52,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [context.themePrimary, context.themeSecondary],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
 
 class RoleNavigationItem {
@@ -40,80 +43,82 @@ class ResponsiveRoleNavigation extends StatelessWidget {
     if (!context.isWideScreen || items.isEmpty) return child;
 
     final extended = context.screenWidth >= ResponsiveBreakpoints.desktop;
-    final l10n = MaterialLocalizations.of(context);
+    const railWidth = 80.0;
+    const sidebarWidth = 232.0; // UI spec desktop sidebar
 
     return Row(
+      // Stretch so pages that size to their content start at the top
+      // instead of being centred vertically beside the rail.
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          width: extended ? 264 : 80,
+          width: extended ? sidebarWidth : railWidth,
           child: NavigationRail(
             extended: extended,
-            minWidth: 80,
-            minExtendedWidth: 264,
+            minWidth: railWidth,
+            minExtendedWidth: sidebarWidth,
             groupAlignment: -0.85,
-            backgroundColor: AppColors.navigation,
+            // Colours come from NavigationRailThemeData (navy + gold).
             selectedIndex: selectedIndex.clamp(0, items.length - 1),
             labelType: extended
                 ? NavigationRailLabelType.none
                 : NavigationRailLabelType.all,
             onDestinationSelected: onSelected,
             leading: Padding(
-              padding: EdgeInsets.fromLTRB(extended ? 20 : 8, 24, 8, 24),
+              padding: EdgeInsets.fromLTRB(extended ? 16 : 8, 24, 8, 16),
               child: extended
-                  ? Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withValues(alpha: 0.10),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.asset(
-                            'assets/images/balaji_point_logo.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => const Icon(
-                              Icons.home_work_rounded,
-                              color: AppColors.white,
+                  ? SizedBox(
+                      width: sidebarWidth - 32,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.gold,
+                              borderRadius: AppRadius.md12,
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.asset(
+                              'assets/images/balaji_point_logo.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => const Icon(
+                                Icons.home_work_rounded,
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'Balaji Hardware',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Text(
-                                roleLabel,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: AppColors.white.withValues(
-                                    alpha: 0.68,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Balaji Hardware',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.section(
+                                    color: AppColors.white,
                                   ),
-                                  fontSize: 12,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  roleLabel,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.caption(
+                                    color: AppColors.onPrimaryMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     )
                   : const Icon(
                       Icons.home_work_rounded,
-                      color: AppColors.white,
+                      color: AppColors.gold,
                       size: 28,
                     ),
             ),
@@ -122,8 +127,12 @@ class ResponsiveRoleNavigation extends StatelessWidget {
                 NavigationRailDestination(
                   icon: Icon(item.icon),
                   selectedIcon: Icon(item.selectedIcon),
-                  label: Text(item.label),
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  label: Text(
+                    item.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 2),
                 ),
             ],
             trailing: onLogout == null
@@ -135,31 +144,32 @@ class ResponsiveRoleNavigation extends StatelessWidget {
                         padding: EdgeInsets.fromLTRB(
                           extended ? 16 : 8,
                           8,
-                          8,
+                          extended ? 16 : 8,
                           20,
                         ),
                         child: extended
                             ? SizedBox(
-                                width: double.infinity,
+                                width: sidebarWidth - 32,
                                 child: OutlinedButton.icon(
                                   onPressed: onLogout,
                                   icon: const Icon(Icons.logout_rounded),
-                                  label: const Text('Sign out'),
+                                  label: Text(
+                                    AppLocalizations.of(context)!.signOut,
+                                  ),
                                   style: OutlinedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
                                     foregroundColor: AppColors.white,
-                                    side: BorderSide(
-                                      color: AppColors.white.withValues(
-                                        alpha: 0.25,
-                                      ),
+                                    side: const BorderSide(
+                                      color: AppColors.primaryLine,
                                     ),
                                   ),
                                 ),
                               )
                             : IconButton(
                                 onPressed: onLogout,
-                                tooltip: l10n.closeButtonTooltip,
+                                tooltip: AppLocalizations.of(context)!.signOut,
                                 icon: const Icon(Icons.logout_rounded),
-                                color: AppColors.white,
+                                color: AppColors.onPrimaryMuted,
                               ),
                       ),
                     ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/screens/super_admin/super_admin_section_header.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -10,13 +12,12 @@ import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/branch/super_admin_service.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_loading_view.dart';
 
-String _superAdminErrorMessage(Object error) {
+String _superAdminErrorMessage(BuildContext context, Object error) {
   if (error is FirebaseFunctionsException && error.message != null) {
     return error.message!;
   }
   if (error is FirebaseException && error.code == 'permission-denied') {
-    return 'Permission denied. Check that Firestore rules are published and '
-        'the signed-in account is the configured super admin.';
+    return AppLocalizations.of(context)!.permissionDeniedSuperAdmin;
   }
   return error.toString().replaceFirst('Exception: ', '');
 }
@@ -52,7 +53,7 @@ class SuperAdminPointsCleanupTabState
       if (mounted) setState(() => _preview = result);
     } catch (error) {
       if (mounted) {
-        _showMessage(_superAdminErrorMessage(error), isError: true);
+        _showMessage(_superAdminErrorMessage(context, error), isError: true);
       }
     } finally {
       if (mounted) setState(() => _loadingPreview = false);
@@ -78,7 +79,7 @@ class SuperAdminPointsCleanupTabState
               color: context.themeError,
               size: 32,
             ),
-            title: const Text('Reset branch points?'),
+            title: Text(AppLocalizations.of(context)!.resetBranchPoints),
             content: SizedBox(
               width: 460,
               child: Column(
@@ -86,16 +87,20 @@ class SuperAdminPointsCleanupTabState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${preview.branchName} has ${preview.eligibleUsers} '
-                    'eligible users, ${preview.currentPoints} points and '
-                    '${preview.embeddedHistoryEntries + preview.historyDocuments} '
-                    'history items.',
+                    AppLocalizations.of(
+                      context,
+                    )!.hasEligibleUsersPointsAndHistory(
+                      '${preview.branchName}',
+                      '${preview.eligibleUsers}',
+                      '${preview.currentPoints}',
+                      '${preview.embeddedHistoryEntries + preview.historyDocuments}',
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const Text(
-                    'This permanently clears points and points history for '
-                    'carpenters, architects and interior designers in this '
-                    'branch. User accounts, branch admins and bills are kept.',
+                  Text(
+                    AppLocalizations.of(
+                      context,
+                    )!.thisPermanentlyClearsPointsAndPoints,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   TextField(
@@ -103,7 +108,9 @@ class SuperAdminPointsCleanupTabState
                     autofocus: true,
                     onChanged: (_) => setDialogState(() {}),
                     decoration: InputDecoration(
-                      labelText: 'Type ${preview.branchId} to confirm',
+                      labelText: AppLocalizations.of(
+                        context,
+                      )!.typeToConfirm('${preview.branchId}'),
                       border: OutlineInputBorder(
                         borderRadius: AppRadius.forInput,
                       ),
@@ -115,7 +122,7 @@ class SuperAdminPointsCleanupTabState
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancel'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               FilledButton.icon(
                 onPressed: matches
@@ -125,10 +132,12 @@ class SuperAdminPointsCleanupTabState
                       )
                     : null,
                 icon: const Icon(Icons.delete_sweep_outlined),
-                label: const Text('Reset points and history'),
+                label: Text(
+                  AppLocalizations.of(context)!.resetPointsAndHistory,
+                ),
                 style: FilledButton.styleFrom(
                   backgroundColor: context.themeError,
-                  foregroundColor: AppColors.white,
+                  foregroundColor: context.themeOnError,
                 ),
               ),
             ],
@@ -149,13 +158,15 @@ class SuperAdminPointsCleanupTabState
       if (!mounted) return;
       setState(() => _preview = null);
       _showMessage(
-        '${result.branchName}: reset ${result.usersReset} users and deleted '
-        '${result.historyDocumentsDeleted} history records. '
-        'Accounts and bills were kept.',
+        AppLocalizations.of(context)!.resetUsersAndDeletedHistoryRecords(
+          '${result.branchName}',
+          '${result.usersReset}',
+          '${result.historyDocumentsDeleted}',
+        ),
       );
     } catch (error) {
       if (mounted) {
-        _showMessage(_superAdminErrorMessage(error), isError: true);
+        _showMessage(_superAdminErrorMessage(context, error), isError: true);
       }
     } finally {
       if (mounted) setState(() => _clearing = false);
@@ -180,7 +191,9 @@ class SuperAdminPointsCleanupTabState
       stream: BranchService().watchAllBranches(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SuperAdminLoadingView(label: 'Loading branches…');
+          return SuperAdminLoadingView(
+            label: AppLocalizations.of(context)!.loadingBranches,
+          );
         }
         if (snapshot.hasError) {
           return Center(
@@ -189,11 +202,13 @@ class SuperAdminPointsCleanupTabState
               children: [
                 const Icon(Icons.cloud_off_rounded),
                 const SizedBox(height: AppSpacing.sm),
-                const Text('Could not load branches for points cleanup.'),
+                Text(
+                  AppLocalizations.of(context)!.couldNotLoadBranchesForPoints,
+                ),
                 TextButton.icon(
                   onPressed: () => setState(() {}),
                   icon: const Icon(Icons.refresh_rounded),
-                  label: const Text('Try again'),
+                  label: Text(AppLocalizations.of(context)!.tryAgain),
                 ),
               ],
             ),
@@ -204,47 +219,43 @@ class SuperAdminPointsCleanupTabState
           (branch) => branch.id == _selectedBranchId,
         );
         return Align(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.topLeft,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.only(bottom: AppSpacing.xl3),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 780),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Annual points reset',
-                    style: AppTypography.h4(color: context.themePrimary),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'After prize distribution, start a fresh points season for '
-                    'one branch.',
-                    style: AppTypography.bodyMedium(
-                      color: context.themeTextSecondary,
-                    ),
+                  SuperAdminSectionHeader(
+                    title: AppLocalizations.of(context)!.annualPointsReset,
+                    subtitle: AppLocalizations.of(
+                      context,
+                    )!.afterPrizeDistributionStartAFresh,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: context.themeError.withValues(alpha: 0.08),
-                      border: Border.all(
-                        color: context.themeError.withValues(alpha: 0.24),
-                      ),
-                      borderRadius: AppRadius.forCard,
+                      color: context.themeErrorSoft,
+                      borderRadius: AppRadius.md12,
                     ),
-                    child: const Row(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.info_outline_rounded),
-                        SizedBox(width: AppSpacing.sm),
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          color: context.themeErrorText,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
-                            'Only points, tiers and points history for '
-                            'carpenters, architects and interior designers '
-                            'are cleared. User accounts, login access, branch '
-                            'admins and bills stay unchanged.',
+                            AppLocalizations.of(
+                              context,
+                            )!.onlyPointsTiersAndPointsHistory,
+                            style: AppTypography.body(
+                              color: context.themeErrorText,
+                            ),
                           ),
                         ),
                       ],
@@ -254,11 +265,9 @@ class SuperAdminPointsCleanupTabState
                   DropdownButtonFormField<String>(
                     initialValue: hasSelectedBranch ? _selectedBranchId : null,
                     isExpanded: true,
+                    hint: Text(AppLocalizations.of(context)!.selectBranch),
                     decoration: InputDecoration(
-                      labelText: 'Branch to reset',
-                      border: OutlineInputBorder(
-                        borderRadius: AppRadius.forInput,
-                      ),
+                      labelText: AppLocalizations.of(context)!.branchToReset,
                     ),
                     items: branches
                         .map(
@@ -294,7 +303,9 @@ class SuperAdminPointsCleanupTabState
                             )
                           : const Icon(Icons.preview_outlined),
                       label: Text(
-                        _loadingPreview ? 'Checking branch…' : 'Preview reset',
+                        _loadingPreview
+                            ? AppLocalizations.of(context)!.checkingBranch
+                            : AppLocalizations.of(context)!.previewReset,
                       ),
                     ),
                   ),
@@ -306,7 +317,9 @@ class SuperAdminPointsCleanupTabState
                     Padding(
                       padding: const EdgeInsets.all(AppSpacing.xl),
                       child: Text(
-                        'Create a branch before resetting points.',
+                        AppLocalizations.of(
+                          context,
+                        )!.createABranchBeforeResettingPoints,
                         textAlign: TextAlign.center,
                         style: AppTypography.bodyMedium(
                           color: context.themeTextSecondary,
@@ -338,7 +351,9 @@ class SuperAdminPointsCleanupTabState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Cleanup preview · ${preview.branchName}',
+              AppLocalizations.of(
+                context,
+              )!.cleanupPreview('${preview.branchName}'),
               style: AppTypography.h5(color: context.themePrimary),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -347,17 +362,17 @@ class SuperAdminPointsCleanupTabState
               runSpacing: AppSpacing.sm,
               children: [
                 _PreviewMetric(
-                  label: 'Eligible users',
+                  label: AppLocalizations.of(context)!.eligibleUsers,
                   value: preview.eligibleUsers.toString(),
                   icon: Icons.people_alt_outlined,
                 ),
                 _PreviewMetric(
-                  label: 'Current points',
+                  label: AppLocalizations.of(context)!.currentPoints,
                   value: preview.currentPoints.toString(),
                   icon: Icons.stars_outlined,
                 ),
                 _PreviewMetric(
-                  label: 'History items',
+                  label: AppLocalizations.of(context)!.historyItems,
                   value:
                       (preview.embeddedHistoryEntries +
                               preview.historyDocuments)
@@ -379,22 +394,19 @@ class SuperAdminPointsCleanupTabState
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
-                          color: AppColors.white,
+                          color: AppColors.primary,
                           strokeWidth: 2,
                         ),
                       )
                     : const Icon(Icons.cleaning_services_rounded),
                 label: Text(
                   _clearing
-                      ? 'Resetting branch points…'
-                      : 'Reset points and history',
+                      ? AppLocalizations.of(context)!.resettingBranchPoints
+                      : AppLocalizations.of(context)!.resetPointsAndHistory,
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: context.themeError,
-                  foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.forButton,
-                  ),
+                  foregroundColor: context.themeOnError,
                 ),
               ),
             ),
@@ -422,7 +434,7 @@ class _PreviewMetric extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 145),
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: context.themePrimary.withValues(alpha: 0.06),
+        color: context.themeSoftSurface,
         borderRadius: AppRadius.md12,
       ),
       child: Row(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
@@ -18,8 +19,10 @@ class PointsRepairDetailsPage extends StatelessWidget {
     final results = (repairResults['results'] as Map<String, dynamic>?) ?? {};
     final successCount = repairResults['repaired'] as int? ?? 0;
     final totalUsers = repairResults['total'] as int? ?? 0;
-    final totalDuplicatesRemoved = repairResults['totalDuplicatesRemoved'] as int? ?? 0;
-    final totalPointsDifference = repairResults['totalPointsDifference'] as num? ?? 0;
+    final totalDuplicatesRemoved =
+        repairResults['totalDuplicatesRemoved'] as int? ?? 0;
+    final totalPointsDifference =
+        repairResults['totalPointsDifference'] as num? ?? 0;
 
     return Scaffold(
       backgroundColor: context.themeBackground,
@@ -28,7 +31,10 @@ class PointsRepairDetailsPage extends StatelessWidget {
         foregroundColor: context.themeTextPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: AppText.h3('Repair Details', color: context.themeTextPrimary),
+        title: AppText.h3(
+          AppLocalizations.of(context)!.repairDetails,
+          color: context.themeTextPrimary,
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -40,14 +46,7 @@ class PointsRepairDetailsPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.success.withValues(alpha: 0.15),
-                    AppColors.success.withValues(alpha: 0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: AppColors.success.withValues(alpha: 0.15),
                 borderRadius: AppRadius.all16,
                 border: Border.all(
                   color: AppColors.success.withValues(alpha: 0.3),
@@ -55,18 +54,25 @@ class PointsRepairDetailsPage extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.verified_user,
-                      color: AppColors.success, size: 24),
+                  Icon(
+                    Icons.verified_user_rounded,
+                    color: AppColors.success,
+                    size: 24,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AppText.label('Verification Complete',
-                            color: context.themeTextPrimary),
+                        AppText.label(
+                          AppLocalizations.of(context)!.verificationComplete,
+                          color: context.themeTextPrimary,
+                        ),
                         const SizedBox(height: 4),
                         AppText.bodySmall(
-                          '✅ NO POINTS LOST\n✅ All users verified\n✅ Data consistent',
+                          AppLocalizations.of(
+                            context,
+                          )!.noPointsLostAllUsersVerified,
                           color: AppColors.success,
                         ),
                       ],
@@ -87,8 +93,10 @@ class PointsRepairDetailsPage extends StatelessWidget {
             const SizedBox(height: 20),
 
             // User-wise results
-            AppText.h5('User-wise Repair Results',
-                color: context.themeTextPrimary),
+            AppText.h5(
+              AppLocalizations.of(context)!.userWiseRepairResults,
+              color: context.themeTextPrimary,
+            ),
             const SizedBox(height: 12),
 
             if (results.isEmpty)
@@ -98,8 +106,10 @@ class PointsRepairDetailsPage extends StatelessWidget {
                   color: context.themeSoftSurface,
                   borderRadius: AppRadius.all16,
                 ),
-                child: AppText.body('No repairs completed',
-                    color: context.themeTextSecondary),
+                child: AppText.body(
+                  AppLocalizations.of(context)!.noRepairsCompleted,
+                  color: context.themeTextSecondary,
+                ),
               )
             else
               ListView.separated(
@@ -120,11 +130,16 @@ class PointsRepairDetailsPage extends StatelessWidget {
                     userId: userId,
                     beforeTotal: repairData['beforeTotal'] as int? ?? 0,
                     afterTotal: repairData['afterTotal'] as int? ?? 0,
-                    beforeTier: repairData['beforeTier'] as String? ?? 'Unknown',
-                    afterTier: repairData['afterTier'] as String? ?? 'Unknown',
+                    beforeTier:
+                        repairData['beforeTier'] as String? ??
+                        AppLocalizations.of(context)!.unknown,
+                    afterTier:
+                        repairData['afterTier'] as String? ??
+                        AppLocalizations.of(context)!.unknown,
                     historyBefore: repairData['historyBefore'] as int? ?? 0,
                     historyAfter: repairData['historyAfter'] as int? ?? 0,
-                    duplicatesRemoved: repairData['duplicatesRemoved'] as int? ?? 0,
+                    duplicatesRemoved:
+                        repairData['duplicatesRemoved'] as int? ?? 0,
                   );
                 },
               ),
@@ -162,39 +177,37 @@ class _SummarySection extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.success.withValues(alpha: 0.1),
-                AppColors.success.withValues(alpha: 0.05),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: AppColors.success.withValues(alpha: 0.1),
             borderRadius: AppRadius.all16,
-            border: Border.all(
-              color: AppColors.success.withValues(alpha: 0.2),
-            ),
+            border: Border.all(color: AppColors.success.withValues(alpha: 0.2)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 24),
+                  Icon(
+                    Icons.check_circle_rounded,
+                    color: AppColors.success,
+                    size: 24,
+                  ),
                   const SizedBox(width: 10),
-                  AppText.h5('Repair Complete', color: context.themeTextPrimary),
+                  AppText.h5(
+                    AppLocalizations.of(context)!.repairComplete,
+                    color: context.themeTextPrimary,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
               _StatRow(
-                label: 'Successfully Repaired',
+                label: AppLocalizations.of(context)!.successfullyRepaired,
                 value: '$successCount/$totalUsers',
                 valueColor: AppColors.success,
               ),
               if (failureCount > 0) ...[
                 const SizedBox(height: 8),
                 _StatRow(
-                  label: 'Failed',
+                  label: AppLocalizations.of(context)!.failed,
                   value: '$failureCount',
                   valueColor: AppColors.error,
                 ),
@@ -209,19 +222,19 @@ class _SummarySection extends StatelessWidget {
           children: [
             Expanded(
               child: _ImpactCard(
-                icon: Icons.copy_all,
-                label: 'Duplicates Removed',
+                icon: Icons.copy_all_rounded,
+                label: AppLocalizations.of(context)!.duplicatesRemoved,
                 value: '$totalDuplicatesRemoved',
-                color: const Color(0xFFFF8A65),
+                color: AppColors.warning,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _ImpactCard(
-                icon: Icons.trending_down,
-                label: 'Points Adjusted',
+                icon: Icons.trending_down_rounded,
+                label: AppLocalizations.of(context)!.pointsAdjusted,
                 value: '$totalPointsDifference',
-                color: const Color(0xFF42A5F5),
+                color: AppColors.primaryOnDark,
               ),
             ),
           ],
@@ -253,7 +266,6 @@ class _UserRepairCard extends StatelessWidget {
     required this.duplicatesRemoved,
   });
 
-
   @override
   Widget build(BuildContext context) {
     final pointsChanged = beforeTotal != afterTotal;
@@ -280,7 +292,7 @@ class _UserRepairCard extends StatelessWidget {
 
           // Before state
           _StateRow(
-            label: 'Before',
+            label: AppLocalizations.of(context)!.before,
             points: beforeTotal,
             tier: beforeTier,
             context: context,
@@ -290,11 +302,17 @@ class _UserRepairCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
               children: [
-                Icon(Icons.arrow_downward,
-                    size: 16, color: context.themeTextSecondary),
+                Icon(
+                  Icons.arrow_downward_rounded,
+                  size: 16,
+                  color: context.themeTextSecondary,
+                ),
                 const SizedBox(width: 4),
-                Icon(Icons.arrow_downward,
-                    size: 16, color: context.themeTextSecondary),
+                Icon(
+                  Icons.arrow_downward_rounded,
+                  size: 16,
+                  color: context.themeTextSecondary,
+                ),
               ],
             ),
           ),
@@ -302,7 +320,7 @@ class _UserRepairCard extends StatelessWidget {
 
           // After state
           _StateRow(
-            label: 'After',
+            label: AppLocalizations.of(context)!.after,
             points: afterTotal,
             tier: afterTier,
             context: context,
@@ -323,16 +341,16 @@ class _UserRepairCard extends StatelessWidget {
               children: [
                 if (pointsChanged)
                   _ChangeDetail(
-                    icon: Icons.trending_down,
-                    label: 'Points',
+                    icon: Icons.trending_down_rounded,
+                    label: AppLocalizations.of(context)!.pointsLabel,
                     before: beforeTotal.toString(),
                     after: afterTotal.toString(),
                   ),
                 if (pointsChanged && tierChanged) const SizedBox(height: 6),
                 if (tierChanged)
                   _ChangeDetail(
-                    icon: Icons.grade,
-                    label: 'Tier',
+                    icon: Icons.grade_rounded,
+                    label: AppLocalizations.of(context)!.homeTierSuffix,
                     before: beforeTier,
                     after: afterTier,
                   ),
@@ -340,8 +358,8 @@ class _UserRepairCard extends StatelessWidget {
                   const SizedBox(height: 6),
                 if (duplicatesRemoved > 0)
                   _ChangeDetail(
-                    icon: Icons.copy_all,
-                    label: 'Duplicates Removed',
+                    icon: Icons.copy_all_rounded,
+                    label: AppLocalizations.of(context)!.duplicatesRemoved,
                     before: historyBefore.toString(),
                     after: historyAfter.toString(),
                     suffix: '($duplicatesRemoved)',
@@ -372,18 +390,23 @@ class _FailedRepairCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: AppColors.error),
+          Icon(Icons.error_outline_rounded, color: AppColors.error),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText.body(userId,
-                    color: context.themeTextSecondary,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
+                AppText.body(
+                  userId,
+                  color: context.themeTextSecondary,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 4),
-                AppText.body('Repair failed', color: AppColors.error),
+                AppText.body(
+                  AppLocalizations.of(context)!.repairFailed,
+                  color: AppColors.error,
+                ),
               ],
             ),
           ),
@@ -418,7 +441,7 @@ class _StateRow extends StatelessWidget {
         Row(
           children: [
             AppText.body(
-              '$points pts',
+              AppLocalizations.of(context)!.ptsValue('$points'),
               color: context.themeTextPrimary,
             ),
             const SizedBox(width: 8),
@@ -460,10 +483,7 @@ class _ChangeDetail extends StatelessWidget {
         Icon(icon, size: 16, color: context.themePrimary),
         const SizedBox(width: 6),
         Expanded(
-          child: AppText.bodySmall(
-            label,
-            color: context.themeTextSecondary,
-          ),
+          child: AppText.bodySmall(label, color: context.themeTextSecondary),
         ),
         AppText.bodySmall(
           '$before → $after${suffix != null ? ' $suffix' : ''}',

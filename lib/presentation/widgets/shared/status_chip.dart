@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 
 class StatusChip extends StatelessWidget {
@@ -16,84 +18,75 @@ class StatusChip extends StatelessWidget {
 
   String get _normalized => status.toLowerCase().trim();
 
-  bool get _isPending => _normalized.isEmpty || _normalized == 'pending';
-
-  Color _statusColor() {
+  /// Tinted background + dark text pair (spec chips). Theme-aware.
+  (Color bg, Color fg) _colors(BuildContext context) {
     switch (_normalized) {
       case 'approved':
       case 'completed':
-        return AppColors.success;
-      case 'processing':
-        return AppColors.warning;
+        return (context.themeSuccessSoft, context.themeSuccessText);
       case 'cancelled':
       case 'rejected':
-        return AppColors.error;
+        return (context.themeErrorSoft, context.themeErrorText);
+      case 'processing':
+        return (context.themeSoftSurface, context.themeTextPrimary);
       default:
-        return AppColors.textSecondary;
+        return (context.themePendingSoft, context.themePendingText);
     }
-  }
-
-  Color _foreground(BuildContext context) {
-    return _isPending ? context.themeTextSecondary : _statusColor();
   }
 
   IconData _iconData() {
     switch (_normalized) {
       case 'approved':
       case 'completed':
-        return Icons.check_circle;
+        return Icons.check_circle_rounded;
       case 'processing':
-        return Icons.autorenew;
+        return Icons.autorenew_rounded;
       case 'cancelled':
       case 'rejected':
-        return Icons.cancel;
+        return Icons.cancel_rounded;
       default:
-        return Icons.pending;
+        return Icons.pending_rounded;
     }
   }
 
-  String _label() {
+  String _label(BuildContext context) {
     switch (_normalized) {
       case 'approved':
-        return 'Approved';
+        return AppLocalizations.of(context)!.approvedLabel;
       case 'completed':
-        return 'Completed';
+        return AppLocalizations.of(context)!.completed;
       case 'processing':
-        return 'Processing';
+        return AppLocalizations.of(context)!.processing;
       case 'cancelled':
       case 'rejected':
-        return 'Rejected';
+        return AppLocalizations.of(context)!.rejectedLabel;
       default:
-        return 'Pending';
+        return AppLocalizations.of(context)!.pendingStatus;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final background = _statusColor().withValues(alpha: 0.15);
-    final foreground = _foreground(context);
-    final iconSize = compact ? 14.0 : 16.0;
-    final horizontal = compact ? 10.0 : 12.0;
-    final vertical = compact ? 4.0 : 6.0;
+    final (background, foreground) = _colors(context);
+    final iconSize = compact ? 13.0 : 15.0;
+    final horizontal = compact ? 8.0 : 10.0;
+    final vertical = compact ? 3.0 : 4.0;
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
+      decoration: BoxDecoration(color: background, borderRadius: AppRadius.sm8),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (showIcon) ...[
             Icon(_iconData(), size: iconSize, color: foreground),
-            const SizedBox(width: 6),
+            const SizedBox(width: 4),
           ],
           Text(
-            _label(),
-            style: AppTypography.labelSmall(
-              color: foreground,
-            ).copyWith(fontWeight: FontWeight.w600),
+            _label(context),
+            style: (compact
+                ? AppTypography.labelSmall(color: foreground)
+                : AppTypography.label(color: foreground)),
           ),
         ],
       ),

@@ -44,22 +44,10 @@ class CarpenterBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final barBg = context.themeSurface;
-    final topBorder = context.themeLineBorder;
-
     return Container(
       decoration: BoxDecoration(
-        color: barBg,
-        border: Border(top: BorderSide(color: topBorder, width: 1)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: isDark ? 0.30 : 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, -3),
-          ),
-        ],
+        color: context.themeChrome,
+        border: Border(top: BorderSide(color: context.themeBorder, width: 1)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -133,50 +121,51 @@ class _NavTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = index == currentIndex;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final activeColor = context.themePrimary;
-    final inactiveColor = isDark
-        ? AppColors.white.withValues(alpha: 0.50)
-        : AppColors.black.withValues(alpha: 0.45);
-    final pillBg = activeColor.withValues(alpha: isDark ? 0.18 : 0.10);
+    // Spec: active = brand ink on gold-soft pill, inactive = secondary text.
+    final activeColor = context.themeContentColor;
+    final inactiveColor = context.themeTextSecondary;
+    final pillBg = context.themePendingSoft;
 
     return Expanded(
-      child: InkWell(
-        onTap: () => onTap(index),
-        splashColor: activeColor.withValues(alpha: 0.08),
-        highlightColor: Colors.transparent,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon with active pill background
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: selected ? pillBg : Colors.transparent,
-                borderRadius: AppRadius.all16,
+      child: Semantics(
+        selected: selected,
+        button: true,
+        child: InkWell(
+          onTap: () => onTap(index),
+          splashColor: activeColor.withValues(alpha: 0.08),
+          highlightColor: Colors.transparent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon with active pill background
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: selected ? pillBg : Colors.transparent,
+                  borderRadius: AppRadius.md12,
+                ),
+                child: Icon(
+                  selected ? activeIcon : icon,
+                  size: 24,
+                  color: selected ? activeColor : inactiveColor,
+                ),
               ),
-              child: Icon(
-                selected ? activeIcon : icon,
-                size: 24,
-                color: selected ? activeColor : inactiveColor,
+              const SizedBox(height: 2),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.navLabel(
+                  color: selected ? activeColor : inactiveColor,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style:
-                  AppTypography.caption(
-                    color: selected ? activeColor : inactiveColor,
-                  ).copyWith(
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                  ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -195,6 +184,7 @@ class _CenterAddButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
+        // Semantics label comes from the visible text below.
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -204,19 +194,14 @@ class _CenterAddButton extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: context.themePrimary,
+                // Main action — gold with navy glyph (spec CTA colours).
+                color: AppColors.gold,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: context.themePrimary.withValues(alpha: 0.45),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                boxShadow: AppColors.shadowLevel2,
               ),
               child: const Icon(
                 Icons.add_rounded,
-                color: AppColors.white,
+                color: AppColors.primary,
                 size: 24,
               ),
             ),
@@ -226,9 +211,7 @@ class _CenterAddButton extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.caption(
-                color: context.themePrimary,
-              ).copyWith(fontWeight: FontWeight.w700, fontSize: 10),
+              style: AppTypography.navLabel(color: context.themeContentColor),
             ),
           ],
         ),

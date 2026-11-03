@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -24,7 +26,7 @@ class _CleanupDuplicateAccountsScreenState
 
   Future<Map<String, dynamic>> _fetchDuplicates() async {
     final db = FirebaseFirestore.instance;
-    final usersSnapshot = await db.collection('users').get();
+    final usersSnapshot = await db.collection('users').forAdminBranch().get();
 
     final phoneMap = <String, List<Map<String, dynamic>>>{};
 
@@ -77,7 +79,10 @@ class _CleanupDuplicateAccountsScreenState
     return Scaffold(
       backgroundColor: context.themeBackground,
       appBar: AppBar(
-        title: Text('Clean Up Duplicates', style: AppTypography.h2()),
+        title: Text(
+          AppLocalizations.of(context)!.cleanUpDuplicates,
+          style: AppTypography.h2(),
+        ),
         backgroundColor: context.themePrimary,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -92,7 +97,7 @@ class _CleanupDuplicateAccountsScreenState
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Error: ${snapshot.error}',
+                AppLocalizations.of(context)!.error3('${snapshot.error}'),
                 style: AppTypography.bodyMedium().copyWith(
                   color: context.themeError,
                 ),
@@ -114,17 +119,17 @@ class _CleanupDuplicateAccountsScreenState
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
+                        color: AppColors.error.withValues(alpha: 0.1),
                         border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.3),
+                          color: AppColors.error.withValues(alpha: 0.3),
                         ),
                         borderRadius: AppRadius.md12,
                       ),
                       child: Row(
                         children: [
                           Icon(
-                            Icons.warning_amber,
-                            color: Colors.red,
+                            Icons.warning_amber_rounded,
+                            color: AppColors.error,
                             size: 24,
                           ),
                           const SizedBox(width: 12),
@@ -133,15 +138,20 @@ class _CleanupDuplicateAccountsScreenState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Duplicates Found',
+                                  AppLocalizations.of(context)!.duplicatesFound,
                                   style: AppTypography.labelLarge().copyWith(
-                                    color: Colors.red[700],
+                                    color: AppColors.error,
                                   ),
                                 ),
                                 Text(
-                                  '$duplicateCount accounts across ${duplicates.length} phone numbers',
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.accountsAcrossPhoneNumbers(
+                                    '$duplicateCount',
+                                    '${duplicates.length}',
+                                  ),
                                   style: AppTypography.bodySmall().copyWith(
-                                    color: Colors.red[600],
+                                    color: AppColors.error,
                                   ),
                                 ),
                               ],
@@ -157,18 +167,20 @@ class _CleanupDuplicateAccountsScreenState
                         child: Column(
                           children: [
                             Icon(
-                              Icons.check_circle,
+                              Icons.check_circle_rounded,
                               size: 64,
-                              color: Colors.green,
+                              color: AppColors.success,
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No Duplicates Found!',
+                              AppLocalizations.of(context)!.noDuplicatesFound,
                               style: AppTypography.h3(),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'All carpenter accounts are unique.',
+                              AppLocalizations.of(
+                                context,
+                              )!.allCarpenterAccountsAreUnique,
                               style: AppTypography.bodyMedium().copyWith(
                                 color: context.themeTextMuted,
                               ),
@@ -179,7 +191,10 @@ class _CleanupDuplicateAccountsScreenState
                     ),
                   if (duplicates.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    Text('Duplicate Groups', style: AppTypography.h3()),
+                    Text(
+                      AppLocalizations.of(context)!.duplicateGroups,
+                      style: AppTypography.h3(),
+                    ),
                     const SizedBox(height: 12),
                     ...duplicates.entries.mapIndexed((index, entry) {
                       final phone = entry.key;
@@ -235,7 +250,9 @@ class _DuplicateGroup extends StatelessWidget {
               ),
             ),
             child: Text(
-              '$groupIndex. Phone: $phone (${users.length} accounts)',
+              AppLocalizations.of(
+                context,
+              )!.phoneAccounts('$groupIndex', '$phone', '${users.length}'),
               style: AppTypography.bodyLarge().copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -259,8 +276,8 @@ class _DuplicateGroup extends StatelessWidget {
                     color: context.themeBackground,
                     border: Border.all(
                       color: isOldest
-                          ? Colors.green.withValues(alpha: 0.5)
-                          : Colors.red.withValues(alpha: 0.5),
+                          ? AppColors.success.withValues(alpha: 0.5)
+                          : AppColors.error.withValues(alpha: 0.5),
                       width: 2,
                     ),
                     borderRadius: AppRadius.md12,
@@ -298,15 +315,17 @@ class _DuplicateGroup extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha: 0.2),
+                              color: AppColors.success.withValues(alpha: 0.2),
                               borderRadius: AppRadius.sm8,
                             ),
                             child: Text(
-                              isOldest ? '⭐ Keep' : 'Review only',
+                              isOldest
+                                  ? AppLocalizations.of(context)!.keep
+                                  : AppLocalizations.of(context)!.reviewOnly,
                               style: AppTypography.labelSmall().copyWith(
                                 color: isOldest
-                                    ? Colors.green[700]
-                                    : Colors.orange[800],
+                                    ? AppColors.success
+                                    : AppColors.warning,
                               ),
                             ),
                           ),

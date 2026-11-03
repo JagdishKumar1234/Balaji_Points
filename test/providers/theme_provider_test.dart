@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
-import 'package:balaji_points/core/design/app_colors.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -21,15 +20,5 @@ void main() {
     await container.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
     expect(container.read(themeModeProvider), ThemeMode.dark);
     expect(container.read(themeIsDarkProvider), true);
-  });
-
-  test('ThemeColorPaletteNotifier default is navy and updates correctly', () async {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
-
-    expect(container.read(themeColorPaletteProvider), AppColorPalette.navy);
-
-    await container.read(themeColorPaletteProvider.notifier).setColorPalette(AppColorPalette.emerald);
-    expect(container.read(themeColorPaletteProvider), AppColorPalette.emerald);
   });
 }

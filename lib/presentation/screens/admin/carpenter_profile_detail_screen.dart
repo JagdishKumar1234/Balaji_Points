@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -31,13 +32,13 @@ class _CarpenterProfileDetailScreenState
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
       case 'platinum':
-        return const Color(0xFFE5E4E2);
+        return AppColors.tierPlatinum;
       case 'gold':
-        return const Color(0xFFFFD700);
+        return AppColors.tierGold;
       case 'silver':
-        return const Color(0xFFC0C0C0);
+        return AppColors.tierSilver;
       case 'bronze':
-        return const Color(0xFFCD7F32);
+        return AppColors.tierBronze;
       default:
         return AppColors.textSecondary;
     }
@@ -52,8 +53,10 @@ class _CarpenterProfileDetailScreenState
     if (pin.isEmpty || confirmPin.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(dialogContext).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter PIN in both fields'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.pleaseEnterPinInBothFields,
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -64,8 +67,8 @@ class _CarpenterProfileDetailScreenState
     if (pin != confirmPin) {
       if (mounted) {
         ScaffoldMessenger.of(dialogContext).showSnackBar(
-          const SnackBar(
-            content: Text('PINs do not match'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.pinMismatch),
             backgroundColor: AppColors.error,
           ),
         );
@@ -76,8 +79,8 @@ class _CarpenterProfileDetailScreenState
     if (pin.length < 4 || pin.length > 6) {
       if (mounted) {
         ScaffoldMessenger.of(dialogContext).showSnackBar(
-          const SnackBar(
-            content: Text('PIN must be 4-6 digits'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.pinMustBe46Digits),
             backgroundColor: AppColors.error,
           ),
         );
@@ -88,8 +91,10 @@ class _CarpenterProfileDetailScreenState
     if (!RegExp(r'^[0-9]+$').hasMatch(pin)) {
       if (mounted) {
         ScaffoldMessenger.of(dialogContext).showSnackBar(
-          const SnackBar(
-            content: Text('PIN must contain only numbers'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.pinMustContainOnlyNumbers,
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -112,15 +117,15 @@ class _CarpenterProfileDetailScreenState
           Navigator.pop(dialogContext);
         }
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('PIN reset successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.pinResetSuccessfully),
             backgroundColor: AppColors.success,
           ),
         );
       } else {
         ScaffoldMessenger.of(dialogContext).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to reset PIN. Please try again.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.adminResetPinFailed),
             backgroundColor: AppColors.error,
           ),
         );
@@ -129,7 +134,7 @@ class _CarpenterProfileDetailScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(dialogContext).showSnackBar(
         SnackBar(
-          content: Text('Error resetting PIN: $e'),
+          content: Text(AppLocalizations.of(context)!.errorResettingPin('$e')),
           backgroundColor: AppColors.error,
         ),
       );
@@ -152,11 +157,11 @@ class _CarpenterProfileDetailScreenState
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.lock_reset, color: AppColors.warning, size: 28),
+            Icon(Icons.lock_reset_rounded, color: AppColors.warning, size: 28),
             SizedBox(width: 12),
-            Text('Reset PIN'),
+            Text(AppLocalizations.of(context)!.resetPin),
           ],
         ),
         content: SingleChildScrollView(
@@ -165,14 +170,14 @@ class _CarpenterProfileDetailScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Reset PIN for: $carpenterName',
+                AppLocalizations.of(context)!.resetPinFor('$carpenterName'),
                 style: AppTypography.bodyMedium().copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Phone: $carpenterPhone',
+                AppLocalizations.of(context)!.phone2('$carpenterPhone'),
                 style: AppTypography.bodySmall().copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -187,8 +192,8 @@ class _CarpenterProfileDetailScreenState
                     color: AppColors.warning.withValues(alpha: 0.3),
                   ),
                 ),
-                child: const Text(
-                  '⚠️ Carpenter will need to use this new PIN to login. Make sure to communicate it securely.',
+                child: Text(
+                  AppLocalizations.of(context)!.carpenterWillNeedToUseThis,
                   style: TextStyle(fontSize: 12, color: AppColors.warning),
                 ),
               ),
@@ -197,7 +202,7 @@ class _CarpenterProfileDetailScreenState
                 controller: pinController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'New PIN (4-6 digits)',
+                  labelText: AppLocalizations.of(context)!.newPin46Digits,
                   hintText: '0000',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -211,7 +216,7 @@ class _CarpenterProfileDetailScreenState
                 controller: confirmPinController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Confirm PIN',
+                  labelText: AppLocalizations.of(context)!.confirmPin,
                   hintText: '0000',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -226,7 +231,7 @@ class _CarpenterProfileDetailScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => _handleResetPin(
@@ -235,10 +240,13 @@ class _CarpenterProfileDetailScreenState
               confirmPinController.text.trim(),
               carpenterPhone,
             ),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
-            child: const Text(
-              'Reset PIN',
-              style: TextStyle(color: AppColors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.warning,
+              foregroundColor: AppColors.navigation,
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.resetPin,
+              style: TextStyle(color: AppColors.navigation),
             ),
           ),
         ],
@@ -264,7 +272,7 @@ class _CarpenterProfileDetailScreenState
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: const Color(0xFF1E40AF),
+              primary: AppColors.primary,
               onPrimary: AppColors.white,
               surface: context.themeSurface,
               onSurface: context.themeTextPrimary,
@@ -307,14 +315,20 @@ class _CarpenterProfileDetailScreenState
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(
-                  Icons.arrow_back,
+                  Icons.arrow_back_rounded,
                   color: AppColors.textPrimary,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: const AppText.title('Carpenter Details'),
+              title: AppText.title(
+                AppLocalizations.of(context)!.carpenterDetails,
+              ),
             ),
-            body: Center(child: AppText.body('Carpenter not found')),
+            body: Center(
+              child: AppText.body(
+                AppLocalizations.of(context)!.carpenterNotFound,
+              ),
+            ),
           );
         }
 
@@ -335,10 +349,15 @@ class _CarpenterProfileDetailScreenState
             backgroundColor: AppColors.white,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              icon: const Icon(
+                Icons.arrow_back_rounded,
+                color: AppColors.textPrimary,
+              ),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const AppText.title('Carpenter Details'),
+            title: AppText.title(
+              AppLocalizations.of(context)!.carpenterDetails,
+            ),
             centerTitle: false,
             actions: context.isDesktop
                 ? [
@@ -353,10 +372,10 @@ class _CarpenterProfileDetailScreenState
                         children: [
                           OutlinedButton.icon(
                             icon: Icon(
-                              Icons.lock_reset,
+                              Icons.lock_reset_rounded,
                               color: context.themePrimary,
                             ),
-                            label: const Text('Reset PIN'),
+                            label: Text(AppLocalizations.of(context)!.resetPin),
                             onPressed: () => _resetPinDialog(
                               context,
                               widget.carpenterId,
@@ -366,8 +385,11 @@ class _CarpenterProfileDetailScreenState
                           ),
                           const SizedBox(width: 8),
                           OutlinedButton.icon(
-                            icon: Icon(Icons.edit, color: context.themePrimary),
-                            label: const Text('Edit'),
+                            icon: Icon(
+                              Icons.edit_rounded,
+                              color: context.themePrimary,
+                            ),
+                            label: Text(AppLocalizations.of(context)!.edit),
                             onPressed: () => _showEditDialog(
                               context,
                               widget.carpenterId,
@@ -381,23 +403,29 @@ class _CarpenterProfileDetailScreenState
                 : [
                     // Mobile: Show as icons
                     IconButton(
-                      icon: Icon(Icons.lock_reset, color: context.themePrimary),
+                      icon: Icon(
+                        Icons.lock_reset_rounded,
+                        color: context.themePrimary,
+                      ),
                       onPressed: () => _resetPinDialog(
                         context,
                         widget.carpenterId,
                         phone,
                         carpenterName,
                       ),
-                      tooltip: 'Reset PIN',
+                      tooltip: AppLocalizations.of(context)!.resetPin,
                     ),
                     IconButton(
-                      icon: Icon(Icons.edit, color: context.themePrimary),
+                      icon: Icon(
+                        Icons.edit_rounded,
+                        color: context.themePrimary,
+                      ),
                       onPressed: () => _showEditDialog(
                         context,
                         widget.carpenterId,
                         userData,
                       ),
-                      tooltip: 'Edit',
+                      tooltip: AppLocalizations.of(context)!.edit,
                     ),
                   ],
           ),
@@ -424,7 +452,7 @@ class _CarpenterProfileDetailScreenState
                                     height: 56,
                                     color: context.themeBackground,
                                     child: Icon(
-                                      Icons.person,
+                                      Icons.person_rounded,
                                       size: 28,
                                       color: context.themeTextSecondary,
                                     ),
@@ -436,7 +464,7 @@ class _CarpenterProfileDetailScreenState
                                 height: 56,
                                 color: context.themeBackground,
                                 child: Icon(
-                                  Icons.person,
+                                  Icons.person_rounded,
                                   size: 28,
                                   color: context.themeTextSecondary,
                                 ),
@@ -455,7 +483,7 @@ class _CarpenterProfileDetailScreenState
                             const SizedBox(height: 3),
                             Row(
                               children: [
-                                const Icon(Icons.phone, size: 12),
+                                const Icon(Icons.phone_rounded, size: 12),
                                 const SizedBox(width: 4),
                                 Expanded(
                                   child: AppText.caption(
@@ -477,7 +505,7 @@ class _CarpenterProfileDetailScreenState
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: AppText.caption(
-                                'Active',
+                                AppLocalizations.of(context)!.active,
                                 color: AppColors.white,
                               ),
                             ),
@@ -505,7 +533,7 @@ class _CarpenterProfileDetailScreenState
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              Icons.star,
+                              Icons.star_rounded,
                               size: 18,
                               color: context.themeContentColor,
                             ),
@@ -517,7 +545,11 @@ class _CarpenterProfileDetailScreenState
                               children: [
                                 AppText.section(totalPoints.toStringAsFixed(0)),
                                 const SizedBox(height: 1),
-                                AppText.caption('Total Points'),
+                                AppText.caption(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.totalPointsLabel,
+                                ),
                               ],
                             ),
                           ),
@@ -544,9 +576,9 @@ class _CarpenterProfileDetailScreenState
                           Expanded(
                             child: _buildStatColumn(
                               context,
-                              Icons.check_circle,
+                              Icons.check_circle_rounded,
                               '32',
-                              'Approved',
+                              AppLocalizations.of(context)!.approvedLabel,
                               AppColors.success,
                             ),
                           ),
@@ -554,19 +586,19 @@ class _CarpenterProfileDetailScreenState
                           Expanded(
                             child: _buildStatColumn(
                               context,
-                              Icons.schedule,
+                              Icons.schedule_rounded,
                               '5',
-                              'Pending',
-                              const Color(0xFFFFA500),
+                              AppLocalizations.of(context)!.pendingStatus,
+                              AppColors.warning,
                             ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: _buildStatColumn(
                               context,
-                              Icons.cancel,
+                              Icons.cancel_rounded,
                               '2',
-                              'Rejected',
+                              AppLocalizations.of(context)!.rejectedLabel,
                               AppColors.error,
                             ),
                           ),
@@ -594,12 +626,16 @@ class _CarpenterProfileDetailScreenState
                           Row(
                             children: [
                               Icon(
-                                Icons.person,
+                                Icons.person_rounded,
                                 size: 16,
                                 color: context.themeContentColor,
                               ),
                               const SizedBox(width: 5),
-                              AppText.section('Carpenter Information'),
+                              AppText.section(
+                                AppLocalizations.of(
+                                  context,
+                                )!.carpenterInformation,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -611,9 +647,14 @@ class _CarpenterProfileDetailScreenState
                                   children: [
                                     Row(
                                       children: [
-                                        const Icon(Icons.phone, size: 11),
+                                        const Icon(
+                                          Icons.phone_rounded,
+                                          size: 11,
+                                        ),
                                         const SizedBox(width: 3),
-                                        AppText.caption('Phone'),
+                                        AppText.caption(
+                                          AppLocalizations.of(context)!.phone,
+                                        ),
                                       ],
                                     ),
                                     const SizedBox(height: 1),
@@ -632,11 +673,15 @@ class _CarpenterProfileDetailScreenState
                                     Row(
                                       children: [
                                         const Icon(
-                                          Icons.calendar_today,
+                                          Icons.calendar_today_rounded,
                                           size: 11,
                                         ),
                                         const SizedBox(width: 3),
-                                        AppText.caption('Member Since'),
+                                        AppText.caption(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.memberSince,
+                                        ),
                                       ],
                                     ),
                                     const SizedBox(height: 1),
@@ -661,9 +706,14 @@ class _CarpenterProfileDetailScreenState
                                   children: [
                                     Row(
                                       children: [
-                                        const Icon(Icons.business, size: 11),
+                                        const Icon(
+                                          Icons.business_rounded,
+                                          size: 11,
+                                        ),
                                         const SizedBox(width: 3),
-                                        AppText.caption('Branch'),
+                                        AppText.caption(
+                                          AppLocalizations.of(context)!.branch,
+                                        ),
                                       ],
                                     ),
                                     const SizedBox(height: 1),
@@ -681,9 +731,16 @@ class _CarpenterProfileDetailScreenState
                                   children: [
                                     Row(
                                       children: [
-                                        const Icon(Icons.star, size: 11),
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          size: 11,
+                                        ),
                                         const SizedBox(width: 3),
-                                        AppText.caption('Total Points'),
+                                        AppText.caption(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.totalPointsLabel,
+                                        ),
                                       ],
                                     ),
                                     const SizedBox(height: 1),
@@ -709,7 +766,7 @@ class _CarpenterProfileDetailScreenState
 
                 // Complete History Header
                 Text(
-                  'Complete History',
+                  AppLocalizations.of(context)!.completeHistory,
                   style: AppTypography.labelLarge().copyWith(fontSize: 18),
                 ),
                 const SizedBox(height: 12),
@@ -721,13 +778,13 @@ class _CarpenterProfileDetailScreenState
                     Row(
                       children: [
                         Icon(
-                          Icons.tune,
+                          Icons.tune_rounded,
                           size: 18,
                           color: context.themeContentColor,
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Filters',
+                          AppLocalizations.of(context)!.filters,
                           style: AppTypography.labelMedium().copyWith(
                             fontSize: 12,
                           ),
@@ -746,13 +803,13 @@ class _CarpenterProfileDetailScreenState
                       child: Row(
                         children: [
                           Icon(
-                            Icons.refresh,
+                            Icons.refresh_rounded,
                             size: 16,
                             color: context.themePrimary,
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Clear All',
+                            AppLocalizations.of(context)!.clearAll,
                             style: AppTypography.labelSmall().copyWith(
                               fontSize: 12,
                               color: context.themePrimary,
@@ -792,7 +849,7 @@ class _CarpenterProfileDetailScreenState
                           child: Row(
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today_rounded,
                                 size: 14,
                                 color: context.themeTextSecondary,
                               ),
@@ -803,9 +860,9 @@ class _CarpenterProfileDetailScreenState
                                       ? DateFormat(
                                           'dd MMM',
                                         ).format(_historyStartDate!)
-                                      : 'From Date',
+                                      : AppLocalizations.of(context)!.fromDate,
                                   style: AppTypography.bodySmall().copyWith(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ),
@@ -835,7 +892,7 @@ class _CarpenterProfileDetailScreenState
                           child: Row(
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today_rounded,
                                 size: 14,
                                 color: context.themeTextSecondary,
                               ),
@@ -846,9 +903,9 @@ class _CarpenterProfileDetailScreenState
                                       ? DateFormat(
                                           'dd MMM',
                                         ).format(_historyEndDate!)
-                                      : 'To Date',
+                                      : AppLocalizations.of(context)!.toDate,
                                   style: AppTypography.bodySmall().copyWith(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ),
@@ -864,25 +921,30 @@ class _CarpenterProfileDetailScreenState
                 // Status Filter Pills
                 Row(
                   children: [
-                    _buildFilterPill(context, 'All', 'all', Colors.blue),
+                    _buildFilterPill(
+                      context,
+                      AppLocalizations.of(context)!.all,
+                      'all',
+                      AppColors.primaryOnDark,
+                    ),
                     const SizedBox(width: 8),
                     _buildFilterPill(
                       context,
-                      'Approved',
+                      AppLocalizations.of(context)!.approvedLabel,
                       'approved',
                       AppColors.success,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterPill(
                       context,
-                      'Pending',
+                      AppLocalizations.of(context)!.pendingStatus,
                       'pending',
-                      const Color(0xFFFFA500),
+                      AppColors.warning,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterPill(
                       context,
-                      'Rejected',
+                      AppLocalizations.of(context)!.rejectedLabel,
                       'rejected',
                       AppColors.error,
                     ),
@@ -924,7 +986,7 @@ class _CarpenterProfileDetailScreenState
       context: context,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: AppText.title('Edit Carpenter'),
+        title: AppText.title(AppLocalizations.of(context)!.editCarpenter),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -932,7 +994,7 @@ class _CarpenterProfileDetailScreenState
               TextField(
                 controller: firstNameController,
                 decoration: InputDecoration(
-                  labelText: 'First Name',
+                  labelText: AppLocalizations.of(context)!.firstName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -942,7 +1004,7 @@ class _CarpenterProfileDetailScreenState
               TextField(
                 controller: lastNameController,
                 decoration: InputDecoration(
-                  labelText: 'Last Name',
+                  labelText: AppLocalizations.of(context)!.lastName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -952,12 +1014,13 @@ class _CarpenterProfileDetailScreenState
               TextField(
                 controller: phoneController,
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
+                  labelText: AppLocalizations.of(context)!.phoneNumber,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  helperText:
-                      'Changing phone number will update login credentials',
+                  helperText: AppLocalizations.of(
+                    context,
+                  )!.changingPhoneNumberWillUpdateLogin,
                 ),
                 keyboardType: TextInputType.phone,
               ),
@@ -965,7 +1028,7 @@ class _CarpenterProfileDetailScreenState
               TextField(
                 controller: branchIdController,
                 decoration: InputDecoration(
-                  labelText: 'Branch ID',
+                  labelText: AppLocalizations.of(context)!.branchId,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -977,7 +1040,7 @@ class _CarpenterProfileDetailScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: AppText.body('Cancel'),
+            child: AppText.body(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -985,8 +1048,10 @@ class _CarpenterProfileDetailScreenState
               if (newPhone.isEmpty) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Phone number cannot be empty'),
+                    SnackBar(
+                      content: Text(
+                        AppLocalizations.of(context)!.phoneNumberCannotBeEmpty,
+                      ),
                       backgroundColor: AppColors.error,
                     ),
                   );
@@ -1010,7 +1075,9 @@ class _CarpenterProfileDetailScreenState
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: AppText.body(
-                        'Carpenter updated successfully',
+                        AppLocalizations.of(
+                          context,
+                        )!.carpenterUpdatedSuccessfully,
                         color: AppColors.white,
                       ),
                       backgroundColor: AppColors.success,
@@ -1022,7 +1089,9 @@ class _CarpenterProfileDetailScreenState
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: AppText.body(
-                        'Error updating carpenter: $e',
+                        AppLocalizations.of(
+                          context,
+                        )!.errorUpdatingCarpenter('$e'),
                         color: AppColors.white,
                       ),
                       backgroundColor: AppColors.error,
@@ -1034,7 +1103,10 @@ class _CarpenterProfileDetailScreenState
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themePrimary,
             ),
-            child: AppText.body('Update', color: AppColors.white),
+            child: AppText.body(
+              AppLocalizations.of(context)!.update,
+              color: AppColors.white,
+            ),
           ),
         ],
       ),
@@ -1078,6 +1150,10 @@ class _CarpenterProfileDetailScreenState
     Color color,
   ) {
     final isSelected = value == 'all' || _statusFilter == value;
+    final selectedForeground =
+        ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+        ? AppColors.white
+        : AppColors.navigation;
     return ElevatedButton(
       onPressed: () {
         setState(() {
@@ -1087,7 +1163,7 @@ class _CarpenterProfileDetailScreenState
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? color : context.themeSoftSurface,
         foregroundColor: isSelected
-            ? AppColors.white
+            ? selectedForeground
             : context.themeTextPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(
@@ -1099,7 +1175,7 @@ class _CarpenterProfileDetailScreenState
       ),
       child: Text(
         label,
-        style: AppTypography.labelSmall().copyWith(fontSize: 11),
+        style: AppTypography.labelSmall().copyWith(fontSize: 12),
       ),
     );
   }
@@ -1144,7 +1220,7 @@ class _CarpenterProfileDetailScreenState
               DropdownMenuItem(
                 value: null,
                 child: Text(
-                  'All Sites',
+                  AppLocalizations.of(context)!.allSites,
                   style: AppTypography.bodySmall().copyWith(fontSize: 12),
                 ),
               ),
@@ -1195,13 +1271,17 @@ class _CarpenterProfileDetailScreenState
           children: [
             Row(
               children: [
-                Icon(Icons.schedule, size: 20, color: const Color(0xFFFFA500)),
+                Icon(
+                  Icons.schedule_rounded,
+                  size: 20,
+                  color: AppColors.warning,
+                ),
                 const SizedBox(width: 8),
                 Text(
-                  'Pending Bill Requests',
+                  AppLocalizations.of(context)!.pendingBillRequests,
                   style: AppTypography.labelLarge().copyWith(
                     fontSize: 16,
-                    color: const Color(0xFFFFA500),
+                    color: AppColors.warning,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -1211,13 +1291,13 @@ class _CarpenterProfileDetailScreenState
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFA500).withValues(alpha: 0.15),
+                    color: AppColors.warning.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${bills.length}',
                     style: AppTypography.labelSmall().copyWith(
-                      color: const Color(0xFFFFA500),
+                      color: AppColors.warning,
                       fontSize: 12,
                     ),
                   ),
@@ -1258,7 +1338,7 @@ class _CarpenterProfileDetailScreenState
         color: context.themeSurface,
         borderRadius: AppRadius.md12,
         border: Border.all(
-          color: const Color(0xFFFFA500).withValues(alpha: 0.3),
+          color: AppColors.warning.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -1281,7 +1361,7 @@ class _CarpenterProfileDetailScreenState
                         height: 60,
                         color: context.themeBackground,
                         child: Icon(
-                          Icons.receipt,
+                          Icons.receipt_rounded,
                           size: 24,
                           color: context.themeTextSecondary,
                         ),
@@ -1297,7 +1377,7 @@ class _CarpenterProfileDetailScreenState
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Icon(
-                      Icons.receipt,
+                      Icons.receipt_rounded,
                       size: 24,
                       color: context.themeTextSecondary,
                     ),
@@ -1321,15 +1401,15 @@ class _CarpenterProfileDetailScreenState
                         child: Text(
                           'PENDING',
                           style: AppTypography.labelSmall().copyWith(
-                            fontSize: 9,
-                            color: const Color(0xFFFFA500),
+                            fontSize: 12,
+                            color: AppColors.warning,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Site Material Purchase',
+                        AppLocalizations.of(context)!.siteMaterialPurchase,
                         style: AppTypography.labelMedium().copyWith(
                           fontSize: 12,
                         ),
@@ -1338,17 +1418,17 @@ class _CarpenterProfileDetailScreenState
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Bill No. $billNumber',
+                        AppLocalizations.of(context)!.billNo2('$billNumber'),
                         style: AppTypography.bodySmall().copyWith(
-                          fontSize: 11,
+                          fontSize: 12,
                           color: context.themeTextSecondary,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Site: $siteName',
+                        AppLocalizations.of(context)!.site3('$siteName'),
                         style: AppTypography.bodySmall().copyWith(
-                          fontSize: 11,
+                          fontSize: 12,
                           color: context.themeTextSecondary,
                         ),
                       ),
@@ -1360,7 +1440,7 @@ class _CarpenterProfileDetailScreenState
                               ).format(billDate.toDate())
                             : '-',
                         style: AppTypography.bodySmall().copyWith(
-                          fontSize: 10,
+                          fontSize: 12,
                           color: context.themeTextSecondary,
                         ),
                       ),
@@ -1377,14 +1457,14 @@ class _CarpenterProfileDetailScreenState
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFA500).withValues(alpha: 0.15),
+                        color: AppColors.warning.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Pending',
+                        AppLocalizations.of(context)!.pendingStatus,
                         style: AppTypography.labelSmall().copyWith(
-                          fontSize: 10,
-                          color: const Color(0xFFFFA500),
+                          fontSize: 12,
+                          color: AppColors.warning,
                         ),
                       ),
                     ),
@@ -1401,9 +1481,11 @@ class _CarpenterProfileDetailScreenState
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '+${(amount / 1000).toStringAsFixed(2)} pts',
+                          AppLocalizations.of(
+                            context,
+                          )!.pts7('${(amount / 1000).toStringAsFixed(2)}'),
                           style: AppTypography.bodySmall().copyWith(
-                            fontSize: 10,
+                            fontSize: 12,
                             color: context.themeTextSecondary,
                           ),
                         ),
@@ -1430,8 +1512,11 @@ class _CarpenterProfileDetailScreenState
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    icon: const Icon(Icons.close, size: 16),
-                    label: const Text('Reject', style: TextStyle(fontSize: 12)),
+                    icon: const Icon(Icons.close_rounded, size: 16),
+                    label: Text(
+                      AppLocalizations.of(context)!.reject,
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -1446,9 +1531,9 @@ class _CarpenterProfileDetailScreenState
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    icon: const Icon(Icons.check, size: 16),
-                    label: const Text(
-                      'Approve',
+                    icon: const Icon(Icons.check_rounded, size: 16),
+                    label: Text(
+                      AppLocalizations.of(context)!.approve,
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
@@ -1469,14 +1554,17 @@ class _CarpenterProfileDetailScreenState
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: AppText.label('Approve Bill'),
+        title: AppText.label(AppLocalizations.of(context)!.approveBillAction),
         content: AppText.body(
-          'Approve this bill of ₹${amount.toStringAsFixed(0)}?\n\n${(amount / 1000).toStringAsFixed(2)} points will be added.',
+          AppLocalizations.of(context)!.approveThisBillOfPointsWill2(
+            '${amount.toStringAsFixed(0)}',
+            '${(amount / 1000).toStringAsFixed(2)}',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: AppText.label('Cancel'),
+            child: AppText.label(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -1486,8 +1574,8 @@ class _CarpenterProfileDetailScreenState
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              'Approve',
+            child: Text(
+              AppLocalizations.of(context)!.approve,
               style: TextStyle(color: AppColors.white),
             ),
           ),
@@ -1511,8 +1599,8 @@ class _CarpenterProfileDetailScreenState
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Bill approved successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.billApproved),
             backgroundColor: AppColors.success,
             duration: Duration(seconds: 2),
           ),
@@ -1520,7 +1608,7 @@ class _CarpenterProfileDetailScreenState
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Failed to approve bill'),
+            content: Text(AppLocalizations.of(context)!.failedToApproveBill2),
             backgroundColor: context.themeError,
           ),
         );
@@ -1530,7 +1618,7 @@ class _CarpenterProfileDetailScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text(AppLocalizations.of(context)!.error2('$e')),
             backgroundColor: context.themeError,
           ),
         );
@@ -1544,17 +1632,19 @@ class _CarpenterProfileDetailScreenState
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Reject Bill',
+          AppLocalizations.of(context)!.rejectBill,
           style: AppTypography.labelLarge().copyWith(
             fontSize: 20,
             color: context.themeError,
           ),
         ),
-        content: AppText.body('Are you sure you want to reject this bill?'),
+        content: AppText.body(
+          AppLocalizations.of(context)!.rejectBillConfirmation,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: AppText.label('Cancel'),
+            child: AppText.label(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -1564,8 +1654,8 @@ class _CarpenterProfileDetailScreenState
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              'Reject',
+            child: Text(
+              AppLocalizations.of(context)!.reject,
               style: TextStyle(color: AppColors.white),
             ),
           ),
@@ -1585,8 +1675,8 @@ class _CarpenterProfileDetailScreenState
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Bill rejected successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.billRejected),
             backgroundColor: AppColors.warning,
             duration: Duration(seconds: 2),
           ),
@@ -1594,7 +1684,7 @@ class _CarpenterProfileDetailScreenState
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Failed to reject bill'),
+            content: Text(AppLocalizations.of(context)!.failedToRejectBill2),
             backgroundColor: context.themeError,
           ),
         );
@@ -1604,7 +1694,7 @@ class _CarpenterProfileDetailScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text(AppLocalizations.of(context)!.error2('$e')),
             backgroundColor: context.themeError,
           ),
         );
@@ -1637,7 +1727,7 @@ class _CarpenterProfileDetailScreenState
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
-                'No history found',
+                AppLocalizations.of(context)!.noHistoryFound,
                 style: AppTypography.bodyMedium().copyWith(
                   color: context.themeTextSecondary,
                 ),
@@ -1675,7 +1765,7 @@ class _CarpenterProfileDetailScreenState
         ? AppColors.success
         : status == 'rejected'
         ? AppColors.error
-        : const Color(0xFFFFA500);
+        : AppColors.warning;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -1701,7 +1791,7 @@ class _CarpenterProfileDetailScreenState
                     height: 60,
                     color: context.themeBackground,
                     child: Icon(
-                      Icons.receipt,
+                      Icons.receipt_rounded,
                       size: 24,
                       color: context.themeTextSecondary,
                     ),
@@ -1717,7 +1807,7 @@ class _CarpenterProfileDetailScreenState
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Icon(
-                  Icons.receipt,
+                  Icons.receipt_rounded,
                   size: 24,
                   color: context.themeTextSecondary,
                 ),
@@ -1739,31 +1829,31 @@ class _CarpenterProfileDetailScreenState
                     child: Text(
                       'BILL',
                       style: AppTypography.labelSmall().copyWith(
-                        fontSize: 9,
+                        fontSize: 12,
                         color: context.themeContentColor,
                       ),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Site Material Purchase',
+                    AppLocalizations.of(context)!.siteMaterialPurchase,
                     style: AppTypography.labelMedium().copyWith(fontSize: 12),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Bill No. $billNumber',
+                    AppLocalizations.of(context)!.billNo2('$billNumber'),
                     style: AppTypography.bodySmall().copyWith(
-                      fontSize: 11,
+                      fontSize: 12,
                       color: context.themeTextSecondary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Site: $siteName',
+                    AppLocalizations.of(context)!.site3('$siteName'),
                     style: AppTypography.bodySmall().copyWith(
-                      fontSize: 11,
+                      fontSize: 12,
                       color: context.themeTextSecondary,
                     ),
                   ),
@@ -1775,7 +1865,7 @@ class _CarpenterProfileDetailScreenState
                           ).format(billDate.toDate())
                         : '-',
                     style: AppTypography.bodySmall().copyWith(
-                      fontSize: 10,
+                      fontSize: 12,
                       color: context.themeTextSecondary,
                     ),
                   ),
@@ -1798,7 +1888,7 @@ class _CarpenterProfileDetailScreenState
                   child: Text(
                     status[0].toUpperCase() + status.substring(1),
                     style: AppTypography.labelSmall().copyWith(
-                      fontSize: 10,
+                      fontSize: 12,
                       color: statusColor,
                     ),
                   ),
@@ -1816,9 +1906,11 @@ class _CarpenterProfileDetailScreenState
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '+${(amount / 1000).toStringAsFixed(2)} pts',
+                      AppLocalizations.of(
+                        context,
+                      )!.pts7('${(amount / 1000).toStringAsFixed(2)}'),
                       style: AppTypography.bodySmall().copyWith(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: context.themeTextSecondary,
                       ),
                     ),
@@ -1828,7 +1920,7 @@ class _CarpenterProfileDetailScreenState
             ),
             const SizedBox(width: 8),
             Icon(
-              Icons.chevron_right,
+              Icons.chevron_right_rounded,
               size: 20,
               color: context.themeTextSecondary,
             ),
@@ -1840,7 +1932,8 @@ class _CarpenterProfileDetailScreenState
 
   Widget _buildPointsItem(BuildContext context, Map<String, dynamic> points) {
     final pointsValue = points['points'] ?? 0;
-    final reason = points['reason'] ?? 'Points awarded';
+    final reason =
+        points['reason'] ?? AppLocalizations.of(context)!.pointsAwarded;
     final timestamp = points['timestamp'] as Timestamp?;
 
     return Container(
@@ -1884,7 +1977,7 @@ class _CarpenterProfileDetailScreenState
                     child: Text(
                       'POINTS',
                       style: AppTypography.labelSmall().copyWith(
-                        fontSize: 9,
+                        fontSize: 12,
                         color: context.themeContentColor,
                       ),
                     ),
@@ -1904,7 +1997,7 @@ class _CarpenterProfileDetailScreenState
                           ).format(timestamp.toDate())
                         : '-',
                     style: AppTypography.bodySmall().copyWith(
-                      fontSize: 10,
+                      fontSize: 12,
                       color: context.themeTextSecondary,
                     ),
                   ),
@@ -1924,9 +2017,9 @@ class _CarpenterProfileDetailScreenState
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'Approved',
+                    AppLocalizations.of(context)!.approvedLabel,
                     style: AppTypography.labelSmall().copyWith(
-                      fontSize: 10,
+                      fontSize: 12,
                       color: AppColors.success,
                     ),
                   ),
@@ -1943,9 +2036,9 @@ class _CarpenterProfileDetailScreenState
                       ),
                     ),
                     Text(
-                      'Points',
+                      AppLocalizations.of(context)!.pointsLabel,
                       style: AppTypography.bodySmall().copyWith(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: context.themeTextSecondary,
                       ),
                     ),
@@ -1955,7 +2048,7 @@ class _CarpenterProfileDetailScreenState
             ),
             const SizedBox(width: 8),
             Icon(
-              Icons.chevron_right,
+              Icons.chevron_right_rounded,
               size: 20,
               color: context.themeTextSecondary,
             ),

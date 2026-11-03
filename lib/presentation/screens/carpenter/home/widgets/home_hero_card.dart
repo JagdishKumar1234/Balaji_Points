@@ -15,37 +15,53 @@ import 'package:balaji_points/providers/home_provider.dart';
 
 int _tierNextThreshold(String tier) {
   switch (tier) {
-    case 'Silver':  return 5000;
-    case 'Gold':    return 10000;
-    case 'Platinum': return 10000;
-    default:        return 2000;
+    case 'Silver':
+      return 5000;
+    case 'Gold':
+      return 10000;
+    case 'Platinum':
+      return 10000;
+    default:
+      return 2000;
   }
 }
 
 int _tierCurrentThreshold(String tier) {
   switch (tier) {
-    case 'Silver':  return 2000;
-    case 'Gold':    return 5000;
-    case 'Platinum': return 10000;
-    default:        return 0;
+    case 'Silver':
+      return 2000;
+    case 'Gold':
+      return 5000;
+    case 'Platinum':
+      return 10000;
+    default:
+      return 0;
   }
 }
 
 String _tierNextLabel(String tier) {
   switch (tier) {
-    case 'Bronze':  return 'Silver';
-    case 'Silver':  return 'Gold';
-    case 'Gold':    return 'Platinum';
-    default:        return 'Max';
+    case 'Bronze':
+      return 'Silver';
+    case 'Silver':
+      return 'Gold';
+    case 'Gold':
+      return 'Platinum';
+    default:
+      return 'Max';
   }
 }
 
 Color _tierColor(String tier) {
   switch (tier) {
-    case 'Silver':  return AppColors.tierSilver;
-    case 'Gold':    return AppColors.warning;
-    case 'Platinum': return AppColors.tierPlatinum;
-    default:        return AppColors.tierBronze; // Bronze
+    case 'Silver':
+      return AppColors.tierSilver;
+    case 'Gold':
+      return AppColors.warning;
+    case 'Platinum':
+      return AppColors.tierPlatinum;
+    default:
+      return AppColors.tierBronze; // Bronze
   }
 }
 
@@ -74,7 +90,8 @@ class HomeHeroCard extends StatelessWidget {
         : (hour < 17 ? l10n.goodAfternoonGreeting : l10n.goodEveningGreeting);
 
     final profileImage = homeState.profileImage;
-    final hasValidImage = profileImage != null &&
+    final hasValidImage =
+        profileImage != null &&
         (profileImage.startsWith('http://') ||
             profileImage.startsWith('https://'));
     final tier = homeState.tier;
@@ -87,8 +104,8 @@ class HomeHeroCard extends StatelessWidget {
     final progress = isPlatinum
         ? 1.0
         : ((homeState.points - currentThreshold) /
-                (nextThreshold - currentThreshold))
-            .clamp(0.0, 1.0);
+                  (nextThreshold - currentThreshold))
+              .clamp(0.0, 1.0);
     final pointsToNext = isPlatinum
         ? 0
         : (nextThreshold - homeState.points).clamp(0, nextThreshold);
@@ -139,7 +156,8 @@ class HomeHeroCard extends StatelessWidget {
               bannerAsset,
               fit: BoxFit.cover,
               cacheWidth: _imageCacheWidthPx(context, 400),
-              errorBuilder: (_, __, ___) => Container(color: context.themePrimary),
+              errorBuilder: (_, __, ___) =>
+                  Container(color: context.themePrimary),
             ),
 
             // ── 2. Subtle left-side gradient for text readability ───────────
@@ -188,34 +206,43 @@ class HomeHeroCard extends StatelessWidget {
                                       return child;
                                     }
                                     return Container(
-                                      color: context.themeSecondary
-                                          .withValues(alpha: 0.3),
+                                      color: context.themeSecondary.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       child: Center(
                                         child: CircularProgressIndicator(
-                                          value: progress.expectedTotalBytes !=
+                                          value:
+                                              progress.expectedTotalBytes !=
                                                   null
                                               ? progress.cumulativeBytesLoaded /
-                                                  progress.expectedTotalBytes!
+                                                    progress.expectedTotalBytes!
                                               : null,
                                           strokeWidth: 2,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                  tierColor),
+                                                tierColor,
+                                              ),
                                         ),
                                       ),
                                     );
                                   },
                                   errorBuilder: (context, error, _) =>
                                       Container(
-                                    color: context.themeSecondary,
-                                    child: Icon(Icons.person_rounded,
-                                        color: AppColors.white, size: 28),
-                                  ),
+                                        color: context.themeSecondary,
+                                        child: Icon(
+                                          Icons.person_rounded,
+                                          color: AppColors.white,
+                                          size: 28,
+                                        ),
+                                      ),
                                 )
                               : Container(
                                   color: context.themeSecondary,
-                                  child: Icon(Icons.person_rounded,
-                                      color: AppColors.white, size: 28),
+                                  child: Icon(
+                                    Icons.person_rounded,
+                                    color: AppColors.white,
+                                    size: 28,
+                                  ),
                                 ),
                         ),
                       ),
@@ -225,9 +252,12 @@ class HomeHeroCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(greeting,
-                                style: AppTypography.caption(
-                                    color: textSecondary)),
+                            Text(
+                              greeting,
+                              style: AppTypography.caption(
+                                color: textSecondary,
+                              ),
+                            ),
                             const SizedBox(height: 1),
                             Text(
                               homeState.displayName,
@@ -261,25 +291,39 @@ class HomeHeroCard extends StatelessWidget {
                           child: Row(
                             children: [
                               _HeroStat(
-                                label: 'Total Points',
-                                value: PointsUtils.formatPoints(homeState.points),
+                                label: AppLocalizations.of(
+                                  context,
+                                )!.totalPoints,
+                                value: PointsUtils.formatPoints(
+                                  homeState.points,
+                                ),
                                 valueColor: tierColor,
                                 textSecondary: textSecondary,
                               ),
                               VerticalDivider(
-                                  color: dividerColor, width: 1, thickness: 1),
+                                color: dividerColor,
+                                width: 1,
+                                thickness: 1,
+                              ),
                               _HeroStat(
-                                label: isPlatinum ? 'Status' : 'To $nextLabel',
+                                label: isPlatinum
+                                    ? AppLocalizations.of(context)!.status
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.to2('$nextLabel'),
                                 value: isPlatinum
-                                    ? 'Max'
+                                    ? AppLocalizations.of(context)!.max
                                     : PointsUtils.formatPoints(pointsToNext),
                                 valueColor: textPrimary,
                                 textSecondary: textSecondary,
                               ),
                               VerticalDivider(
-                                  color: dividerColor, width: 1, thickness: 1),
+                                color: dividerColor,
+                                width: 1,
+                                thickness: 1,
+                              ),
                               _HeroStat(
-                                label: 'Rank',
+                                label: AppLocalizations.of(context)!.rankShort,
                                 value: homeState.userRank != null
                                     ? '#${homeState.userRank}'
                                     : '—',
@@ -297,15 +341,19 @@ class HomeHeroCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '$pointsToNext pts to $nextLabel',
-                                style:
-                                    AppTypography.caption(color: textSecondary),
+                                AppLocalizations.of(
+                                  context,
+                                )!.ptsToNextLabel('$pointsToNext', nextLabel),
+                                style: AppTypography.caption(
+                                  color: textSecondary,
+                                ),
                               ),
                               const Spacer(),
                               Text(
                                 '${(progress * 100).toStringAsFixed(0)}%',
-                                style:
-                                    AppTypography.caption(color: textSecondary),
+                                style: AppTypography.caption(
+                                  color: textSecondary,
+                                ),
                               ),
                             ],
                           ),
@@ -316,18 +364,26 @@ class HomeHeroCard extends StatelessWidget {
                               value: progress,
                               minHeight: 5,
                               backgroundColor: progressBg,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(tierColor),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                tierColor,
+                              ),
                             ),
                           ),
                         ] else
                           Row(
                             children: [
-                              Icon(Icons.workspace_premium_rounded,
-                                  size: 13, color: tierColor),
+                              Icon(
+                                Icons.workspace_premium_rounded,
+                                size: 13,
+                                color: tierColor,
+                              ),
                               const SizedBox(width: 4),
-                              AppText.caption('Platinum — Highest Tier!',
-                                  color: tierColor),
+                              AppText.caption(
+                                AppLocalizations.of(
+                                  context,
+                                )!.platinumHighestTier,
+                                color: tierColor,
+                              ),
                             ],
                           ),
                       ],
@@ -342,8 +398,10 @@ class HomeHeroCard extends StatelessWidget {
               top: 12,
               right: 12,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: tierColor.withValues(alpha: 0.85),
                   borderRadius: AppRadius.all16,
@@ -358,8 +416,11 @@ class HomeHeroCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star_rounded,
-                        size: 12, color: AppColors.white),
+                    const Icon(
+                      Icons.star_rounded,
+                      size: 12,
+                      color: AppColors.white,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       tier,
@@ -427,10 +488,14 @@ class _HeroStat extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 3),
-          Text(
-            value,
-            style: AppTypography.pointsLarge(color: valueColor),
-            textAlign: TextAlign.center,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: AppTypography.pointsLarge(color: valueColor),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+            ),
           ),
         ],
       ),

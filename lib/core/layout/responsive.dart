@@ -1,21 +1,62 @@
 import 'package:flutter/material.dart';
 
-/// Responsive breakpoint constants and helpers
+/// Responsive breakpoint constants (Material 3 window size classes).
+///
+/// Layout contract (docs/ui_spec_conformance_audit.md §6):
+///   compact  < 600   phone layout, bottom nav, 16 px gutter, 1 column
+///   medium   600–839 bottom nav, content max-width 640, 2-column cards
+///   expanded 840–1199 navy rail (80), 24 px gutter, 2-column grids
+///   large    ≥ 1200  navy sidebar (232), 24/32 padding, tables + pagination
 class ResponsiveBreakpoints {
-  // Material adaptive layout breakpoints (logical pixels).
   static const double mobile = 600;
   static const double tablet = 840;
   static const double desktop = 1200;
   static const double largeDesktop = 1600;
+
+  /// Readable max width for single-column (phone-designed) content.
+  static const double readableContent = 720;
+}
+
+/// Material 3 window size class.
+enum WindowSize {
+  compact,
+  medium,
+  expanded,
+  large;
+
+  static WindowSize of(double width) {
+    if (width < ResponsiveBreakpoints.mobile) return WindowSize.compact;
+    if (width < ResponsiveBreakpoints.tablet) return WindowSize.medium;
+    if (width < ResponsiveBreakpoints.desktop) return WindowSize.expanded;
+    return WindowSize.large;
+  }
+
+  bool get isCompact => this == WindowSize.compact;
+  bool get atLeastMedium => index >= WindowSize.medium.index;
+  bool get atLeastExpanded => index >= WindowSize.expanded.index;
+
+  /// Horizontal page gutter for this size class.
+  double get gutter => switch (this) {
+    WindowSize.compact => 16,
+    WindowSize.medium => 20,
+    WindowSize.expanded => 24,
+    WindowSize.large => 32,
+  };
 }
 
 /// Extension on BuildContext to provide responsive helpers
 extension ResponsiveContext on BuildContext {
-  /// Current screen width in logical pixels
-  double get screenWidth => MediaQuery.of(this).size.width;
+  /// Current window width in logical pixels. Uses `sizeOf` so widgets only
+  /// rebuild on size changes (not on keyboard / inset changes).
+  double get screenWidth => MediaQuery.sizeOf(this).width;
 
-  /// Current screen height in logical pixels
-  double get screenHeight => MediaQuery.of(this).size.height;
+  /// Current window height in logical pixels
+  double get screenHeight => MediaQuery.sizeOf(this).height;
+
+  /// Material 3 window size class of the whole window. Prefer
+  /// [ResponsiveLayout] / `LayoutBuilder` when the widget does not span the
+  /// full window (e.g. content beside the navigation rail).
+  WindowSize get windowSize => WindowSize.of(screenWidth);
 
   /// Compact phone layout.
   bool get isMobile => screenWidth < ResponsiveBreakpoints.mobile;
@@ -43,13 +84,13 @@ extension ResponsiveContext on BuildContext {
   }
 
   /// Safe area padding accounting for notches, system UI, etc.
-  EdgeInsets get safeAreaPadding => MediaQuery.of(this).padding;
+  EdgeInsets get safeAreaPadding => MediaQuery.paddingOf(this);
 
   /// View padding accounting for system UI
-  EdgeInsets get viewPadding => MediaQuery.of(this).viewPadding;
+  EdgeInsets get viewPadding => MediaQuery.viewPaddingOf(this);
 
   /// Device orientation
-  Orientation get orientation => MediaQuery.of(this).orientation;
+  Orientation get orientation => MediaQuery.orientationOf(this);
 
   /// True if device is in landscape
   bool get isLandscape => orientation == Orientation.landscape;
@@ -90,19 +131,86 @@ class ResponsiveContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = context.screenWidth;
+    // Size from the parent's constraints, not the window: inside a rail
+    // layout the available width is smaller than the screen.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= maxWidth + padding.horizontal) {
+          return Padding(padding: padding, child: child);
+        }
+        return Align(
+          alignment: alignment,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxWidth + padding.horizontal,
+            ),
+            child: Padding(padding: padding, child: child),
+          ),
+        );
+      },
+    );
+  }
+}
 
-    if (screenWidth <= maxWidth + (padding.horizontal * 2)) {
-      // Screen is narrow enough, no constraining needed
-      return Padding(padding: padding, child: child);
-    }
+/// Picks a builder by the space actually available to this widget.
+///
+/// ```dart
+/// ResponsiveLayout(
+///   compact: (_) => const BillCards(),
+///   expanded: (_) => const BillTable(),
+/// )
+/// ```
+/// Missing sizes fall back to the next smaller one.
+class ResponsiveLayout extends StatelessWidget {
+  const ResponsiveLayout({
+    super.key,
+    required this.compact,
+    this.medium,
+    this.expanded,
+    this.large,
+  });
 
-    // Center content with max-width constraint
+  final WidgetBuilder compact;
+  final WidgetBuilder? medium;
+  final WidgetBuilder? expanded;
+  final WidgetBuilder? large;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = WindowSize.of(constraints.maxWidth);
+        final builder = switch (size) {
+          WindowSize.large => large ?? expanded ?? medium ?? compact,
+          WindowSize.expanded => expanded ?? medium ?? compact,
+          WindowSize.medium => medium ?? compact,
+          WindowSize.compact => compact,
+        };
+        return builder(context);
+      },
+    );
+  }
+}
+
+/// Centers phone-designed content at a readable width on large windows.
+/// Does nothing on compact screens.
+class ReadableWidth extends StatelessWidget {
+  const ReadableWidth({
+    super.key,
+    required this.child,
+    this.maxWidth = ResponsiveBreakpoints.readableContent,
+  });
+
+  final Widget child;
+  final double maxWidth;
+
+  @override
+  Widget build(BuildContext context) {
     return Align(
-      alignment: alignment,
+      alignment: Alignment.topCenter,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Padding(padding: padding, child: child),
+        child: child,
       ),
     );
   }

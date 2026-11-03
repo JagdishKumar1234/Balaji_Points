@@ -55,7 +55,7 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
 
   @override
   Size get preferredSize =>
-      Size.fromHeight(topInset + CarpenterShellLayout.navBarHeight);
+      Size.fromHeight(topInset + CarpenterShellLayout.topBarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
             SizedBox(height: topInset),
             Flexible(
               child: SizedBox(
-                height: CarpenterShellLayout.navBarHeight,
+                height: CarpenterShellLayout.topBarHeight,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Row(

@@ -5,7 +5,9 @@ import 'package:balaji_points/core/design/app_typography.dart';
 // Notifications screen for carpenters to view and manage their notifications
 
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
@@ -337,7 +339,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Notification deleted'),
+            content: Text(AppLocalizations.of(context)!.notificationDeleted),
             backgroundColor: context.themePrimary,
             behavior: SnackBarBehavior.floating,
           ),
@@ -348,7 +350,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error deleting notification: $e'),
+            content: Text(AppLocalizations.of(context)!.errorWithDetails('$e')),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -379,23 +381,23 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                'Delete All Notifications',
+                AppLocalizations.of(context)!.deleteAllNotifications,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
         ),
-        content: const Text(
-          'Are you sure you want to delete all notifications? This action cannot be undone.',
+        content: Text(
+          AppLocalizations.of(context)!.deleteAllNotificationsConfirm,
           style: TextStyle(fontSize: 16),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(color: context.themeTextSecondary, fontSize: 16),
             ),
           ),
@@ -404,11 +406,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeError,
               foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: AppRadius.md12,
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             ),
-            child: const Text('Delete All', style: TextStyle(fontSize: 16)),
+            child: Text(
+              AppLocalizations.of(context)!.deleteAll,
+              style: TextStyle(fontSize: 16),
+            ),
           ),
         ],
       ),
@@ -471,7 +474,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${snapshot.length} notification(s) deleted'),
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.notificationsDeleted('${snapshot.length}'),
+            ),
             backgroundColor: context.themePrimary,
             behavior: SnackBarBehavior.floating,
           ),
@@ -488,7 +495,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error deleting notifications: $e'),
+            content: Text(AppLocalizations.of(context)!.errorWithDetails('$e')),
             backgroundColor: context.themeError,
             behavior: SnackBarBehavior.floating,
           ),
@@ -498,7 +505,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   String _formatTimestamp(Timestamp? timestamp) {
-    if (timestamp == null) return 'Just now';
+    if (timestamp == null) return AppLocalizations.of(context)!.justNow;
 
     final date = timestamp.toDate();
     final now = DateTime.now();
@@ -507,15 +514,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         if (difference.inMinutes == 0) {
-          return 'Just now';
+          return AppLocalizations.of(context)!.justNow;
         }
-        return '${difference.inMinutes}m ago';
+        return AppLocalizations.of(context)!.mAgo('${difference.inMinutes}');
       }
-      return '${difference.inHours}h ago';
+      return AppLocalizations.of(context)!.hAgo('${difference.inHours}');
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return AppLocalizations.of(context)!.yesterday;
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return AppLocalizations.of(context)!.dAgo('${difference.inDays}');
     } else {
       return DateFormat('MMM dd, yyyy').format(date);
     }
@@ -524,30 +531,30 @@ class _NotificationsPageState extends State<NotificationsPage> {
   IconData _getNotificationIcon(String? type) {
     switch (type) {
       case 'billApproved':
-        return Icons.check_circle;
+        return Icons.check_circle_rounded;
       case 'billRejected':
-        return Icons.cancel;
+        return Icons.cancel_rounded;
       case 'pointsWithdrawn':
-        return Icons.remove_circle;
+        return Icons.remove_circle_rounded;
       case 'tierUpgraded':
-        return Icons.trending_up;
+        return Icons.trending_up_rounded;
       case 'dailySpinWon':
-        return Icons.casino;
+        return Icons.casino_rounded;
       case 'offerRedeemed':
-        return Icons.card_giftcard;
+        return Icons.card_giftcard_rounded;
       case 'newOfferAvailable':
-        return Icons.notifications_active;
+        return Icons.notifications_active_rounded;
       case 'pointsMilestone':
-        return Icons.emoji_events;
+        return Icons.emoji_events_rounded;
       // Admin notification types
       case 'newPendingBill':
-        return Icons.receipt_long;
+        return Icons.receipt_long_rounded;
       case 'newUserRegistered':
-        return Icons.person_add;
+        return Icons.person_add_rounded;
       case 'dailySpinReminder':
-        return Icons.casino;
+        return Icons.casino_rounded;
       default:
-        return Icons.notifications;
+        return Icons.notifications_rounded;
     }
   }
 
@@ -599,13 +606,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         body: Column(
           children: [
-            const HomeNavBar(
-              title: 'Notifications',
+            HomeNavBar(
+              title: AppLocalizations.of(context)!.notifications,
               showLogo: false,
               showProfileButton: false,
             ),
-            const Expanded(
-              child: Center(child: Text('Unable to load notifications')),
+            const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
+            Expanded(
+              child: Center(
+                child: Text(
+                  AppLocalizations.of(context)!.unableToLoadNotifications,
+                ),
+              ),
             ),
           ],
         ),
@@ -620,7 +632,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               HomeNavBar(
-                title: 'Notifications',
+                title: AppLocalizations.of(context)!.notifications,
                 showLogo: false,
                 showProfileButton: false,
                 showBackButton: isAdmin,
@@ -637,9 +649,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         return const SizedBox.shrink();
                       }
                       return IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 22),
+                        icon: const Icon(
+                          Icons.delete_outline_rounded,
+                          size: 22,
+                        ),
                         onPressed: _deleteAllNotifications,
-                        tooltip: 'Delete All',
+                        tooltip: AppLocalizations.of(context)!.deleteAll,
                       );
                     },
                   ),
@@ -647,6 +662,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             ],
           ),
+          const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
           Expanded(
             child: Container(
               color: theme.colorScheme.surface,
@@ -670,13 +686,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
-                                    Icons.error_outline,
+                                    Icons.error_outline_rounded,
                                     size: 64,
-                                    color: const Color(0xFFE57373),
+                                    color: AppColors.error,
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Error loading notifications',
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.errorLoadingNotifications,
                                     style: TextStyle(
                                       color: context.themeTextSecondary,
                                       fontSize: 16,
@@ -685,7 +703,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   const SizedBox(height: 8),
                                   TextButton(
                                     onPressed: () => setState(() {}),
-                                    child: const Text('Retry'),
+                                    child: Text(
+                                      AppLocalizations.of(context)!.retry,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -706,7 +726,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
-                                      Icons.notifications_none,
+                                      Icons.notifications_none_rounded,
                                       size: 64,
                                       color: context.themePrimary.withValues(
                                         alpha: 0.5,
@@ -715,15 +735,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   ),
                                   const SizedBox(height: 24),
                                   Text(
-                                    'No Notifications',
-                                    style: AppTypography.buttonMedium().copyWith(
-                                      fontSize: 24,
-                                      color: context.themeTextPrimary,
-                                    ),
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.noNotificationsTitle,
+                                    style: AppTypography.buttonMedium()
+                                        .copyWith(
+                                          fontSize: 24,
+                                          color: context.themeTextPrimary,
+                                        ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'You don\'t have any notifications yet',
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.noNotificationsYet,
                                     style: AppTypography.bodyMedium().copyWith(
                                       fontSize: 16,
                                       color: context.themeTextSecondary,
@@ -758,7 +783,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
                                 final type = data['type'] as String?;
                                 final title =
-                                    data['title'] as String? ?? 'Notification';
+                                    data['title'] as String? ??
+                                    AppLocalizations.of(context)!.notification;
                                 final body = data['body'] as String? ?? '';
                                 final sentAt = data['sentAt'] as Timestamp?;
                                 final notificationColor = _getNotificationColor(
@@ -790,14 +816,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                           context: context,
                                           builder: (context) => AlertDialog(
                                             shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  AppRadius.all16,
+                                              borderRadius: AppRadius.all16,
                                             ),
-                                            title: const Text(
-                                              'Delete Notification',
+                                            title: Text(
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.deleteNotification,
                                             ),
-                                            content: const Text(
-                                              'Are you sure you want to delete this notification?',
+                                            content: Text(
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.deleteNotificationConfirm,
                                             ),
                                             actions: [
                                               TextButton(
@@ -805,9 +834,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                   context,
                                                 ).pop(false),
                                                 child: Text(
-                                                  'Cancel',
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.cancel,
                                                   style: TextStyle(
-                                                    color: context.themeTextSecondary,
+                                                    color: context
+                                                        .themeTextSecondary,
                                                   ),
                                                 ),
                                               ),
@@ -827,7 +859,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                         ),
                                                   ),
                                                 ),
-                                                child: const Text('Delete'),
+                                                child: Text(
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.delete,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -883,21 +919,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                   width: 44,
                                                   height: 44,
                                                   decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      begin: Alignment.topLeft,
-                                                      end:
-                                                          Alignment.bottomRight,
-                                                      colors: [
-                                                        notificationColor
-                                                            .withValues(
-                                                              alpha: 0.2,
-                                                            ),
-                                                        notificationColor
-                                                            .withValues(
-                                                              alpha: 0.1,
-                                                            ),
-                                                      ],
-                                                    ),
+                                                    color: notificationColor
+                                                        .withValues(alpha: 0.2),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           12,
@@ -930,7 +953,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                                   .copyWith(
                                                                     fontSize:
                                                                         15,
-                                                                    color: context.themeTextPrimary,
+                                                                    color: context
+                                                                        .themeTextPrimary,
                                                                     letterSpacing:
                                                                         -0.2,
                                                                   ),
@@ -958,13 +982,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                       // Body text
                                                       Text(
                                                         body,
-                                                        style: AppTypography.bodyMedium()
-                                                            .copyWith(
-                                                              fontSize: 13,
-                                                              color: Colors
-                                                                  .grey[600],
-                                                              height: 1.3,
-                                                            ),
+                                                        style:
+                                                            AppTypography.bodyMedium()
+                                                                .copyWith(
+                                                                  fontSize: 13,
+                                                                  color: Colors
+                                                                      .grey[600],
+                                                                  height: 1.3,
+                                                                ),
                                                         maxLines: 2,
                                                         overflow: TextOverflow
                                                             .ellipsis,

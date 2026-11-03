@@ -117,7 +117,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 64,
+                  color: AppColors.error,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   body,

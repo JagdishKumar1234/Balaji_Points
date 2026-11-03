@@ -101,7 +101,9 @@ class _OffersManagementState extends State<OffersManagement> {
                     return Container(
                       padding: const EdgeInsets.all(20),
                       color: context.themeSoftSurface,
-                      child: const Text('Failed to load image'),
+                      child: Text(
+                        AppLocalizations.of(context)!.failedToLoadImage,
+                      ),
                     );
                   },
                 ),
@@ -111,7 +113,11 @@ class _OffersManagementState extends State<OffersManagement> {
               top: 40,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.white,
+                  size: 30,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),
@@ -136,7 +142,7 @@ class _OffersManagementState extends State<OffersManagement> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.error_outline,
+                    Icons.error_outline_rounded,
                     size: 64,
                     color: context.themeError,
                   ),
@@ -201,7 +207,8 @@ class _OffersManagementState extends State<OffersManagement> {
               final offer = offers[index].data() as Map<String, dynamic>;
               final offerId = offers[index].id;
 
-              final title = offer['title'] ?? 'Untitled';
+              final title =
+                  offer['title'] ?? AppLocalizations.of(context)!.untitled;
               final description = offer['description'] ?? '';
               final points = offer['points'] ?? 0;
               final bannerUrl = offer['bannerUrl'] ?? '';
@@ -235,7 +242,7 @@ class _OffersManagementState extends State<OffersManagement> {
                                 color: context.themeBorder,
                                 child: Center(
                                   child: Icon(
-                                    Icons.broken_image,
+                                    Icons.broken_image_rounded,
                                     size: 50,
                                     color: context.themeTextSecondary,
                                   ),
@@ -310,7 +317,7 @@ class _OffersManagementState extends State<OffersManagement> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(
-                                  Icons.stars,
+                                  Icons.stars_rounded,
                                   color: AppColors.white,
                                   size: 20,
                                 ),
@@ -332,7 +339,7 @@ class _OffersManagementState extends State<OffersManagement> {
                           Row(
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today_rounded,
                                 size: 14,
                                 color: context.themeTextSecondary,
                               ),
@@ -349,7 +356,7 @@ class _OffersManagementState extends State<OffersManagement> {
                               if (validUntil != null) ...[
                                 const SizedBox(width: 12),
                                 Icon(
-                                  Icons.event_busy,
+                                  Icons.event_busy_rounded,
                                   size: 14,
                                   color: context.themeContentColor,
                                 ),
@@ -392,7 +399,10 @@ class _OffersManagementState extends State<OffersManagement> {
                                       borderRadius: AppRadius.md12,
                                     ),
                                   ),
-                                  icon: const Icon(Icons.edit, size: 18),
+                                  icon: const Icon(
+                                    Icons.edit_rounded,
+                                    size: 18,
+                                  ),
                                   label: Text(
                                     l10n.edit,
                                     style: AppTypography.labelLarge(),
@@ -414,7 +424,10 @@ class _OffersManagementState extends State<OffersManagement> {
                                       borderRadius: AppRadius.md12,
                                     ),
                                   ),
-                                  icon: const Icon(Icons.delete, size: 18),
+                                  icon: const Icon(
+                                    Icons.delete_rounded,
+                                    size: 18,
+                                  ),
                                   label: Text(
                                     l10n.delete,
                                     style: AppTypography.labelLarge(),
@@ -436,9 +449,9 @@ class _OffersManagementState extends State<OffersManagement> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToCreateOfferPage,
         backgroundColor: context.themeSecondary,
-        foregroundColor: AppColors.white,
+        foregroundColor: context.themeOnSecondary,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.add_rounded),
         label: Text(
           l10n.createOffer,
           style: AppTypography.labelLarge().copyWith(fontSize: 16),
@@ -596,7 +609,9 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       if (pointsText.isNotEmpty) {
         points = int.tryParse(pointsText);
         if (points == null) {
-          throw Exception('Please enter a valid number for points');
+          throw Exception(
+            AppLocalizations.of(context)!.pleaseEnterAValidNumberFor,
+          );
         }
       }
       // If points is empty and in edit mode, we'll pass null to preserve existing value
@@ -606,7 +621,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
 
       // Banner is mandatory for new offers - check if we have one
       if (!isEditMode && _bannerBytes == null && bannerUrl == null) {
-        throw Exception('Please upload a banner image');
+        throw Exception(AppLocalizations.of(context)!.pleaseUploadABannerImage);
       }
 
       // Upload new banner if selected
@@ -619,7 +634,9 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         if (uploadedUrl != null) {
           bannerUrl = uploadedUrl;
         } else {
-          throw Exception('Failed to upload banner image');
+          throw Exception(
+            AppLocalizations.of(context)!.failedToUploadBannerImage,
+          );
         }
 
         setState(() {
@@ -720,7 +737,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.local_offer, color: AppColors.white, size: 28),
+                const Icon(
+                  Icons.local_offer_rounded,
+                  color: AppColors.white,
+                  size: 28,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -732,7 +753,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: AppColors.white),
+                  icon: const Icon(Icons.close_rounded, color: AppColors.white),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -780,7 +801,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
-                                    Icons.add_photo_alternate,
+                                    Icons.add_photo_alternate_rounded,
                                     size: 48,
                                     color: context.themeTextMuted,
                                   ),
@@ -870,7 +891,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                         ),
                         hintText: l10n.pointsHint,
                         prefixIcon: Icon(
-                          Icons.stars,
+                          Icons.stars_rounded,
                           color: context.themeContentColor,
                         ),
                         border: OutlineInputBorder(
@@ -911,7 +932,10 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.event, color: context.themeContentColor),
+                            Icon(
+                              Icons.event_rounded,
+                              color: context.themeContentColor,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -933,7 +957,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                             if (_validUntil != null)
                               IconButton(
                                 icon: Icon(
-                                  Icons.clear,
+                                  Icons.clear_rounded,
                                   size: 20,
                                   color: context.themeTextSecondary,
                                 ),
@@ -960,7 +984,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.visibility,
+                            Icons.visibility_rounded,
                             color: context.themeContentColor,
                           ),
                           const SizedBox(width: 12),
@@ -1029,20 +1053,20 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                             : _saveOffer,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.themeSecondary,
-                          foregroundColor: AppColors.white,
+                          foregroundColor: context.themeOnSecondary,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: AppRadius.md12,
                           ),
                         ),
                         child: _isSaving
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
+                                    context.themeOnSecondary,
                                   ),
                                 ),
                               )
@@ -1052,7 +1076,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                                     : l10n.createOffer,
                                 style: AppTypography.labelLarge().copyWith(
                                   fontSize: 16,
-                                  color: AppColors.white,
+                                  color: context.themeOnSecondary,
                                 ),
                               ),
                       ),

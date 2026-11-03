@@ -79,6 +79,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  fake_cloud_firestore: ^4.4.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -95,6 +96,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    # Nunito (bundled so text renders offline; google_fonts picks these up)
+    - assets/google_fonts/
     - assets/images/balaji_point_logo.png
     # Furniture / plywood showcase images used on home screen
     - assets/images/background_image.png

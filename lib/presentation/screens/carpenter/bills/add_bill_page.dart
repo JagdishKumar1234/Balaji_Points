@@ -17,6 +17,7 @@ import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 import 'package:balaji_points/services/branch/branch_celebration_service.dart';
 
 class AddBillPage extends StatefulWidget {
@@ -101,7 +102,7 @@ class _AddBillPageState extends State<AddBillPage> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.person_add_alt_1,
+                Icons.person_add_alt_1_rounded,
                 color: context.themeSecondary,
                 size: 24,
               ),
@@ -109,19 +110,20 @@ class _AddBillPageState extends State<AddBillPage> {
             const SizedBox(width: 12),
             Expanded(
               child: AppText.h4(
-                l10n?.profileIncomplete ?? 'Profile Incomplete',
+                l10n?.profileIncomplete ??
+                    AppLocalizations.of(context)!.profileIncomplete,
               ),
             ),
           ],
         ),
         content: AppText.body(
           l10n?.completeProfileMessage ??
-              'Please complete your profile (first name, last name, and profile picture) to add bills and earn points.',
+              AppLocalizations.of(context)!.pleaseCompleteYourProfileFirstName,
           color: context.themeTextSecondary,
         ),
         actions: [
           AppButton.secondary(
-            label: l10n?.back ?? 'Go Back',
+            label: l10n?.back ?? AppLocalizations.of(context)!.goBack,
             fullWidth: false,
             verticalPadding: 10,
             onPressed: () {
@@ -130,7 +132,9 @@ class _AddBillPageState extends State<AddBillPage> {
             },
           ),
           AppButton.primary(
-            label: l10n?.completeProfile ?? 'Complete Profile',
+            label:
+                l10n?.completeProfile ??
+                AppLocalizations.of(context)!.completeProfile,
             fullWidth: false,
             verticalPadding: 10,
             onPressed: () {
@@ -194,7 +198,9 @@ class _AddBillPageState extends State<AddBillPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.errorWithDetails(e.toString()),
+            ),
             backgroundColor: context.themeError,
           ),
         );
@@ -219,7 +225,9 @@ class _AddBillPageState extends State<AddBillPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.errorWithDetails(e.toString()),
+            ),
             backgroundColor: context.themeError,
           ),
         );
@@ -239,24 +247,35 @@ class _AddBillPageState extends State<AddBillPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.photo_library, color: context.themePrimary),
-              title: Text(l10n?.selectImage ?? 'Choose from Gallery'),
+              leading: Icon(
+                Icons.photo_library_rounded,
+                color: context.themePrimary,
+              ),
+              title: Text(
+                l10n?.selectImage ??
+                    AppLocalizations.of(context)!.chooseFromGallery,
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage();
               },
             ),
             ListTile(
-              leading: Icon(Icons.camera_alt, color: context.themePrimary),
-              title: Text(l10n?.selectImage ?? 'Take Photo'),
+              leading: Icon(
+                Icons.camera_alt_rounded,
+                color: context.themePrimary,
+              ),
+              title: Text(
+                l10n?.selectImage ?? AppLocalizations.of(context)!.takePhoto,
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _takePhoto();
               },
             ),
             ListTile(
-              leading: Icon(Icons.cancel, color: context.themeError),
-              title: Text(l10n?.cancel ?? 'Cancel'),
+              leading: Icon(Icons.cancel_rounded, color: context.themeError),
+              title: Text(l10n?.cancel ?? AppLocalizations.of(context)!.cancel),
               onTap: () => Navigator.pop(context),
             ),
           ],
@@ -274,7 +293,7 @@ class _AddBillPageState extends State<AddBillPage> {
     if (siteName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('❌ Site name is required'),
+          content: Text(AppLocalizations.of(context)!.siteNameRequired),
           backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
         ),
@@ -287,7 +306,7 @@ class _AddBillPageState extends State<AddBillPage> {
     if (billDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('❌ Please select a bill date'),
+          content: Text(AppLocalizations.of(context)!.selectBillDate),
           backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
         ),
@@ -299,7 +318,7 @@ class _AddBillPageState extends State<AddBillPage> {
     if (billDate.isAfter(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('❌ Bill date cannot be in the future'),
+          content: Text(AppLocalizations.of(context)!.billDateFuture),
           backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
         ),
@@ -313,7 +332,7 @@ class _AddBillPageState extends State<AddBillPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '❌ ${l10n?.enterValidAmount ?? 'Please enter a valid amount'}',
+            '${l10n?.enterValidAmount ?? 'Please enter a valid amount'}',
           ),
           backgroundColor: context.themeError,
           duration: const Duration(seconds: 3),
@@ -332,7 +351,8 @@ class _AddBillPageState extends State<AddBillPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                l10n?.sessionExpired ?? 'Please login to submit bills',
+                l10n?.sessionExpired ??
+                    AppLocalizations.of(context)!.pleaseLoginToSubmitBills,
               ),
               backgroundColor: context.themeError,
               duration: const Duration(seconds: 3),
@@ -403,7 +423,9 @@ class _AddBillPageState extends State<AddBillPage> {
               SnackBar(
                 content: Text(
                   l10n?.billSubmitted ??
-                      'Bill submitted successfully! Admin will review it.',
+                      AppLocalizations.of(
+                        context,
+                      )!.billSubmittedSuccessfullyAdminWillReview,
                 ),
                 backgroundColor: AppColors.success,
                 duration: const Duration(seconds: 3),
@@ -418,7 +440,7 @@ class _AddBillPageState extends State<AddBillPage> {
               SnackBar(
                 content: Text(
                   l10n?.billSubmitError ??
-                      'Failed to submit bill. Please try again.',
+                      AppLocalizations.of(context)!.failedToSubmitBillPleaseTry,
                 ),
                 backgroundColor: context.themeError,
                 duration: const Duration(seconds: 3),
@@ -433,7 +455,9 @@ class _AddBillPageState extends State<AddBillPage> {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.errorWithDetails(e.toString()),
+            ),
             backgroundColor: context.themeError,
             duration: const Duration(seconds: 3),
           ),
@@ -475,7 +499,7 @@ class _AddBillPageState extends State<AddBillPage> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.warning_amber,
+                Icons.warning_amber_rounded,
                 color: context.themeError,
                 size: 28,
               ),
@@ -483,7 +507,7 @@ class _AddBillPageState extends State<AddBillPage> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                '⚠️ Duplicate Bill Detected',
+                AppLocalizations.of(context)!.duplicateBillDetected,
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(color: context.themeError),
@@ -497,7 +521,7 @@ class _AddBillPageState extends State<AddBillPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'A bill with the SAME site, amount, and date already exists:',
+                AppLocalizations.of(context)!.duplicateBillIntro,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
@@ -521,7 +545,7 @@ class _AddBillPageState extends State<AddBillPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.location_on,
+                          Icons.location_on_rounded,
                           size: 16,
                           color: context.themeError,
                         ),
@@ -531,7 +555,7 @@ class _AddBillPageState extends State<AddBillPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Site Name',
+                                AppLocalizations.of(context)!.siteNameLabel,
                                 style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       color: context.themeTextSecondary,
@@ -551,7 +575,7 @@ class _AddBillPageState extends State<AddBillPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.currency_rupee,
+                          Icons.currency_rupee_rounded,
                           size: 16,
                           color: AppColors.success,
                         ),
@@ -561,7 +585,7 @@ class _AddBillPageState extends State<AddBillPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Amount',
+                                AppLocalizations.of(context)!.amountLabel,
                                 style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       color: context.themeTextSecondary,
@@ -584,7 +608,7 @@ class _AddBillPageState extends State<AddBillPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.stars,
+                          Icons.stars_rounded,
                           size: 16,
                           color: context.themePrimary,
                         ),
@@ -594,14 +618,16 @@ class _AddBillPageState extends State<AddBillPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Points',
+                                AppLocalizations.of(context)!.pointsLabel,
                                 style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       color: context.themeTextSecondary,
                                     ),
                               ),
                               Text(
-                                '${duplicatePoints.toStringAsFixed(2)} pts',
+                                AppLocalizations.of(
+                                  context,
+                                )!.ptsValue(duplicatePoints.toStringAsFixed(2)),
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       fontWeight: FontWeight.w600,
@@ -617,7 +643,7 @@ class _AddBillPageState extends State<AddBillPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.calendar_today,
+                          Icons.calendar_today_rounded,
                           size: 16,
                           color: context.themeTextSecondary,
                         ),
@@ -627,7 +653,7 @@ class _AddBillPageState extends State<AddBillPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Date',
+                                AppLocalizations.of(context)!.dateLabel,
                                 style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       color: context.themeTextSecondary,
@@ -656,11 +682,15 @@ class _AddBillPageState extends State<AddBillPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info, size: 18, color: AppColors.warning),
+                    Icon(
+                      Icons.info_rounded,
+                      size: 18,
+                      color: AppColors.warning,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'This might be a duplicate entry. Please verify before adding.',
+                        AppLocalizations.of(context)!.duplicateBillVerify,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.warning,
                         ),
@@ -672,7 +702,7 @@ class _AddBillPageState extends State<AddBillPage> {
 
               const SizedBox(height: 16),
               Text(
-                'Do you want to add this bill anyway?',
+                AppLocalizations.of(context)!.addBillAnywayQuestion,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
@@ -687,7 +717,7 @@ class _AddBillPageState extends State<AddBillPage> {
               Navigator.pop(context);
             },
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: context.themePrimary,
                 fontWeight: FontWeight.w600,
@@ -719,7 +749,9 @@ class _AddBillPageState extends State<AddBillPage> {
                     SnackBar(
                       content: Text(
                         l10n?.billSubmitted ??
-                            'Bill submitted successfully! Admin will review it.',
+                            AppLocalizations.of(
+                              context,
+                            )!.billSubmittedSuccessfullyAdminWillReview,
                       ),
                       backgroundColor: AppColors.success,
                       duration: const Duration(seconds: 3),
@@ -733,7 +765,9 @@ class _AddBillPageState extends State<AddBillPage> {
                     SnackBar(
                       content: Text(
                         l10n?.billSubmitError ??
-                            'Failed to submit bill. Please try again.',
+                            AppLocalizations.of(
+                              context,
+                            )!.failedToSubmitBillPleaseTry,
                       ),
                       backgroundColor: context.themeError,
                       duration: const Duration(seconds: 3),
@@ -746,7 +780,11 @@ class _AddBillPageState extends State<AddBillPage> {
                 setState(() => _isSubmitting = false);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('❌ Error: ${e.toString()}'),
+                    content: Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.errorWithDetails(e.toString()),
+                    ),
                     backgroundColor: context.themeError,
                     duration: const Duration(seconds: 3),
                   ),
@@ -755,12 +793,13 @@ class _AddBillPageState extends State<AddBillPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: context.themeSecondary,
+              foregroundColor: context.themeOnSecondary,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
             child: Text(
-              'Add Anyway',
+              AppLocalizations.of(context)!.addAnyway,
               style: TextStyle(
-                color: AppColors.white,
+                color: context.themeOnSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -788,7 +827,7 @@ class _AddBillPageState extends State<AddBillPage> {
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: AppText.body(
-                'Bill submissions are paused for the Diwali celebration.',
+                AppLocalizations.of(context)!.billsPausedDiwali,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -816,7 +855,7 @@ class _AddBillPageState extends State<AddBillPage> {
               context,
               customMessage:
                   l10n?.discardBillMessage ??
-                  'You have unsaved bill data. Do you want to discard it?',
+                  AppLocalizations.of(context)!.discardBillMessage,
             );
             if (shouldDiscard == true && mounted) {
               // ignore: use_build_context_synchronously
@@ -832,11 +871,12 @@ class _AddBillPageState extends State<AddBillPage> {
         body: Column(
           children: [
             HomeNavBar(
-              title: l10n?.addBill ?? 'Add Bill',
+              title: l10n?.addBill ?? AppLocalizations.of(context)!.addBill,
               showLogo: false,
               showProfileButton: false,
               showBackButton: true,
             ),
+            const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
             Container(height: 1, color: borderColor),
             Expanded(
               child: SingleChildScrollView(
@@ -854,7 +894,10 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 12),
 
                       // Bill Image
-                      _sectionLabel(l10n?.billImage ?? 'Bill Image'),
+                      _sectionLabel(
+                        l10n?.billImage ??
+                            AppLocalizations.of(context)!.billImage,
+                      ),
                       const SizedBox(height: 12),
                       GestureDetector(
                         onTap: _showImageSourceDialog,
@@ -882,7 +925,7 @@ class _AddBillPageState extends State<AddBillPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      Icons.add_photo_alternate,
+                                      Icons.add_photo_alternate_rounded,
                                       size: 64,
                                       color: context.themePrimary.withValues(
                                         alpha: 0.5,
@@ -891,7 +934,9 @@ class _AddBillPageState extends State<AddBillPage> {
                                     const SizedBox(height: 12),
                                     AppText.body(
                                       l10n?.tapToAddBillImage ??
-                                          'Tap to add bill image',
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.tapToAddBillImage,
                                       color: context.themeTextSecondary,
                                     ),
                                   ],
@@ -902,23 +947,32 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 24),
 
                       // Amount
-                      _sectionLabel(l10n?.billAmount ?? 'Bill Amount (₹)'),
+                      _sectionLabel(
+                        l10n?.billAmount ??
+                            AppLocalizations.of(context)!.billAmount,
+                      ),
                       const SizedBox(height: 12),
                       AppTextField(
                         controller: _amountController,
-                        label: l10n?.enterBillAmount ?? 'Enter bill amount',
-                        hint: l10n?.enterBillAmount ?? 'Enter bill amount',
-                        prefixIcon: Icons.currency_rupee,
+                        label:
+                            l10n?.enterBillAmount ??
+                            AppLocalizations.of(context)!.enterBillAmount,
+                        hint:
+                            l10n?.enterBillAmount ??
+                            AppLocalizations.of(context)!.enterBillAmount,
+                        prefixIcon: Icons.currency_rupee_rounded,
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return l10n?.enterBillAmount ??
-                                'Please enter bill amount';
+                                AppLocalizations.of(
+                                  context,
+                                )!.pleaseEnterBillAmount;
                           }
                           final amt = double.tryParse(value.trim());
                           if (amt == null || amt <= 0) {
                             return l10n?.enterValidAmount ??
-                                'Please enter a valid amount';
+                                AppLocalizations.of(context)!.invalidAmount;
                           }
                           return null;
                         },
@@ -949,14 +1003,16 @@ class _AddBillPageState extends State<AddBillPage> {
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons.star,
+                                    Icons.star_rounded,
                                     color: context.themePrimary,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: AppText.label(
-                                      'You will earn $pointsDisplay points when approved',
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.earnPointsWhenApproved(pointsDisplay),
                                       color: context.themePrimary,
                                     ),
                                   ),
@@ -971,7 +1027,10 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 32),
 
                       // Bill Date (Required)
-                      _sectionLabel(l10n?.billDate ?? 'Bill Date *'),
+                      _sectionLabel(
+                        l10n?.billDate ??
+                            AppLocalizations.of(context)!.billDate2,
+                      ),
                       const SizedBox(height: 12),
                       GestureDetector(
                         onTap: _selectDate,
@@ -992,7 +1051,7 @@ class _AddBillPageState extends State<AddBillPage> {
                           child: Row(
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today_rounded,
                                 color: context.themePrimary,
                                 size: 24,
                               ),
@@ -1002,14 +1061,16 @@ class _AddBillPageState extends State<AddBillPage> {
                                   _billDate != null
                                       ? '${_billDate!.day}/${_billDate!.month}/${_billDate!.year}'
                                       : (l10n?.selectBillDate ??
-                                            'Select bill date'),
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.selectBillDate2),
                                   color: _billDate != null
                                       ? context.themeTextPrimary
                                       : context.themeTextMuted,
                                 ),
                               ),
                               Icon(
-                                Icons.arrow_forward_ios,
+                                Icons.arrow_forward_ios_rounded,
                                 color: context.themePrimary.withValues(
                                   alpha: 0.5,
                                 ),
@@ -1023,16 +1084,20 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 24),
 
                       // Site Name (Required)
-                      _sectionLabel('Site Name *'),
+                      _sectionLabel(AppLocalizations.of(context)!.siteName),
                       const SizedBox(height: 12),
                       AppTextField(
                         controller: _siteNameController,
-                        label: 'Site Name',
-                        hint: 'Enter site/location name',
-                        prefixIcon: Icons.location_on,
+                        label: AppLocalizations.of(context)!.siteNameLabel,
+                        hint: AppLocalizations.of(
+                          context,
+                        )!.enterSiteLocationName,
+                        prefixIcon: Icons.location_on_rounded,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Site name is required';
+                            return AppLocalizations.of(
+                              context,
+                            )!.siteNameRequired;
                           }
                           return null;
                         },
@@ -1041,13 +1106,17 @@ class _AddBillPageState extends State<AddBillPage> {
                       const SizedBox(height: 24),
 
                       // Vendor Name (Optional)
-                      _sectionLabel('Vendor Name (Optional)'),
+                      _sectionLabel(
+                        AppLocalizations.of(context)!.vendorNameOptional,
+                      ),
                       const SizedBox(height: 12),
                       AppTextField(
                         controller: _vendorNameController,
-                        label: 'Vendor Name',
-                        hint: 'Enter vendor/store name (optional)',
-                        prefixIcon: Icons.store,
+                        label: AppLocalizations.of(context)!.vendorNameLabel,
+                        hint: AppLocalizations.of(
+                          context,
+                        )!.enterVendorStoreNameOptional,
+                        prefixIcon: Icons.store_rounded,
                       ),
 
                       const SizedBox(height: 24),
@@ -1077,7 +1146,9 @@ class _AddBillPageState extends State<AddBillPage> {
                 top: false,
                 bottom: false,
                 child: AppButton.secondary(
-                  label: l10n?.submitBill ?? 'Submit Bill',
+                  label:
+                      l10n?.submitBill ??
+                      AppLocalizations.of(context)!.submitBill,
                   onPressed: _isSubmitting ? null : _submitBill,
                   isLoading: _isSubmitting,
                   verticalPadding: 16,

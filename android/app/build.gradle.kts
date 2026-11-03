@@ -2,6 +2,7 @@ import java.util.Properties
 import java.io.FileInputStream
 import org.gradle.api.tasks.Copy
 import java.io.File
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
@@ -24,8 +25,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
-
-    kotlinOptions { jvmTarget = "17" }
 
     defaultConfig {
         applicationId = "com.balaji.points"
@@ -74,6 +73,12 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

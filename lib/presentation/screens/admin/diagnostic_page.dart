@@ -2,6 +2,7 @@
 // This page verifies Firestore data for user 9894223355
 
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
@@ -235,15 +236,15 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: AppText.h4(
-          'Diagnostic: User ${widget.phoneNumber}',
+          AppLocalizations.of(context)!.diagnosticUser('${widget.phoneNumber}'),
           color: context.themeTextPrimary,
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: _runDiagnostics,
-            tooltip: 'Refresh',
+            tooltip: AppLocalizations.of(context)!.refresh,
           ),
         ],
       ),
@@ -254,16 +255,20 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error, color: context.themeError, size: 64),
+                  Icon(
+                    Icons.error_rounded,
+                    color: context.themeError,
+                    size: 64,
+                  ),
                   const SizedBox(height: 16),
                   AppText.body(
-                    'Error: $_error',
+                    AppLocalizations.of(context)!.error3('$_error'),
                     color: context.themeError,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   AppButton.outline(
-                    label: 'Retry',
+                    label: AppLocalizations.of(context)!.retry,
                     onPressed: _runDiagnostics,
                     fullWidth: false,
                   ),
@@ -271,29 +276,32 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
               ),
             )
           : _diagnosticData == null
-          ? const Center(child: Text('No data'))
+          ? Center(child: Text(AppLocalizations.of(context)!.noData))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSection('Phone Number Information', [
-                    _buildInfoRow(
-                      'Original Phone',
-                      _diagnosticData!['phoneNumber'],
-                    ),
-                    _buildInfoRow(
-                      'Normalized Phone',
-                      _diagnosticData!['normalizedPhone'],
-                    ),
-                    _buildInfoRow(
-                      'Match',
-                      _diagnosticData!['phoneNumber'] ==
-                              _diagnosticData!['normalizedPhone']
-                          ? '✅ YES'
-                          : '❌ NO',
-                    ),
-                  ]),
+                  _buildSection(
+                    AppLocalizations.of(context)!.phoneNumberInformation,
+                    [
+                      _buildInfoRow(
+                        AppLocalizations.of(context)!.originalPhone,
+                        _diagnosticData!['phoneNumber'],
+                      ),
+                      _buildInfoRow(
+                        AppLocalizations.of(context)!.normalizedPhone,
+                        _diagnosticData!['normalizedPhone'],
+                      ),
+                      _buildInfoRow(
+                        AppLocalizations.of(context)!.match,
+                        _diagnosticData!['phoneNumber'] ==
+                                _diagnosticData!['normalizedPhone']
+                            ? 'YES'
+                            : 'NO',
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 24),
                   _buildUserDocumentSection(),
                   const SizedBox(height: 24),
@@ -343,43 +351,55 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
   Widget _buildUserDocumentSection() {
     final userDoc = _diagnosticData!['userDocument'] as Map<String, dynamic>;
 
-    return _buildSection('User Document Status', [
+    return _buildSection(AppLocalizations.of(context)!.userDocumentStatus, [
       _buildInfoRow(
-        'Exists (by Document ID)',
-        userDoc['existsById'] ? '✅ YES' : '❌ NO',
+        AppLocalizations.of(context)!.existsByDocumentId,
+        userDoc['existsById'] ? 'YES' : 'NO',
       ),
-      _buildInfoRow('Document ID', userDoc['docId'] ?? 'N/A'),
+      _buildInfoRow(
+        AppLocalizations.of(context)!.documentId,
+        userDoc['docId'] ?? 'N/A',
+      ),
       if (userDoc['dataById'] != null) ...[
         _buildInfoRow(
-          'Phone Field (in data)',
+          AppLocalizations.of(context)!.phoneFieldInData,
           userDoc['dataById']?['phone'] ?? 'N/A',
         ),
-        _buildInfoRow('First Name', userDoc['dataById']?['firstName'] ?? 'N/A'),
-        _buildInfoRow('Last Name', userDoc['dataById']?['lastName'] ?? 'N/A'),
+        _buildInfoRow(
+          AppLocalizations.of(context)!.firstName,
+          userDoc['dataById']?['firstName'] ?? 'N/A',
+        ),
+        _buildInfoRow(
+          AppLocalizations.of(context)!.lastName,
+          userDoc['dataById']?['lastName'] ?? 'N/A',
+        ),
       ],
       const Divider(height: 24),
       _buildInfoRow(
-        'Exists (by Phone Field Query)',
-        userDoc['existsByPhoneField'] ? '✅ YES' : '❌ NO',
+        AppLocalizations.of(context)!.existsByPhoneFieldQuery,
+        userDoc['existsByPhoneField'] ? 'YES' : 'NO',
       ),
       if (userDoc['docIdFromQuery'] != null)
-        _buildInfoRow('Document ID (from query)', userDoc['docIdFromQuery']),
+        _buildInfoRow(
+          AppLocalizations.of(context)!.documentIdFromQuery,
+          userDoc['docIdFromQuery'],
+        ),
       if (userDoc['dataByPhoneField'] != null) ...[
         _buildInfoRow(
-          'Phone Field (in data)',
+          AppLocalizations.of(context)!.phoneFieldInData,
           userDoc['dataByPhoneField']?['phone'] ?? 'N/A',
         ),
       ],
       const Divider(height: 24),
       _buildInfoRow(
-        '⚠️ ISSUE DETECTED',
+        AppLocalizations.of(context)!.issueDetected,
         (userDoc['existsById'] &&
                 userDoc['existsByPhoneField'] &&
                 userDoc['docId'] != userDoc['docIdFromQuery'])
-            ? '❌ Document ID mismatch!'
+            ? AppLocalizations.of(context)!.documentIdMismatch
             : (userDoc['existsById'] || userDoc['existsByPhoneField'])
-            ? '✅ User document found'
-            : '❌ User document NOT FOUND',
+            ? AppLocalizations.of(context)!.userDocumentFound
+            : AppLocalizations.of(context)!.userDocumentNotFound,
       ),
     ]);
   }
@@ -387,7 +407,7 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
   Widget _buildBillsSection() {
     final bills = _diagnosticData!['bills'] as Map<String, dynamic>;
 
-    return _buildSection('Bills Collection Status', [
+    return _buildSection(AppLocalizations.of(context)!.billsCollectionStatus, [
       _buildInfoRow(
         'Bills (carpenterPhone=original)',
         '${bills['byCarpenterPhone']?['count'] ?? 0}',
@@ -406,11 +426,11 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       ),
       const Divider(height: 24),
       _buildInfoRow(
-        '⚠️ ISSUE DETECTED',
+        AppLocalizations.of(context)!.issueDetected,
         (bills['byCarpenterPhone']?['count'] ?? 0) !=
                 (bills['byNormalizedCarpenterPhone']?['count'] ?? 0)
-            ? '❌ Phone format mismatch in bills!'
-            : '✅ Phone format consistent',
+            ? AppLocalizations.of(context)!.phoneFormatMismatchInBills
+            : AppLocalizations.of(context)!.phoneFormatConsistent,
       ),
     ]);
   }
@@ -421,15 +441,21 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         [];
     final totalPending = _diagnosticData!['totalPendingBills'] ?? 0;
 
-    return _buildSection('Pending Bills Status', [
-      _buildInfoRow('Total Pending Bills', totalPending.toString()),
-      _buildInfoRow('Matching Bills Found', matchingBills.length.toString()),
+    return _buildSection(AppLocalizations.of(context)!.pendingBillsStatus, [
+      _buildInfoRow(
+        AppLocalizations.of(context)!.totalPendingBills,
+        totalPending.toString(),
+      ),
+      _buildInfoRow(
+        AppLocalizations.of(context)!.matchingBillsFound,
+        matchingBills.length.toString(),
+      ),
       const Divider(height: 24),
       if (matchingBills.isEmpty)
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: AppText.body(
-            '❌ No pending bills found for this user!',
+            AppLocalizations.of(context)!.noPendingBillsFoundForThis,
             color: context.themeError,
           ),
         )
@@ -443,23 +469,38 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow('Bill ID', bill['billId']),
-                _buildInfoRow('Carpenter ID', bill['carpenterId']),
-                _buildInfoRow('Carpenter Phone', bill['carpenterPhone']),
-                _buildInfoRow('Amount', '₹${bill['amount']}'),
-                _buildInfoRow('Status', bill['status']),
                 _buildInfoRow(
-                  'Bill Date',
+                  AppLocalizations.of(context)!.billId,
+                  bill['billId'],
+                ),
+                _buildInfoRow(
+                  AppLocalizations.of(context)!.carpenterId,
+                  bill['carpenterId'],
+                ),
+                _buildInfoRow(
+                  AppLocalizations.of(context)!.carpenterPhone,
+                  bill['carpenterPhone'],
+                ),
+                _buildInfoRow(
+                  AppLocalizations.of(context)!.amountLabel,
+                  '₹${bill['amount']}',
+                ),
+                _buildInfoRow(
+                  AppLocalizations.of(context)!.status,
+                  bill['status'],
+                ),
+                _buildInfoRow(
+                  AppLocalizations.of(context)!.billDateLabel,
                   bill['billDate'] != null
                       ? DateFormat('dd MMM yyyy').format(bill['billDate'])
                       : 'N/A',
                 ),
                 _buildInfoRow(
-                  'Is Today',
-                  bill['isToday'] == true ? '✅ YES' : '❌ NO',
+                  AppLocalizations.of(context)!.isToday,
+                  bill['isToday'] == true ? 'YES' : 'NO',
                 ),
                 _buildInfoRow(
-                  'Created At',
+                  AppLocalizations.of(context)!.createdAt,
                   bill['createdAt'] != null
                       ? DateFormat(
                           'dd MMM yyyy, hh:mm a',
@@ -467,10 +508,10 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
                       : 'N/A',
                 ),
                 if (bill['isToday'] != true)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 8),
                     child: AppText.bodySmall(
-                      '⚠️ This bill won\'t show in default admin view (not today)',
+                      AppLocalizations.of(context)!.thisBillWonTShowIn,
                       color: AppColors.warning,
                     ),
                   ),

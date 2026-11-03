@@ -1,6 +1,7 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,7 @@ import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 
 class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
@@ -43,7 +45,9 @@ class WalletPage extends ConsumerWidget {
             title: l10n.wallet,
             showLogo: false,
             showProfileButton: false,
-            subtitle: 'Track your points and manage your bills',
+            subtitle: AppLocalizations.of(
+              context,
+            )!.trackYourPointsAndManageYour,
             actions: [
               Padding(
                 padding: const EdgeInsets.only(right: 8),
@@ -56,7 +60,7 @@ class WalletPage extends ConsumerWidget {
                       borderRadius: AppRadius.md12,
                     ),
                     child: const Icon(
-                      Icons.add,
+                      Icons.add_rounded,
                       color: AppColors.white,
                       size: 20,
                     ),
@@ -65,6 +69,7 @@ class WalletPage extends ConsumerWidget {
               ),
             ],
           ),
+          const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -93,7 +98,7 @@ class WalletPage extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: _StatusPill(
-                            icon: Icons.schedule,
+                            icon: Icons.schedule_rounded,
                             label: l10n.pending,
                             color: AppColors.warning,
                             child: walletState.loading || !idsReady
@@ -104,7 +109,7 @@ class WalletPage extends ConsumerWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _StatusPill(
-                            icon: Icons.check_circle,
+                            icon: Icons.check_circle_rounded,
                             label: l10n.approved,
                             color: AppColors.success,
                             child: walletState.loading || !idsReady
@@ -115,8 +120,8 @@ class WalletPage extends ConsumerWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _StatusPill(
-                            icon: Icons.cancel,
-                            label: 'Rejected',
+                            icon: Icons.cancel_rounded,
+                            label: AppLocalizations.of(context)!.rejectedLabel,
                             color: AppColors.error,
                             child: walletState.loading || !idsReady
                                 ? _statLoading(context)
@@ -246,15 +251,7 @@ class _DesignPointsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.themePrimary,
-            context.themePrimary.withValues(alpha: 0.88),
-            context.themePrimary.withValues(alpha: 0.75),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.primary,
         borderRadius: AppRadius.all16,
         boxShadow: [
           BoxShadow(
@@ -280,7 +277,7 @@ class _DesignPointsCard extends StatelessWidget {
                     l10n.totalPoints,
                     style: AppTypography.bodySmall(
                       color: AppColors.white.withValues(alpha: 0.85),
-                    ).copyWith(fontWeight: FontWeight.w600, fontSize: 11),
+                    ).copyWith(fontWeight: FontWeight.w600, fontSize: 12),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -313,7 +310,11 @@ class _DesignPointsCard extends StatelessWidget {
                       ).copyWith(fontWeight: FontWeight.w800, fontSize: 12),
                     ),
                     const SizedBox(height: 1),
-                    const Icon(Icons.shield, size: 14, color: AppColors.white),
+                    const Icon(
+                      Icons.shield_rounded,
+                      size: 14,
+                      color: AppColors.white,
+                    ),
                   ],
                 ),
               ),
@@ -328,7 +329,7 @@ class _DesignPointsCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Next Tier: $nextLabel',
+                  AppLocalizations.of(context)!.nextTierLabel(nextLabel),
                   style: AppTypography.bodySmall(
                     color: AppColors.white,
                   ).copyWith(fontWeight: FontWeight.w700, fontSize: 12),
@@ -348,10 +349,10 @@ class _DesignPointsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$pointsToNext pts to next tier',
+                  AppLocalizations.of(context)!.ptsToNextTier('$pointsToNext'),
                   style: AppTypography.labelSmall(
                     color: AppColors.white,
-                  ).copyWith(fontWeight: FontWeight.w500, fontSize: 10),
+                  ).copyWith(fontWeight: FontWeight.w500, fontSize: 12),
                 ),
               ],
             )
@@ -362,10 +363,14 @@ class _DesignPointsCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.star, size: 14, color: AppColors.white),
+                    const Icon(
+                      Icons.star_rounded,
+                      size: 14,
+                      color: AppColors.white,
+                    ),
                     const SizedBox(width: 6),
                     Text(
-                      'Platinum Tier - Maximum Level',
+                      AppLocalizations.of(context)!.platinumMaxLevel,
                       style: AppTypography.bodySmall(
                         color: AppColors.white,
                       ).copyWith(fontWeight: FontWeight.w700, fontSize: 12),
@@ -444,7 +449,7 @@ class _StatusPill extends StatelessWidget {
             label,
             style: AppTypography.bodySmall(
               color: color,
-            ).copyWith(fontWeight: FontWeight.w700, fontSize: 11),
+            ).copyWith(fontWeight: FontWeight.w700, fontSize: 12),
           ),
         ],
       ),
@@ -559,7 +564,7 @@ class _BillHistorySectionHeader extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Text(
-              'Bill History',
+              AppLocalizations.of(context)!.billHistory,
               style: AppTypography.h5(
                 color: context.themeTextPrimary,
               ).copyWith(fontWeight: FontWeight.w700),
@@ -578,10 +583,14 @@ class _BillHistorySectionHeader extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.filter_list, size: 14, color: context.themePrimary),
+              Icon(
+                Icons.filter_list_rounded,
+                size: 14,
+                color: context.themePrimary,
+              ),
               const SizedBox(width: 4),
               Text(
-                'Filter',
+                AppLocalizations.of(context)!.filterLabel,
                 style: AppTypography.labelSmall(
                   color: context.themePrimary,
                 ).copyWith(fontWeight: FontWeight.w700),
@@ -638,27 +647,27 @@ class _BillHistoryTableWithFilterState
           child: Row(
             children: [
               _FilterTab(
-                label: 'All',
+                label: AppLocalizations.of(context)!.all,
                 isSelected: selectedFilter == 'all',
                 onTap: () => setState(() => selectedFilter = 'all'),
               ),
               const SizedBox(width: 8),
               _FilterTab(
-                label: 'Approved',
+                label: AppLocalizations.of(context)!.approved,
                 isSelected: selectedFilter == 'approved',
                 onTap: () => setState(() => selectedFilter = 'approved'),
                 color: AppColors.success,
               ),
               const SizedBox(width: 8),
               _FilterTab(
-                label: 'Pending',
+                label: AppLocalizations.of(context)!.pending,
                 isSelected: selectedFilter == 'pending',
                 onTap: () => setState(() => selectedFilter = 'pending'),
                 color: AppColors.warning,
               ),
               const SizedBox(width: 8),
               _FilterTab(
-                label: 'Rejected',
+                label: AppLocalizations.of(context)!.rejectedLabel,
                 isSelected: selectedFilter == 'rejected',
                 onTap: () => setState(() => selectedFilter = 'rejected'),
                 color: AppColors.error,
@@ -805,10 +814,14 @@ class _BillListByFilter extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       child: Column(
         children: [
-          Icon(Icons.error_outline, size: 48, color: context.themeError),
+          Icon(
+            Icons.error_outline_rounded,
+            size: 48,
+            color: context.themeError,
+          ),
           const SizedBox(height: 12),
           Text(
-            'Error loading bills',
+            AppLocalizations.of(context)!.errorLoadingBills,
             style: AppTypography.bodyLarge(
               color: context.themeError,
             ).copyWith(fontWeight: FontWeight.w600),
@@ -827,32 +840,10 @@ class _BillListByFilter extends StatelessWidget {
   }
 
   Widget _emptyCard(BuildContext context) {
-    return AppCard(
-      padding: const EdgeInsets.all(22),
-      child: Column(
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 48,
-            color: context.themeTextPrimary.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'No bills yet',
-            style: AppTypography.bodyLarge(
-              color: context.themeTextPrimary.withValues(alpha: 0.6),
-            ).copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Submit your first bill to get started',
-            style: AppTypography.bodySmall(
-              color: context.themeTextPrimary.withValues(alpha: 0.5),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: Icons.receipt_long_outlined,
+      title: AppLocalizations.of(context)!.noBillsYet,
+      message: AppLocalizations.of(context)!.submitFirstBill,
     );
   }
 }
@@ -889,7 +880,7 @@ class _SummaryCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Total Approved Points',
+                AppLocalizations.of(context)!.totalApprovedPoints,
                 style: AppTypography.bodySmall(
                   color: context.themeTextPrimary.withValues(alpha: 0.7),
                 ).copyWith(fontWeight: FontWeight.w600),
@@ -910,7 +901,7 @@ class _SummaryCard extends StatelessWidget {
               borderRadius: AppRadius.md12,
             ),
             child: Icon(
-              Icons.account_balance_wallet,
+              Icons.account_balance_wallet_rounded,
               color: AppColors.white,
               size: 20,
             ),
@@ -999,21 +990,23 @@ class _BillHistoryTableState extends ConsumerState<_BillHistoryTable> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Approved',
+                        AppLocalizations.of(context)!.approved,
                         style: AppTypography.labelSmall(
                           color: context.themeTextPrimary.withValues(
                             alpha: 0.7,
                           ),
-                        ).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
+                        ).copyWith(fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '$approvedCount bills',
+                        AppLocalizations.of(
+                          context,
+                        )!.billsCount('$approvedCount'),
                         style: AppTypography.bodySmall(
                           color: context.themeTextPrimary.withValues(
                             alpha: 0.5,
                           ),
-                        ).copyWith(fontSize: 11),
+                        ).copyWith(fontSize: 12),
                       ),
                     ],
                   ),
@@ -1047,10 +1040,14 @@ class _BillHistoryTableState extends ConsumerState<_BillHistoryTable> {
       padding: const EdgeInsets.all(22),
       child: Column(
         children: [
-          Icon(Icons.error_outline, size: 48, color: context.themeError),
+          Icon(
+            Icons.error_outline_rounded,
+            size: 48,
+            color: context.themeError,
+          ),
           const SizedBox(height: 12),
           Text(
-            'Error loading bills',
+            AppLocalizations.of(context)!.errorLoadingBills,
             style: AppTypography.bodyLarge(
               color: context.themeError,
             ).copyWith(fontWeight: FontWeight.w600),
@@ -1069,32 +1066,10 @@ class _BillHistoryTableState extends ConsumerState<_BillHistoryTable> {
   }
 
   Widget _emptyCard(BuildContext context) {
-    return AppCard(
-      padding: const EdgeInsets.all(22),
-      child: Column(
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 48,
-            color: context.themeTextPrimary.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'No bills yet',
-            style: AppTypography.bodyLarge(
-              color: context.themeTextPrimary.withValues(alpha: 0.6),
-            ).copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Submit your first bill to get started',
-            style: AppTypography.bodySmall(
-              color: context.themeTextPrimary.withValues(alpha: 0.5),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: Icons.receipt_long_outlined,
+      title: AppLocalizations.of(context)!.noBillsYet,
+      message: AppLocalizations.of(context)!.submitFirstBill,
     );
   }
 }
@@ -1122,12 +1097,13 @@ class _DesignBillCard extends StatelessWidget {
         'BLP-0000-0000';
 
     final date = createdAt?.toDate() ?? DateTime.now();
-    final dateStr = '${date.day} ${_monthName(date.month)} ${date.year}';
+    final dateStr =
+        '${date.day} ${_monthName(context, date.month)} ${date.year}';
     final timeStr =
         '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} ${date.hour >= 12 ? 'PM' : 'AM'}';
 
     final statusColor = _getStatusColor(status);
-    final statusLabel = _getStatusLabel(status);
+    final statusLabel = _getStatusLabel(context, status);
 
     return Container(
       decoration: BoxDecoration(
@@ -1186,7 +1162,7 @@ class _DesignBillCard extends StatelessWidget {
                         borderRadius: AppRadius.sm8,
                       ),
                       child: const Icon(
-                        Icons.image,
+                        Icons.image_rounded,
                         size: 12,
                         color: AppColors.white,
                       ),
@@ -1216,7 +1192,7 @@ class _DesignBillCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.business,
+                      Icons.business_rounded,
                       size: 12,
                       color: context.themeTextPrimary.withValues(alpha: 0.6),
                     ),
@@ -1228,7 +1204,7 @@ class _DesignBillCard extends StatelessWidget {
                           color: context.themeTextPrimary.withValues(
                             alpha: 0.7,
                           ),
-                        ).copyWith(fontSize: 10),
+                        ).copyWith(fontSize: 12),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1240,7 +1216,7 @@ class _DesignBillCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.access_time,
+                      Icons.access_time_rounded,
                       size: 12,
                       color: context.themeTextPrimary.withValues(alpha: 0.6),
                     ),
@@ -1252,7 +1228,7 @@ class _DesignBillCard extends StatelessWidget {
                           color: context.themeTextPrimary.withValues(
                             alpha: 0.6,
                           ),
-                        ).copyWith(fontSize: 10),
+                        ).copyWith(fontSize: 12),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1265,7 +1241,7 @@ class _DesignBillCard extends StatelessWidget {
                   billNumber,
                   style: AppTypography.labelSmall(
                     color: context.themeTextPrimary.withValues(alpha: 0.5),
-                  ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+                  ).copyWith(fontSize: 12, fontWeight: FontWeight.w600),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1289,7 +1265,7 @@ class _DesignBillCard extends StatelessWidget {
                   statusLabel,
                   style: AppTypography.labelSmall(
                     color: statusColor,
-                  ).copyWith(fontWeight: FontWeight.w700, fontSize: 10),
+                  ).copyWith(fontWeight: FontWeight.w700, fontSize: 12),
                 ),
               ),
               const SizedBox(height: 8),
@@ -1305,17 +1281,17 @@ class _DesignBillCard extends StatelessWidget {
                     ).copyWith(fontWeight: FontWeight.w900, fontSize: 14),
                   ),
                   Text(
-                    'Points',
+                    AppLocalizations.of(context)!.pointsLabel,
                     style: AppTypography.labelSmall(
                       color: context.themeTextPrimary.withValues(alpha: 0.6),
-                    ).copyWith(fontSize: 9),
+                    ).copyWith(fontSize: 12),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
               // Arrow icon
               Icon(
-                Icons.chevron_right,
+                Icons.chevron_right_rounded,
                 color: context.themeTextPrimary.withValues(alpha: 0.3),
                 size: 16,
               ),
@@ -1329,25 +1305,25 @@ class _DesignBillCard extends StatelessWidget {
   Widget _billPlaceholder(Color color) {
     return Container(
       color: color.withValues(alpha: 0.12),
-      child: Icon(Icons.receipt_long, color: color, size: 32),
+      child: Icon(Icons.receipt_long_rounded, color: color, size: 32),
     );
   }
 
-  String _monthName(int month) {
-    const months = [
+  String _monthName(BuildContext context, int month) {
+    final months = [
       '',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      AppLocalizations.of(context)!.jan,
+      AppLocalizations.of(context)!.feb,
+      AppLocalizations.of(context)!.mar,
+      AppLocalizations.of(context)!.apr,
+      AppLocalizations.of(context)!.may,
+      AppLocalizations.of(context)!.jun,
+      AppLocalizations.of(context)!.jul,
+      AppLocalizations.of(context)!.aug,
+      AppLocalizations.of(context)!.sep,
+      AppLocalizations.of(context)!.oct,
+      AppLocalizations.of(context)!.nov,
+      AppLocalizations.of(context)!.dec,
     ];
     return months[month];
   }
@@ -1368,7 +1344,7 @@ class _DesignBillCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Bill Attachment',
+                    AppLocalizations.of(context)!.billAttachment,
                     style: AppTypography.h5(
                       color: context.themeTextPrimary,
                     ).copyWith(fontWeight: FontWeight.w700),
@@ -1382,7 +1358,7 @@ class _DesignBillCard extends StatelessWidget {
                         borderRadius: AppRadius.sm8,
                       ),
                       child: Icon(
-                        Icons.close,
+                        Icons.close_rounded,
                         size: 20,
                         color: context.themeTextPrimary,
                       ),
@@ -1415,13 +1391,13 @@ class _DesignBillCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.error_outline,
+                            Icons.error_outline_rounded,
                             size: 48,
                             color: context.themeError,
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Failed to load image',
+                            AppLocalizations.of(context)!.failedToLoadImage,
                             style: AppTypography.bodySmall(
                               color: context.themeError,
                             ).copyWith(fontWeight: FontWeight.w600),
@@ -1453,7 +1429,7 @@ class _DesignBillCard extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
                   ),
                   child: Text(
-                    'Close',
+                    AppLocalizations.of(context)!.close,
                     style: AppTypography.bodySmall(
                       color: AppColors.white,
                     ).copyWith(fontWeight: FontWeight.w700),
@@ -1480,14 +1456,14 @@ class _DesignBillCard extends StatelessWidget {
     }
   }
 
-  String _getStatusLabel(String status) {
+  String _getStatusLabel(BuildContext context, String status) {
     switch (status.toLowerCase()) {
       case 'approved':
-        return 'Approved';
+        return AppLocalizations.of(context)!.approved;
       case 'pending':
-        return 'Pending';
+        return AppLocalizations.of(context)!.pending;
       case 'rejected':
-        return 'Rejected';
+        return AppLocalizations.of(context)!.rejectedLabel;
       default:
         return status.toUpperCase();
     }
@@ -1542,10 +1518,14 @@ class _BillsList extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       child: Column(
         children: [
-          Icon(Icons.error_outline, size: 48, color: context.themeError),
+          Icon(
+            Icons.error_outline_rounded,
+            size: 48,
+            color: context.themeError,
+          ),
           const SizedBox(height: 12),
           Text(
-            'Error loading bills',
+            AppLocalizations.of(context)!.errorLoadingBills,
             style: AppTypography.bodyLarge(
               color: context.themeError,
             ).copyWith(fontWeight: FontWeight.w600),
@@ -1564,33 +1544,10 @@ class _BillsList extends StatelessWidget {
   }
 
   Widget _emptyCard(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return AppCard(
-      padding: const EdgeInsets.all(22),
-      child: Column(
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 48,
-            color: context.themeTextPrimary.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            l10n.noBillsYet,
-            style: AppTypography.bodyLarge(
-              color: context.themeTextPrimary.withValues(alpha: 0.6),
-            ).copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.submitFirstBill,
-            style: AppTypography.bodySmall(
-              color: context.themeTextPrimary.withValues(alpha: 0.5),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: Icons.receipt_long_outlined,
+      title: AppLocalizations.of(context)!.noBillsYet,
+      message: AppLocalizations.of(context)!.submitFirstBill,
     );
   }
 }
@@ -1651,7 +1608,7 @@ class _BillCard extends StatelessWidget {
                   ),
                 ] else ...[
                   Text(
-                    'Pending approval',
+                    AppLocalizations.of(context)!.pendingApproval,
                     style: AppTypography.bodySmall(
                       color: context.themeTextPrimary.withValues(alpha: 0.6),
                     ).copyWith(fontWeight: FontWeight.w500),
@@ -1704,13 +1661,13 @@ class _BillCard extends StatelessWidget {
   static IconData _statusIcon(String status) {
     switch (status.toLowerCase()) {
       case 'approved':
-        return Icons.check_circle;
+        return Icons.check_circle_rounded;
       case 'pending':
-        return Icons.pending;
+        return Icons.pending_rounded;
       case 'rejected':
-        return Icons.cancel;
+        return Icons.cancel_rounded;
       default:
-        return Icons.receipt;
+        return Icons.receipt_rounded;
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -8,10 +9,7 @@ import 'bill_duplicate_details_page.dart';
 class PointsScanDetailsPage extends StatelessWidget {
   final Map<String, dynamic> report;
 
-  const PointsScanDetailsPage({
-    super.key,
-    required this.report,
-  });
+  const PointsScanDetailsPage({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +31,10 @@ class PointsScanDetailsPage extends StatelessWidget {
         foregroundColor: context.themeTextPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: AppText.h3('Scan Results - Full Details',
-            color: context.themeTextPrimary),
+        title: AppText.h3(
+          AppLocalizations.of(context)!.scanResultsFullDetails,
+          color: context.themeTextPrimary,
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -47,13 +47,15 @@ class PointsScanDetailsPage extends StatelessWidget {
               totalScanned: totalScanned,
               usersWithIssues: usersWithIssues,
               totalDuplicates: report['totalDuplicates'] as int? ?? 0,
-              totalPointsDiff:
-                  report['totalPointsDifference'] as num? ?? 0,
+              totalPointsDiff: report['totalPointsDifference'] as num? ?? 0,
             ),
             const SizedBox(height: 20),
 
             // Users list
-            AppText.h5('Users with Issues', color: context.themeTextPrimary),
+            AppText.h5(
+              AppLocalizations.of(context)!.usersWithIssues2,
+              color: context.themeTextPrimary,
+            ),
             const SizedBox(height: 12),
 
             if (issues.isEmpty)
@@ -63,8 +65,10 @@ class PointsScanDetailsPage extends StatelessWidget {
                   color: context.themeSoftSurface,
                   borderRadius: AppRadius.all16,
                 ),
-                child: AppText.body('No users with issues found',
-                    color: context.themeTextSecondary),
+                child: AppText.body(
+                  AppLocalizations.of(context)!.noUsersWithIssuesFound,
+                  color: context.themeTextSecondary,
+                ),
               )
             else
               ListView.separated(
@@ -83,13 +87,16 @@ class PointsScanDetailsPage extends StatelessWidget {
                     historySum: (userData['historySum'] as num?)?.toInt() ?? 0,
                     pointsDifference:
                         (userData['pointsDifference'] as num?)?.toInt() ?? 0,
-                    historyLength: (userData['historyLength'] as num?)?.toInt() ?? 0,
-                    uniqueBills: (userData['uniqueBills'] as num?)?.toInt() ?? 0,
-                    duplicateCount: (userData['duplicateCount'] as num?)?.toInt() ?? 0,
+                    historyLength:
+                        (userData['historyLength'] as num?)?.toInt() ?? 0,
+                    uniqueBills:
+                        (userData['uniqueBills'] as num?)?.toInt() ?? 0,
+                    duplicateCount:
+                        (userData['duplicateCount'] as num?)?.toInt() ?? 0,
                     duplicateBillIds:
                         (userData['duplicateBillIds'] as List<dynamic>?)
-                                ?.cast<String>() ??
-                            [],
+                            ?.cast<String>() ??
+                        [],
                   );
                 },
               ),
@@ -121,34 +128,40 @@ class _ScanSummaryHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.themePrimary.withValues(alpha: 0.15),
-            context.themePrimary.withValues(alpha: 0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.primary.withValues(alpha: 0.15),
         borderRadius: AppRadius.all16,
-        border: Border.all(
-          color: context.themePrimary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: context.themePrimary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText.h5('📊 Scan Summary', color: context.themeTextPrimary),
+          AppText.h5(
+            AppLocalizations.of(context)!.scanSummary,
+            color: context.themeTextPrimary,
+          ),
           const SizedBox(height: 16),
-          _SummaryRow('Total Users Scanned', '$totalScanned'),
+          _SummaryRow(
+            AppLocalizations.of(context)!.totalUsersScanned2,
+            '$totalScanned',
+          ),
           const SizedBox(height: 10),
-          _SummaryRow('Users with Issues', '$usersWithIssues',
-              color: usersWithIssues > 0 ? AppColors.warning : AppColors.success),
+          _SummaryRow(
+            AppLocalizations.of(context)!.usersWithIssues2,
+            '$usersWithIssues',
+            color: usersWithIssues > 0 ? AppColors.warning : AppColors.success,
+          ),
           const SizedBox(height: 10),
-          _SummaryRow('Total Duplicate Entries', '$totalDuplicates',
-              color: totalDuplicates > 0 ? AppColors.warning : AppColors.success),
+          _SummaryRow(
+            AppLocalizations.of(context)!.totalDuplicateEntries2,
+            '$totalDuplicates',
+            color: totalDuplicates > 0 ? AppColors.warning : AppColors.success,
+          ),
           const SizedBox(height: 10),
-          _SummaryRow('Total Points Difference', '${totalPointsDiff.toInt()}',
-              color: totalPointsDiff > 0 ? AppColors.warning : AppColors.success),
+          _SummaryRow(
+            AppLocalizations.of(context)!.totalPointsDifference,
+            '${totalPointsDiff.toInt()}',
+            color: totalPointsDiff > 0 ? AppColors.warning : AppColors.success,
+          ),
         ],
       ),
     );
@@ -169,10 +182,7 @@ class _SummaryRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText.body(label, color: context.themeTextSecondary),
-        AppText.body(
-          value,
-          color: color ?? context.themeTextPrimary,
-        ),
+        AppText.body(value, color: color ?? context.themeTextPrimary),
       ],
     );
   }
@@ -231,7 +241,8 @@ class _UserScanCard extends StatelessWidget {
               String username = '';
               String phoneNumber = '';
               String? profileImage;
-              bool isLoading = snapshot.connectionState == ConnectionState.waiting;
+              bool isLoading =
+                  snapshot.connectionState == ConnectionState.waiting;
 
               if (snapshot.connectionState == ConnectionState.done &&
                   snapshot.hasData &&
@@ -242,7 +253,10 @@ class _UserScanCard extends StatelessWidget {
                 firstName = userData['firstName'] as String? ?? '';
                 lastName = userData['lastName'] as String? ?? '';
                 username = userData['displayName'] as String? ?? userId;
-                phoneNumber = userData['phoneNumber'] as String? ?? userData['phone'] as String? ?? '';
+                phoneNumber =
+                    userData['phoneNumber'] as String? ??
+                    userData['phone'] as String? ??
+                    '';
                 profileImage = userData['profileImage'] as String?;
               } else if (snapshot.hasError) {
                 username = userId;
@@ -276,43 +290,48 @@ class _UserScanCard extends StatelessWidget {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      context.themePrimary),
+                                    context.themePrimary,
+                                  ),
                                 ),
                               ),
                             )
                           : profileImage != null &&
-                                  (profileImage.startsWith('http://') ||
-                                      profileImage.startsWith('https://'))
-                              ? Image.network(
-                                  profileImage,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Center(
-                                    child: Icon(Icons.person_rounded,
-                                        color: context.themePrimary,
-                                        size: 36),
-                                  ),
-                                  loadingBuilder: (_, child, progress) =>
-                                      progress == null
-                                          ? child
-                                          : Center(
-                                              child: SizedBox(
-                                                width: 28,
-                                                height: 28,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation<
-                                                              Color>(
-                                                          context.themePrimary),
-                                                ),
-                                              ),
-                                            ),
-                                )
-                              : Center(
-                                  child: Icon(Icons.person_rounded,
-                                      color: context.themePrimary, size: 36),
+                                (profileImage.startsWith('http://') ||
+                                    profileImage.startsWith('https://'))
+                          ? Image.network(
+                              profileImage,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Center(
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  color: context.themePrimary,
+                                  size: 36,
                                 ),
+                              ),
+                              loadingBuilder: (_, child, progress) =>
+                                  progress == null
+                                  ? child
+                                  : Center(
+                                      child: SizedBox(
+                                        width: 28,
+                                        height: 28,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                context.themePrimary,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                            )
+                          : Center(
+                              child: Icon(
+                                Icons.person_rounded,
+                                color: context.themePrimary,
+                                size: 36,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -362,8 +381,12 @@ class _UserScanCard extends StatelessWidget {
                               color: AppColors.warning.withValues(alpha: 0.2),
                               borderRadius: AppRadius.sm8,
                             ),
-                            child: AppText.label('$duplicateCount duplicates',
-                                color: AppColors.warning),
+                            child: AppText.label(
+                              AppLocalizations.of(
+                                context,
+                              )!.duplicates('$duplicateCount'),
+                              color: AppColors.warning,
+                            ),
                           ),
                       ],
                     ),
@@ -386,10 +409,13 @@ class _UserScanCard extends StatelessWidget {
               children: [
                 _DetailRow('totalPoints', '$totalPoints'),
                 const SizedBox(height: 6),
-                _DetailRow('History Sum', '$historySum'),
+                _DetailRow(
+                  AppLocalizations.of(context)!.historySum,
+                  '$historySum',
+                ),
                 const SizedBox(height: 6),
                 _DetailRow(
-                  'Difference',
+                  AppLocalizations.of(context)!.difference,
                   '$pointsDifference',
                   highlight: pointsDifference > 0,
                 ),
@@ -403,14 +429,14 @@ class _UserScanCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatTile(
-                  label: 'Total Entries',
+                  label: AppLocalizations.of(context)!.totalEntries,
                   value: '$historyLength',
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _StatTile(
-                  label: 'Unique Bills',
+                  label: AppLocalizations.of(context)!.uniqueBills,
                   value: '$uniqueBills',
                 ),
               ),
@@ -419,53 +445,58 @@ class _UserScanCard extends StatelessWidget {
 
           if (duplicateBillIds.isNotEmpty) ...[
             const SizedBox(height: 12),
-            AppText.label('Duplicate Bills:', color: context.themeTextSecondary),
+            AppText.label(
+              AppLocalizations.of(context)!.duplicateBills,
+              color: context.themeTextSecondary,
+            ),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: duplicateBillIds
-                  .map((billIdWithCount) {
-                    // billIdWithCount format: "Bill_ID (2x)"
-                    final billId = billIdWithCount.split(' ').first;
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                BillDuplicateDetailsPage(
-                              billId: billId,
-                              userId: userId,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.warning.withValues(alpha: 0.15),
-                          borderRadius: AppRadius.sm8,
-                          border: Border.all(
-                            color: AppColors.warning.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AppText.bodySmall(billIdWithCount,
-                                color: AppColors.warning),
-                            const SizedBox(width: 4),
-                            Icon(Icons.arrow_forward_ios_rounded,
-                                size: 12, color: AppColors.warning),
-                          ],
+              children: duplicateBillIds.map((billIdWithCount) {
+                // billIdWithCount format: "Bill_ID (2x)"
+                final billId = billIdWithCount.split(' ').first;
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => BillDuplicateDetailsPage(
+                          billId: billId,
+                          userId: userId,
                         ),
                       ),
                     );
-                  })
-                  .toList(),
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withValues(alpha: 0.15),
+                      borderRadius: AppRadius.sm8,
+                      border: Border.all(
+                        color: AppColors.warning.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AppText.bodySmall(
+                          billIdWithCount,
+                          color: AppColors.warning,
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 12,
+                          color: AppColors.warning,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ],
@@ -480,11 +511,7 @@ class _DetailRow extends StatelessWidget {
   final String value;
   final bool highlight;
 
-  const _DetailRow(
-    this.label,
-    this.value, {
-    this.highlight = false,
-  });
+  const _DetailRow(this.label, this.value, {this.highlight = false});
 
   @override
   Widget build(BuildContext context) {

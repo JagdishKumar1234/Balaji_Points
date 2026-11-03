@@ -37,7 +37,9 @@ class TopCarpentersList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ...carpenters.map((carpenter) => _buildLeaderboardCard(context, carpenter)),
+        ...carpenters.map(
+          (carpenter) => _buildLeaderboardCard(context, carpenter),
+        ),
       ],
     );
   }
@@ -133,9 +135,7 @@ class TopCarpentersList extends StatelessWidget {
               carpenter.name,
               style: AppTypography.section(
                 color: context.themeTextPrimary,
-              ).copyWith(
-                fontSize: 16,
-              ),
+              ).copyWith(fontSize: 16),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -148,13 +148,16 @@ class TopCarpentersList extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.warning.withValues(alpha: 0.15),
               borderRadius: AppRadius.md12,
-              border: Border.all(color: AppColors.warning.withValues(alpha: 0.4), width: 1),
+              border: Border.all(
+                color: AppColors.warning.withValues(alpha: 0.4),
+                width: 1,
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.monetization_on,
+                  Icons.monetization_on_rounded,
                   color: AppColors.warning,
                   size: 20,
                 ),
@@ -163,10 +166,7 @@ class TopCarpentersList extends StatelessWidget {
                   _formatPoints(carpenter.points),
                   style: AppTypography.section(
                     color: context.themeTextPrimary,
-                  ).copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
+                  ).copyWith(fontWeight: FontWeight.w700, fontSize: 16),
                 ),
               ],
             ),

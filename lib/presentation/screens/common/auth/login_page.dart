@@ -71,10 +71,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       l10n = null;
     }
 
-    final appName = l10n?.appName ?? 'Balaji Points';
-    final errorLabel = l10n?.error ?? 'Error';
-    final companyName = l10n?.companyName ?? 'Balaji Points';
-    final subtitle = l10n?.enterPhoneNumber ?? 'Sign in with your email';
+    final appName = l10n?.appName ?? AppLocalizations.of(context)!.appName;
+    final errorLabel = l10n?.error ?? AppLocalizations.of(context)!.error;
+    final companyName = l10n?.companyName ?? 'Aajii Tech Studio';
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -127,166 +126,260 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           children: [
             AuthBackground(isDark: isDark),
             SafeArea(
-              bottom: false,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(bottom: bottomInset + AppSpacing.xl),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      AuthTopControls(
-                        themeToggle: _ThemeToggleButton(isDark: isDark),
-                        languagePicker: _LanguagePicker(),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact =
+                      constraints.maxHeight < 760 || bottomInset > 0;
+                  final gap = compact ? 10.0 : 16.0;
+                  final cardPadding = compact ? 20.0 : 26.0;
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.only(bottom: bottomInset + 12),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
                       ),
-                      const SizedBox(height: AppSpacing.lg),
-                      Stack(
-                        children: [
-                          ProfessionalAuthCard(
-                            isDark: isDark,
-                            securityMessage: 'Your data is 100% secure with us',
-                            child: Column(
-                              children: [
-                                AuthHeader(
-                                  logoPath:
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            AuthTopControls(
+                              themeToggle: _ThemeToggleButton(isDark: isDark),
+                              languagePicker: _LanguagePicker(),
+                            ),
+                            SizedBox(height: compact ? 8 : 14),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 52,
+                                    height: 52,
+                                    decoration: BoxDecoration(
+                                      color: context.themeCard,
+                                      borderRadius: AppRadius.all16,
+                                      boxShadow: context.themeShadow,
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                    child: Image.asset(
                                       'assets/images/balaji_point_logo.png',
-                                  title: appName,
-                                  subtitle: subtitle,
-                                  isDark: isDark,
-                                ),
-                                const SizedBox(height: AppSpacing.xl3),
-                                AppTextField(
-                                  controller: _emailController,
-                                  label: 'Email',
-                                  prefixIcon: Icons.email_outlined,
-                                  keyboardType: TextInputType.emailAddress,
-                                  validator: (value) {
-                                    final v = value?.trim() ?? '';
-                                    if (v.isEmpty ||
-                                        !RegExp(
-                                          r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                                        ).hasMatch(v)) {
-                                      return 'Please enter a valid email address';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                AppTextField(
-                                  controller: _passwordController,
-                                  label: 'Password',
-                                  prefixIcon: Icons.lock_outline,
-                                  obscureText: !_isPasswordVisible,
-                                  suffix: IconButton(
-                                    onPressed: () => setState(
-                                      () => _isPasswordVisible =
-                                          !_isPasswordVisible,
-                                    ),
-                                    icon: Icon(
-                                      _isPasswordVisible
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                      color: context.themePrimary,
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    final v = value ?? '';
-                                    if (v.isEmpty || v.length < 6) {
-                                      return 'Password must be at least 6 characters';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: AppSpacing.md),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () => context.push(
-                                      '/forgot-password',
-                                      extra: _emailController.text.trim(),
-                                    ),
-                                    child: Text(
-                                      'Forgot password?',
-                                      style: AppTypography.bodyMedium(
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) => Icon(
+                                        Icons.workspace_premium_rounded,
                                         color: context.themePrimary,
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: AppSpacing.xl2),
-                                AppButton.primary(
-                                  label: 'Sign in',
-                                  onPressed: isChecking
-                                      ? null
-                                      : _loginWithEmail,
-                                  isLoading: isChecking,
-                                ),
-                                const SizedBox(height: AppSpacing.md),
-                                AppButton.secondary(
-                                  label: 'Login with PIN',
-                                  icon: Icons.dialpad_rounded,
-                                  onPressed: isChecking
-                                      ? null
-                                      : () => context.push('/phone-pin-login'),
-                                ),
-                                const SizedBox(height: AppSpacing.xs),
-                                Text(
-                                  'For existing users with a mobile number and PIN',
-                                  textAlign: TextAlign.center,
-                                  style: AppTypography.bodySmall(
-                                    color: context.themeTextSecondary,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.welcomeBack2,
+                                          style: AppTypography.title(
+                                            color: context.themeTextPrimary,
+                                          ),
+                                        ),
+                                        Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.signInToContinueTo('$appName'),
+                                          style: AppTypography.bodySmall(
+                                            color: context.themeTextSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: AppSpacing.md),
-                                AppButton.secondary(
-                                  label: 'Sign in with Google',
-                                  icon: Icons.g_mobiledata_rounded,
-                                  onPressed: isChecking
-                                      ? null
-                                      : _loginWithGoogle,
-                                ),
-                                const SizedBox(height: AppSpacing.sm),
-                                TextButton(
-                                  onPressed: () => context.go('/register'),
-                                  child: const Text('Create an account'),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Positioned(
-                            top: 12,
-                            left: 12,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  if (Navigator.of(context).canPop()) {
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    context.go('/login');
-                                  }
-                                },
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(99),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Icon(
-                                    Icons.arrow_back_rounded,
-                                    color: context.themePrimary,
-                                    size: 24,
+                            SizedBox(height: gap),
+                            ProfessionalAuthCard(
+                              isDark: isDark,
+                              padding: EdgeInsets.all(cardPadding),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.signIn,
+                                    style: AppTypography.title(
+                                      color: context.themeTextPrimary,
+                                    ),
                                   ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.useYourEmailAndPasswordOr,
+                                    style: AppTypography.bodySmall(
+                                      color: context.themeTextSecondary,
+                                    ),
+                                  ),
+                                  SizedBox(height: gap),
+                                  AppTextField(
+                                    controller: _emailController,
+                                    label: AppLocalizations.of(context)!.email,
+                                    prefixIcon: Icons.email_outlined,
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: (value) {
+                                      final v = value?.trim() ?? '';
+                                      if (v.isEmpty ||
+                                          !RegExp(
+                                            r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                                          ).hasMatch(v)) {
+                                        return AppLocalizations.of(
+                                          context,
+                                        )!.pleaseEnterAValidEmailAddress;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(height: gap),
+                                  AppTextField(
+                                    controller: _passwordController,
+                                    label: AppLocalizations.of(
+                                      context,
+                                    )!.passwordLabel,
+                                    prefixIcon: Icons.lock_outline_rounded,
+                                    obscureText: !_isPasswordVisible,
+                                    suffix: IconButton(
+                                      onPressed: () => setState(
+                                        () => _isPasswordVisible =
+                                            !_isPasswordVisible,
+                                      ),
+                                      icon: Icon(
+                                        _isPasswordVisible
+                                            ? Icons.visibility_off_rounded
+                                            : Icons.visibility_rounded,
+                                        color: context.themePrimary,
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      final v = value ?? '';
+                                      if (v.isEmpty || v.length < 6) {
+                                        return AppLocalizations.of(
+                                          context,
+                                        )!.passwordMustBeAtLeast6;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: () => context.push(
+                                        '/forgot-password',
+                                        extra: _emailController.text.trim(),
+                                      ),
+                                      child: Text(
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.forgotPassword,
+                                        style: AppTypography.bodyMedium(
+                                          color: context.themePrimary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: gap),
+                                  AppButton.primary(
+                                    label: AppLocalizations.of(context)!.signIn,
+                                    onPressed: isChecking
+                                        ? null
+                                        : _loginWithEmail,
+                                    isLoading: isChecking,
+                                  ),
+                                  SizedBox(height: compact ? 10 : 16),
+                                  TextButton.icon(
+                                    onPressed: isChecking
+                                        ? null
+                                        : () =>
+                                              context.push('/phone-pin-login'),
+                                    icon: const Icon(
+                                      Icons.dialpad_rounded,
+                                      size: 18,
+                                    ),
+                                    label: Text(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.loginWithPin,
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: context.themePrimary,
+                                      minimumSize: const Size(48, 44),
+                                    ),
+                                  ),
+                                  SizedBox(height: compact ? 2 : 6),
+                                  _GoogleSignInButton(
+                                    onPressed: isChecking
+                                        ? null
+                                        : _loginWithGoogle,
+                                    isLoading: isChecking,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Center(
+                                    child: Wrap(
+                                      alignment: WrapAlignment.center,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.newToBalajiPoints,
+                                          style: AppTypography.bodySmall(
+                                            color: context.themeTextSecondary,
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              context.go('/register'),
+                                          style: TextButton.styleFrom(
+                                            foregroundColor:
+                                                context.themePrimary,
+                                            minimumSize: const Size(48, 40),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.createAccount2,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: compact ? 8 : 16),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.designedAndDevelopedBy('$companyName'),
+                                textAlign: TextAlign.center,
+                                style: AppTypography.bodySmall(
+                                  color: context.themeTextSecondary,
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: AppSpacing.xl2),
-                      AuthFooter(companyName: companyName, isDark: isDark),
-                      const SizedBox(height: AppSpacing.xl3),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -294,6 +387,95 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       ),
     );
   }
+}
+
+class _GoogleSignInButton extends StatelessWidget {
+  const _GoogleSignInButton({required this.onPressed, required this.isLoading});
+
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      height: 50,
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF3C4043),
+          side: BorderSide(color: scheme.outlineVariant),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        ),
+        child: isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: scheme.primary,
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CustomPaint(painter: _GoogleMarkPainter()),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(AppLocalizations.of(context)!.signInWithGoogle),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class _GoogleMarkPainter extends CustomPainter {
+  const _GoogleMarkPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final stroke = size.width * .22;
+    final colors = <Color>[
+      const Color(0xFF4285F4),
+      const Color(0xFF34A853),
+      const Color(0xFFFBBC05),
+      const Color(0xFFEA4335),
+    ];
+    final starts = <double>[-.55, .95, 2.45, 3.95];
+    for (var i = 0; i < colors.length; i++) {
+      canvas.drawArc(
+        rect.deflate(stroke / 2),
+        starts[i],
+        1.28,
+        false,
+        Paint()
+          ..color = colors[i]
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = stroke
+          ..strokeCap = StrokeCap.butt,
+      );
+    }
+    canvas.drawRect(
+      Rect.fromLTWH(
+        size.width * .51,
+        size.height * .43,
+        size.width * .49,
+        stroke,
+      ),
+      Paint()..color = const Color(0xFF4285F4),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _ThemeToggleButton extends ConsumerWidget {
@@ -318,14 +500,16 @@ class _ThemeToggleButton extends ConsumerWidget {
       ),
       child: IconButton(
         padding: EdgeInsets.zero,
-        tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+        tooltip: isDark
+            ? AppLocalizations.of(context)!.switchToLight
+            : AppLocalizations.of(context)!.switchToDark,
         onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
         icon: AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           transitionBuilder: (child, anim) =>
               RotationTransition(turns: anim, child: child),
           child: Icon(
-            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round_rounded,
             key: ValueKey(isDark),
             size: 20,
             color: isDark ? AppColors.warning : context.themePrimary,
@@ -375,15 +559,22 @@ class _LanguagePicker extends ConsumerWidget {
           items: [
             DropdownMenuItem(
               value: const Locale('en'),
-              child: Text(l10n?.languageEnglish ?? 'English'),
+              child: Text(
+                l10n?.languageEnglish ??
+                    AppLocalizations.of(context)!.languageEnglish,
+              ),
             ),
             DropdownMenuItem(
               value: const Locale('hi'),
-              child: Text(l10n?.languageHindi ?? 'Hindi'),
+              child: Text(
+                l10n?.languageHindi ?? AppLocalizations.of(context)!.hindi,
+              ),
             ),
             DropdownMenuItem(
               value: const Locale('ta'),
-              child: Text(l10n?.languageTamil ?? 'Tamil'),
+              child: Text(
+                l10n?.languageTamil ?? AppLocalizations.of(context)!.tamil,
+              ),
             ),
           ],
         ),

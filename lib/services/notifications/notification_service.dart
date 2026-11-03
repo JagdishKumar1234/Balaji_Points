@@ -686,9 +686,12 @@ class NotificationService {
     required String body,
     required int adminsQueuedCount,
     Map<String, dynamic>? data,
+    String? branchId,
   }) async {
     try {
       final logData = <String, dynamic>{
+        // Lets each branch admin's inbox show only their branch's events.
+        if (branchId != null && branchId.isNotEmpty) 'branchId': branchId,
         'type': type.name,
         'title': title,
         'body': body,
@@ -710,18 +713,26 @@ class NotificationService {
     }
   }
 
-  /// Send notification to all admin users
+  /// Send a notification to the admins of [branchId] (all admins when the
+  /// branch is unknown, e.g. legacy data).
   Future<int> _sendNotificationToAllAdmins({
     required NotificationType type,
     required String title,
     required String body,
     Map<String, dynamic>? data,
+    String? branchId,
   }) async {
     try {
       AppLogger.info('📢 Sending notification to all admins: $title');
 
       // Get all admin users with FCM tokens
-      final usersQuery = await _firestore.collection('users').get();
+      final scoped = branchId != null && branchId.isNotEmpty;
+      final usersQuery = scoped
+          ? await _firestore
+                .collection('users')
+                .where('branchId', isEqualTo: branchId)
+                .get()
+          : await _firestore.collection('users').get();
 
       // Filter to only include admins with FCM tokens
       final adminUsers = usersQuery.docs.where((doc) {
@@ -740,6 +751,7 @@ class NotificationService {
           body: body,
           adminsQueuedCount: 0,
           data: data,
+          branchId: branchId,
         );
         return 0;
       }
@@ -798,6 +810,7 @@ class NotificationService {
         body: body,
         adminsQueuedCount: successCount,
         data: data,
+        branchId: branchId,
       );
 
       return successCount;
@@ -813,8 +826,10 @@ class NotificationService {
     required String carpenterPhone,
     required double amount,
     required String billId,
+    String? branchId,
   }) async {
     return await _sendNotificationToAllAdmins(
+      branchId: branchId,
       type: NotificationType.newPendingBill,
       title: '📋 New Bill Pending',
       body: '$carpenterName submitted a bill of ₹${amount.toStringAsFixed(0)}',
@@ -832,8 +847,10 @@ class NotificationService {
     required String userName,
     required String userPhone,
     required String userId,
+    String? branchId,
   }) async {
     return await _sendNotificationToAllAdmins(
+      branchId: branchId,
       type: NotificationType.newUserRegistered,
       title: '👤 New Carpenter Registered',
       body: '$userName ($userPhone) just registered',

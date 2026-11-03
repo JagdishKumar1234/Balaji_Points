@@ -3,6 +3,7 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_top_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 /// Simple top navigation bar for carpenter shell screens (top safe area included).
@@ -38,7 +39,7 @@ class HomeNavBar extends StatelessWidget {
     Widget? leading;
     if (showBackButton) {
       leading = IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back_rounded),
         onPressed:
             onBackTap ??
             () {
@@ -55,7 +56,11 @@ class HomeNavBar extends StatelessWidget {
               ? NetworkImage(userImageUrl!)
               : null,
           child: userImageUrl == null || userImageUrl!.isEmpty
-              ? Icon(Icons.person, size: 20, color: context.themePrimary)
+              ? Icon(
+                  Icons.person_rounded,
+                  size: 20,
+                  color: context.themePrimary,
+                )
               : null,
         ),
       );
@@ -82,7 +87,7 @@ class HomeNavBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title ?? 'Balaji Points',
+                  title ?? AppLocalizations.of(context)!.appName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.buttonMedium().copyWith(
@@ -109,7 +114,7 @@ class HomeNavBar extends StatelessWidget {
 
     return CarpenterTopNavBar(
       topInset: topInset,
-      title: title ?? 'Balaji Points',
+      title: title ?? AppLocalizations.of(context)!.appName,
       subtitle: showLogo ? null : subtitle,
       center: center,
       leading: leading,

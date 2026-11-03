@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -12,10 +14,12 @@ class ExportUsersBeforeCleanupScreen extends StatefulWidget {
   const ExportUsersBeforeCleanupScreen({super.key});
 
   @override
-  State<ExportUsersBeforeCleanupScreen> createState() => _ExportUsersBeforeCleanupScreenState();
+  State<ExportUsersBeforeCleanupScreen> createState() =>
+      _ExportUsersBeforeCleanupScreenState();
 }
 
-class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanupScreen> {
+class _ExportUsersBeforeCleanupScreenState
+    extends State<ExportUsersBeforeCleanupScreen> {
   bool _isExporting = false;
 
   Future<void> _exportUsersPdf() async {
@@ -23,12 +27,14 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
 
     setState(() => _isExporting = true);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Preparing user backup PDF...')),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.preparingUserBackupPdf),
+      ),
     );
 
     try {
       final query = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('users').forAdminBranch()
           .orderBy('totalPoints', descending: true)
           .get();
 
@@ -45,7 +51,9 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
       if (users.isEmpty) {
         setState(() => _isExporting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No carpenters found.')),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.noCarpentersFound2),
+          ),
         );
         return;
       }
@@ -94,17 +102,27 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
               level: 0,
               child: pw.Text(
                 'User Backup Report (Pre-Cleanup)',
-                style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
             ),
             pw.SizedBox(height: 10),
             pw.Text(
               'Generated on: ${DateFormat('dd/MM/yyyy, hh:mm a').format(DateTime.now())}',
-              style: pw.TextStyle(fontSize: 10),
+              style: pw.TextStyle(fontSize: 12),
             ),
             pw.SizedBox(height: 20),
             pw.TableHelper.fromTextArray(
-              headers: ['Sr.', 'Carpenter Name', 'Phone', 'Total Points', 'Earned Points', 'Created Date'],
+              headers: [
+                'Sr.',
+                'Carpenter Name',
+                'Phone',
+                'Total Points',
+                'Earned Points',
+                'Created Date',
+              ],
               data: users.asMap().entries.map((entry) {
                 final idx = entry.key;
                 final doc = entry.value;
@@ -113,9 +131,12 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
                 final lastName = data['lastName'] ?? '';
                 final phone = carpenterData[doc.id]?['phone'] ?? 'N/A';
                 final totalPoints = carpenterData[doc.id]?['totalPoints'] ?? 0;
-                final earnedPoints = carpenterData[doc.id]?['earnedPoints'] ?? 0.0;
-                final createdAt = carpenterData[doc.id]?['createdAt'] as Timestamp?;
-                final createdDate = createdAt?.toDate().toString().split(' ')[0] ?? 'N/A';
+                final earnedPoints =
+                    carpenterData[doc.id]?['earnedPoints'] ?? 0.0;
+                final createdAt =
+                    carpenterData[doc.id]?['createdAt'] as Timestamp?;
+                final createdDate =
+                    createdAt?.toDate().toString().split(' ')[0] ?? 'N/A';
 
                 return [
                   '${idx + 1}',
@@ -126,7 +147,10 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
                   createdDate,
                 ];
               }).toList(),
-              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12),
+              headerStyle: pw.TextStyle(
+                fontWeight: pw.FontWeight.bold,
+                fontSize: 12,
+              ),
               cellStyle: pw.TextStyle(),
               cellHeight: 20,
               columnWidths: {
@@ -156,7 +180,7 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
             ),
             pw.Text(
               'Export Date: ${DateFormat('dd/MM/yyyy').format(DateTime.now())}',
-              style: const pw.TextStyle(fontSize: 10),
+              style: const pw.TextStyle(fontSize: 12),
             ),
           ],
         ),
@@ -164,21 +188,28 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
 
       await Printing.sharePdf(
         bytes: await pdf.save(),
-        filename: 'user_backup_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.pdf',
+        filename:
+            'user_backup_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.pdf',
       );
 
       setState(() => _isExporting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ User backup exported successfully! (${users.length} carpenters)'),
-          backgroundColor: Colors.green,
+          content: Text(
+            AppLocalizations.of(
+              context,
+            )!.userBackupExportedSuccessfullyCarpenters('${users.length}'),
+          ),
+          backgroundColor: AppColors.success,
         ),
       );
     } catch (e) {
       setState(() => _isExporting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error exporting PDF: ${e.toString()}'),
+          content: Text(
+            AppLocalizations.of(context)!.errorExportingPdf('${e.toString()}'),
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -191,7 +222,7 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
       backgroundColor: context.themeBackground,
       appBar: AppBar(
         title: Text(
-          'Export Users Backup',
+          AppLocalizations.of(context)!.exportUsersBackup,
           style: AppTypography.h2(),
         ),
         backgroundColor: context.themePrimary,
@@ -202,20 +233,18 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.backup,
-                size: 80,
-                color: context.themePrimary,
-              ),
+              Icon(Icons.backup_rounded, size: 80, color: context.themePrimary),
               const SizedBox(height: 24),
               Text(
-                'Create User Backup',
+                AppLocalizations.of(context)!.createUserBackup,
                 style: AppTypography.h3(),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
-                'Export all carpenters with their points and phone numbers before cleanup.',
+                AppLocalizations.of(
+                  context,
+                )!.exportAllCarpentersWithTheirPoints,
                 style: AppTypography.bodyMedium().copyWith(
                   color: context.themeTextMuted,
                 ),
@@ -233,26 +262,28 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
                           color: context.themeContentColor,
                         ),
                       )
-                    : const Icon(Icons.picture_as_pdf, size: 24),
-                label: Text(_isExporting ? 'Exporting...' : 'Export to PDF'),
+                    : const Icon(Icons.picture_as_pdf_rounded, size: 24),
+                label: Text(
+                  _isExporting
+                      ? AppLocalizations.of(context)!.exporting
+                      : AppLocalizations.of(context)!.exportToPdf,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.themePrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 16,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.all16,
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
                 ),
               ),
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: AppColors.primaryOnDark.withValues(alpha: 0.1),
                   border: Border.all(
-                    color: Colors.blue.withValues(alpha: 0.3),
+                    color: AppColors.primaryOnDark.withValues(alpha: 0.3),
                   ),
                   borderRadius: AppRadius.md12,
                 ),
@@ -260,14 +291,16 @@ class _ExportUsersBeforeCleanupScreenState extends State<ExportUsersBeforeCleanu
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '📋 PDF will include:',
+                      AppLocalizations.of(context)!.pdfWillInclude,
                       style: AppTypography.labelLarge().copyWith(
-                        color: Colors.blue[700],
+                        color: AppColors.primaryOnDark,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '• Carpenter name and phone number\n• Total points and earned points\n• Account creation date\n• Summary with total carpenters and gross points',
+                      AppLocalizations.of(
+                        context,
+                      )!.carpenterNameAndPhoneNumberTotal,
                       style: AppTypography.bodySmall().copyWith(
                         color: context.themeTextMuted,
                       ),

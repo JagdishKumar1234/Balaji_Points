@@ -1,5 +1,8 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_table_card.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -74,7 +77,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.error,
+                              Icons.error_rounded,
                               color: context.themeError,
                               size: 60,
                             ),
@@ -89,7 +92,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.image_not_supported,
+                            Icons.image_not_supported_rounded,
                             size: 60,
                             color: context.themeTextSecondary,
                           ),
@@ -106,7 +109,11 @@ class _BillHistoryListState extends State<BillHistoryList> {
               top: 20,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.white,
+                  size: 30,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -271,7 +278,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'No bills to export. Apply filters or wait for data.',
+              AppLocalizations.of(context)!.noBillsToExportApplyFilters,
             ),
             backgroundColor: AppColors.warning,
           ),
@@ -282,9 +289,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
 
     setState(() => _isExporting = true);
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Preparing PDF...')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.preparingPdf)),
+      );
     }
 
     try {
@@ -308,8 +315,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         final billId = doc.id;
         final amount = (bill['amount'] ?? 0) as num;
         final amountDouble = amount.toDouble();
-        final points =
-            (bill['pointsEarned'] ?? (amountDouble / 1000)) as num;
+        final points = (bill['pointsEarned'] ?? (amountDouble / 1000)) as num;
         final status = (bill['status'] ?? '') as String;
         final phone = (bill['carpenterPhone'] ?? '') as String;
         final billDate = bill['billDate'] as Timestamp?;
@@ -337,7 +343,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
           setState(() => _isExporting = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('No bills match current filters for export.'),
+              content: Text(
+                AppLocalizations.of(context)!.noBillsMatchCurrentFiltersFor,
+              ),
               backgroundColor: AppColors.warning,
             ),
           );
@@ -371,7 +379,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                 pw.Text(
                   'Bill History Report • ${context.pageNumber} of ${context.pagesCount}',
                   style: const pw.TextStyle(
-                    fontSize: 9,
+                    fontSize: 12,
                     color: PdfColors.grey600,
                   ),
                 ),
@@ -411,7 +419,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       pw.Text(
                         AppConstants.shopAddressShort,
                         style: const pw.TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           color: PdfColors.grey700,
                         ),
                       ),
@@ -419,14 +427,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       pw.Text(
                         periodStr,
                         style: const pw.TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           color: PdfColors.grey700,
                         ),
                       ),
                       pw.Text(
                         generatedStr,
                         style: const pw.TextStyle(
-                          fontSize: 9,
+                          fontSize: 12,
                           color: PdfColors.grey600,
                         ),
                       ),
@@ -491,7 +499,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                 pw.Text(
                   'Total bills: ${rows.length}',
                   style: pw.TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: pw.FontWeight.bold,
                   ),
                 ),
@@ -513,7 +521,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export failed: $e'),
+            content: Text(AppLocalizations.of(context)!.exportFailed('$e')),
             backgroundColor: context.themeError,
           ),
         );
@@ -540,101 +548,86 @@ class _BillHistoryListState extends State<BillHistoryList> {
 
   // ---------------- DESKTOP DATA TABLE VIEW ----------------
   Widget _buildDesktopDataTable(List<QueryDocumentSnapshot> bills) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        child: DataTable(
-          sortColumnIndex: _sortColumnIndex(),
-          sortAscending: _sortAscending,
-          headingRowColor: WidgetStatePropertyAll(
-            context.themeSurface.withValues(alpha: 0.5),
+    return AppTableCard(
+      sortColumnIndex: _sortColumnIndex(),
+      sortAscending: _sortAscending,
+      columns: [
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.bill,
+            style: AppTypography.label(color: context.themeTextSecondary),
           ),
-          columns: [
-            DataColumn(
-              label: Text(
-                'Bill #',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'billNumber';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Carpenter',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'carpenter';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Amount (₹)',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              numeric: true,
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'amount';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Points',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              numeric: true,
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'points';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Approved Date',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-              onSort: (index, ascending) {
-                setState(() {
-                  _sortColumn = 'date';
-                  _sortAscending = ascending;
-                });
-              },
-            ),
-            DataColumn(
-              label: Text(
-                'Status',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Actions',
-                style: AppTypography.labelSmall()
-                    .copyWith(color: context.themePrimary),
-              ),
-            ),
-          ],
-          rows: _buildDataTableRows(bills),
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'billNumber';
+              _sortAscending = ascending;
+            });
+          },
         ),
-      ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.carpenter,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'carpenter';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            'Amount (₹)',
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          numeric: true,
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'amount';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.pointsLabel,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          numeric: true,
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'points';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.approvedDate,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+          onSort: (index, ascending) {
+            setState(() {
+              _sortColumn = 'date';
+              _sortAscending = ascending;
+            });
+          },
+        ),
+        DataColumn(
+          label: Text(
+            'Status',
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+        ),
+        DataColumn(
+          label: Text(
+            AppLocalizations.of(context)!.actions,
+            style: AppTypography.label(color: context.themeTextSecondary),
+          ),
+        ),
+      ],
+      rows: _buildDataTableRows(bills),
     );
   }
 
@@ -673,7 +666,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
       String statusLabel = 'N/A';
       if (status == 'approved') {
         statusColor = AppColors.success;
-        statusLabel = 'Approved';
+        statusLabel = AppLocalizations.of(context)!.approvedLabel;
       } else if (status == 'rejected') {
         statusColor = context.themeError.withValues(alpha: 0.6);
         statusLabel = 'Rejected';
@@ -682,21 +675,19 @@ class _BillHistoryListState extends State<BillHistoryList> {
       return DataRow(
         cells: [
           DataCell(
-            Text(
-              bill['billNumber'] ?? 'N/A',
-              style: AppTypography.bodySmall(),
-            ),
+            Text(bill['billNumber'] ?? 'N/A', style: AppTypography.bodySmall()),
           ),
           DataCell(
             FutureBuilder<Map<String, dynamic>?>(
               future: _fetchCarpenterData(carpenterId),
               builder: (context, snap) {
-                String carpenterName = 'Carpenter';
+                String carpenterName = AppLocalizations.of(context)!.carpenter;
                 if (snap.hasData && snap.data != null) {
                   final first = snap.data!['firstName'] ?? '';
                   final last = snap.data!['lastName'] ?? '';
                   carpenterName = '$first $last'.trim();
-                  if (carpenterName.isEmpty) carpenterName = 'Carpenter';
+                  if (carpenterName.isEmpty)
+                    carpenterName = AppLocalizations.of(context)!.carpenter;
                 }
                 return Text(
                   carpenterName,
@@ -714,17 +705,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
             ),
           ),
           DataCell(
-            Text(
-              points.toStringAsFixed(2),
-              style: AppTypography.bodySmall(),
-            ),
+            Text(points.toStringAsFixed(2), style: AppTypography.bodySmall()),
           ),
-          DataCell(
-            Text(
-              dateStr,
-              style: AppTypography.bodySmall(),
-            ),
-          ),
+          DataCell(Text(dateStr, style: AppTypography.bodySmall())),
           DataCell(
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -744,7 +727,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
           DataCell(
             IconButton(
               icon: Icon(
-                Icons.visibility,
+                Icons.visibility_rounded,
                 size: 16,
                 color: context.themePrimary,
               ),
@@ -752,17 +735,15 @@ class _BillHistoryListState extends State<BillHistoryList> {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BillDetailsPage(
-                      billId: billId,
-                      initialBillData: bill,
-                    ),
+                    builder: (context) =>
+                        BillDetailsPage(billId: billId, initialBillData: bill),
                   ),
                 );
                 if (result == true && mounted) {
                   setState(() {});
                 }
               },
-              tooltip: 'View Details',
+              tooltip: AppLocalizations.of(context)!.viewDetails,
             ),
           ),
         ],
@@ -802,7 +783,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         children: [
                           _buildCompactStatusChip(
                             'approved',
-                            'Approved',
+                            AppLocalizations.of(context)!.approvedLabel,
                             AppColors.success,
                           ),
                           const SizedBox(width: 6),
@@ -814,7 +795,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           const SizedBox(width: 6),
                           _buildCompactStatusChip(
                             'all',
-                            'All',
+                            AppLocalizations.of(context)!.all,
                             context.themePrimary,
                           ),
                         ],
@@ -841,7 +822,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                               ),
                             )
                           : Icon(
-                              Icons.picture_as_pdf,
+                              Icons.picture_as_pdf_rounded,
                               color: _billsForExport.isEmpty
                                   ? context.themeTextSecondary
                                   : context.themePrimary,
@@ -853,7 +834,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         minWidth: 36,
                         minHeight: 36,
                       ),
-                      tooltip: 'Export all bills to PDF',
+                      tooltip: AppLocalizations.of(
+                        context,
+                      )!.exportAllBillsToPdf,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -868,7 +851,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                     child: IconButton(
                       icon: Icon(
                         _showFilters
-                            ? Icons.filter_list
+                            ? Icons.filter_list_rounded
                             : Icons.filter_list_outlined,
                         color: _showFilters
                             ? context.themePrimary
@@ -882,7 +865,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         minWidth: 36,
                         minHeight: 36,
                       ),
-                      tooltip: 'Filters',
+                      tooltip: AppLocalizations.of(context)!.filters,
                     ),
                   ),
                 ],
@@ -918,7 +901,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today_rounded,
                                 size: 14,
                                 color: _startDate != null
                                     ? context.themePrimary
@@ -929,7 +912,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                 child: Text(
                                   _startDate != null
                                       ? DateFormat('dd MMM').format(_startDate!)
-                                      : 'From',
+                                      : AppLocalizations.of(context)!.from,
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
                                     color: _startDate != null
@@ -943,7 +926,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                   onTap: () =>
                                       setState(() => _startDate = null),
                                   child: Icon(
-                                    Icons.close,
+                                    Icons.close_rounded,
                                     size: 14,
                                     color: context.themeTextSecondary,
                                   ),
@@ -978,7 +961,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.event,
+                                Icons.event_rounded,
                                 size: 14,
                                 color: _endDate != null
                                     ? context.themePrimary
@@ -989,7 +972,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                 child: Text(
                                   _endDate != null
                                       ? DateFormat('dd MMM').format(_endDate!)
-                                      : 'To',
+                                      : AppLocalizations.of(context)!.to,
                                   style: AppTypography.bodySmall().copyWith(
                                     fontSize: 12,
                                     color: _endDate != null
@@ -1002,7 +985,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                 InkWell(
                                   onTap: () => setState(() => _endDate = null),
                                   child: Icon(
-                                    Icons.close,
+                                    Icons.close_rounded,
                                     size: 14,
                                     color: context.themeTextSecondary,
                                   ),
@@ -1023,20 +1006,20 @@ class _BillHistoryListState extends State<BillHistoryList> {
                   ),
                   style: AppTypography.bodyMedium().copyWith(fontSize: 13),
                   decoration: InputDecoration(
-                    hintText: 'Search carpenter...',
+                    hintText: AppLocalizations.of(context)!.searchCarpenter,
                     hintStyle: AppTypography.bodyMedium().copyWith(
                       color: context.themeTextSecondary,
                       fontSize: 13,
                     ),
                     prefixIcon: Icon(
-                      Icons.search,
+                      Icons.search_rounded,
                       color: context.themeTextSecondary,
                       size: 18,
                     ),
                     suffixIcon: _carpenterNameFilter.isNotEmpty
                         ? IconButton(
                             icon: Icon(
-                              Icons.clear,
+                              Icons.clear_rounded,
                               size: 16,
                               color: context.themeTextSecondary,
                             ),
@@ -1090,7 +1073,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
             stream: _firestore
-                .collection('bills')
+                .collection('bills').forAdminBranch()
                 .where('status', whereIn: ['approved', 'rejected'])
                 .snapshots(),
             builder: (_, snap) {
@@ -1100,13 +1083,13 @@ class _BillHistoryListState extends State<BillHistoryList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.error_outline,
+                        Icons.error_outline_rounded,
                         size: 64,
                         color: context.themeError,
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Error loading bills',
+                        AppLocalizations.of(context)!.errorLoadingBillHistory,
                         style: AppTypography.labelLarge().copyWith(
                           fontSize: 18,
                         ),
@@ -1138,26 +1121,20 @@ class _BillHistoryListState extends State<BillHistoryList> {
               _billsForExport = bills;
 
               if (bills.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.receipt_long_outlined,
-                        size: 64,
-                        color: context.themeTextMuted,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _hasActiveFilters()
-                            ? 'No bills found matching filters'
-                            : 'No bills found',
-                        style: AppTypography.bodyMedium().copyWith(
-                          fontSize: 16,
-                          color: context.themeTextSecondary,
-                        ),
-                      ),
-                    ],
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: EmptyState(
+                    icon: _hasActiveFilters()
+                        ? Icons.filter_alt_off_rounded
+                        : Icons.receipt_long_outlined,
+                    title: _hasActiveFilters()
+                        ? AppLocalizations.of(
+                            context,
+                          )!.noBillsFoundMatchingFilters
+                        : AppLocalizations.of(context)!.noBillsFoundHistory,
+                    message: _hasActiveFilters()
+                        ? AppLocalizations.of(context)!.tryChangingFilters
+                        : AppLocalizations.of(context)!.billsAppearHere,
                   ),
                 );
               }
@@ -1186,13 +1163,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                   final createdAt = bill['createdAt'] as Timestamp?;
 
                   // Extract points earned (for approved bills)
-                  final points =
-                      bill['pointsEarned'] ?? (amount / 1000);
+                  final points = bill['pointsEarned'] ?? (amount / 1000);
 
                   return FutureBuilder<Map<String, dynamic>?>(
                     future: _fetchCarpenterData(carpenterId),
                     builder: (context, carpenterSnapshot) {
-                      String carpenterName = 'Carpenter';
+                      String carpenterName = AppLocalizations.of(
+                        context,
+                      )!.carpenter;
                       String? profileImageUrl;
 
                       if (carpenterSnapshot.hasData &&
@@ -1201,7 +1179,10 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         final firstName = carpenterData['firstName'] ?? '';
                         final lastName = carpenterData['lastName'] ?? '';
                         carpenterName = ('$firstName $lastName').trim();
-                        if (carpenterName.isEmpty) carpenterName = 'Carpenter';
+                        if (carpenterName.isEmpty)
+                          carpenterName = AppLocalizations.of(
+                            context,
+                          )!.carpenter;
                         profileImageUrl =
                             carpenterData['profileImage'] as String?;
                       }
@@ -1213,7 +1194,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         final searchQuery = _carpenterNameFilter.toLowerCase();
 
                         // Search by name or phone
-                        if (!fullName.contains(searchQuery) && !carpenterPhone.contains(searchQuery)) {
+                        if (!fullName.contains(searchQuery) &&
+                            !carpenterPhone.contains(searchQuery)) {
                           return const SizedBox.shrink();
                         }
                       }
@@ -1288,7 +1270,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                   fit: BoxFit.cover,
                                                   errorBuilder: (_, __, ___) =>
                                                       Icon(
-                                                        Icons.person,
+                                                        Icons.person_rounded,
                                                         color:
                                                             AppColors.primary,
                                                         size: 20,
@@ -1296,7 +1278,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 ),
                                               )
                                             : Icon(
-                                                Icons.person,
+                                                Icons.person_rounded,
                                                 color:
                                                     context.themeContentColor,
                                                 size: 20,
@@ -1342,7 +1324,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 phone,
                                                 style: AppTypography.bodyMedium()
                                                     .copyWith(
-                                                      fontSize: 11,
+                                                      fontSize: 12,
                                                       color: context
                                                           .themeTextSecondary,
                                                       height: 1.2,
@@ -1350,12 +1332,14 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                               ),
                                             ],
                                             // Site Name (NEW)
-                                            if ((bill['siteName'] as String?)?.isNotEmpty ?? false) ...[
+                                            if ((bill['siteName'] as String?)
+                                                    ?.isNotEmpty ??
+                                                false) ...[
                                               const SizedBox(height: 4),
                                               Row(
                                                 children: [
                                                   Icon(
-                                                    Icons.location_on,
+                                                    Icons.location_on_rounded,
                                                     size: 10,
                                                     color: context
                                                         .themeContentColor,
@@ -1363,11 +1347,12 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                   const SizedBox(width: 3),
                                                   Flexible(
                                                     child: Text(
-                                                      bill['siteName'] as String? ??
+                                                      bill['siteName']
+                                                              as String? ??
                                                           'N/A',
                                                       style: AppTypography.bodySmall()
                                                           .copyWith(
-                                                            fontSize: 10,
+                                                            fontSize: 12,
                                                             color: context
                                                                 .themeContentColor,
                                                             height: 1.2,
@@ -1449,7 +1434,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                         ),
                                                         child: Center(
                                                           child: Icon(
-                                                            Icons.zoom_in,
+                                                            Icons
+                                                                .zoom_in_rounded,
                                                             color:
                                                                 AppColors.white,
                                                             size: 14,
@@ -1526,7 +1512,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                       MainAxisSize.min,
                                                   children: [
                                                     Icon(
-                                                      Icons.stars,
+                                                      Icons.stars_rounded,
                                                       size: 10,
                                                       color: AppColors.primary,
                                                     ),
@@ -1536,7 +1522,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                       style:
                                                           AppTypography.labelLarge()
                                                               .copyWith(
-                                                                fontSize: 11,
+                                                                fontSize: 12,
                                                                 color: AppColors
                                                                     .primary,
                                                                 height: 1,
@@ -1559,7 +1545,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                     children: [
                                       if (billDate != null) ...[
                                         Icon(
-                                          Icons.receipt_long,
+                                          Icons.receipt_long_rounded,
                                           size: 12,
                                           color: context.themeContentColor,
                                         ),
@@ -1586,8 +1572,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                       if (approvedAt != null) ...[
                                         Icon(
                                           status == 'approved'
-                                              ? Icons.check_circle
-                                              : Icons.cancel,
+                                              ? Icons.check_circle_rounded
+                                              : Icons.cancel_rounded,
                                           size: 12,
                                           color: status == 'approved'
                                               ? AppColors.success
@@ -1607,7 +1593,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                           approvedAt == null &&
                                           createdAt != null) ...[
                                         Icon(
-                                          Icons.schedule,
+                                          Icons.schedule_rounded,
                                           size: 12,
                                           color: context.themeTextSecondary,
                                         ),
@@ -1634,31 +1620,29 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                           height: 200,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              Container(
-                                                height: 200,
-                                                color: context.themeBorder,
-                                                child: Center(
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.error_outline,
-                                                        color: context
-                                                            .themeTextMuted,
-                                                        size: 40,
-                                                      ),
-                                                      const SizedBox(height: 8),
-                                                      AppText.caption(
-                                                        l10n.failedToLoadImage,
-                                                        color: context
-                                                            .themeTextSecondary,
-                                                      ),
-                                                    ],
+                                          errorBuilder: (_, __, ___) => Container(
+                                            height: 200,
+                                            color: context.themeBorder,
+                                            child: Center(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.error_outline_rounded,
+                                                    color:
+                                                        context.themeTextMuted,
+                                                    size: 40,
                                                   ),
-                                                ),
+                                                  const SizedBox(height: 8),
+                                                  AppText.caption(
+                                                    l10n.failedToLoadImage,
+                                                    color: context
+                                                        .themeTextSecondary,
+                                                  ),
+                                                ],
                                               ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -1698,7 +1682,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         child: Text(
           label,
           style: AppTypography.labelLarge().copyWith(
-            fontSize: 11,
+            fontSize: 12,
             color: isSelected ? AppColors.white : color,
           ),
         ),

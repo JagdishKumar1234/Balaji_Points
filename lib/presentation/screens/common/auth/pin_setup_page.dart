@@ -79,9 +79,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
         if (_selectedRole == AppConstants.roleAdmin && hasAdmin) {
           _selectedRole = AppConstants.roleCarpenter;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Selected branch already has an Admin. Role defaulted to Carpenter.',
+                AppLocalizations.of(context)!.branchHasAdminDefaulted,
               ),
               backgroundColor: AppColors.warning,
               duration: Duration(seconds: 4),
@@ -120,7 +120,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
     if (_selectedBranchId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please select a branch to continue.'),
+          content: Text(AppLocalizations.of(context)!.selectBranchToContinue),
           backgroundColor: context.themeError,
         ),
       );
@@ -131,9 +131,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
     if (_selectedRole == AppConstants.roleAdmin && _branchHasAdmin) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            'This branch already has an assigned Admin. Only one Admin is permitted per branch.',
-          ),
+          content: Text(AppLocalizations.of(context)!.oneAdminPerBranch),
           backgroundColor: context.themeError,
         ),
       );
@@ -176,7 +174,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
         ScaffoldMessenger.of(context).clearSnackBars();
         String msg = state.message;
         if (msg.contains('already exists') ||
-            msg.contains('User already exists')) {
+            msg.contains(AppLocalizations.of(context)!.userAlreadyExists)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.accountExistsUseReset),
@@ -185,7 +183,7 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
               behavior: SnackBarBehavior.floating,
               action: SnackBarAction(
                 label: l10n.resetPin,
-                textColor: AppColors.white,
+                textColor: AppColors.navigation,
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   context.push(
@@ -198,7 +196,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
           );
         } else {
           if (msg.contains('permission-denied')) {
-            msg = 'Permission denied. Please check Firebase configuration.';
+            msg = AppLocalizations.of(
+              context,
+            )!.permissionDeniedPleaseCheckFirebaseConfiguration;
           } else if (msg.contains('network')) {
             msg = l10n.networkError;
           }
@@ -232,10 +232,12 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                   children: [
                     // ── Top Controls ──
                     AuthTopControls(
-                      themeToggle: _ThemeToggleButton(isDark: isDark)
-                          .fadeIn(delay: AppAnimations.stagger(0)),
-                      languagePicker: _LanguagePicker()
-                          .fadeIn(delay: AppAnimations.stagger(0)),
+                      themeToggle: _ThemeToggleButton(
+                        isDark: isDark,
+                      ).fadeIn(delay: AppAnimations.stagger(0)),
+                      languagePicker: _LanguagePicker().fadeIn(
+                        delay: AppAnimations.stagger(0),
+                      ),
                     ),
 
                     const SizedBox(height: AppSpacing.lg),
@@ -245,138 +247,145 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                       children: [
                         ProfessionalAuthCard(
                           isDark: isDark,
-                          securityMessage: 'Your data is 100% secure with us',
+                          securityMessage: AppLocalizations.of(
+                            context,
+                          )!.yourDataIs100SecureWith,
                           child: Column(
                             children: [
                               // Header
                               Column(
                                 children: [
                                   // Logo
-                              Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: isDark ? context.themePrimary.withValues(alpha: 0.3) : context.themePrimary,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.asset(
-                                    'assets/images/balaji_point_logo.png',
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const Icon(
-                                      Icons.home_rounded,
-                                      color: Colors.white,
-                                      size: 40,
+                                  Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? context.themePrimary.withValues(
+                                              alpha: 0.3,
+                                            )
+                                          : context.themePrimary,
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
-                                  ),
-                                ),
-                              ).enterHero(delay: AppAnimations.stagger(1)),
-                              const SizedBox(height: AppSpacing.lg),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.asset(
+                                        'assets/images/balaji_point_logo.png',
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) =>
+                                            const Icon(
+                                              Icons.home_rounded,
+                                              color: Colors.white,
+                                              size: 40,
+                                            ),
+                                      ),
+                                    ),
+                                  ).enterHero(delay: AppAnimations.stagger(1)),
+                                  const SizedBox(height: AppSpacing.lg),
 
-                              // Title
-                              Text(
-                                l10n.createPinTitle,
-                                style: AppTypography.displaySmall(
-                                  color: context.themeTextPrimary,
-                                ).copyWith(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ).fadeIn(delay: AppAnimations.stagger(2)),
-                              const SizedBox(height: 8),
+                                  // Title
+                                  Text(
+                                    l10n.createPinTitle,
+                                    style: AppTypography.displaySmall(
+                                      color: context.themeTextPrimary,
+                                    ).copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ).fadeIn(delay: AppAnimations.stagger(2)),
+                                  const SizedBox(height: 8),
 
-                              // Subtitle
-                              Text(
-                                l10n.createPinSubtitle,
-                                style: AppTypography.bodyMedium(
-                                  color: context.themeTextSecondary,
-                                ),
-                                textAlign: TextAlign.center,
-                              ).fadeIn(delay: AppAnimations.stagger(3)),
+                                  // Subtitle
+                                  Text(
+                                    l10n.createPinSubtitle,
+                                    style: AppTypography.bodyMedium(
+                                      color: context.themeTextSecondary,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ).fadeIn(delay: AppAnimations.stagger(3)),
+                                ],
+                              ),
+
+                              const SizedBox(height: AppSpacing.xl3),
+
+                              // Phone
+                              AppTextField.phone(
+                                controller: _phoneController,
+                                label: l10n.mobileNumber,
+                                validator: (v) {
+                                  final s = v?.trim() ?? '';
+                                  if (s.length != 10 ||
+                                      !RegExp(r'^[0-9]+$').hasMatch(s)) {
+                                    return l10n.enterValidTenDigit;
+                                  }
+                                  return null;
+                                },
+                              ).fadeIn(delay: AppAnimations.stagger(4)),
+
+                              const SizedBox(height: AppSpacing.xl2),
+
+                              // Branch picker
+                              _BranchPicker(
+                                branches: _branches,
+                                selected: _selectedBranchId,
+                                loading: _loadingBranches,
+                                onChanged: (id) {
+                                  setState(() => _selectedBranchId = id);
+                                  if (id != null) _checkBranchAdmin(id);
+                                },
+                              ).fadeIn(delay: AppAnimations.stagger(5)),
+
+                              const SizedBox(height: AppSpacing.xl2),
+
+                              // Role picker (Carpenter, Architect, Interior Designer, Branch Admin)
+                              _RolePicker(
+                                selectedRole: _selectedRole,
+                                branchHasAdmin: _branchHasAdmin,
+                                checkingAdmin: _checkingAdmin,
+                                onChanged: (role) {
+                                  if (role != null) {
+                                    setState(() => _selectedRole = role);
+                                  }
+                                },
+                              ).fadeIn(delay: AppAnimations.stagger(5)),
+
+                              const SizedBox(height: AppSpacing.xl2),
+
+                              // PIN
+                              AppTextField.pin(
+                                controller: _pinController,
+                                label: l10n.fourDigitPin,
+                                validator: (v) => (v == null || v.length != 4)
+                                    ? l10n.enter4Digits
+                                    : null,
+                              ).fadeIn(delay: AppAnimations.stagger(6)),
+
+                              const SizedBox(height: AppSpacing.xl2),
+
+                              // Confirm PIN
+                              AppTextField.pin(
+                                controller: _confirmPinController,
+                                label: l10n.confirmPin,
+                                validator: (v) {
+                                  if (v == null || v.length != 4) {
+                                    return l10n.enter4Digits;
+                                  }
+                                  if (v != _pinController.text.trim()) {
+                                    return l10n.pinsDoNotMatch;
+                                  }
+                                  return null;
+                                },
+                              ).fadeIn(delay: AppAnimations.stagger(7)),
+
+                              const SizedBox(height: AppSpacing.xl2),
+
+                              // Save button
+                              AppButton.secondary(
+                                label: l10n.savePin,
+                                isLoading: isSaving,
+                                onPressed: isSaving ? null : _savePin,
+                              ).fadeIn(delay: AppAnimations.stagger(8)),
                             ],
                           ),
-
-                          const SizedBox(height: AppSpacing.xl3),
-
-                          // Phone
-                          AppTextField.phone(
-                            controller: _phoneController,
-                            label: l10n.mobileNumber,
-                            validator: (v) {
-                              final s = v?.trim() ?? '';
-                              if (s.length != 10 ||
-                                  !RegExp(r'^[0-9]+$').hasMatch(s)) {
-                                return l10n.enterValidTenDigit;
-                              }
-                              return null;
-                            },
-                          ).fadeIn(delay: AppAnimations.stagger(4)),
-
-                          const SizedBox(height: AppSpacing.xl2),
-
-                          // Branch picker
-                          _BranchPicker(
-                            branches: _branches,
-                            selected: _selectedBranchId,
-                            loading: _loadingBranches,
-                            onChanged: (id) {
-                              setState(() => _selectedBranchId = id);
-                              if (id != null) _checkBranchAdmin(id);
-                            },
-                          ).fadeIn(delay: AppAnimations.stagger(5)),
-
-                          const SizedBox(height: AppSpacing.xl2),
-
-                          // Role picker (Carpenter, Architect, Interior Designer, Branch Admin)
-                          _RolePicker(
-                            selectedRole: _selectedRole,
-                            branchHasAdmin: _branchHasAdmin,
-                            checkingAdmin: _checkingAdmin,
-                            onChanged: (role) {
-                              if (role != null) {
-                                setState(() => _selectedRole = role);
-                              }
-                            },
-                          ).fadeIn(delay: AppAnimations.stagger(5)),
-
-                          const SizedBox(height: AppSpacing.xl2),
-
-                          // PIN
-                          AppTextField.pin(
-                            controller: _pinController,
-                            label: l10n.fourDigitPin,
-                            validator: (v) => (v == null || v.length != 4)
-                                ? l10n.enter4Digits
-                                : null,
-                          ).fadeIn(delay: AppAnimations.stagger(6)),
-
-                          const SizedBox(height: AppSpacing.xl2),
-
-                          // Confirm PIN
-                          AppTextField.pin(
-                            controller: _confirmPinController,
-                            label: l10n.confirmPin,
-                            validator: (v) {
-                              if (v == null || v.length != 4) {
-                                return l10n.enter4Digits;
-                              }
-                              if (v != _pinController.text.trim()) {
-                                return l10n.pinsDoNotMatch;
-                              }
-                              return null;
-                            },
-                          ).fadeIn(delay: AppAnimations.stagger(7)),
-
-                          const SizedBox(height: AppSpacing.xl2),
-
-                          // Save button
-                          AppButton.secondary(
-                            label: l10n.savePin,
-                            isLoading: isSaving,
-                            onPressed: isSaving ? null : _savePin,
-                          ).fadeIn(delay: AppAnimations.stagger(8)),
-                        ],
-                      ),
-                    ).enterCard(delay: AppAnimations.stagger(9)),
+                        ).enterCard(delay: AppAnimations.stagger(9)),
                         // Back button (top-left, not scrollable - icon only)
                         Positioned(
                           top: 12,
@@ -391,7 +400,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                                   context.go('/login');
                                 }
                               },
-                              borderRadius: const BorderRadius.all(Radius.circular(99)),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(99),
+                              ),
                               child: Padding(
                                 padding: const EdgeInsets.all(8),
                                 child: Icon(
@@ -447,7 +458,7 @@ class _BranchPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Branch *',
+          AppLocalizations.of(context)!.branchRequired,
           style: AppTypography.bodyMedium(color: context.themeTextSecondary),
         ),
         const SizedBox(height: AppSpacing.xs),
@@ -472,13 +483,13 @@ class _BranchPicker extends StatelessWidget {
                     isExpanded: true,
                     dropdownColor: context.themeSurface,
                     hint: Text(
-                      'Select your branch',
+                      AppLocalizations.of(context)!.selectYourBranch,
                       style: AppTypography.bodyMedium(
                         color: context.themeTextSecondary,
                       ),
                     ),
                     icon: Icon(
-                      Icons.arrow_drop_down,
+                      Icons.arrow_drop_down_rounded,
                       color: context.themePrimary,
                     ),
                     style: AppTypography.bodyMedium(
@@ -522,8 +533,10 @@ class _RolePicker extends StatelessWidget {
         Row(
           children: [
             Text(
-              'User Role *',
-              style: AppTypography.bodyMedium(color: context.themeTextSecondary),
+              AppLocalizations.of(context)!.userRoleRequired,
+              style: AppTypography.bodyMedium(
+                color: context.themeTextSecondary,
+              ),
             ),
             if (checkingAdmin) ...[
               const SizedBox(width: 8),
@@ -551,37 +564,42 @@ class _RolePicker extends StatelessWidget {
               value: selectedRole,
               isExpanded: true,
               dropdownColor: context.themeSurface,
-              icon: Icon(Icons.arrow_drop_down, color: context.themePrimary),
+              icon: Icon(
+                Icons.arrow_drop_down_rounded,
+                color: context.themePrimary,
+              ),
               style: AppTypography.bodyMedium(color: context.themeTextPrimary),
               onChanged: onChanged,
               items: [
                 DropdownMenuItem<String>(
                   value: AppConstants.roleCarpenter,
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(Icons.handyman_outlined, size: 20),
                       SizedBox(width: 10),
-                      Text('Carpenter / Woodworker'),
+                      Text(
+                        AppLocalizations.of(context)!.roleCarpenterWoodworker,
+                      ),
                     ],
                   ),
                 ),
                 DropdownMenuItem<String>(
                   value: AppConstants.roleArchitect,
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(Icons.architecture_outlined, size: 20),
                       SizedBox(width: 10),
-                      Text('Architect'),
+                      Text(AppLocalizations.of(context)!.roleArchitect),
                     ],
                   ),
                 ),
                 DropdownMenuItem<String>(
                   value: AppConstants.roleInteriorDesigner,
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(Icons.brush_outlined, size: 20),
                       SizedBox(width: 10),
-                      Text('Interior Designer'),
+                      Text(AppLocalizations.of(context)!.roleInteriorDesigner),
                     ],
                   ),
                 ),
@@ -593,15 +611,19 @@ class _RolePicker extends StatelessWidget {
                       Icon(
                         Icons.admin_panel_settings_outlined,
                         size: 20,
-                        color: branchHasAdmin ? Colors.grey : null,
+                        color: branchHasAdmin ? AppColors.textMuted : null,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         branchHasAdmin
-                            ? 'Branch Admin (Already Assigned)'
-                            : 'Branch Admin (1 per branch)',
+                            ? AppLocalizations.of(
+                                context,
+                              )!.branchAdminAlreadyAssigned
+                            : AppLocalizations.of(
+                                context,
+                              )!.branchAdmin1PerBranch,
                         style: TextStyle(
-                          color: branchHasAdmin ? Colors.grey : null,
+                          color: branchHasAdmin ? AppColors.textMuted : null,
                         ),
                       ),
                     ],
@@ -640,9 +662,7 @@ class _ThemeToggleButton extends ConsumerWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: (isDark
-                    ? AppColors.darkBorder
-                    : context.themePrimary)
+            color: (isDark ? AppColors.darkBorder : context.themePrimary)
                 .withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
@@ -652,14 +672,16 @@ class _ThemeToggleButton extends ConsumerWidget {
       child: IconButton(
         padding: EdgeInsets.zero,
         splashRadius: 22,
-        tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+        tooltip: isDark
+            ? AppLocalizations.of(context)!.switchToLight
+            : AppLocalizations.of(context)!.switchToDark,
         onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
         icon: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           transitionBuilder: (child, anim) =>
               RotationTransition(turns: anim, child: child),
           child: Icon(
-            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round_rounded,
             key: ValueKey(isDark),
             size: 22,
             color: isDark ? AppColors.warning : context.themePrimary,
@@ -693,9 +715,7 @@ class _LanguagePicker extends ConsumerWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: (isDark
-                    ? AppColors.darkBorder
-                    : context.themePrimary)
+            color: (isDark ? AppColors.darkBorder : context.themePrimary)
                 .withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
@@ -705,9 +725,7 @@ class _LanguagePicker extends ConsumerWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Locale>(
           value: ref.watch(localeProvider),
-          style: AppTypography.bodyMedium(
-            color: context.themeTextPrimary,
-          ),
+          style: AppTypography.bodyMedium(color: context.themeTextPrimary),
           dropdownColor: context.themeSurface,
           iconEnabledColor: isDark ? AppColors.white : context.themePrimary,
           icon: Icon(
@@ -725,7 +743,7 @@ class _LanguagePicker extends ConsumerWidget {
               value: const Locale('en'),
               child: Row(
                 children: [
-                  const Icon(Icons.language, size: 16),
+                  const Icon(Icons.language_rounded, size: 16),
                   const SizedBox(width: 8),
                   Text(l10n.languageEnglish),
                 ],
@@ -735,7 +753,7 @@ class _LanguagePicker extends ConsumerWidget {
               value: const Locale('hi'),
               child: Row(
                 children: [
-                  const Icon(Icons.language, size: 16),
+                  const Icon(Icons.language_rounded, size: 16),
                   const SizedBox(width: 8),
                   Text(l10n.languageHindi),
                 ],
@@ -745,7 +763,7 @@ class _LanguagePicker extends ConsumerWidget {
               value: const Locale('ta'),
               child: Row(
                 children: [
-                  const Icon(Icons.language, size: 16),
+                  const Icon(Icons.language_rounded, size: 16),
                   const SizedBox(width: 8),
                   Text(l10n.languageTamil),
                 ],

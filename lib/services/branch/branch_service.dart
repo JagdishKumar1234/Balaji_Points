@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/logger.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 
 /// The fixed document ID for the seed branch.
 const String kDefaultBranchId = 'erode_main';
@@ -9,7 +10,7 @@ class BranchService {
   factory BranchService() => _instance;
   BranchService._internal();
 
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  FirebaseFirestore get _db => appFirestore;
 
   CollectionReference<Map<String, dynamic>> get _branches =>
       _db.collection('branches');

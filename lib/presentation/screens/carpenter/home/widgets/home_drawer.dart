@@ -28,7 +28,8 @@ class HomeDrawer extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final mq = MediaQuery.of(context);
     final topInset = mq.padding.top;
-    final drawerFooterBottom = CarpenterShellLayout.chromeHeight(mq) + AppSpacing.sm;
+    final drawerFooterBottom =
+        CarpenterShellLayout.chromeHeight(mq) + AppSpacing.sm;
     final titleColor = isDark ? AppColors.white : context.themeTextPrimary;
     final subtitleColor = isDark
         ? AppColors.white.withValues(alpha: 0.80)
@@ -36,31 +37,20 @@ class HomeDrawer extends StatelessWidget {
 
     final phone = homeState.userData?['phone'] as String? ?? '';
     final profileImage = homeState.profileImage;
-    final hasImg = profileImage != null &&
-        (profileImage.startsWith('http://') || profileImage.startsWith('https://'));
+    final hasImg =
+        profileImage != null &&
+        (profileImage.startsWith('http://') ||
+            profileImage.startsWith('https://'));
     final l10n = AppLocalizations.of(context)!;
 
     final drawerBase = theme.colorScheme.surface;
-    final drawerTintSoft = isDark
-        ? context.themePrimary.withValues(alpha: 0.10)
-        : context.themeSecondary.withValues(alpha: 0.06);
-    final drawerTintAccent = isDark
-        ? const Color(0xFF2563EB).withValues(alpha: 0.16)
-        : AppColors.warning.withValues(alpha: 0.30);
 
     return Drawer(
       elevation: 8,
       child: SafeArea(
         top: false,
         child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [drawerBase, drawerTintSoft, drawerTintAccent],
-              stops: const [0.0, 0.45, 1.0],
-            ),
-          ),
+          decoration: BoxDecoration(color: drawerBase),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -68,18 +58,9 @@ class HomeDrawer extends StatelessWidget {
               Container(
                 padding: EdgeInsets.fromLTRB(20, 20 + topInset, 20, 20),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      isDark
-                          ? const Color(0xFF2563EB).withValues(alpha: 0.6)
-                          : context.themeSecondary.withValues(alpha: 0.15),
-                      isDark
-                          ? AppColors.tierPlatinum.withValues(alpha: 0.7)
-                          : AppColors.warning.withValues(alpha: 0.9),
-                    ],
-                  ),
+                  color: isDark
+                      ? AppColors.primaryOnDark.withValues(alpha: 0.6)
+                      : context.themeSecondary.withValues(alpha: 0.15),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.black.withValues(alpha: 0.15),
@@ -96,8 +77,9 @@ class HomeDrawer extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: AppColors.white.withValues(alpha: 0.9),
-                            width: 2),
+                          color: AppColors.white.withValues(alpha: 0.9),
+                          width: 2,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: AppColors.black.withValues(alpha: 0.25),
@@ -108,17 +90,23 @@ class HomeDrawer extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: hasImg
-                            ? Image.network(profileImage,
+                            ? Image.network(
+                                profileImage,
                                 fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => ColoredBox(
                                   color: AppColors.white,
-                                  child: Icon(Icons.person,
-                                      color: context.themePrimary),
-                                ))
+                                  child: Icon(
+                                    Icons.person_rounded,
+                                    color: context.themePrimary,
+                                  ),
+                                ),
+                              )
                             : ColoredBox(
                                 color: AppColors.white,
-                                child: Icon(Icons.person,
-                                    color: context.themePrimary),
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  color: context.themePrimary,
+                                ),
                               ),
                       ),
                     ),
@@ -138,7 +126,8 @@ class HomeDrawer extends StatelessWidget {
                             Text(
                               phone,
                               style: AppTypography.bodySmall(
-                                  color: AppColors.white.withValues(alpha: 0.85)),
+                                color: AppColors.white.withValues(alpha: 0.85),
+                              ),
                             ),
                         ],
                       ),
@@ -154,7 +143,9 @@ class HomeDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                   children: [
                     _DrawerSectionLabel(
-                        label: l10n.drawerSectionMainNav, color: subtitleColor),
+                      label: l10n.drawerSectionMainNav,
+                      color: subtitleColor,
+                    ),
                     _DrawerNavItem(
                       icon: Icons.home_rounded,
                       label: l10n.home,
@@ -183,7 +174,7 @@ class HomeDrawer extends StatelessWidget {
                       },
                     ),
                     _DrawerNavItem(
-                      icon: Icons.person_outline,
+                      icon: Icons.person_outline_rounded,
                       label: l10n.profile,
                       titleColor: titleColor,
                       onTap: () {
@@ -194,11 +185,14 @@ class HomeDrawer extends StatelessWidget {
                     Padding(
                       padding: AppSpacing.screenHorizontal,
                       child: Divider(
-                          height: 24,
-                          color: subtitleColor.withValues(alpha: 0.22)),
+                        height: 24,
+                        color: subtitleColor.withValues(alpha: 0.22),
+                      ),
                     ),
                     _DrawerSectionLabel(
-                        label: l10n.drawerSectionMore, color: subtitleColor),
+                      label: l10n.drawerSectionMore,
+                      color: subtitleColor,
+                    ),
                     _DrawerNavItem(
                       icon: Icons.info_outline_rounded,
                       label: l10n.aboutUs,
@@ -215,7 +209,10 @@ class HomeDrawer extends StatelessWidget {
               ),
 
               // Footer
-              Padding(padding: AppSpacing.screenHorizontal, child: const Divider()),
+              Padding(
+                padding: AppSpacing.screenHorizontal,
+                child: const Divider(),
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   AppSpacing.cardPadding,
@@ -231,8 +228,9 @@ class HomeDrawer extends StatelessWidget {
                         child: Text(
                           appVersion,
                           style: AppTypography.labelSmall(
-                            color: context.themeTextSecondary
-                                .withValues(alpha: 0.5),
+                            color: context.themeTextSecondary.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
                         ),
                       ),
@@ -297,8 +295,8 @@ class _DrawerNavItem extends StatelessWidget {
           ? Text(
               subtitle!,
               style: AppTypography.bodySmall(
-                  color: subtitleColor ??
-                      titleColor.withValues(alpha: 0.65)),
+                color: subtitleColor ?? titleColor.withValues(alpha: 0.65),
+              ),
             )
           : null,
       onTap: onTap,

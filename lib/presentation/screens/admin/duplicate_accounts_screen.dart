@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -9,7 +11,8 @@ class DuplicateAccountsScreen extends StatefulWidget {
   const DuplicateAccountsScreen({super.key});
 
   @override
-  State<DuplicateAccountsScreen> createState() => _DuplicateAccountsScreenState();
+  State<DuplicateAccountsScreen> createState() =>
+      _DuplicateAccountsScreenState();
 }
 
 class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
@@ -23,7 +26,7 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
 
   Future<Map<String, dynamic>> _fetchDuplicates() async {
     final db = FirebaseFirestore.instance;
-    final usersSnapshot = await db.collection('users').get();
+    final usersSnapshot = await db.collection('users').forAdminBranch().get();
 
     final phoneMap = <String, List<Map<String, dynamic>>>{};
 
@@ -52,7 +55,11 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
     final duplicates = <String, List<Map<String, dynamic>>>{};
     phoneMap.forEach((phone, users) {
       if (users.length > 1) {
-        users.sort((a, b) => (a['createdAt'] as DateTime).compareTo(b['createdAt'] as DateTime));
+        users.sort(
+          (a, b) => (a['createdAt'] as DateTime).compareTo(
+            b['createdAt'] as DateTime,
+          ),
+        );
         duplicates[phone] = users;
       }
     });
@@ -60,7 +67,10 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
     return {
       'duplicates': duplicates,
       'totalAccounts': usersSnapshot.docs.length,
-      'duplicateCount': duplicates.values.fold(0, (total, list) => total + list.length),
+      'duplicateCount': duplicates.values.fold(
+        0,
+        (total, list) => total + list.length,
+      ),
     };
   }
 
@@ -73,7 +83,7 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
       backgroundColor: context.themeBackground,
       appBar: AppBar(
         title: Text(
-          'Duplicate Accounts',
+          AppLocalizations.of(context)!.duplicateAccounts,
           style: AppTypography.h2(),
         ),
         backgroundColor: context.themePrimary,
@@ -84,16 +94,14 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(
-                color: context.themePrimary,
-              ),
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Error: ${snapshot.error}',
+                AppLocalizations.of(context)!.error3('${snapshot.error}'),
                 style: AppTypography.bodyMedium().copyWith(
                   color: context.themeError,
                 ),
@@ -119,18 +127,21 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () => context.push('/admin/export-users'),
-                        icon: const Icon(Icons.backup, size: 20),
-                        label: const Text('Export Users'),
+                        icon: const Icon(Icons.backup_rounded, size: 20),
+                        label: Text(AppLocalizations.of(context)!.exportUsers),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: context.themePrimary,
+                          foregroundColor: context.themeOnPrimary,
                         ),
                       ),
                       ElevatedButton.icon(
-                        onPressed: () => context.push('/admin/cleanup-duplicates'),
-                        icon: const Icon(Icons.delete_sweep, size: 20),
-                        label: const Text('Clean Up'),
+                        onPressed: () =>
+                            context.push('/admin/cleanup-duplicates'),
+                        icon: const Icon(Icons.delete_sweep_rounded, size: 20),
+                        label: Text(AppLocalizations.of(context)!.cleanUp),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: context.themeError,
+                          foregroundColor: context.themeOnError,
                         ),
                       ),
                     ],
@@ -143,19 +154,19 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
                     runSpacing: 12,
                     children: [
                       _StatCard(
-                        label: 'Total Accounts',
+                        label: AppLocalizations.of(context)!.totalAccounts,
                         value: '$totalAccounts',
                         color: context.themePrimary,
                       ),
                       _StatCard(
-                        label: 'Duplicate Phones',
+                        label: AppLocalizations.of(context)!.duplicatePhones,
                         value: '${duplicates.length}',
-                        color: Colors.orange,
+                        color: AppColors.warning,
                       ),
                       _StatCard(
-                        label: 'Affected Accounts',
+                        label: AppLocalizations.of(context)!.affectedAccounts,
                         value: '$duplicateCount',
-                        color: Colors.red,
+                        color: AppColors.error,
                       ),
                     ],
                   ),
@@ -172,13 +183,15 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
                         child: Column(
                           children: [
                             Icon(
-                              Icons.check_circle,
+                              Icons.check_circle_rounded,
                               size: 48,
-                              color: Colors.green,
+                              color: AppColors.success,
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'No duplicate accounts found!',
+                              AppLocalizations.of(
+                                context,
+                              )!.noDuplicateAccountsFound,
                               style: AppTypography.bodyLarge(),
                             ),
                           ],
@@ -190,7 +203,7 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Duplicate Phone Numbers',
+                          AppLocalizations.of(context)!.duplicatePhoneNumbers,
                           style: AppTypography.h3(),
                         ),
                         const SizedBox(height: 16),
@@ -231,23 +244,11 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color, color.withValues(alpha: 0.7)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: AppRadius.all24,
-      ),
+      decoration: BoxDecoration(color: color, borderRadius: AppRadius.all24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            value,
-            style: AppTypography.h2().copyWith(
-              color: Colors.white,
-            ),
-          ),
+          Text(value, style: AppTypography.h2().copyWith(color: Colors.white)),
           const SizedBox(height: 4),
           Text(
             label,
@@ -278,9 +279,7 @@ class _DuplicatePhoneGroup extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        border: Border.all(
-          color: context.themePrimary.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: context.themePrimary.withValues(alpha: 0.3)),
         borderRadius: AppRadius.all24,
       ),
       child: Column(
@@ -298,7 +297,9 @@ class _DuplicatePhoneGroup extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '$groupIndex. Phone: $phone (${users.length} accounts)',
+                  AppLocalizations.of(
+                    context,
+                  )!.phoneAccounts('$groupIndex', '$phone', '${users.length}'),
                   style: AppTypography.bodyLarge().copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -316,14 +317,16 @@ class _DuplicatePhoneGroup extends StatelessWidget {
                 final isOldest = idx == 0;
 
                 return Container(
-                  margin: EdgeInsets.only(bottom: idx < users.length - 1 ? 12 : 0),
+                  margin: EdgeInsets.only(
+                    bottom: idx < users.length - 1 ? 12 : 0,
+                  ),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: context.themeBackground,
                     border: Border.all(
                       color: isOldest
-                          ? Colors.green.withValues(alpha: 0.5)
-                          : Colors.red.withValues(alpha: 0.5),
+                          ? AppColors.success.withValues(alpha: 0.5)
+                          : AppColors.error.withValues(alpha: 0.5),
                       width: 2,
                     ),
                     borderRadius: AppRadius.md12,
@@ -336,7 +339,9 @@ class _DuplicatePhoneGroup extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              'Account ${idx + 1}',
+                              AppLocalizations.of(
+                                context,
+                              )!.account('${idx + 1}'),
                               style: AppTypography.labelLarge(),
                             ),
                           ),
@@ -347,11 +352,15 @@ class _DuplicatePhoneGroup extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: isOldest ? Colors.green : Colors.red,
+                              color: isOldest
+                                  ? AppColors.success
+                                  : AppColors.error,
                               borderRadius: AppRadius.sm8,
                             ),
                             child: Text(
-                              isOldest ? '⭐ Keep' : '🗑️ Review',
+                              isOldest
+                                  ? AppLocalizations.of(context)!.keep
+                                  : AppLocalizations.of(context)!.review,
                               style: AppTypography.labelSmall().copyWith(
                                 color: Colors.white,
                               ),
@@ -360,11 +369,20 @@ class _DuplicatePhoneGroup extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      _InfoRow('Name', user['name'] as String),
-                      _InfoRow('Points', '${user['points']}'),
-                      _InfoRow('Tier', user['tier'] as String),
                       _InfoRow(
-                        'Created',
+                        AppLocalizations.of(context)!.name,
+                        user['name'] as String,
+                      ),
+                      _InfoRow(
+                        AppLocalizations.of(context)!.pointsLabel,
+                        '${user['points']}',
+                      ),
+                      _InfoRow(
+                        AppLocalizations.of(context)!.homeTierSuffix,
+                        user['tier'] as String,
+                      ),
+                      _InfoRow(
+                        AppLocalizations.of(context)!.createdLabel,
                         _formatDate(user['createdAt'] as DateTime),
                       ),
                       _InfoRow('ID', user['id'] as String, mono: true),

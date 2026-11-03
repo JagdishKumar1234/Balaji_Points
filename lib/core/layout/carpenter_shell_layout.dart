@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 class CarpenterShellLayout {
   CarpenterShellLayout._();
 
-  static const double navBarHeight = kToolbarHeight; // 56
+  /// Bottom tab bar height (UI spec).
+  static const double navBarHeight = 68;
+
+  /// Top toolbar height.
+  static const double topBarHeight = kToolbarHeight; // 56
 
   static double topInset(MediaQueryData mq) =>
       math.max(mq.padding.top, mq.viewPadding.top);
@@ -16,7 +20,7 @@ class CarpenterShellLayout {
 
   /// Total top chrome: status bar + toolbar.
   static double topChromeHeight(MediaQueryData mq) =>
-      navBarHeight + topInset(mq);
+      topBarHeight + topInset(mq);
 
   /// Total bottom chrome: tab bar + home indicator area.
   static double chromeHeight(MediaQueryData mq) =>

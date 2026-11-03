@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -24,7 +26,7 @@ class _FirebaseDuplicateCheckerScreenState
 
   Future<Map<String, dynamic>> _checkDuplicates() async {
     final db = FirebaseFirestore.instance;
-    final usersSnapshot = await db.collection('users').get();
+    final usersSnapshot = await db.collection('users').forAdminBranch().get();
 
     final phoneMap = <String, List<Map<String, dynamic>>>{};
     int totalCarpenters = 0;
@@ -57,8 +59,11 @@ class _FirebaseDuplicateCheckerScreenState
     final duplicates = <String, List<Map<String, dynamic>>>{};
     phoneMap.forEach((phone, users) {
       if (users.length > 1) {
-        users.sort((a, b) =>
-            (a['createdAt'] as DateTime).compareTo(b['createdAt'] as DateTime));
+        users.sort(
+          (a, b) => (a['createdAt'] as DateTime).compareTo(
+            b['createdAt'] as DateTime,
+          ),
+        );
         duplicates[phone] = users;
       }
     });
@@ -68,7 +73,10 @@ class _FirebaseDuplicateCheckerScreenState
       'totalCarpenters': totalCarpenters,
       'uniquePhones': phoneMap.length,
       'duplicatePhones': duplicates.length,
-      'totalDuplicates': duplicates.values.fold(0, (sum, list) => sum + list.length),
+      'totalDuplicates': duplicates.values.fold(
+        0,
+        (sum, list) => sum + list.length,
+      ),
     };
   }
 
@@ -78,7 +86,7 @@ class _FirebaseDuplicateCheckerScreenState
       backgroundColor: context.themeBackground,
       appBar: AppBar(
         title: Text(
-          'Firebase Duplicate Check',
+          AppLocalizations.of(context)!.firebaseDuplicateCheck,
           style: AppTypography.h2(),
         ),
         backgroundColor: context.themePrimary,
@@ -88,9 +96,7 @@ class _FirebaseDuplicateCheckerScreenState
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(
-                color: context.themePrimary,
-              ),
+              child: CircularProgressIndicator(color: context.themePrimary),
             );
           }
 
@@ -99,7 +105,7 @@ class _FirebaseDuplicateCheckerScreenState
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Error: ${snapshot.error}',
+                  AppLocalizations.of(context)!.error3('${snapshot.error}'),
                   style: AppTypography.bodyMedium().copyWith(
                     color: context.themeError,
                   ),
@@ -136,18 +142,30 @@ class _FirebaseDuplicateCheckerScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '📊 Firebase Database Summary',
+                          AppLocalizations.of(context)!.firebaseDatabaseSummary,
                           style: AppTypography.labelLarge().copyWith(
                             color: context.themePrimary,
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _StatRow('Total Carpenters:', '$totalCarpenters'),
-                        _StatRow('Unique Phone Numbers:', '$uniquePhones'),
-                        _StatRow('Duplicate Phone Numbers:', '$duplicatePhones',
-                            color: Colors.orange),
-                        _StatRow('Total Duplicate Accounts:', '$totalDuplicates',
-                            color: Colors.red),
+                        _StatRow(
+                          AppLocalizations.of(context)!.totalCarpenters2,
+                          '$totalCarpenters',
+                        ),
+                        _StatRow(
+                          AppLocalizations.of(context)!.uniquePhoneNumbers,
+                          '$uniquePhones',
+                        ),
+                        _StatRow(
+                          AppLocalizations.of(context)!.duplicatePhoneNumbers2,
+                          '$duplicatePhones',
+                          color: AppColors.warning,
+                        ),
+                        _StatRow(
+                          AppLocalizations.of(context)!.totalDuplicateAccounts,
+                          '$totalDuplicates',
+                          color: AppColors.error,
+                        ),
                       ],
                     ),
                   ),
@@ -164,18 +182,20 @@ class _FirebaseDuplicateCheckerScreenState
                         child: Column(
                           children: [
                             Icon(
-                              Icons.check_circle,
+                              Icons.check_circle_rounded,
                               size: 64,
-                              color: Colors.green,
+                              color: AppColors.success,
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No Duplicates Found!',
+                              AppLocalizations.of(context)!.noDuplicatesFound,
                               style: AppTypography.h3(),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'All phone numbers are unique.',
+                              AppLocalizations.of(
+                                context,
+                              )!.allPhoneNumbersAreUnique,
                               style: AppTypography.bodyMedium().copyWith(
                                 color: context.themeTextMuted,
                               ),
@@ -189,7 +209,7 @@ class _FirebaseDuplicateCheckerScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '🔍 Duplicate Mobile Numbers',
+                          AppLocalizations.of(context)!.duplicateMobileNumbers,
                           style: AppTypography.h3(),
                         ),
                         const SizedBox(height: 16),
@@ -230,10 +250,7 @@ class _StatRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: AppTypography.bodyMedium(),
-          ),
+          Text(label, style: AppTypography.bodyMedium()),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -274,7 +291,7 @@ class _DuplicatePhoneCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
         border: Border.all(
-          color: Colors.red.withValues(alpha: 0.3),
+          color: AppColors.error.withValues(alpha: 0.3),
           width: 2,
         ),
         borderRadius: AppRadius.all24,
@@ -286,7 +303,7 @@ class _DuplicatePhoneCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
+              color: AppColors.error.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24),
                 topRight: Radius.circular(24),
@@ -299,16 +316,20 @@ class _DuplicatePhoneCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$groupIndex/$totalGroups - Mobile: $phone',
+                      AppLocalizations.of(
+                        context,
+                      )!.mobile2('$groupIndex', '$totalGroups', '$phone'),
                       style: AppTypography.bodyLarge().copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${users.length} accounts with same phone number',
+                      AppLocalizations.of(
+                        context,
+                      )!.accountsWithSamePhoneNumber('${users.length}'),
                       style: AppTypography.bodySmall().copyWith(
-                        color: Colors.red[700],
+                        color: AppColors.error,
                       ),
                     ),
                   ],
@@ -319,7 +340,7 @@ class _DuplicatePhoneCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: AppColors.error,
                     borderRadius: AppRadius.sm8,
                   ),
                   child: Text(
@@ -352,8 +373,8 @@ class _DuplicatePhoneCard extends StatelessWidget {
                     color: context.themeBackground,
                     border: Border.all(
                       color: isOldest
-                          ? Colors.green.withValues(alpha: 0.5)
-                          : Colors.red.withValues(alpha: 0.5),
+                          ? AppColors.success.withValues(alpha: 0.5)
+                          : AppColors.error.withValues(alpha: 0.5),
                       width: 2,
                     ),
                     borderRadius: AppRadius.md12,
@@ -378,11 +399,15 @@ class _DuplicatePhoneCard extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: isOldest ? Colors.green : Colors.red,
+                              color: isOldest
+                                  ? AppColors.success
+                                  : AppColors.error,
                               borderRadius: AppRadius.sm8,
                             ),
                             child: Text(
-                              isOldest ? '⭐ Main' : '❌ Duplicate',
+                              isOldest
+                                  ? AppLocalizations.of(context)!.main
+                                  : AppLocalizations.of(context)!.duplicate,
                               style: AppTypography.labelSmall().copyWith(
                                 color: Colors.white,
                               ),
@@ -391,13 +416,29 @@ class _DuplicatePhoneCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      _InfoText('Email', user['email'] as String),
-                      _InfoText('Points', '${user['points']}'),
-                      _InfoText('Tier', user['tier'] as String),
-                      _InfoText('Status', user['isActive'] ? 'Active' : 'Inactive',
-                          color: user['isActive'] ? Colors.green : Colors.orange),
                       _InfoText(
-                        'Created',
+                        AppLocalizations.of(context)!.email,
+                        user['email'] as String,
+                      ),
+                      _InfoText(
+                        AppLocalizations.of(context)!.pointsLabel,
+                        '${user['points']}',
+                      ),
+                      _InfoText(
+                        AppLocalizations.of(context)!.homeTierSuffix,
+                        user['tier'] as String,
+                      ),
+                      _InfoText(
+                        AppLocalizations.of(context)!.status,
+                        user['isActive']
+                            ? AppLocalizations.of(context)!.active
+                            : AppLocalizations.of(context)!.inactive,
+                        color: user['isActive']
+                            ? AppColors.success
+                            : AppColors.warning,
+                      ),
+                      _InfoText(
+                        AppLocalizations.of(context)!.createdLabel,
                         _formatDate(user['createdAt'] as DateTime),
                       ),
                       _InfoText('ID', user['id'] as String, mono: true),

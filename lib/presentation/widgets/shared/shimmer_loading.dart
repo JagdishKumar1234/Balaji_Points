@@ -25,7 +25,7 @@ class ShimmerCard extends StatelessWidget {
       width: width,
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.themeSurface,
         borderRadius: borderRadius ?? AppRadius.all16,
       ),
       child: Shimmer.fromColors(
@@ -33,7 +33,7 @@ class ShimmerCard extends StatelessWidget {
         highlightColor: context.themeSoftSurface,
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.themeSurface,
             borderRadius: borderRadius ?? AppRadius.all16,
           ),
         ),
@@ -72,7 +72,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.themeSurface,
         borderRadius: AppRadius.all16,
       ),
       child: Shimmer.fromColors(
@@ -85,7 +85,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
               height: 24,
               width: 200,
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: context.themeSurface,
                 borderRadius: AppRadius.xs4,
               ),
             ),
@@ -95,9 +95,9 @@ class ShimmerTopCarpenters extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                _buildPodiumShimmer(100),
-                _buildPodiumShimmer(120),
-                _buildPodiumShimmer(80),
+                _buildPodiumShimmer(context, 100),
+                _buildPodiumShimmer(context, 120),
+                _buildPodiumShimmer(context, 80),
               ],
             ),
           ],
@@ -106,7 +106,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
     );
   }
 
-  Widget _buildPodiumShimmer(double height) {
+  Widget _buildPodiumShimmer(BuildContext context, double height) {
     return Expanded(
       child: Column(
         children: [
@@ -114,8 +114,8 @@ class ShimmerTopCarpenters extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
+            decoration: BoxDecoration(
+              color: context.themeSurface,
               shape: BoxShape.circle,
             ),
           ),
@@ -124,8 +124,8 @@ class ShimmerTopCarpenters extends StatelessWidget {
           Container(
             width: 60,
             height: 60,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
+            decoration: BoxDecoration(
+              color: context.themeSurface,
               shape: BoxShape.circle,
             ),
           ),
@@ -135,7 +135,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
             height: 14,
             width: 60,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: context.themeSurface,
               borderRadius: AppRadius.xs4,
             ),
           ),
@@ -144,7 +144,7 @@ class ShimmerTopCarpenters extends StatelessWidget {
           Container(
             height: height,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: context.themeSurface,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(8),
               ),
@@ -184,8 +184,8 @@ class ShimmerWinnerCard extends StatelessWidget {
             Container(
               width: 60,
               height: 60,
-              decoration: const BoxDecoration(
-                color: AppColors.white,
+              decoration: BoxDecoration(
+                color: context.themeSurface,
                 shape: BoxShape.circle,
               ),
             ),
@@ -199,7 +199,7 @@ class ShimmerWinnerCard extends StatelessWidget {
                     height: 18,
                     width: 150,
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: context.themeSurface,
                       borderRadius: AppRadius.xs4,
                     ),
                   ),
@@ -209,7 +209,7 @@ class ShimmerWinnerCard extends StatelessWidget {
                     height: 14,
                     width: 100,
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: context.themeSurface,
                       borderRadius: AppRadius.xs4,
                     ),
                   ),
@@ -233,11 +233,7 @@ class ShimmerPositionCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [context.themePrimary, context.themeSecondary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.primary,
         borderRadius: AppRadius.all16,
       ),
       child: Shimmer.fromColors(
@@ -249,8 +245,8 @@ class ShimmerPositionCard extends StatelessWidget {
             Container(
               width: 70,
               height: 70,
-              decoration: const BoxDecoration(
-                color: AppColors.white,
+              decoration: BoxDecoration(
+                color: context.themeSurface,
                 shape: BoxShape.circle,
               ),
             ),
@@ -264,7 +260,7 @@ class ShimmerPositionCard extends StatelessWidget {
                     height: 12,
                     width: 80,
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: context.themeSurface,
                       borderRadius: AppRadius.xs4,
                     ),
                   ),
@@ -274,7 +270,7 @@ class ShimmerPositionCard extends StatelessWidget {
                     height: 18,
                     width: 150,
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: context.themeSurface,
                       borderRadius: AppRadius.xs4,
                     ),
                   ),

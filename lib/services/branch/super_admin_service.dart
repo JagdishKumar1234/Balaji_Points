@@ -31,6 +31,31 @@ class SuperAdminService {
     );
   }
 
+  /// Edits a branch admin's name, phone, sign-in email and branch.
+  /// Runs server-side (Firebase Auth + one-admin-per-branch transaction).
+  Future<BranchAdminResult> updateBranchAdmin({
+    required String uid,
+    required String email,
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String branchId,
+  }) async {
+    final response = await _functions.httpsCallable('updateBranchAdmin').call({
+      'uid': uid,
+      'email': email,
+      'firstName': firstName,
+      'lastName': lastName,
+      'phone': phone,
+      'branchId': branchId,
+    });
+    final data = Map<String, dynamic>.from(response.data as Map);
+    return BranchAdminResult(
+      email: data['email'] as String? ?? email,
+      branchName: data['branchName'] as String? ?? branchId,
+    );
+  }
+
   Future<void> updateBranchAdminPassword({
     required String uid,
     required String password,

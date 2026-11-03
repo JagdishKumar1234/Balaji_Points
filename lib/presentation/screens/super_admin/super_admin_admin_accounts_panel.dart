@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/screens/super_admin/super_admin_create_admin_tab.dart';
+import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
+import 'package:balaji_points/presentation/screens/super_admin/super_admin_section_header.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -9,18 +14,21 @@ import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/services/branch/super_admin_service.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_loading_view.dart';
 
-String _adminAccountsError(Object error) {
+String _adminAccountsError(BuildContext context, Object error) {
   if (error is FirebaseFunctionsException && error.message != null) {
     return error.message!;
   }
   if (error is FirebaseException && error.code == 'permission-denied') {
-    return 'Permission denied. Verify Firestore rules and your Super Admin account.';
+    return AppLocalizations.of(context)!.permissionDeniedSuperAdmin;
   }
   return error.toString().replaceFirst('Exception: ', '');
 }
 
 class SuperAdminAdminAccountsPanel extends StatefulWidget {
-  const SuperAdminAdminAccountsPanel({super.key});
+  const SuperAdminAdminAccountsPanel({super.key, this.action});
+
+  /// Main action shown in the section header (e.g. "Add admin").
+  final Widget? action;
 
   @override
   State<SuperAdminAdminAccountsPanel> createState() =>
@@ -44,75 +52,75 @@ class _SuperAdminAdminAccountsPanelState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: AppSpacing.xl),
-        Text(
-          'Branch admin accounts',
-          style: AppTypography.h4(color: context.themePrimary),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'Review each admin and the branch they manage. Reset passwords or remove an account.',
-          style: AppTypography.bodySmall(color: context.themeTextSecondary),
+        SuperAdminSectionHeader(
+          title: AppLocalizations.of(context)!.branchAdminsTitle,
+          subtitle: AppLocalizations.of(context)!.reviewEachAdminAndTheBranch,
+          action: widget.action,
         ),
         const SizedBox(height: AppSpacing.md),
-        SearchBar(
+        TextField(
           controller: _searchController,
-          hintText: 'Search by name, email or branch',
-          leading: const Icon(Icons.search_rounded),
-          trailing: [
-            if (_search.isNotEmpty)
-              IconButton(
-                tooltip: 'Clear search',
-                onPressed: () {
-                  _searchController.clear();
-                  setState(() => _search = '');
-                },
-                icon: const Icon(Icons.clear_rounded),
-              ),
-          ],
+          textInputAction: TextInputAction.search,
           onChanged: (value) => setState(() => _search = value.trim()),
+          decoration: InputDecoration(
+            hintText: AppLocalizations.of(context)!.searchByNameEmailOrBranch,
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            prefixIcon: const Icon(Icons.search_rounded),
+            suffixIcon: _search.isEmpty
+                ? null
+                : IconButton(
+                    tooltip: AppLocalizations.of(context)!.clearSearch,
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _search = '');
+                    },
+                    icon: const Icon(Icons.clear_rounded),
+                  ),
+          ),
         ),
         const SizedBox(height: AppSpacing.md),
         StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           key: ValueKey(_reloadKey),
-          stream: FirebaseFirestore.instance
+          stream: appFirestore
               .collection('users')
               .where('role', isEqualTo: 'admin')
               .snapshots(),
           builder: (context, adminsSnapshot) {
             if (adminsSnapshot.hasError) {
               return _AccountsMessage(
-                message: _adminAccountsError(adminsSnapshot.error!),
+                message: _adminAccountsError(context, adminsSnapshot.error!),
                 isError: true,
                 onRetry: () => setState(() => _reloadKey++),
               );
             }
             if (!adminsSnapshot.hasData) {
-              return const SuperAdminLoadingView(
-                label: 'Loading branch admin accounts…',
+              return SuperAdminLoadingView(
+                label: AppLocalizations.of(context)!.loadingBranchAdminAccounts,
               );
             }
             final admins = adminsSnapshot.data!.docs;
             if (admins.isEmpty) {
-              return const _AccountsMessage(
-                message: 'No branch admin accounts yet.',
+              return EmptyState(
+                icon: Icons.manage_accounts_outlined,
+                title: AppLocalizations.of(context)!.noBranchAdminAccountsYet,
               );
             }
             return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
-                  .collection('branches')
-                  .snapshots(),
+              stream: appFirestore.collection('branches').snapshots(),
               builder: (context, branchesSnapshot) {
                 if (branchesSnapshot.hasError) {
                   return _AccountsMessage(
-                    message: _adminAccountsError(branchesSnapshot.error!),
+                    message: _adminAccountsError(
+                      context,
+                      branchesSnapshot.error!,
+                    ),
                     isError: true,
                     onRetry: () => setState(() => _reloadKey++),
                   );
                 }
                 if (!branchesSnapshot.hasData) {
-                  return const SuperAdminLoadingView(
-                    label: 'Loading branch names…',
+                  return SuperAdminLoadingView(
+                    label: AppLocalizations.of(context)!.loadingBranchNames,
                   );
                 }
                 final branchNames = <String, String>{};
@@ -145,8 +153,15 @@ class _SuperAdminAdminAccountsPanelState
                       }
                       return _AdminAccountCard(
                         uid: admin.id,
-                        name: fullName.isEmpty ? 'Branch admin' : fullName,
-                        email: data['email'] as String? ?? 'No email',
+                        firstName: data['firstName'] as String? ?? '',
+                        lastName: data['lastName'] as String? ?? '',
+                        branchId: branchId,
+                        name: fullName.isEmpty
+                            ? AppLocalizations.of(context)!.branchAdmin
+                            : fullName,
+                        email:
+                            data['email'] as String? ??
+                            AppLocalizations.of(context)!.noEmail,
                         phone: data['phone'] as String? ?? '',
                         branchName: branchName,
                         onPasswordReset: (password) =>
@@ -163,8 +178,10 @@ class _SuperAdminAdminAccountsPanelState
                 if (rows.isEmpty) {
                   return _AccountsMessage(
                     message: admins.isEmpty
-                        ? 'No branch admin accounts yet.'
-                        : 'No admin accounts match “$_search”.',
+                        ? AppLocalizations.of(context)!.noBranchAdminAccountsYet
+                        : AppLocalizations.of(
+                            context,
+                          )!.noAdminAccountsMatch('$_search'),
                   );
                 }
                 return Column(
@@ -172,23 +189,30 @@ class _SuperAdminAdminAccountsPanelState
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Admin accounts',
-                            style: AppTypography.labelLarge(
-                              color: context.themeTextPrimary,
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Badge(
-                            label: Text(rows.length.toString()),
-                            child: const Icon(Icons.people_alt_outlined),
-                          ),
-                        ],
+                      child: Text(
+                        AppLocalizations.of(context)!.adminsCount(rows.length),
+                        style: AppTypography.caption(
+                          color: context.themeTextSecondary,
+                        ),
                       ),
                     ),
-                    ...rows,
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        const gap = AppSpacing.md;
+                        final columns = constraints.maxWidth >= 860 ? 2 : 1;
+                        final width =
+                            (constraints.maxWidth - gap * (columns - 1)) /
+                            columns;
+                        return Wrap(
+                          spacing: gap,
+                          runSpacing: gap,
+                          children: [
+                            for (final row in rows)
+                              SizedBox(width: width, child: row),
+                          ],
+                        );
+                      },
+                    ),
                   ],
                 );
               },
@@ -203,6 +227,9 @@ class _SuperAdminAdminAccountsPanelState
 class _AdminAccountCard extends StatefulWidget {
   const _AdminAccountCard({
     required this.uid,
+    required this.firstName,
+    required this.lastName,
+    required this.branchId,
     required this.name,
     required this.email,
     required this.phone,
@@ -212,6 +239,9 @@ class _AdminAccountCard extends StatefulWidget {
   });
 
   final String uid;
+  final String firstName;
+  final String lastName;
+  final String branchId;
   final String name;
   final String email;
   final String phone;
@@ -226,6 +256,26 @@ class _AdminAccountCard extends StatefulWidget {
 class _AdminAccountCardState extends State<_AdminAccountCard> {
   bool _working = false;
 
+  Future<void> _edit() async {
+    final result = await showDialog<BranchAdminResult>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => CreateBranchAdminDialog(
+        existing: AdminFormData(
+          uid: widget.uid,
+          firstName: widget.firstName,
+          lastName: widget.lastName,
+          phone: widget.phone,
+          email: widget.email,
+          branchId: widget.branchId,
+          branchName: widget.branchName,
+        ),
+      ),
+    );
+    if (result == null || !mounted) return;
+    _message(AppLocalizations.of(context)!.adminUpdated(result.email));
+  }
+
   Future<void> _resetPassword() async {
     final password = await showDialog<String>(
       context: context,
@@ -235,9 +285,12 @@ class _AdminAccountCardState extends State<_AdminAccountCard> {
     setState(() => _working = true);
     try {
       await widget.onPasswordReset(password);
-      if (mounted) _message('Password updated for ${widget.email}.');
+      if (mounted)
+        _message(
+          AppLocalizations.of(context)!.passwordUpdatedFor('${widget.email}'),
+        );
     } catch (error) {
-      if (mounted) _message(_adminAccountsError(error), error: true);
+      if (mounted) _message(_adminAccountsError(context, error), error: true);
     } finally {
       if (mounted) setState(() => _working = false);
     }
@@ -247,19 +300,25 @@ class _AdminAccountCardState extends State<_AdminAccountCard> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete branch admin?'),
+        title: Text(AppLocalizations.of(context)!.deleteBranchAdmin),
         content: Text(
-          'Delete ${widget.email} for ${widget.branchName}? They will lose sign-in access. Branch members and their points will be kept.',
+          AppLocalizations.of(context)!.deleteForTheyWillLoseSign(
+            '${widget.email}',
+            '${widget.branchName}',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: context.themeError),
+            style: FilledButton.styleFrom(
+              backgroundColor: context.themeError,
+              foregroundColor: context.themeOnError,
+            ),
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete admin'),
+            child: Text(AppLocalizations.of(context)!.deleteAdmin),
           ),
         ],
       ),
@@ -268,9 +327,9 @@ class _AdminAccountCardState extends State<_AdminAccountCard> {
     setState(() => _working = true);
     try {
       await widget.onDelete();
-      if (mounted) _message('Admin account deleted.');
+      if (mounted) _message(AppLocalizations.of(context)!.adminAccountDeleted);
     } catch (error) {
-      if (mounted) _message(_adminAccountsError(error), error: true);
+      if (mounted) _message(_adminAccountsError(context, error), error: true);
     } finally {
       if (mounted) setState(() => _working = false);
     }
@@ -282,102 +341,151 @@ class _AdminAccountCardState extends State<_AdminAccountCard> {
       ..showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: error ? context.themeError : AppColors.success,
-          behavior: SnackBarBehavior.floating,
+          backgroundColor: error ? context.themeError : null,
         ),
       );
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final parts = widget.name.trim().split(RegExp(r'\s+'));
+    final initials = parts
+        .where((p) => p.isNotEmpty)
+        .take(2)
+        .map((p) => p.characters.first.toUpperCase())
+        .join();
+    final secondary = context.themeTextSecondary;
+
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-      elevation: 0,
-      color: colors.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.xs,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 4, 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: AppRadius.md12,
+              ),
+              child: Text(
+                initials.isEmpty ? '?' : initials,
+                style: AppTypography.section(color: AppColors.gold),
+              ),
             ),
-            leading: CircleAvatar(
-              backgroundColor: colors.primaryContainer,
-              foregroundColor: colors.onPrimaryContainer,
-              child: const Icon(Icons.admin_panel_settings_rounded),
-            ),
-            title: Text(
-              widget.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.labelLarge(color: context.themeTextPrimary),
-            ),
-            subtitle: Text(
-              widget.email,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.bodySmall(color: context.themeTextSecondary),
-            ),
-            trailing: _working
-                ? const SizedBox.square(
-                    dimension: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Icon(Icons.verified_user_outlined, color: colors.primary),
-          ),
-          const Divider(height: 1, indent: 72),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.sm,
-              AppSpacing.md,
-              AppSpacing.md,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: AppSpacing.xs,
-                  runSpacing: AppSpacing.xs,
-                  children: [
-                    Chip(
-                      avatar: Icon(Icons.store_outlined, color: colors.primary),
-                      label: Text(widget.branchName),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.section(
+                      color: context.themeTextPrimary,
                     ),
-                    if (widget.phone.isNotEmpty)
-                      Chip(
-                        avatar: const Icon(Icons.phone_outlined),
-                        label: Text(widget.phone),
+                  ),
+                  Text(
+                    widget.email,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.caption(color: secondary),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Icon(
+                          Icons.store_outlined,
+                          size: 16,
+                          color: secondary,
+                        ),
                       ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.xs,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: _working ? null : _resetPassword,
-                      icon: const Icon(Icons.key_rounded),
-                      label: const Text('Change password'),
-                    ),
-                    TextButton.icon(
-                      onPressed: _working ? null : _delete,
-                      style: TextButton.styleFrom(
-                        foregroundColor: context.themeError,
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          widget.branchName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.caption(color: secondary),
+                        ),
                       ),
-                      icon: const Icon(Icons.delete_outline_rounded),
-                      label: const Text('Delete account'),
+                    ],
+                  ),
+                  if (widget.phone.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.call_outlined, size: 16, color: secondary),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.phone,
+                          style: AppTypography.caption(color: secondary),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            if (_working)
+              const Padding(
+                padding: EdgeInsets.all(14),
+                child: SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else
+              PopupMenuButton<String>(
+                tooltip: l10n.adminActions,
+                icon: const Icon(Icons.more_vert_rounded),
+                onSelected: (value) {
+                  if (value == 'edit') _edit();
+                  if (value == 'password') _resetPassword();
+                  if (value == 'delete') _delete();
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.edit_outlined),
+                      title: Text(l10n.editDetails),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'password',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.key_rounded),
+                      title: Text(l10n.changePassword),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        Icons.delete_outline_rounded,
+                        color: context.themeError,
+                      ),
+                      title: Text(
+                        l10n.deleteAccount,
+                        style: TextStyle(color: context.themeError),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -406,7 +514,7 @@ class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Change admin password'),
+      title: Text(AppLocalizations.of(context)!.changeAdminPassword),
       content: SizedBox(
         width: 420,
         child: Form(
@@ -418,27 +526,30 @@ class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
                 controller: _password,
                 obscureText: !_visible,
                 decoration: InputDecoration(
-                  labelText: 'New password',
+                  labelText: AppLocalizations.of(context)!.newPassword,
                   suffixIcon: IconButton(
                     onPressed: () => setState(() => _visible = !_visible),
                     icon: Icon(
-                      _visible ? Icons.visibility_off : Icons.visibility,
+                      _visible
+                          ? Icons.visibility_off_rounded
+                          : Icons.visibility_rounded,
                     ),
                   ),
                 ),
                 validator: (value) => (value?.length ?? 0) < 8
-                    ? 'Use at least 8 characters'
+                    ? AppLocalizations.of(context)!.useAtLeast8Characters
                     : null,
               ),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: _confirm,
                 obscureText: !_visible,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm new password',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.confirmNewPassword,
                 ),
-                validator: (value) =>
-                    value != _password.text ? 'Passwords do not match' : null,
+                validator: (value) => value != _password.text
+                    ? AppLocalizations.of(context)!.passwordsDoNotMatch
+                    : null,
               ),
             ],
           ),
@@ -447,7 +558,7 @@ class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         FilledButton(
           onPressed: () {
@@ -455,7 +566,7 @@ class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
               Navigator.pop(context, _password.text);
             }
           },
-          child: const Text('Update password'),
+          child: Text(AppLocalizations.of(context)!.updatePassword),
         ),
       ],
     );
@@ -500,7 +611,7 @@ class _AccountsMessage extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try again'),
+              label: Text(AppLocalizations.of(context)!.tryAgain),
             ),
           ),
       ],

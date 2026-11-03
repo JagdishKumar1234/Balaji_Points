@@ -25,8 +25,8 @@ class AppSpacing {
   // Semantic layout tokens (from PDF spec)
   // --------------------------------------------------------------------------
 
-  /// Default horizontal screen inset — 20 px.
-  static const double screenPaddingH = xl;
+  /// Default horizontal screen inset — 16 px (spec mobile gutter).
+  static const double screenPaddingH = lg;
 
   /// Vertical screen inset — 24 px.
   static const double screenPaddingV = xl2;
@@ -46,14 +46,20 @@ class AppSpacing {
   /// Tight gap inside a card or between related rows — 12 px.
   static const double cardGapTight = md;
 
-  /// Standard button height — 54 px.
-  static const double buttonHeight = 54.0;
+  /// Standard button height — 48 px (hero CTA uses [buttonHeightHero]).
+  static const double buttonHeight = 48.0;
 
-  /// Standard input field height — 56 px.
-  static const double inputHeight = 56.0;
+  /// Hero call-to-action height (Sign in, Submit) — 52 px.
+  static const double buttonHeightHero = 52.0;
 
-  /// Bottom navigation bar height — 64 px.
-  static const double bottomNavHeight = 64.0;
+  /// Compact desktop table button — 36 px (desktop/mouse only).
+  static const double buttonHeightCompact = 36.0;
+
+  /// Standard input field height — 48 px.
+  static const double inputHeight = 48.0;
+
+  /// Bottom navigation bar height — 68 px.
+  static const double bottomNavHeight = 68.0;
 
   /// App bar height — 56 px.
   static const double appBarHeight = 56.0;

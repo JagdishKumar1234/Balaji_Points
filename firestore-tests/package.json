@@ -1,0 +1,13 @@
+{
+  "name": "balaji-points-firestore-rules-tests",
+  "private": true,
+  "description": "Firestore security rules tests (run inside the emulator)",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore --project demo-balaji-rules \"node --test roles.rules.test.mjs\"",
+    "test:functions": "firebase emulators:exec --only auth,firestore,functions --project demo-balaji-rules --config ../firebase.emulators.test.json \"node --test functions.emulator.test.mjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.0.0"
+  }
+}

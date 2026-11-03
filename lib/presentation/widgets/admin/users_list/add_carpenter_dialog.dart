@@ -59,7 +59,10 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
     }
 
     if (pin.isEmpty || pin.length < 4) {
-      _showSnack('PIN must be at least 4 digits', isError: true);
+      _showSnack(
+        AppLocalizations.of(context)!.pinMustBeAtLeast4,
+        isError: true,
+      );
       return;
     }
 
@@ -82,16 +85,19 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
       setState(() => _creating = false);
 
       if (success && mounted) {
-        _showSnack('Carpenter created successfully!');
+        _showSnack(AppLocalizations.of(context)!.carpenterCreatedSuccessfully);
         widget.onCarpenterAdded?.call();
         Navigator.of(context).pop();
       } else if (!success && mounted) {
-        _showSnack('Failed to create carpenter', isError: true);
+        _showSnack(
+          AppLocalizations.of(context)!.failedToCreateCarpenter,
+          isError: true,
+        );
       }
     } catch (e) {
       setState(() => _creating = false);
       if (mounted) {
-        _showSnack('Error: $e', isError: true);
+        _showSnack(AppLocalizations.of(context)!.error2('$e'), isError: true);
       }
     }
   }
@@ -128,7 +134,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
                 labelText: l10n.phoneNumberLabel,
                 hintText: l10n.phoneNumberHint,
                 border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.phone),
+                prefixIcon: const Icon(Icons.phone_rounded),
               ),
             ),
             const SizedBox(height: 12),
@@ -137,31 +143,31 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
               keyboardType: TextInputType.number,
               obscureText: true,
               maxLength: 6,
-              decoration: const InputDecoration(
-                labelText: 'PIN (4-6 digits)',
-                hintText: 'Enter PIN',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.pin46Digits,
+                hintText: AppLocalizations.of(context)!.enterPin,
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
+                prefixIcon: Icon(Icons.lock_rounded),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _firstNameController,
-              decoration: const InputDecoration(
-                labelText: 'First Name (Optional)',
-                hintText: 'Enter first name',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.firstNameOptional,
+                hintText: AppLocalizations.of(context)!.enterFirstName,
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
+                prefixIcon: Icon(Icons.person_rounded),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _lastNameController,
-              decoration: const InputDecoration(
-                labelText: 'Last Name (Optional)',
-                hintText: 'Enter last name',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.lastNameOptional,
+                hintText: AppLocalizations.of(context)!.enterLastName,
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person_outline),
+                prefixIcon: Icon(Icons.person_outline_rounded),
               ),
             ),
             const SizedBox(height: 20),
@@ -183,7 +189,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.themePrimary,
                       ),
-                      child: const Text('Create'),
+                      child: Text(AppLocalizations.of(context)!.create),
                     ),
                   ),
                 ],

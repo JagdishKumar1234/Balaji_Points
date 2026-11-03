@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -24,8 +25,10 @@ class BillDuplicateDetailsPage extends StatelessWidget {
         foregroundColor: context.themeTextPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: AppText.h3('Bill Details - $billId',
-            color: context.themeTextPrimary),
+        title: AppText.h3(
+          AppLocalizations.of(context)!.billDetails2('$billId'),
+          color: context.themeTextPrimary,
+        ),
         centerTitle: true,
       ),
       body: FutureBuilder<QuerySnapshot>(
@@ -38,8 +41,7 @@ class BillDuplicateDetailsPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    context.themePrimary),
+                valueColor: AlwaysStoppedAnimation<Color>(context.themePrimary),
               ),
             );
           }
@@ -49,11 +51,16 @@ class BillDuplicateDetailsPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline,
-                      color: AppColors.error, size: 48),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    color: AppColors.error,
+                    size: 48,
+                  ),
                   const SizedBox(height: 16),
-                  AppText.body('Error loading bill details',
-                      color: AppColors.error),
+                  AppText.body(
+                    AppLocalizations.of(context)!.errorLoadingBillDetails,
+                    color: AppColors.error,
+                  ),
                 ],
               ),
             );
@@ -64,11 +71,16 @@ class BillDuplicateDetailsPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.info_outline,
-                      color: context.themeTextSecondary, size: 48),
+                  Icon(
+                    Icons.info_outline_rounded,
+                    color: context.themeTextSecondary,
+                    size: 48,
+                  ),
                   const SizedBox(height: 16),
-                  AppText.body('No bill found',
-                      color: context.themeTextSecondary),
+                  AppText.body(
+                    AppLocalizations.of(context)!.noBillFound,
+                    color: context.themeTextSecondary,
+                  ),
                 ],
               ),
             );
@@ -92,19 +104,32 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText.h5('Bill Summary', color: context.themeTextPrimary),
+                      AppText.h5(
+                        AppLocalizations.of(context)!.billSummary,
+                        color: context.themeTextPrimary,
+                      ),
                       const SizedBox(height: 12),
-                      _SummaryRow('Bill ID', billId, context),
+                      _SummaryRow(
+                        AppLocalizations.of(context)!.billId,
+                        billId,
+                        context,
+                      ),
                       const SizedBox(height: 8),
-                      _SummaryRow('Total Instances', '${bills.length}',
-                          context),
+                      _SummaryRow(
+                        AppLocalizations.of(context)!.totalInstances,
+                        '${bills.length}',
+                        context,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 // Bill instances
-                AppText.h5('Bill Entries', color: context.themeTextPrimary),
+                AppText.h5(
+                  AppLocalizations.of(context)!.billEntries,
+                  color: context.themeTextPrimary,
+                ),
                 const SizedBox(height: 12),
 
                 ListView.separated(
@@ -113,8 +138,7 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                   itemCount: bills.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final bill =
-                        bills[index].data() as Map<String, dynamic>;
+                    final bill = bills[index].data() as Map<String, dynamic>;
                     final billDate = bill['createdAt'] as Timestamp?;
                     final amount = (bill['amount'] as num?)?.toDouble() ?? 0;
                     final points = (bill['points'] as num?)?.toDouble() ?? 0.0;
@@ -143,18 +167,23 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                         children: [
                           // Header with index
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              AppText.body('Instance ${index + 1}',
-                                  color: context.themeTextPrimary),
+                              AppText.body(
+                                AppLocalizations.of(
+                                  context,
+                                )!.instance('${index + 1}'),
+                                color: context.themeTextPrimary,
+                              ),
                               Container(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: _getStatusColor(status)
-                                      .withValues(alpha: 0.15),
+                                  color: _getStatusColor(
+                                    status,
+                                  ).withValues(alpha: 0.15),
                                   borderRadius: AppRadius.sm8,
                                 ),
                                 child: AppText.label(
@@ -170,24 +199,33 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: context.themePrimary
-                                  .withValues(alpha: 0.08),
+                              color: context.themePrimary.withValues(
+                                alpha: 0.08,
+                              ),
                               borderRadius: AppRadius.sm8,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AppText.label('Date',
-                                    color: context.themeTextSecondary),
+                                AppText.label(
+                                  AppLocalizations.of(context)!.dateLabel,
+                                  color: context.themeTextSecondary,
+                                ),
                                 const SizedBox(height: 2),
-                                AppText.body(dateStr,
-                                    color: context.themeTextPrimary),
+                                AppText.body(
+                                  dateStr,
+                                  color: context.themeTextPrimary,
+                                ),
                                 const SizedBox(height: 8),
-                                AppText.label('Time',
-                                    color: context.themeTextSecondary),
+                                AppText.label(
+                                  AppLocalizations.of(context)!.time,
+                                  color: context.themeTextSecondary,
+                                ),
                                 const SizedBox(height: 2),
-                                AppText.body(timeStr,
-                                    color: context.themeTextPrimary),
+                                AppText.body(
+                                  timeStr,
+                                  color: context.themeTextPrimary,
+                                ),
                               ],
                             ),
                           ),
@@ -198,7 +236,9 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: _DetailCard(
-                                  label: 'Amount',
+                                  label: AppLocalizations.of(
+                                    context,
+                                  )!.amountLabel,
                                   value: '₹${amount.toStringAsFixed(2)}',
                                   context: context,
                                 ),
@@ -206,7 +246,9 @@ class BillDuplicateDetailsPage extends StatelessWidget {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: _DetailCard(
-                                  label: 'Points',
+                                  label: AppLocalizations.of(
+                                    context,
+                                  )!.pointsLabel,
                                   value: '$points',
                                   context: context,
                                   highlight: true,
@@ -217,11 +259,15 @@ class BillDuplicateDetailsPage extends StatelessWidget {
 
                           if (description.isNotEmpty) ...[
                             const SizedBox(height: 12),
-                            AppText.label('Description',
-                                color: context.themeTextSecondary),
+                            AppText.label(
+                              AppLocalizations.of(context)!.descriptionLabel,
+                              color: context.themeTextSecondary,
+                            ),
                             const SizedBox(height: 4),
-                            AppText.body(description,
-                                color: context.themeTextPrimary),
+                            AppText.body(
+                              description,
+                              color: context.themeTextPrimary,
+                            ),
                           ],
                         ],
                       ),
@@ -304,8 +350,10 @@ class _DetailCard extends StatelessWidget {
         children: [
           AppText.label(label, color: context.themeTextSecondary),
           const SizedBox(height: 4),
-          AppText.h5(value,
-              color: highlight ? context.themePrimary : context.themeTextPrimary),
+          AppText.h5(
+            value,
+            color: highlight ? context.themePrimary : context.themeTextPrimary,
+          ),
         ],
       ),
     );

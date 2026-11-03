@@ -35,6 +35,7 @@ import 'package:balaji_points/presentation/widgets/carpenter/offers_carousel.dar
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/shimmer_loading.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 
@@ -87,7 +88,9 @@ class _HomePageState extends ConsumerState<HomePage>
       final info = await PackageInfo.fromPlatform();
       if (!mounted) return;
       setState(
-        () => _appVersion = 'Version ${info.version} (${info.buildNumber})',
+        () => _appVersion = AppLocalizations.of(
+          context,
+        )!.version('${info.version}', '${info.buildNumber}'),
       );
     } catch (_) {
       if (!mounted) return;
@@ -265,14 +268,14 @@ class _HomePageState extends ConsumerState<HomePage>
       ),
       appBar: CarpenterTopNavBar(
         topInset: CarpenterShellLayout.topInset(mq),
-        title: 'Balaji Points',
+        title: AppLocalizations.of(context)!.appName,
         backgroundColor: bg,
         foregroundColor: fg,
         leading: Builder(
           builder: (ctx) => IconButton(
             icon: Icon(Icons.menu_rounded, color: fg),
             onPressed: () => Scaffold.of(ctx).openDrawer(),
-            tooltip: 'Menu',
+            tooltip: AppLocalizations.of(context)!.menu,
           ),
         ),
         center: Row(
@@ -310,13 +313,13 @@ class _HomePageState extends ConsumerState<HomePage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Balaji Points',
+                    AppLocalizations.of(context)!.appName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.h5(color: fg),
                   ),
                   Text(
-                    '${l10n.companyName} · ${l10n.homeStoreBranch}',
+                    l10n.companyName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.caption(
@@ -348,6 +351,9 @@ class _HomePageState extends ConsumerState<HomePage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const BranchBanner(
+                      margin: EdgeInsets.fromLTRB(16, 10, 16, 0),
+                    ),
                     // Hero card
                     RepaintBoundary(
                       child: showHeroLoading
@@ -496,12 +502,30 @@ class _HomePageState extends ConsumerState<HomePage>
           : fallbackBranchName;
     }
     if (!mounted || GoRouterState.of(context).uri.path != '/') return;
+    late final List<BranchCelebrationEntry> leaderboard;
+    try {
+      leaderboard = await ref.read(
+        branchCelebrationLeaderboardProvider(resolvedBranchId).future,
+      );
+    } catch (error) {
+      AppLogger.warning('Could not load branch celebration users: $error');
+      if (mounted) {
+        _celebrationShownThisEntry = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.diwaliPrizeLoadFailed),
+          ),
+        );
+      }
+      return;
+    }
+    if (!mounted || GoRouterState.of(context).uri.path != '/') return;
     await showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (_) => DiwaliCelebrationDialog(
         branchName: branchName,
-        leaderboard: service.loadBranchCarpenters(resolvedBranchId),
+        leaderboard: leaderboard,
       ),
     );
   }
@@ -519,14 +543,16 @@ class _ThemeToggleButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return IconButton(
-      tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
+      tooltip: isDark
+          ? AppLocalizations.of(context)!.switchToLight
+          : AppLocalizations.of(context)!.switchToDark,
       onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 250),
         transitionBuilder: (child, anim) =>
             RotationTransition(turns: anim, child: child),
         child: Icon(
-          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round_rounded,
           key: ValueKey(isDark),
           color: fg,
         ),

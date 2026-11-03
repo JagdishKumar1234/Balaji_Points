@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -23,35 +24,44 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
   }
 
   String _getMonthName(int month) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+    final months = [
+      AppLocalizations.of(context)!.january,
+      AppLocalizations.of(context)!.february,
+      AppLocalizations.of(context)!.march,
+      AppLocalizations.of(context)!.april,
+      AppLocalizations.of(context)!.may,
+      AppLocalizations.of(context)!.june,
+      AppLocalizations.of(context)!.july,
+      AppLocalizations.of(context)!.august,
+      AppLocalizations.of(context)!.september,
+      AppLocalizations.of(context)!.october,
+      AppLocalizations.of(context)!.november,
+      AppLocalizations.of(context)!.december,
     ];
     return months[month - 1];
   }
 
   void _previousMonth() {
     setState(() {
-      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1, 1);
+      _selectedMonth = DateTime(
+        _selectedMonth.year,
+        _selectedMonth.month - 1,
+        1,
+      );
     });
   }
 
   void _nextMonth() {
     final now = DateTime.now();
-    final isCurrentMonth = _selectedMonth.year == now.year && _selectedMonth.month == now.month;
+    final isCurrentMonth =
+        _selectedMonth.year == now.year && _selectedMonth.month == now.month;
     if (!isCurrentMonth) {
       setState(() {
-        _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
+        _selectedMonth = DateTime(
+          _selectedMonth.year,
+          _selectedMonth.month + 1,
+          1,
+        );
       });
     }
   }
@@ -64,10 +74,13 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const AppText.title('Daily Spin History'),
+        title: AppText.title(AppLocalizations.of(context)!.dailySpinHistory),
         centerTitle: false,
       ),
       body: Column(
@@ -80,19 +93,22 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.chevron_left),
+                  icon: const Icon(Icons.chevron_left_rounded),
                   onPressed: _previousMonth,
                 ),
                 Expanded(
                   child: Center(
                     child: Text(
-                      '${_getMonthName(_selectedMonth.month)} ${_selectedMonth.year}',
+                      AppLocalizations.of(context)!.text(
+                        '${_getMonthName(_selectedMonth.month)}',
+                        '${_selectedMonth.year}',
+                      ),
                       style: AppTypography.labelLarge().copyWith(fontSize: 18),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.chevron_right),
+                  icon: const Icon(Icons.chevron_right_rounded),
                   onPressed: _nextMonth,
                 ),
               ],
@@ -133,7 +149,8 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
             if (dateStr != null) {
               try {
                 final date = DateTime.parse(dateStr);
-                if (date.year == _selectedMonth.year && date.month == _selectedMonth.month) {
+                if (date.year == _selectedMonth.year &&
+                    date.month == _selectedMonth.month) {
                   if (!spinsByDate.containsKey(date.day)) {
                     spinsByDate[date.day] = [];
                   }
@@ -156,19 +173,28 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
               childAspectRatio: 1.2,
               mainAxisSpacing: 4,
               crossAxisSpacing: 4,
-              children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) {
-                return Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    day,
-                    style: AppTypography.labelSmall().copyWith(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: context.themeTextSecondary,
-                    ),
-                  ),
-                );
-              }).toList(),
+              children:
+                  [
+                    'Sun',
+                    AppLocalizations.of(context)!.mon,
+                    AppLocalizations.of(context)!.tue,
+                    AppLocalizations.of(context)!.wed,
+                    AppLocalizations.of(context)!.thu,
+                    AppLocalizations.of(context)!.fri,
+                    AppLocalizations.of(context)!.sat,
+                  ].map((day) {
+                    return Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        day,
+                        style: AppTypography.labelSmall().copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: context.themeTextSecondary,
+                        ),
+                      ),
+                    );
+                  }).toList(),
             ),
             const SizedBox(height: 8),
             // Calendar days
@@ -184,7 +210,8 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
               itemCount: 42,
               itemBuilder: (context, index) {
                 int? day;
-                if (index >= startingDayOfWeek - 1 && index < startingDayOfWeek - 1 + daysInMonth) {
+                if (index >= startingDayOfWeek - 1 &&
+                    index < startingDayOfWeek - 1 + daysInMonth) {
                   day = index - (startingDayOfWeek - 1) + 1;
                 }
 
@@ -192,7 +219,9 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                   return const SizedBox();
                 }
 
-                final hasSpin = spinsByDate.containsKey(day) && spinsByDate[day]!.isNotEmpty;
+                final hasSpin =
+                    spinsByDate.containsKey(day) &&
+                    spinsByDate[day]!.isNotEmpty;
                 final spinData = hasSpin ? spinsByDate[day]![0] : null;
 
                 return _buildDayCard(context, day, hasSpin, spinData);
@@ -255,15 +284,15 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.check_circle,
+                      Icons.check_circle_rounded,
                       size: 12,
                       color: AppColors.success,
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      'Spinned',
+                      AppLocalizations.of(context)!.spinned,
                       style: AppTypography.bodySmall().copyWith(
-                        fontSize: 9,
+                        fontSize: 12,
                         color: AppColors.success,
                         fontWeight: FontWeight.bold,
                       ),
@@ -279,9 +308,9 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'No Spin',
+                  AppLocalizations.of(context)!.noSpin,
                   style: AppTypography.bodySmall().copyWith(
-                    fontSize: 9,
+                    fontSize: 12,
                     color: context.themeError,
                     fontWeight: FontWeight.bold,
                   ),
@@ -295,7 +324,8 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
   }
 
   void _showSpinDetails(BuildContext context, Map<String, dynamic> spinData) {
-    final carpenterName = spinData['carpenterName'] ?? 'Unknown';
+    final carpenterName =
+        spinData['carpenterName'] ?? AppLocalizations.of(context)!.unknown;
     final carpenterPhoto = spinData['carpenterPhoto'] ?? '';
     final dateStr = spinData['date'] as String?;
     final timestamp = spinData['timestamp'] as Timestamp?;
@@ -335,7 +365,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.emoji_events,
+                      Icons.emoji_events_rounded,
                       color: AppColors.success,
                       size: 24,
                     ),
@@ -346,7 +376,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Spin Winner',
+                          AppLocalizations.of(context)!.spinWinner,
                           style: AppTypography.labelSmall().copyWith(
                             fontSize: 12,
                             color: context.themeTextSecondary,
@@ -364,7 +394,10 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.success.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(6),
@@ -372,7 +405,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                     child: Text(
                       formattedTime,
                       style: AppTypography.labelSmall().copyWith(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: AppColors.success,
                       ),
                     ),
@@ -381,10 +414,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
               ),
               const SizedBox(height: 16),
               // Divider
-              Container(
-                height: 1,
-                color: context.themeBorder,
-              ),
+              Container(height: 1, color: context.themeBorder),
               const SizedBox(height: 16),
               // Winner Info
               Row(
@@ -404,7 +434,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                             color: context.themeBackground,
                           ),
                           child: Icon(
-                            Icons.person,
+                            Icons.person_rounded,
                             color: context.themeTextSecondary,
                           ),
                         ),
@@ -419,7 +449,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                         color: context.themeBackground,
                       ),
                       child: Icon(
-                        Icons.person,
+                        Icons.person_rounded,
                         color: context.themeTextSecondary,
                       ),
                     ),
@@ -429,10 +459,10 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Winner Name',
+                          AppLocalizations.of(context)!.winnerName,
                           style: AppTypography.bodySmall().copyWith(
                             color: context.themeTextSecondary,
-                            fontSize: 11,
+                            fontSize: 12,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -462,8 +492,8 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Close',
+                  child: Text(
+                    AppLocalizations.of(context)!.close,
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: 14,

@@ -394,7 +394,7 @@ abstract class AppLocalizations {
   /// No description provided for @mobileNumber.
   ///
   /// In en, this message translates to:
-  /// **'Mobile Number'**
+  /// **'Mobile number'**
   String get mobileNumber;
 
   /// No description provided for @firstName.
@@ -2386,14 +2386,14 @@ abstract class AppLocalizations {
   /// No description provided for @hoursAgo.
   ///
   /// In en, this message translates to:
-  /// **'{hours}h ago'**
-  String hoursAgo(int hours);
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String hoursAgo(int count);
 
   /// No description provided for @daysAgo.
   ///
   /// In en, this message translates to:
-  /// **'{days}d ago'**
-  String daysAgo(int days);
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String daysAgo(int count);
 
   /// No description provided for @billLabel.
   ///
@@ -2886,6 +2886,4770 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get notified when bills are approved or rejected. Manage your profile and preferences anytime.'**
   String get onboardingSlide3Body;
+
+  /// No description provided for @errorWithDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {details}'**
+  String errorWithDetails(String details);
+
+  /// No description provided for @siteNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Site name is required'**
+  String get siteNameRequired;
+
+  /// No description provided for @billDateFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill date cannot be in the future'**
+  String get billDateFuture;
+
+  /// No description provided for @duplicateBillDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate bill detected'**
+  String get duplicateBillDetected;
+
+  /// No description provided for @duplicateBillIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'A bill with the same site, amount and date already exists:'**
+  String get duplicateBillIntro;
+
+  /// No description provided for @siteNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Site name'**
+  String get siteNameLabel;
+
+  /// No description provided for @amountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amountLabel;
+
+  /// No description provided for @pointsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Points'**
+  String get pointsLabel;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @ptsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts'**
+  String ptsValue(String points);
+
+  /// No description provided for @duplicateBillVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'This might be a duplicate entry. Please check before adding.'**
+  String get duplicateBillVerify;
+
+  /// No description provided for @addBillAnywayQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to add this bill anyway?'**
+  String get addBillAnywayQuestion;
+
+  /// No description provided for @addAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get addAnyway;
+
+  /// No description provided for @billsPausedDiwali.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill submissions are paused for the Diwali celebration.'**
+  String get billsPausedDiwali;
+
+  /// No description provided for @earnPointsWhenApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'You will earn {points} points when approved'**
+  String earnPointsWhenApproved(String points);
+
+  /// No description provided for @vendorNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor name'**
+  String get vendorNameLabel;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @diwaliPrizeLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the Diwali prize list. Please try again.'**
+  String get diwaliPrizeLoadFailed;
+
+  /// No description provided for @featureEarnMore.
+  ///
+  /// In en, this message translates to:
+  /// **'EARN MORE'**
+  String get featureEarnMore;
+
+  /// No description provided for @featureEarnBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Bills\nEarn Points'**
+  String get featureEarnBody;
+
+  /// No description provided for @featureRedeemMore.
+  ///
+  /// In en, this message translates to:
+  /// **'REDEEM MORE'**
+  String get featureRedeemMore;
+
+  /// No description provided for @featureRedeemBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Exciting Rewards\n& Gifts'**
+  String get featureRedeemBody;
+
+  /// No description provided for @featureGrowMore.
+  ///
+  /// In en, this message translates to:
+  /// **'GROW MORE'**
+  String get featureGrowMore;
+
+  /// No description provided for @featureGrowBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Climb Leaderboard\nBe a Top Carpenter'**
+  String get featureGrowBody;
+
+  /// No description provided for @featureExclusive.
+  ///
+  /// In en, this message translates to:
+  /// **'EXCLUSIVE'**
+  String get featureExclusive;
+
+  /// No description provided for @featureExclusiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Benefits\nJust for You'**
+  String get featureExclusiveBody;
+
+  /// No description provided for @newAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'New announcement'**
+  String get newAnnouncement;
+
+  /// No description provided for @ptsToNextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts to {tier}'**
+  String ptsToNextLabel(String points, String tier);
+
+  /// No description provided for @platinumHighestTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Platinum — highest tier!'**
+  String get platinumHighestTier;
+
+  /// No description provided for @topCarpentersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top carpenters'**
+  String get topCarpentersTitle;
+
+  /// No description provided for @noRankingYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No ranking data yet'**
+  String get noRankingYet;
+
+  /// No description provided for @noWinnerToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No winner today'**
+  String get noWinnerToday;
+
+  /// No description provided for @spinNotDoneYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin not done yet · {date}'**
+  String spinNotDoneYet(String date);
+
+  /// No description provided for @todaysLuckyWinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s lucky winner'**
+  String get todaysLuckyWinner;
+
+  /// No description provided for @selectedViaDailySpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected via daily spin · {date}'**
+  String selectedViaDailySpin(String date);
+
+  /// No description provided for @notificationDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification deleted'**
+  String get notificationDeleted;
+
+  /// No description provided for @deleteAllNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all notifications'**
+  String get deleteAllNotifications;
+
+  /// No description provided for @deleteAllNotificationsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete all notifications? This cannot be undone.'**
+  String get deleteAllNotificationsConfirm;
+
+  /// No description provided for @deleteAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all'**
+  String get deleteAll;
+
+  /// No description provided for @notificationsDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} notifications deleted'**
+  String notificationsDeleted(String count);
+
+  /// No description provided for @unableToLoadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load notifications'**
+  String get unableToLoadNotifications;
+
+  /// No description provided for @errorLoadingNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading notifications'**
+  String get errorLoadingNotifications;
+
+  /// No description provided for @noNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get noNotificationsTitle;
+
+  /// No description provided for @noNotificationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any notifications yet'**
+  String get noNotificationsYet;
+
+  /// No description provided for @deleteNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete notification'**
+  String get deleteNotification;
+
+  /// No description provided for @deleteNotificationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this notification?'**
+  String get deleteNotificationConfirm;
+
+  /// No description provided for @addProfilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add a profile photo'**
+  String get addProfilePhoto;
+
+  /// No description provided for @profileUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdatedSuccess;
+
+  /// No description provided for @failedToUpdateProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get failedToUpdateProfile;
+
+  /// No description provided for @tapToChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change photo'**
+  String get tapToChangePhoto;
+
+  /// No description provided for @lastNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name *'**
+  String get lastNameRequired;
+
+  /// No description provided for @uploadingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading image...'**
+  String get uploadingImage;
+
+  /// No description provided for @completeProfileToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to complete your profile to continue'**
+  String get completeProfileToContinue;
+
+  /// No description provided for @couldNotMakeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not make call'**
+  String get couldNotMakeCall;
+
+  /// No description provided for @themeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeLabel;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @youWonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You won'**
+  String get youWonLabel;
+
+  /// No description provided for @pointsWon.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} points!'**
+  String pointsWon(String points);
+
+  /// No description provided for @pointsAddedToAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Points have been added to your account.'**
+  String get pointsAddedToAccount;
+
+  /// No description provided for @great.
+  ///
+  /// In en, this message translates to:
+  /// **'Great!'**
+  String get great;
+
+  /// No description provided for @spinAndWin.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin & win points!'**
+  String get spinAndWin;
+
+  /// No description provided for @spinAndWinSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get your daily spin and win exciting points'**
+  String get spinAndWinSubtitle;
+
+  /// No description provided for @alreadySpunToday.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve already spun today!\nCome back tomorrow for another chance.'**
+  String get alreadySpunToday;
+
+  /// No description provided for @nextTierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next tier: {tier}'**
+  String nextTierLabel(String tier);
+
+  /// No description provided for @ptsToNextTier.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts to next tier'**
+  String ptsToNextTier(String points);
+
+  /// No description provided for @platinumMaxLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Platinum tier — maximum level'**
+  String get platinumMaxLevel;
+
+  /// No description provided for @filterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filterLabel;
+
+  /// No description provided for @totalApprovedPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Total approved points'**
+  String get totalApprovedPoints;
+
+  /// No description provided for @billsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} bills'**
+  String billsCount(String count);
+
+  /// No description provided for @billAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill attachment'**
+  String get billAttachment;
+
+  /// No description provided for @pendingApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending approval'**
+  String get pendingApproval;
+
+  /// No description provided for @backToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get backToSignIn;
+
+  /// No description provided for @noPinAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'No PIN account was found for this number. Sign in with email and password or Google.'**
+  String get noPinAccount;
+
+  /// No description provided for @signInWithMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with mobile number'**
+  String get signInWithMobile;
+
+  /// No description provided for @continueToPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to PIN'**
+  String get continueToPin;
+
+  /// No description provided for @backToOtherSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to other sign-in options'**
+  String get backToOtherSignIn;
+
+  /// No description provided for @branchHasAdminDefaulted.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected branch already has an Admin. Role set to Carpenter.'**
+  String get branchHasAdminDefaulted;
+
+  /// No description provided for @selectBranchToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a branch to continue.'**
+  String get selectBranchToContinue;
+
+  /// No description provided for @oneAdminPerBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'This branch already has an Admin. Only one Admin is allowed per branch.'**
+  String get oneAdminPerBranch;
+
+  /// No description provided for @branchRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch *'**
+  String get branchRequired;
+
+  /// No description provided for @selectYourBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your branch'**
+  String get selectYourBranch;
+
+  /// No description provided for @userRoleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'User role *'**
+  String get userRoleRequired;
+
+  /// No description provided for @roleCarpenterWoodworker.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter / Woodworker'**
+  String get roleCarpenterWoodworker;
+
+  /// No description provided for @roleArchitect.
+  ///
+  /// In en, this message translates to:
+  /// **'Architect'**
+  String get roleArchitect;
+
+  /// No description provided for @roleInteriorDesigner.
+  ///
+  /// In en, this message translates to:
+  /// **'Interior designer'**
+  String get roleInteriorDesigner;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get fullName;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @noActiveRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'No active roles are available. Contact the Super Admin.'**
+  String get noActiveRoles;
+
+  /// No description provided for @noActiveBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'No active branches are available. Contact your administrator.'**
+  String get noActiveBranches;
+
+  /// No description provided for @cancelReturnToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel and return to sign in'**
+  String get cancelReturnToSignIn;
+
+  /// No description provided for @selectRoleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select role *'**
+  String get selectRoleRequired;
+
+  /// No description provided for @previousPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previousPage;
+
+  /// No description provided for @tablePageInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {pages} · {from}–{to} of {total}'**
+  String tablePageInfo(String page, String pages, String from, String to, String total);
+
+  /// No description provided for @noRows.
+  ///
+  /// In en, this message translates to:
+  /// **'No rows'**
+  String get noRows;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
+  String get updateNow;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get maybeLater;
+
+  /// No description provided for @requiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredLabel;
+
+  /// No description provided for @installedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed'**
+  String get installedLabel;
+
+  /// No description provided for @updateMandatory.
+  ///
+  /// In en, this message translates to:
+  /// **'This update is required to keep using the app.'**
+  String get updateMandatory;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @billsAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills you submit will appear here.'**
+  String get billsAppearHere;
+
+  /// No description provided for @pendingBillsAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'New bills from carpenters will appear here for approval.'**
+  String get pendingBillsAppearHere;
+
+  /// No description provided for @tryChangingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try changing or clearing the filters.'**
+  String get tryChangingFilters;
+
+  /// No description provided for @carpentersAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered carpenters will appear here.'**
+  String get carpentersAppearHere;
+
+  /// No description provided for @statCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenters'**
+  String get statCarpenters;
+
+  /// No description provided for @statPendingBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending bills'**
+  String get statPendingBills;
+
+  /// No description provided for @statAwaitingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting review'**
+  String get statAwaitingReview;
+
+  /// No description provided for @statBillsThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills this month'**
+  String get statBillsThisMonth;
+
+  /// No description provided for @statApprovedThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} approved'**
+  String statApprovedThisMonth(String count);
+
+  /// No description provided for @statPointsIssued.
+  ///
+  /// In en, this message translates to:
+  /// **'Points issued'**
+  String get statPointsIssued;
+
+  /// No description provided for @statThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get statThisMonth;
+
+  /// No description provided for @statRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered'**
+  String get statRegistered;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} ({buildNumber})'**
+  String version(String version, String buildNumber);
+
+  /// No description provided for @switchToLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Light'**
+  String get switchToLight;
+
+  /// No description provided for @switchToDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Dark'**
+  String get switchToDark;
+
+  /// No description provided for @max.
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get max;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @to2.
+  ///
+  /// In en, this message translates to:
+  /// **'To {nextLabel}'**
+  String to2(String nextLabel);
+
+  /// No description provided for @spinNow2.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin Now!'**
+  String get spinNow2;
+
+  /// No description provided for @pleaseCompleteYourProfileFirstName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete your profile (first name, last name, and profile picture) to add bills and earn points.'**
+  String get pleaseCompleteYourProfileFirstName;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @pleaseLoginToSubmitBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login to submit bills'**
+  String get pleaseLoginToSubmitBills;
+
+  /// No description provided for @billSubmittedSuccessfullyAdminWillReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill submitted successfully! Admin will review it.'**
+  String get billSubmittedSuccessfullyAdminWillReview;
+
+  /// No description provided for @failedToSubmitBillPleaseTry.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit bill. Please try again.'**
+  String get failedToSubmitBillPleaseTry;
+
+  /// No description provided for @pleaseEnterBillAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter bill amount'**
+  String get pleaseEnterBillAmount;
+
+  /// No description provided for @billDate2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Date *'**
+  String get billDate2;
+
+  /// No description provided for @selectBillDate2.
+  ///
+  /// In en, this message translates to:
+  /// **'Select bill date'**
+  String get selectBillDate2;
+
+  /// No description provided for @siteName.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Name *'**
+  String get siteName;
+
+  /// No description provided for @enterSiteLocationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter site/location name'**
+  String get enterSiteLocationName;
+
+  /// No description provided for @vendorNameOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor Name (Optional)'**
+  String get vendorNameOptional;
+
+  /// No description provided for @enterVendorStoreNameOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter vendor/store name (optional)'**
+  String get enterVendorStoreNameOptional;
+
+  /// No description provided for @noUserLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'No user logged in'**
+  String get noUserLoggedIn;
+
+  /// No description provided for @firstNameMustBeAtLeast.
+  ///
+  /// In en, this message translates to:
+  /// **'First name must be at least 2 characters'**
+  String get firstNameMustBeAtLeast;
+
+  /// No description provided for @firstNameIsTooLongMax.
+  ///
+  /// In en, this message translates to:
+  /// **'First name is too long (max 50 characters)'**
+  String get firstNameIsTooLongMax;
+
+  /// No description provided for @lastNameMustBeAtLeast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name must be at least 2 characters'**
+  String get lastNameMustBeAtLeast;
+
+  /// No description provided for @lastNameIsTooLongMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name is too long (max 50 characters)'**
+  String get lastNameIsTooLongMax;
+
+  /// No description provided for @failedToUploadProfileImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload profile image'**
+  String get failedToUploadProfileImage;
+
+  /// No description provided for @failedToUploadProfileImage2.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload profile image: {e}'**
+  String failedToUploadProfileImage2(String e);
+
+  /// No description provided for @enterYourFirstName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your first name'**
+  String get enterYourFirstName;
+
+  /// No description provided for @pleaseEnterYourFirstName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your first name'**
+  String get pleaseEnterYourFirstName;
+
+  /// No description provided for @enterYourLastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your last name'**
+  String get enterYourLastName;
+
+  /// No description provided for @pleaseEnterYourLastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your last name'**
+  String get pleaseEnterYourLastName;
+
+  /// No description provided for @user.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @trackYourPointsAndManageYour.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your points and manage your bills'**
+  String get trackYourPointsAndManageYour;
+
+  /// No description provided for @mAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{inMinutes}m ago'**
+  String mAgo(String inMinutes);
+
+  /// No description provided for @hAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{inHours}h ago'**
+  String hAgo(String inHours);
+
+  /// No description provided for @dAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{inDays}d ago'**
+  String dAgo(String inDays);
+
+  /// No description provided for @notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification'**
+  String get notification;
+
+  /// No description provided for @noCarpenterAccountsAreListedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'No carpenter accounts are listed for this branch yet.'**
+  String get noCarpenterAccountsAreListedFor;
+
+  /// No description provided for @continueToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to Home'**
+  String get continueToHome;
+
+  /// No description provided for @shubhDeepawali.
+  ///
+  /// In en, this message translates to:
+  /// **'Shubh Deepawali!'**
+  String get shubhDeepawali;
+
+  /// No description provided for @carpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'{branchName}  ·  {carpenterCount} carpenters'**
+  String carpenters(String branchName, String carpenterCount);
+
+  /// No description provided for @carpenterRewardBonusReport.
+  ///
+  /// In en, this message translates to:
+  /// **'CARPENTER REWARD & BONUS REPORT  ·  {dateFormat}'**
+  String carpenterRewardBonusReport(String dateFormat);
+
+  /// No description provided for @closeCelebration.
+  ///
+  /// In en, this message translates to:
+  /// **'Close celebration'**
+  String get closeCelebration;
+
+  /// No description provided for @deepawaliPrizeNight.
+  ///
+  /// In en, this message translates to:
+  /// **'✦  DEEPAWALI PRIZE NIGHT  ✦'**
+  String get deepawaliPrizeNight;
+
+  /// No description provided for @topPerformersGoldTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Performers - Gold Tier'**
+  String get topPerformersGoldTier;
+
+  /// No description provided for @ranks110.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranks 1-10'**
+  String get ranks110;
+
+  /// No description provided for @highPerformersSilverTier.
+  ///
+  /// In en, this message translates to:
+  /// **'High Performers - Silver Tier'**
+  String get highPerformersSilverTier;
+
+  /// No description provided for @ranks1130.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranks 11-30'**
+  String get ranks1130;
+
+  /// No description provided for @activePerformersBronzeTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Performers - Bronze Tier'**
+  String get activePerformersBronzeTier;
+
+  /// No description provided for @ranks31Onwards.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranks 31 onwards'**
+  String get ranks31Onwards;
+
+  /// No description provided for @totalCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Total carpenters: {entries}'**
+  String totalCarpenters(String entries);
+
+  /// No description provided for @totalPoints2.
+  ///
+  /// In en, this message translates to:
+  /// **'Total points'**
+  String get totalPoints2;
+
+  /// No description provided for @totalReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Total reward'**
+  String get totalReward;
+
+  /// No description provided for @totalBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Total bonus'**
+  String get totalBonus;
+
+  /// No description provided for @carpentersPointsRewardBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'{entries} carpenters  ·  {totalPoints} points  ·  {totalReward} reward  ·  {totalBonus} bonus'**
+  String carpentersPointsRewardBonus(String entries, String totalPoints, String totalReward, String totalBonus);
+
+  /// No description provided for @bonus.
+  ///
+  /// In en, this message translates to:
+  /// **'{bonusAmount} bonus  ·  {giftDetails}'**
+  String bonus(String bonusAmount, String giftDetails);
+
+  /// No description provided for @mobileNumberUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number unavailable'**
+  String get mobileNumberUnavailable;
+
+  /// No description provided for @reward.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward'**
+  String get reward;
+
+  /// No description provided for @bonus2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus'**
+  String get bonus2;
+
+  /// No description provided for @nil.
+  ///
+  /// In en, this message translates to:
+  /// **'Nil'**
+  String get nil;
+
+  /// No description provided for @gift.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift'**
+  String get gift;
+
+  /// No description provided for @reward2.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward ₹'**
+  String get reward2;
+
+  /// No description provided for @bonus3.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus ₹'**
+  String get bonus3;
+
+  /// No description provided for @giftDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift details'**
+  String get giftDetails;
+
+  /// No description provided for @remarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Remarks'**
+  String get remarks;
+
+  /// No description provided for @verifyYourIdentityToOpenBalaji.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your identity to open Balaji Points'**
+  String get verifyYourIdentityToOpenBalaji;
+
+  /// No description provided for @passwordResetLinksAreSentSecurely.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset links are sent securely by Firebase.'**
+  String get passwordResetLinksAreSentSecurely;
+
+  /// No description provided for @checkYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get checkYourEmail;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @ifAnAccountExistsForThis.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists for this address, Firebase has sent password reset instructions. Check your inbox and spam folder.'**
+  String get ifAnAccountExistsForThis;
+
+  /// No description provided for @enterTheEmailAddressLinkedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email address linked to your account. We’ll send you a secure link to choose a new password.'**
+  String get enterTheEmailAddressLinkedTo;
+
+  /// No description provided for @enterAValidEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get enterAValidEmailAddress;
+
+  /// No description provided for @sendAnotherResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send another reset link'**
+  String get sendAnotherResetLink;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send reset link'**
+  String get sendResetLink;
+
+  /// No description provided for @welcomeBack2.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack2;
+
+  /// No description provided for @signInToContinueTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue to {appName}'**
+  String signInToContinueTo(String appName);
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signIn;
+
+  /// No description provided for @useYourEmailAndPasswordOr.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your email and password, or sign in with your PIN.'**
+  String get useYourEmailAndPasswordOr;
+
+  /// No description provided for @pleaseEnterAValidEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get pleaseEnterAValidEmailAddress;
+
+  /// No description provided for @passwordMustBeAtLeast6.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMustBeAtLeast6;
+
+  /// No description provided for @loginWithPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Login with PIN'**
+  String get loginWithPin;
+
+  /// No description provided for @newToBalajiPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'New to Balaji Points? '**
+  String get newToBalajiPoints;
+
+  /// No description provided for @createAccount2.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAccount2;
+
+  /// No description provided for @designedAndDevelopedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Designed and developed by {companyName}'**
+  String designedAndDevelopedBy(String companyName);
+
+  /// No description provided for @signInWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogle;
+
+  /// No description provided for @hindi.
+  ///
+  /// In en, this message translates to:
+  /// **'Hindi'**
+  String get hindi;
+
+  /// No description provided for @tamil.
+  ///
+  /// In en, this message translates to:
+  /// **'Tamil'**
+  String get tamil;
+
+  /// No description provided for @forCurrentMobilePinAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'For current mobile + PIN accounts'**
+  String get forCurrentMobilePinAccounts;
+
+  /// No description provided for @enterAValid10DigitMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid 10-digit mobile number'**
+  String get enterAValid10DigitMobile;
+
+  /// No description provided for @yourDataIs100SecureWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is 100% secure with us'**
+  String get yourDataIs100SecureWith;
+
+  /// No description provided for @userAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'User already exists'**
+  String get userAlreadyExists;
+
+  /// No description provided for @permissionDeniedPleaseCheckFirebaseConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied. Please check Firebase configuration.'**
+  String get permissionDeniedPleaseCheckFirebaseConfiguration;
+
+  /// No description provided for @branchAdminAlreadyAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Admin (Already Assigned)'**
+  String get branchAdminAlreadyAssigned;
+
+  /// No description provided for @branchAdmin1PerBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Admin (1 per branch)'**
+  String get branchAdmin1PerBranch;
+
+  /// No description provided for @selectABranchToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a branch to continue.'**
+  String get selectABranchToContinue;
+
+  /// No description provided for @selectARoleToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a role to continue.'**
+  String get selectARoleToContinue;
+
+  /// No description provided for @selectAnActiveRoleToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an active role to continue.'**
+  String get selectAnActiveRoleToContinue;
+
+  /// No description provided for @yourInformationIsProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'Your information is protected'**
+  String get yourInformationIsProtected;
+
+  /// No description provided for @completeYourGoogleRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your Google registration'**
+  String get completeYourGoogleRegistration;
+
+  /// No description provided for @createYourAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get createYourAccount;
+
+  /// No description provided for @addYourMobileNumberAndChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your mobile number and choose your branch and role to finish setting up your account.'**
+  String get addYourMobileNumberAndChoose;
+
+  /// No description provided for @chooseYourRoleAndTheBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your role and the branch you belong to.'**
+  String get chooseYourRoleAndTheBranch;
+
+  /// No description provided for @enterYourFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get enterYourFullName;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get hidePassword;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get showPassword;
+
+  /// No description provided for @useAtLeast6Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 6 characters'**
+  String get useAtLeast6Characters;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @yourAccountAlreadyHasAnAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account already has an Admin role. Ask the Super Admin to assign your branch before continuing.'**
+  String get yourAccountAlreadyHasAnAdmin;
+
+  /// No description provided for @branchAdminAccessIsAssignedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Admin access is assigned by a Super Admin.'**
+  String get branchAdminAccessIsAssignedBy;
+
+  /// No description provided for @completeRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete registration'**
+  String get completeRegistration;
+
+  /// No description provided for @loadingRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading roles…'**
+  String get loadingRoles;
+
+  /// No description provided for @chooseOneRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one role'**
+  String get chooseOneRole;
+
+  /// No description provided for @selectARoleToContinue2.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a role to continue'**
+  String get selectARoleToContinue2;
+
+  /// No description provided for @loadingBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading branches…'**
+  String get loadingBranches;
+
+  /// No description provided for @selectABranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a branch'**
+  String get selectABranch;
+
+  /// No description provided for @cannotMakePhoneCallTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot make phone call to {phoneNumber}'**
+  String cannotMakePhoneCallTo(String phoneNumber);
+
+  /// No description provided for @errorMakingPhoneCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Error making phone call: {e}'**
+  String errorMakingPhoneCall(String e);
+
+  /// No description provided for @member.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get member;
+
+  /// No description provided for @updateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get updateRequired;
+
+  /// No description provided for @newVersionAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'New version available'**
+  String get newVersionAvailable;
+
+  /// No description provided for @latest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest'**
+  String get latest;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get processing;
+
+  /// No description provided for @installLatestToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Please install the latest version of {appName} to continue.'**
+  String installLatestToContinue(String appName);
+
+  /// No description provided for @newerVersionReady.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer version is ready with improvements and fixes.'**
+  String get newerVersionReady;
+
+  /// No description provided for @pleaseSelectACarpenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a carpenter'**
+  String get pleaseSelectACarpenter;
+
+  /// No description provided for @billSubmittedSuccessfullyItWillBe.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill submitted successfully! It will be reviewed.'**
+  String get billSubmittedSuccessfullyItWillBe;
+
+  /// No description provided for @duplicateBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Bill'**
+  String get duplicateBill;
+
+  /// No description provided for @aBillWithTheSameSite.
+  ///
+  /// In en, this message translates to:
+  /// **'A bill with the SAME site, amount, and date already exists for this carpenter:'**
+  String get aBillWithTheSameSite;
+
+  /// No description provided for @site.
+  ///
+  /// In en, this message translates to:
+  /// **'Site'**
+  String get site;
+
+  /// No description provided for @pts2.
+  ///
+  /// In en, this message translates to:
+  /// **'{duplicatePoints} pts'**
+  String pts2(String duplicatePoints);
+
+  /// No description provided for @pleaseVerifyThisIsNotA.
+  ///
+  /// In en, this message translates to:
+  /// **'Please verify this is not a duplicate entry.'**
+  String get pleaseVerifyThisIsNotA;
+
+  /// No description provided for @error2.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {e}'**
+  String error2(String e);
+
+  /// No description provided for @addAnyway2.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Anyway'**
+  String get addAnyway2;
+
+  /// No description provided for @addBillForCarpenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Bill for Carpenter'**
+  String get addBillForCarpenter;
+
+  /// No description provided for @carpenter2.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter *'**
+  String get carpenter2;
+
+  /// No description provided for @billAmount2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Amount (₹) *'**
+  String get billAmount2;
+
+  /// No description provided for @billImageOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Image (Optional)'**
+  String get billImageOptional;
+
+  /// No description provided for @siteName2.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Name'**
+  String get siteName2;
+
+  /// No description provided for @vendorName.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor Name'**
+  String get vendorName;
+
+  /// No description provided for @pendingApproval2.
+  ///
+  /// In en, this message translates to:
+  /// **'PENDING APPROVAL'**
+  String get pendingApproval2;
+
+  /// No description provided for @areYouSureYouWantTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to approve this bill?\n\n₹{billData} will be processed.'**
+  String areYouSureYouWantTo(String billData);
+
+  /// No description provided for @billRejected2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill rejected'**
+  String get billRejected2;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @billNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill not found'**
+  String get billNotFound;
+
+  /// No description provided for @billId.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill ID'**
+  String get billId;
+
+  /// No description provided for @submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {createdAt}'**
+  String submitted(String createdAt);
+
+  /// No description provided for @submittedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted On'**
+  String get submittedOn;
+
+  /// No description provided for @store.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get store;
+
+  /// No description provided for @carpenterInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter Info'**
+  String get carpenterInfo;
+
+  /// No description provided for @viewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View Profile'**
+  String get viewProfile;
+
+  /// No description provided for @pts3.
+  ///
+  /// In en, this message translates to:
+  /// **'{totalPoints} pts'**
+  String pts3(String totalPoints);
+
+  /// No description provided for @billSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Summary'**
+  String get billSummary;
+
+  /// No description provided for @billAmount3.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Amount'**
+  String get billAmount3;
+
+  /// No description provided for @pointsToCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Points to Credit'**
+  String get pointsToCredit;
+
+  /// No description provided for @billNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill No.'**
+  String get billNo;
+
+  /// No description provided for @pointsRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Rate'**
+  String get pointsRate;
+
+  /// No description provided for @t1Pt1000.
+  ///
+  /// In en, this message translates to:
+  /// **'1 pt / ₹1000'**
+  String get t1Pt1000;
+
+  /// No description provided for @billType.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Type'**
+  String get billType;
+
+  /// No description provided for @purchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase'**
+  String get purchase;
+
+  /// No description provided for @billAttachment2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Attachment'**
+  String get billAttachment2;
+
+  /// No description provided for @viewFullSize.
+  ///
+  /// In en, this message translates to:
+  /// **'View Full Size'**
+  String get viewFullSize;
+
+  /// No description provided for @downloadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Image'**
+  String get downloadImage;
+
+  /// No description provided for @generatePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate PDF'**
+  String get generatePdf;
+
+  /// No description provided for @timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get timeline;
+
+  /// No description provided for @billCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Created'**
+  String get billCreated;
+
+  /// No description provided for @waitingForApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Approval'**
+  String get waitingForApproval;
+
+  /// No description provided for @pendingActionFromAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending action from admin'**
+  String get pendingActionFromAdmin;
+
+  /// No description provided for @justNow2.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get justNow2;
+
+  /// No description provided for @minAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{inMinutes} min ago'**
+  String minAgo(String inMinutes);
+
+  /// No description provided for @billDetails2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Details - {billId}'**
+  String billDetails2(String billId);
+
+  /// No description provided for @errorLoadingBillDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading bill details'**
+  String get errorLoadingBillDetails;
+
+  /// No description provided for @noBillFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No bill found'**
+  String get noBillFound;
+
+  /// No description provided for @totalInstances.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Instances'**
+  String get totalInstances;
+
+  /// No description provided for @billEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Entries'**
+  String get billEntries;
+
+  /// No description provided for @instance.
+  ///
+  /// In en, this message translates to:
+  /// **'Instance {index}'**
+  String instance(String index);
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @noBillsToExportApplyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills to export. Apply filters or wait for data.'**
+  String get noBillsToExportApplyFilters;
+
+  /// No description provided for @preparingPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing PDF...'**
+  String get preparingPdf;
+
+  /// No description provided for @noBillsMatchCurrentFiltersFor.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills match current filters for export.'**
+  String get noBillsMatchCurrentFiltersFor;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed: {e}'**
+  String exportFailed(String e);
+
+  /// No description provided for @bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill #'**
+  String get bill;
+
+  /// No description provided for @approvedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved Date'**
+  String get approvedDate;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @exportAllBillsToPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export all bills to PDF'**
+  String get exportAllBillsToPdf;
+
+  /// No description provided for @approveThisBillOfPointsWill.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve this bill of ₹{amount}?\n\n{amount2} points will be added to the carpenter.'**
+  String approveThisBillOfPointsWill(String amount, String amount2);
+
+  /// No description provided for @billApprovedAndPointsAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill approved and points added successfully'**
+  String get billApprovedAndPointsAddedSuccessfully;
+
+  /// No description provided for @failedToApproveBill2.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to approve bill'**
+  String get failedToApproveBill2;
+
+  /// No description provided for @errorApprovingBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Error approving bill: {e}'**
+  String errorApprovingBill(String e);
+
+  /// No description provided for @failedToRejectBill2.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reject bill'**
+  String get failedToRejectBill2;
+
+  /// No description provided for @errorRejectingBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Error rejecting bill: {e}'**
+  String errorRejectingBill(String e);
+
+  /// No description provided for @dateFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Filters'**
+  String get dateFilters;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// No description provided for @pts4.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} pts'**
+  String pts4(String amount);
+
+  /// No description provided for @noHistoryAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No history available'**
+  String get noHistoryAvailable;
+
+  /// No description provided for @carpenterSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter Summary'**
+  String get carpenterSummary;
+
+  /// No description provided for @totalPts.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {totalPoints} pts'**
+  String totalPts(String totalPoints);
+
+  /// No description provided for @totalBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Bills'**
+  String get totalBills;
+
+  /// No description provided for @pointsBySite.
+  ///
+  /// In en, this message translates to:
+  /// **'Points by Site'**
+  String get pointsBySite;
+
+  /// No description provided for @pts5.
+  ///
+  /// In en, this message translates to:
+  /// **'{num} pts'**
+  String pts5(String num);
+
+  /// No description provided for @site2.
+  ///
+  /// In en, this message translates to:
+  /// **'Site: '**
+  String get site2;
+
+  /// No description provided for @billDate3.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Date: '**
+  String get billDate3;
+
+  /// No description provided for @approved2.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved: '**
+  String get approved2;
+
+  /// No description provided for @submitted2.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted: '**
+  String get submitted2;
+
+  /// No description provided for @allBillsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'All Bills History'**
+  String get allBillsHistory;
+
+  /// No description provided for @bills.
+  ///
+  /// In en, this message translates to:
+  /// **'{filtered}/{billsList} bills'**
+  String bills(String filtered, String billsList);
+
+  /// No description provided for @filterBySite.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Site'**
+  String get filterBySite;
+
+  /// No description provided for @allSites.
+  ///
+  /// In en, this message translates to:
+  /// **'All Sites'**
+  String get allSites;
+
+  /// No description provided for @billId2.
+  ///
+  /// In en, this message translates to:
+  /// **'#{index} - Bill ID: {billNum}'**
+  String billId2(String index, String billNum);
+
+  /// No description provided for @pts6.
+  ///
+  /// In en, this message translates to:
+  /// **'{pts} pts'**
+  String pts6(String pts);
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewards'**
+  String get rewards;
+
+  /// No description provided for @deleteAllNotifications2.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete All Notifications'**
+  String get deleteAllNotifications2;
+
+  /// No description provided for @areYouSureYouWantTo2.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete all admin notifications?'**
+  String get areYouSureYouWantTo2;
+
+  /// No description provided for @notificationSDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{docs} notification(s) deleted'**
+  String notificationSDeleted(String docs);
+
+  /// No description provided for @deleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed: {e}'**
+  String deleteFailed(String e);
+
+  /// No description provided for @balajiPointsAdminPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Balaji Points - Admin Panel'**
+  String get balajiPointsAdminPanel;
+
+  /// No description provided for @branchAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch admin'**
+  String get branchAdmin;
+
+  /// No description provided for @spin.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin'**
+  String get spin;
+
+  /// No description provided for @pointsRepair.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Repair'**
+  String get pointsRepair;
+
+  /// No description provided for @duplicateAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Accounts'**
+  String get duplicateAccounts;
+
+  /// No description provided for @exportUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Users'**
+  String get exportUsers;
+
+  /// No description provided for @cleanUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean Up'**
+  String get cleanUp;
+
+  /// No description provided for @backupDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Database'**
+  String get backupDatabase;
+
+  /// No description provided for @checkFirebaseDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Firebase Duplicates'**
+  String get checkFirebaseDuplicates;
+
+  /// No description provided for @smartCleanup.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Cleanup'**
+  String get smartCleanup;
+
+  /// No description provided for @sendGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Greeting'**
+  String get sendGreeting;
+
+  /// No description provided for @users2.
+  ///
+  /// In en, this message translates to:
+  /// **'Users - ...'**
+  String get users2;
+
+  /// No description provided for @users3.
+  ///
+  /// In en, this message translates to:
+  /// **'Users - {count}'**
+  String users3(String count);
+
+  /// No description provided for @pleaseEnterPinInBothFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter PIN in both fields'**
+  String get pleaseEnterPinInBothFields;
+
+  /// No description provided for @pinMustBe46Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN must be 4-6 digits'**
+  String get pinMustBe46Digits;
+
+  /// No description provided for @pinMustContainOnlyNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN must contain only numbers'**
+  String get pinMustContainOnlyNumbers;
+
+  /// No description provided for @pinResetSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN reset successfully'**
+  String get pinResetSuccessfully;
+
+  /// No description provided for @errorResettingPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Error resetting PIN: {e}'**
+  String errorResettingPin(String e);
+
+  /// No description provided for @resetPinFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset PIN for: {carpenterName}'**
+  String resetPinFor(String carpenterName);
+
+  /// No description provided for @phone2.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone: {carpenterPhone}'**
+  String phone2(String carpenterPhone);
+
+  /// No description provided for @carpenterWillNeedToUseThis.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter will need to use this new PIN to login. Make sure to communicate it securely.'**
+  String get carpenterWillNeedToUseThis;
+
+  /// No description provided for @newPin46Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'New PIN (4-6 digits)'**
+  String get newPin46Digits;
+
+  /// No description provided for @carpenterDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter Details'**
+  String get carpenterDetails;
+
+  /// No description provided for @carpenterNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter not found'**
+  String get carpenterNotFound;
+
+  /// No description provided for @carpenterInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter Information'**
+  String get carpenterInformation;
+
+  /// No description provided for @branch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get branch;
+
+  /// No description provided for @completeHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete History'**
+  String get completeHistory;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
+
+  /// No description provided for @fromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'From Date'**
+  String get fromDate;
+
+  /// No description provided for @toDate.
+  ///
+  /// In en, this message translates to:
+  /// **'To Date'**
+  String get toDate;
+
+  /// No description provided for @editCarpenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Carpenter'**
+  String get editCarpenter;
+
+  /// No description provided for @changingPhoneNumberWillUpdateLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing phone number will update login credentials'**
+  String get changingPhoneNumberWillUpdateLogin;
+
+  /// No description provided for @branchId.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch ID'**
+  String get branchId;
+
+  /// No description provided for @phoneNumberCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number cannot be empty'**
+  String get phoneNumberCannotBeEmpty;
+
+  /// No description provided for @carpenterUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter updated successfully'**
+  String get carpenterUpdatedSuccessfully;
+
+  /// No description provided for @errorUpdatingCarpenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating carpenter: {e}'**
+  String errorUpdatingCarpenter(String e);
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @pendingBillRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Bill Requests'**
+  String get pendingBillRequests;
+
+  /// No description provided for @siteMaterialPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Material Purchase'**
+  String get siteMaterialPurchase;
+
+  /// No description provided for @billNo2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill No. {billNumber}'**
+  String billNo2(String billNumber);
+
+  /// No description provided for @site3.
+  ///
+  /// In en, this message translates to:
+  /// **'Site: {siteName}'**
+  String site3(String siteName);
+
+  /// No description provided for @pts7.
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} pts'**
+  String pts7(String amount);
+
+  /// No description provided for @approveThisBillOfPointsWill2.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve this bill of ₹{amount}?\n\n{amount2} points will be added.'**
+  String approveThisBillOfPointsWill2(String amount, String amount2);
+
+  /// No description provided for @noHistoryFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No history found'**
+  String get noHistoryFound;
+
+  /// No description provided for @pointsAwarded.
+  ///
+  /// In en, this message translates to:
+  /// **'Points awarded'**
+  String get pointsAwarded;
+
+  /// No description provided for @pinMustBeAtLeast4.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN must be at least 4 digits'**
+  String get pinMustBeAtLeast4;
+
+  /// No description provided for @carpenterCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter created successfully!'**
+  String get carpenterCreatedSuccessfully;
+
+  /// No description provided for @failedToCreateCarpenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create carpenter'**
+  String get failedToCreateCarpenter;
+
+  /// No description provided for @pin46Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN (4-6 digits)'**
+  String get pin46Digits;
+
+  /// No description provided for @enterPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get enterPin;
+
+  /// No description provided for @firstNameOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name (Optional)'**
+  String get firstNameOptional;
+
+  /// No description provided for @enterFirstName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter first name'**
+  String get enterFirstName;
+
+  /// No description provided for @lastNameOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name (Optional)'**
+  String get lastNameOptional;
+
+  /// No description provided for @enterLastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter last name'**
+  String get enterLastName;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @preparingCarpenterListPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing carpenter list PDF...'**
+  String get preparingCarpenterListPdf;
+
+  /// No description provided for @noCarpentersToExportForCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'No carpenters to export for current filters.'**
+  String get noCarpentersToExportForCurrent;
+
+  /// No description provided for @carpenterListExportedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter list exported successfully!'**
+  String get carpenterListExportedSuccessfully;
+
+  /// No description provided for @errorExportingPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Error exporting PDF: {e}'**
+  String errorExportingPdf(String e);
+
+  /// No description provided for @exportCarpenterListToPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export carpenter list to PDF'**
+  String get exportCarpenterListToPdf;
+
+  /// No description provided for @sortByPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Points'**
+  String get sortByPoints;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Name'**
+  String get sortByName;
+
+  /// No description provided for @recentJoins.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Joins'**
+  String get recentJoins;
+
+  /// No description provided for @tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Tier: {tier}'**
+  String tier(String tier);
+
+  /// No description provided for @phoneTierPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone: {phone}\nTier: {tier}\nPoints: {totalPoints}'**
+  String phoneTierPoints(String phone, String tier, String totalPoints);
+
+  /// No description provided for @points2.
+  ///
+  /// In en, this message translates to:
+  /// **'{num} Points'**
+  String points2(String num);
+
+  /// No description provided for @deleteAll2.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete All'**
+  String get deleteAll2;
+
+  /// No description provided for @unableToLoadAdminNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load admin notifications'**
+  String get unableToLoadAdminNotifications;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No Notifications'**
+  String get noNotifications;
+
+  /// No description provided for @youDonTHaveAnyAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any admin notifications yet'**
+  String get youDonTHaveAnyAdmin;
+
+  /// No description provided for @deleteNotification2.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Notification'**
+  String get deleteNotification2;
+
+  /// No description provided for @dailySpinHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Spin History'**
+  String get dailySpinHistory;
+
+  /// No description provided for @text.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} {year}'**
+  String text(String month, String year);
+
+  /// No description provided for @mon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get mon;
+
+  /// No description provided for @tue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get tue;
+
+  /// No description provided for @wed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get wed;
+
+  /// No description provided for @thu.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get thu;
+
+  /// No description provided for @fri.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get fri;
+
+  /// No description provided for @sat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get sat;
+
+  /// No description provided for @spinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Spinned'**
+  String get spinned;
+
+  /// No description provided for @noSpin.
+  ///
+  /// In en, this message translates to:
+  /// **'No Spin'**
+  String get noSpin;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @spinWinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin Winner'**
+  String get spinWinner;
+
+  /// No description provided for @winnerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Winner Name'**
+  String get winnerName;
+
+  /// No description provided for @failedToFetchCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to fetch carpenters: {e}'**
+  String failedToFetchCarpenters(String e);
+
+  /// No description provided for @failedToPickImage2.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick image: {e}'**
+  String failedToPickImage2(String e);
+
+  /// No description provided for @failedToCaptureImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to capture image: {e}'**
+  String failedToCaptureImage(String e);
+
+  /// No description provided for @failedToUploadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image: {e}'**
+  String failedToUploadImage(String e);
+
+  /// No description provided for @notificationSentToCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent to {notificationCount} carpenters'**
+  String notificationSentToCarpenters(String notificationCount);
+
+  /// No description provided for @failedToSendNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send notifications: {e}'**
+  String failedToSendNotifications(String e);
+
+  /// No description provided for @pleaseEnterAMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a message'**
+  String get pleaseEnterAMessage;
+
+  /// No description provided for @pleaseSelectAtLeastOneChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one channel'**
+  String get pleaseSelectAtLeastOneChannel;
+
+  /// No description provided for @notAuthenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not authenticated'**
+  String get notAuthenticated;
+
+  /// No description provided for @showInApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Show in App'**
+  String get showInApp;
+
+  /// No description provided for @greetingSentSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Greeting sent successfully!'**
+  String get greetingSentSuccessfully;
+
+  /// No description provided for @sendingGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending greeting...'**
+  String get sendingGreeting;
+
+  /// No description provided for @composeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Compose Message'**
+  String get composeMessage;
+
+  /// No description provided for @enterGreetingMessageForAllCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter greeting message for all carpenters'**
+  String get enterGreetingMessageForAllCarpenters;
+
+  /// No description provided for @imageOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Image (Optional)'**
+  String get imageOptional;
+
+  /// No description provided for @pickFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick from Gallery'**
+  String get pickFromGallery;
+
+  /// No description provided for @orEnterImageUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Or enter image URL:'**
+  String get orEnterImageUrl;
+
+  /// No description provided for @enterImageUrlJpgPng.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter image URL (JPG/PNG)'**
+  String get enterImageUrlJpgPng;
+
+  /// No description provided for @invalidImageUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid image URL'**
+  String get invalidImageUrl;
+
+  /// No description provided for @selectChannels.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Channels'**
+  String get selectChannels;
+
+  /// No description provided for @showInAppHomeBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Show in App (Home Banner)'**
+  String get showInAppHomeBanner;
+
+  /// No description provided for @bannerOnCarpenterHomeScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Banner on carpenter home screen'**
+  String get bannerOnCarpenterHomeScreen;
+
+  /// No description provided for @whatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsapp;
+
+  /// No description provided for @manualSendViaWhatsappApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual send via WhatsApp app'**
+  String get manualSendViaWhatsappApp;
+
+  /// No description provided for @manualSendViaSmsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual send via SMS app'**
+  String get manualSendViaSmsApp;
+
+  /// No description provided for @noteWhatsappAndSmsUseDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: WhatsApp and SMS use device-assisted flow. Admin must confirm each message in the native app.'**
+  String get noteWhatsappAndSmsUseDevice;
+
+  /// No description provided for @whatsappNotAvailableFor.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp not available for {name}'**
+  String whatsappNotAvailableFor(String name);
+
+  /// No description provided for @smsNotAvailableFor.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS not available for {name}'**
+  String smsNotAvailableFor(String name);
+
+  /// No description provided for @sendToAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to All?'**
+  String get sendToAll;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress: {i}/{carpenters}'**
+  String progress(String i, String carpenters);
+
+  /// No description provided for @opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened: {name}\n{phone}'**
+  String opened(String name, String phone);
+
+  /// No description provided for @tapSendInTheAppThen.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Send in the app, then tap OK here to continue.'**
+  String get tapSendInTheAppThen;
+
+  /// No description provided for @sentToAllCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to all {sentCount} carpenters'**
+  String sentToAllCarpenters(String sentCount);
+
+  /// No description provided for @confirmSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Send'**
+  String get confirmSend;
+
+  /// No description provided for @sendAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Send All'**
+  String get sendAll;
+
+  /// No description provided for @sendViaWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'Send via WhatsApp'**
+  String get sendViaWhatsapp;
+
+  /// No description provided for @sendViaSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Send via SMS'**
+  String get sendViaSms;
+
+  /// No description provided for @pleaseWait24HoursFromThe.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait 24 hours from the last spin'**
+  String get pleaseWait24HoursFromThe;
+
+  /// No description provided for @noCarpentersWithApprovedBillsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No carpenters with approved bills today'**
+  String get noCarpentersWithApprovedBillsToday;
+
+  /// No description provided for @noEligibleCarpentersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible carpenters found'**
+  String get noEligibleCarpentersFound;
+
+  /// No description provided for @isTodaySWinner.
+  ///
+  /// In en, this message translates to:
+  /// **'{carpenterName} is today\'s winner!'**
+  String isTodaySWinner(String carpenterName);
+
+  /// No description provided for @selectALuckyWinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a lucky winner'**
+  String get selectALuckyWinner;
+
+  /// No description provided for @viewSpinHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View Spin History'**
+  String get viewSpinHistory;
+
+  /// No description provided for @winner2.
+  ///
+  /// In en, this message translates to:
+  /// **'Winner: {winnerName}'**
+  String winner2(String winnerName);
+
+  /// No description provided for @noPreviousSpins.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous spins'**
+  String get noPreviousSpins;
+
+  /// No description provided for @readyToSpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to spin!'**
+  String get readyToSpin;
+
+  /// No description provided for @nextSpinInHM.
+  ///
+  /// In en, this message translates to:
+  /// **'Next spin in: {hoursRemaining}h {minutesRemaining}m'**
+  String nextSpinInHM(String hoursRemaining, String minutesRemaining);
+
+  /// No description provided for @todaySWinners.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Winners'**
+  String get todaySWinners;
+
+  /// No description provided for @noWinnersYetToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No winners yet today'**
+  String get noWinnersYetToday;
+
+  /// No description provided for @monthlyWinners.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Winners'**
+  String get monthlyWinners;
+
+  /// No description provided for @fullHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Full History'**
+  String get fullHistory;
+
+  /// No description provided for @noWinnersThisMonthYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No winners this month yet'**
+  String get noWinnersThisMonthYet;
+
+  /// No description provided for @untitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get untitled;
+
+  /// No description provided for @pleaseEnterAValidNumberFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid number for points'**
+  String get pleaseEnterAValidNumberFor;
+
+  /// No description provided for @pleaseUploadABannerImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload a banner image'**
+  String get pleaseUploadABannerImage;
+
+  /// No description provided for @failedToUploadBannerImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload banner image'**
+  String get failedToUploadBannerImage;
+
+  /// No description provided for @loadingEligibleCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading eligible carpenters...'**
+  String get loadingEligibleCarpenters;
+
+  /// No description provided for @errorLoadingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data'**
+  String get errorLoadingData;
+
+  /// No description provided for @noEligibleCarpentersToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No Eligible Carpenters Today'**
+  String get noEligibleCarpentersToday;
+
+  /// No description provided for @noCarpentersHaveApprovedBillsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!'**
+  String get noCarpentersHaveApprovedBillsToday;
+
+  /// No description provided for @todaySEligibleCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Eligible Carpenters'**
+  String get todaySEligibleCarpenters;
+
+  /// No description provided for @eligible.
+  ///
+  /// In en, this message translates to:
+  /// **'{todayStr} • {carpenters} eligible'**
+  String eligible(String todayStr, String carpenters);
+
+  /// No description provided for @branchAdminAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch admin accounts'**
+  String get branchAdminAccounts;
+
+  /// No description provided for @reviewEachAdminAndTheBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Review each admin and the branch they manage. Reset passwords or remove an account.'**
+  String get reviewEachAdminAndTheBranch;
+
+  /// No description provided for @searchByNameEmailOrBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, email or branch'**
+  String get searchByNameEmailOrBranch;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearSearch;
+
+  /// No description provided for @loadingBranchAdminAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading branch admin accounts…'**
+  String get loadingBranchAdminAccounts;
+
+  /// No description provided for @noBranchAdminAccountsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No branch admin accounts yet.'**
+  String get noBranchAdminAccountsYet;
+
+  /// No description provided for @loadingBranchNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading branch names…'**
+  String get loadingBranchNames;
+
+  /// No description provided for @noEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'No email'**
+  String get noEmail;
+
+  /// No description provided for @noAdminAccountsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin accounts match “{search}”.'**
+  String noAdminAccountsMatch(String search);
+
+  /// No description provided for @adminAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin accounts'**
+  String get adminAccounts;
+
+  /// No description provided for @passwordUpdatedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated for {email}.'**
+  String passwordUpdatedFor(String email);
+
+  /// No description provided for @deleteBranchAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete branch admin?'**
+  String get deleteBranchAdmin;
+
+  /// No description provided for @deleteForTheyWillLoseSign.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {email} for {branchName}? They will lose sign-in access. Branch members and their points will be kept.'**
+  String deleteForTheyWillLoseSign(String email, String branchName);
+
+  /// No description provided for @deleteAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete admin'**
+  String get deleteAdmin;
+
+  /// No description provided for @adminAccountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin account deleted.'**
+  String get adminAccountDeleted;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePassword;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @changeAdminPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change admin password'**
+  String get changeAdminPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPassword;
+
+  /// No description provided for @useAtLeast8Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters'**
+  String get useAtLeast8Characters;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get confirmNewPassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get updatePassword;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// No description provided for @branchManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch management'**
+  String get branchManagement;
+
+  /// No description provided for @branchesManageBranchAccessAndStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'{docs} branches · manage branch access and status'**
+  String branchesManageBranchAccessAndStatus(String docs);
+
+  /// No description provided for @addBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Add branch'**
+  String get addBranch;
+
+  /// No description provided for @noBranchesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No branches yet.'**
+  String get noBranchesYet;
+
+  /// No description provided for @branchesCouldNotBeLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches could not be loaded.'**
+  String get branchesCouldNotBeLoaded;
+
+  /// No description provided for @diwaliCelebrationEnabledAddBillIs.
+  ///
+  /// In en, this message translates to:
+  /// **'Diwali celebration enabled. Add Bill is hidden for this branch.'**
+  String get diwaliCelebrationEnabledAddBillIs;
+
+  /// No description provided for @diwaliCelebrationDisabledAddBillIs.
+  ///
+  /// In en, this message translates to:
+  /// **'Diwali celebration disabled. Add Bill is available for this branch.'**
+  String get diwaliCelebrationDisabledAddBillIs;
+
+  /// No description provided for @unableToUpdateTheBranchCelebration.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update the branch celebration setting.'**
+  String get unableToUpdateTheBranchCelebration;
+
+  /// No description provided for @codeId.
+  ///
+  /// In en, this message translates to:
+  /// **'Code: {branchCode}  ·  ID: {branchId}'**
+  String codeId(String branchCode, String branchId);
+
+  /// No description provided for @diwaliCelebrationOnHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Diwali celebration on Home'**
+  String get diwaliCelebrationOnHome;
+
+  /// No description provided for @showsTheBranchPrizeListAnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows the branch prize list and hides Add Bill.'**
+  String get showsTheBranchPrizeListAnd;
+
+  /// No description provided for @offNoPopupAddBillRemains.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: no popup; Add Bill remains available.'**
+  String get offNoPopupAddBillRemains;
+
+  /// No description provided for @branchDeactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch deactivated.'**
+  String get branchDeactivated;
+
+  /// No description provided for @branchActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch activated.'**
+  String get branchActivated;
+
+  /// No description provided for @unableToUpdateTheBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update the branch.'**
+  String get unableToUpdateTheBranch;
+
+  /// No description provided for @deactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get deactivate;
+
+  /// No description provided for @activate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get activate;
+
+  /// No description provided for @branchCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch created ({id})'**
+  String branchCreated(String id);
+
+  /// No description provided for @failedToCreateBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create branch'**
+  String get failedToCreateBranch;
+
+  /// No description provided for @newBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'New Branch'**
+  String get newBranch;
+
+  /// No description provided for @branchFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Full Name *'**
+  String get branchFullName;
+
+  /// No description provided for @shortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Short Name *'**
+  String get shortName;
+
+  /// No description provided for @enterAShortBranchName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a short branch name'**
+  String get enterAShortBranchName;
+
+  /// No description provided for @branchCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Code *'**
+  String get branchCode;
+
+  /// No description provided for @use216LettersNumbersOr.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 2–16 letters, numbers or hyphens'**
+  String get use216LettersNumbersOr;
+
+  /// No description provided for @address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// No description provided for @shareTheTemporaryPasswordSecurelyThe.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the temporary password securely. The admin can change it after their first sign-in.'**
+  String get shareTheTemporaryPasswordSecurelyThe;
+
+  /// No description provided for @adminCreatedForTheyCanSign.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin {email} created for {branchName}. They can sign in with email and password.'**
+  String adminCreatedForTheyCanSign(String email, String branchName);
+
+  /// No description provided for @selectABranchFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a branch first.'**
+  String get selectABranchFirst;
+
+  /// No description provided for @adminDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Details'**
+  String get adminDetails;
+
+  /// No description provided for @mobileNumber10Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number * (10 digits)'**
+  String get mobileNumber10Digits;
+
+  /// No description provided for @enterValid10DigitPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter valid 10-digit phone'**
+  String get enterValid10DigitPhone;
+
+  /// No description provided for @emailAndPasswordLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Email and password login'**
+  String get emailAndPasswordLogin;
+
+  /// No description provided for @emailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address *'**
+  String get emailAddress;
+
+  /// No description provided for @temporaryPassword8CharactersMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary password * (8 characters minimum)'**
+  String get temporaryPassword8CharactersMinimum;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password *'**
+  String get confirmPassword;
+
+  /// No description provided for @assignBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Branch'**
+  String get assignBranch;
+
+  /// No description provided for @loadingActiveBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading active branches…'**
+  String get loadingActiveBranches;
+
+  /// No description provided for @noActiveBranchesFoundCreateOr.
+  ///
+  /// In en, this message translates to:
+  /// **'No active branches found. Create or activate a branch before adding an admin.'**
+  String get noActiveBranchesFoundCreateOr;
+
+  /// No description provided for @selectBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Select branch'**
+  String get selectBranch;
+
+  /// No description provided for @creatingAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating account…'**
+  String get creatingAccount;
+
+  /// No description provided for @createAdminAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create admin account'**
+  String get createAdminAccount;
+
+  /// No description provided for @signOutOfSuperAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of super admin?'**
+  String get signOutOfSuperAdmin;
+
+  /// No description provided for @superAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin'**
+  String get superAdmin;
+
+  /// No description provided for @superAdminConsole.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin Console'**
+  String get superAdminConsole;
+
+  /// No description provided for @branchesAdministratorsAndPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches, administrators and points'**
+  String get branchesAdministratorsAndPoints;
+
+  /// No description provided for @branches.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches'**
+  String get branches;
+
+  /// No description provided for @createAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Admin'**
+  String get createAdmin;
+
+  /// No description provided for @roles.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles'**
+  String get roles;
+
+  /// No description provided for @superAdmin2.
+  ///
+  /// In en, this message translates to:
+  /// **'Super admin'**
+  String get superAdmin2;
+
+  /// No description provided for @createAdmin2.
+  ///
+  /// In en, this message translates to:
+  /// **'Create admin'**
+  String get createAdmin2;
+
+  /// No description provided for @pointsReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Points reset'**
+  String get pointsReset;
+
+  /// No description provided for @onlyPointsTiersAndPointsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Only points, tiers and points history for carpenters, architects and interior designers are cleared. User accounts, login access, branch admins and bills stay unchanged.'**
+  String get onlyPointsTiersAndPointsHistory;
+
+  /// No description provided for @afterPrizeDistributionStartAFresh.
+  ///
+  /// In en, this message translates to:
+  /// **'After prize distribution, start a fresh points season for one branch.'**
+  String get afterPrizeDistributionStartAFresh;
+
+  /// No description provided for @resetUsersAndDeletedHistoryRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'{branchName}: reset {usersReset} users and deleted {historyDocumentsDeleted} history records. Accounts and bills were kept.'**
+  String resetUsersAndDeletedHistoryRecords(String branchName, String usersReset, String historyDocumentsDeleted);
+
+  /// No description provided for @thisPermanentlyClearsPointsAndPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently clears points and points history for carpenters, architects and interior designers in this branch. User accounts, branch admins and bills are kept.'**
+  String get thisPermanentlyClearsPointsAndPoints;
+
+  /// No description provided for @hasEligibleUsersPointsAndHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'{branchName} has {eligibleUsers} eligible users, {currentPoints} points and {historyDocuments} history items.'**
+  String hasEligibleUsersPointsAndHistory(String branchName, String eligibleUsers, String currentPoints, String historyDocuments);
+
+  /// No description provided for @resetBranchPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset branch points?'**
+  String get resetBranchPoints;
+
+  /// No description provided for @typeToConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Type {branchId} to confirm'**
+  String typeToConfirm(String branchId);
+
+  /// No description provided for @resetPointsAndHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset points and history'**
+  String get resetPointsAndHistory;
+
+  /// No description provided for @couldNotLoadBranchesForPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load branches for points cleanup.'**
+  String get couldNotLoadBranchesForPoints;
+
+  /// No description provided for @annualPointsReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual points reset'**
+  String get annualPointsReset;
+
+  /// No description provided for @branchToReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch to reset'**
+  String get branchToReset;
+
+  /// No description provided for @checkingBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking branch…'**
+  String get checkingBranch;
+
+  /// No description provided for @previewReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview reset'**
+  String get previewReset;
+
+  /// No description provided for @createABranchBeforeResettingPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a branch before resetting points.'**
+  String get createABranchBeforeResettingPoints;
+
+  /// No description provided for @cleanupPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleanup preview · {branchName}'**
+  String cleanupPreview(String branchName);
+
+  /// No description provided for @eligibleUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible users'**
+  String get eligibleUsers;
+
+  /// No description provided for @currentPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Current points'**
+  String get currentPoints;
+
+  /// No description provided for @historyItems.
+  ///
+  /// In en, this message translates to:
+  /// **'History items'**
+  String get historyItems;
+
+  /// No description provided for @resettingBranchPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting branch points…'**
+  String get resettingBranchPoints;
+
+  /// No description provided for @couldNotLoadSavedRolesShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load saved roles. Showing the four built-in roles. {loadError}'**
+  String couldNotLoadSavedRolesShowing(String loadError);
+
+  /// No description provided for @roleIdsAreStoredWithUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Role IDs are stored with user accounts. Deleting a role removes it from new registrations and preserves existing accounts.'**
+  String get roleIdsAreStoredWithUser;
+
+  /// No description provided for @willBeRemovedFromNewRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will be removed from new registration. Existing users keep their role and account data.'**
+  String willBeRemovedFromNewRegistration(String name);
+
+  /// No description provided for @roleCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Role created: {name} ({id}).'**
+  String roleCreated(String name, String id);
+
+  /// No description provided for @restoreRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore role?'**
+  String get restoreRole;
+
+  /// No description provided for @deleteRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete role?'**
+  String get deleteRole;
+
+  /// No description provided for @willBeAvailableForNewAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will be available for new account registration.'**
+  String willBeAvailableForNewAccount(String name);
+
+  /// No description provided for @restoreRole2.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore role'**
+  String get restoreRole2;
+
+  /// No description provided for @deleteRole2.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete role'**
+  String get deleteRole2;
+
+  /// No description provided for @accountRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Account roles'**
+  String get accountRoles;
+
+  /// No description provided for @manageTheRolesShownInCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage the roles shown in create account.'**
+  String get manageTheRolesShownInCreate;
+
+  /// No description provided for @addRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Add role'**
+  String get addRole;
+
+  /// No description provided for @loadingAccountRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading account roles…'**
+  String get loadingAccountRoles;
+
+  /// No description provided for @noRolesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No roles found.'**
+  String get noRolesFound;
+
+  /// No description provided for @roleId.
+  ///
+  /// In en, this message translates to:
+  /// **'Role ID: {id}'**
+  String roleId(String id);
+
+  /// No description provided for @restore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
+
+  /// No description provided for @deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get deleted;
+
+  /// No description provided for @addAccountRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Add account role'**
+  String get addAccountRole;
+
+  /// No description provided for @roleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Role name *'**
+  String get roleName;
+
+  /// No description provided for @enterAtLeast2Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter at least 2 characters'**
+  String get enterAtLeast2Characters;
+
+  /// No description provided for @shortFormOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Short form (optional)'**
+  String get shortFormOptional;
+
+  /// No description provided for @exampleAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Ar.'**
+  String get exampleAr;
+
+  /// No description provided for @use10CharactersOrLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 10 characters or less'**
+  String get use10CharactersOrLess;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get saving;
+
+  /// No description provided for @saveRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Save role'**
+  String get saveRole;
+
+  /// No description provided for @cleanUpDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean Up Duplicates'**
+  String get cleanUpDuplicates;
+
+  /// No description provided for @error3.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String error3(String error);
+
+  /// No description provided for @duplicatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicates Found'**
+  String get duplicatesFound;
+
+  /// No description provided for @accountsAcrossPhoneNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'{duplicateCount} accounts across {duplicates} phone numbers'**
+  String accountsAcrossPhoneNumbers(String duplicateCount, String duplicates);
+
+  /// No description provided for @noDuplicatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Duplicates Found!'**
+  String get noDuplicatesFound;
+
+  /// No description provided for @allCarpenterAccountsAreUnique.
+  ///
+  /// In en, this message translates to:
+  /// **'All carpenter accounts are unique.'**
+  String get allCarpenterAccountsAreUnique;
+
+  /// No description provided for @duplicateGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Groups'**
+  String get duplicateGroups;
+
+  /// No description provided for @phoneAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{groupIndex}. Phone: {phone} ({users} accounts)'**
+  String phoneAccounts(String groupIndex, String phone, String users);
+
+  /// No description provided for @keep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get keep;
+
+  /// No description provided for @reviewOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Review only'**
+  String get reviewOnly;
+
+  /// No description provided for @diagnosticUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnostic: User {phoneNumber}'**
+  String diagnosticUser(String phoneNumber);
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @phoneNumberInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number Information'**
+  String get phoneNumberInformation;
+
+  /// No description provided for @originalPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Original Phone'**
+  String get originalPhone;
+
+  /// No description provided for @normalizedPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Normalized Phone'**
+  String get normalizedPhone;
+
+  /// No description provided for @match.
+  ///
+  /// In en, this message translates to:
+  /// **'Match'**
+  String get match;
+
+  /// No description provided for @userDocumentStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'User Document Status'**
+  String get userDocumentStatus;
+
+  /// No description provided for @existsByDocumentId.
+  ///
+  /// In en, this message translates to:
+  /// **'Exists (by Document ID)'**
+  String get existsByDocumentId;
+
+  /// No description provided for @documentId.
+  ///
+  /// In en, this message translates to:
+  /// **'Document ID'**
+  String get documentId;
+
+  /// No description provided for @phoneFieldInData.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Field (in data)'**
+  String get phoneFieldInData;
+
+  /// No description provided for @existsByPhoneFieldQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Exists (by Phone Field Query)'**
+  String get existsByPhoneFieldQuery;
+
+  /// No description provided for @documentIdFromQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Document ID (from query)'**
+  String get documentIdFromQuery;
+
+  /// No description provided for @issueDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'ISSUE DETECTED'**
+  String get issueDetected;
+
+  /// No description provided for @documentIdMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Document ID mismatch!'**
+  String get documentIdMismatch;
+
+  /// No description provided for @userDocumentFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User document found'**
+  String get userDocumentFound;
+
+  /// No description provided for @userDocumentNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User document NOT FOUND'**
+  String get userDocumentNotFound;
+
+  /// No description provided for @billsCollectionStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills Collection Status'**
+  String get billsCollectionStatus;
+
+  /// No description provided for @phoneFormatMismatchInBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone format mismatch in bills!'**
+  String get phoneFormatMismatchInBills;
+
+  /// No description provided for @phoneFormatConsistent.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone format consistent'**
+  String get phoneFormatConsistent;
+
+  /// No description provided for @pendingBillsStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Bills Status'**
+  String get pendingBillsStatus;
+
+  /// No description provided for @totalPendingBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Pending Bills'**
+  String get totalPendingBills;
+
+  /// No description provided for @matchingBillsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching Bills Found'**
+  String get matchingBillsFound;
+
+  /// No description provided for @noPendingBillsFoundForThis.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending bills found for this user!'**
+  String get noPendingBillsFoundForThis;
+
+  /// No description provided for @carpenterId.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter ID'**
+  String get carpenterId;
+
+  /// No description provided for @carpenterPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter Phone'**
+  String get carpenterPhone;
+
+  /// No description provided for @isToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Is Today'**
+  String get isToday;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get createdAt;
+
+  /// No description provided for @thisBillWonTShowIn.
+  ///
+  /// In en, this message translates to:
+  /// **'This bill won\'t show in default admin view (not today)'**
+  String get thisBillWonTShowIn;
+
+  /// No description provided for @totalAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Accounts'**
+  String get totalAccounts;
+
+  /// No description provided for @duplicatePhones.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Phones'**
+  String get duplicatePhones;
+
+  /// No description provided for @affectedAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected Accounts'**
+  String get affectedAccounts;
+
+  /// No description provided for @noDuplicateAccountsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No duplicate accounts found!'**
+  String get noDuplicateAccountsFound;
+
+  /// No description provided for @duplicatePhoneNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Phone Numbers'**
+  String get duplicatePhoneNumbers;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account {idx}'**
+  String account(String idx);
+
+  /// No description provided for @review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get review;
+
+  /// No description provided for @preparingUserBackupPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing user backup PDF...'**
+  String get preparingUserBackupPdf;
+
+  /// No description provided for @noCarpentersFound2.
+  ///
+  /// In en, this message translates to:
+  /// **'No carpenters found.'**
+  String get noCarpentersFound2;
+
+  /// No description provided for @userBackupExportedSuccessfullyCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'User backup exported successfully! ({users} carpenters)'**
+  String userBackupExportedSuccessfullyCarpenters(String users);
+
+  /// No description provided for @exportUsersBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Users Backup'**
+  String get exportUsersBackup;
+
+  /// No description provided for @createUserBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create User Backup'**
+  String get createUserBackup;
+
+  /// No description provided for @exportAllCarpentersWithTheirPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Export all carpenters with their points and phone numbers before cleanup.'**
+  String get exportAllCarpentersWithTheirPoints;
+
+  /// No description provided for @exporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting...'**
+  String get exporting;
+
+  /// No description provided for @exportToPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export to PDF'**
+  String get exportToPdf;
+
+  /// No description provided for @pdfWillInclude.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF will include:'**
+  String get pdfWillInclude;
+
+  /// No description provided for @carpenterNameAndPhoneNumberTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'• Carpenter name and phone number\n• Total points and earned points\n• Account creation date\n• Summary with total carpenters and gross points'**
+  String get carpenterNameAndPhoneNumberTotal;
+
+  /// No description provided for @firebaseDuplicateCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase Duplicate Check'**
+  String get firebaseDuplicateCheck;
+
+  /// No description provided for @firebaseDatabaseSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase Database Summary'**
+  String get firebaseDatabaseSummary;
+
+  /// No description provided for @totalCarpenters2.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Carpenters:'**
+  String get totalCarpenters2;
+
+  /// No description provided for @uniquePhoneNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Unique Phone Numbers:'**
+  String get uniquePhoneNumbers;
+
+  /// No description provided for @duplicatePhoneNumbers2.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Phone Numbers:'**
+  String get duplicatePhoneNumbers2;
+
+  /// No description provided for @totalDuplicateAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Duplicate Accounts:'**
+  String get totalDuplicateAccounts;
+
+  /// No description provided for @allPhoneNumbersAreUnique.
+  ///
+  /// In en, this message translates to:
+  /// **'All phone numbers are unique.'**
+  String get allPhoneNumbersAreUnique;
+
+  /// No description provided for @duplicateMobileNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Mobile Numbers'**
+  String get duplicateMobileNumbers;
+
+  /// No description provided for @mobile2.
+  ///
+  /// In en, this message translates to:
+  /// **'{groupIndex}/{totalGroups} - Mobile: {phone}'**
+  String mobile2(String groupIndex, String totalGroups, String phone);
+
+  /// No description provided for @accountsWithSamePhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'{users} accounts with same phone number'**
+  String accountsWithSamePhoneNumber(String users);
+
+  /// No description provided for @main.
+  ///
+  /// In en, this message translates to:
+  /// **'Main'**
+  String get main;
+
+  /// No description provided for @duplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicate;
+
+  /// No description provided for @startingBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting backup...'**
+  String get startingBackup;
+
+  /// No description provided for @backupExportedUsersBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup exported: {users} users, {bills} bills'**
+  String backupExportedUsersBills(String users, String bills);
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup failed: {e}'**
+  String backupFailed(String e);
+
+  /// No description provided for @backupData.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Data'**
+  String get backupData;
+
+  /// No description provided for @totalSizeKb.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Size: {backupJson} KB'**
+  String totalSizeKb(String backupJson);
+
+  /// No description provided for @firebaseBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase Backup'**
+  String get firebaseBackup;
+
+  /// No description provided for @databaseBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Database Backup'**
+  String get databaseBackup;
+
+  /// No description provided for @createACompleteBackupOfAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a complete backup of all users and bills data from Firebase Firestore.'**
+  String get createACompleteBackupOfAll;
+
+  /// No description provided for @whatWillBeBackedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'What will be backed up:'**
+  String get whatWillBeBackedUp;
+
+  /// No description provided for @allUserAccountsCarpentersAdminsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'• All user accounts (carpenters & admins)\n• All bill records\n• Complete user data with timestamps\n• Firestore metadata'**
+  String get allUserAccountsCarpentersAdminsAll;
+
+  /// No description provided for @backingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Backing up...'**
+  String get backingUp;
+
+  /// No description provided for @startBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Backup'**
+  String get startBackup;
+
+  /// No description provided for @backupIsStoredInFirebaseNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup is stored in Firebase. No files are saved locally.'**
+  String get backupIsStoredInFirebaseNo;
+
+  /// No description provided for @repairDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair Details'**
+  String get repairDetails;
+
+  /// No description provided for @verificationComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Complete'**
+  String get verificationComplete;
+
+  /// No description provided for @noPointsLostAllUsersVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'NO POINTS LOST\nAll users verified\nData consistent'**
+  String get noPointsLostAllUsersVerified;
+
+  /// No description provided for @userWiseRepairResults.
+  ///
+  /// In en, this message translates to:
+  /// **'User-wise Repair Results'**
+  String get userWiseRepairResults;
+
+  /// No description provided for @noRepairsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'No repairs completed'**
+  String get noRepairsCompleted;
+
+  /// No description provided for @repairComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair Complete'**
+  String get repairComplete;
+
+  /// No description provided for @successfullyRepaired.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully Repaired'**
+  String get successfullyRepaired;
+
+  /// No description provided for @failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get failed;
+
+  /// No description provided for @duplicatesRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicates Removed'**
+  String get duplicatesRemoved;
+
+  /// No description provided for @pointsAdjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Adjusted'**
+  String get pointsAdjusted;
+
+  /// No description provided for @before.
+  ///
+  /// In en, this message translates to:
+  /// **'Before'**
+  String get before;
+
+  /// No description provided for @after.
+  ///
+  /// In en, this message translates to:
+  /// **'After'**
+  String get after;
+
+  /// No description provided for @repairFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair failed'**
+  String get repairFailed;
+
+  /// No description provided for @thisToolScansUserPointsData.
+  ///
+  /// In en, this message translates to:
+  /// **'This tool scans user points data and fixes:\n• Duplicate history entries\n• Inconsistent totalPoints\n• Mismatched tiers'**
+  String get thisToolScansUserPointsData;
+
+  /// No description provided for @pointsRepairTool.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Repair Tool'**
+  String get pointsRepairTool;
+
+  /// No description provided for @pointsDataRepair.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Data Repair'**
+  String get pointsDataRepair;
+
+  /// No description provided for @scanReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Report'**
+  String get scanReport;
+
+  /// No description provided for @totalUsersScanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Total users scanned'**
+  String get totalUsersScanned;
+
+  /// No description provided for @usersWithIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Users with issues'**
+  String get usersWithIssues;
+
+  /// No description provided for @usersWithDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Users with duplicates'**
+  String get usersWithDuplicates;
+
+  /// No description provided for @totalDuplicateEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Total duplicate entries'**
+  String get totalDuplicateEntries;
+
+  /// No description provided for @pointsMismatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Points mismatches'**
+  String get pointsMismatches;
+
+  /// No description provided for @viewFullScanDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Full Scan Details'**
+  String get viewFullScanDetails;
+
+  /// No description provided for @viewDetailedResults.
+  ///
+  /// In en, this message translates to:
+  /// **'View Detailed Results'**
+  String get viewDetailedResults;
+
+  /// No description provided for @scanForIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan for Issues'**
+  String get scanForIssues;
+
+  /// No description provided for @scanAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Again'**
+  String get scanAgain;
+
+  /// No description provided for @repairAllUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair All Users'**
+  String get repairAllUsers;
+
+  /// No description provided for @noIssuesFoundAllUserData.
+  ///
+  /// In en, this message translates to:
+  /// **'No issues found! All user data is consistent.'**
+  String get noIssuesFoundAllUserData;
+
+  /// No description provided for @scanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan failed: {e}'**
+  String scanFailed(String e);
+
+  /// No description provided for @repairAllUsers2.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair All Users?'**
+  String get repairAllUsers2;
+
+  /// No description provided for @repair.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair'**
+  String get repair;
+
+  /// No description provided for @repairFailed2.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair failed: {e}'**
+  String repairFailed2(String e);
+
+  /// No description provided for @scanningForIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning for Issues...'**
+  String get scanningForIssues;
+
+  /// No description provided for @analyzingAllUserPointsData.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing all user points data'**
+  String get analyzingAllUserPointsData;
+
+  /// No description provided for @scanResultsFullDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Results - Full Details'**
+  String get scanResultsFullDetails;
+
+  /// No description provided for @usersWithIssues2.
+  ///
+  /// In en, this message translates to:
+  /// **'Users with Issues'**
+  String get usersWithIssues2;
+
+  /// No description provided for @noUsersWithIssuesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users with issues found'**
+  String get noUsersWithIssuesFound;
+
+  /// No description provided for @scanSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Summary'**
+  String get scanSummary;
+
+  /// No description provided for @totalUsersScanned2.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Users Scanned'**
+  String get totalUsersScanned2;
+
+  /// No description provided for @totalDuplicateEntries2.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Duplicate Entries'**
+  String get totalDuplicateEntries2;
+
+  /// No description provided for @totalPointsDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Points Difference'**
+  String get totalPointsDifference;
+
+  /// No description provided for @duplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'{duplicateCount} duplicates'**
+  String duplicates(String duplicateCount);
+
+  /// No description provided for @historySum.
+  ///
+  /// In en, this message translates to:
+  /// **'History Sum'**
+  String get historySum;
+
+  /// No description provided for @difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference'**
+  String get difference;
+
+  /// No description provided for @totalEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Entries'**
+  String get totalEntries;
+
+  /// No description provided for @uniqueBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Unique Bills'**
+  String get uniqueBills;
+
+  /// No description provided for @duplicateBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Bills:'**
+  String get duplicateBills;
+
+  /// No description provided for @smartDuplicateCleanup.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Duplicate Cleanup'**
+  String get smartDuplicateCleanup;
+
+  /// No description provided for @allCarpentersHaveUniquePhoneNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'All carpenters have unique phone numbers.'**
+  String get allCarpentersHaveUniquePhoneNumbers;
+
+  /// No description provided for @potentialDuplicateAccountsReviewRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Potential duplicate accounts — review required'**
+  String get potentialDuplicateAccountsReviewRequired;
+
+  /// No description provided for @foundDuplicateMobileNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {duplicateGroups} duplicate mobile numbers'**
+  String foundDuplicateMobileNumbers(String duplicateGroups);
+
+  /// No description provided for @accountsToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts to review: {totalForReview}'**
+  String accountsToReview(String totalForReview);
+
+  /// No description provided for @allRecordsAreRetainedTheHighest.
+  ///
+  /// In en, this message translates to:
+  /// **'All records are retained. The highest-points profile is only a suggested primary account.'**
+  String get allRecordsAreRetainedTheHighest;
+
+  /// No description provided for @potentialDuplicateGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Potential duplicate groups ({duplicateGroups})'**
+  String potentialDuplicateGroups(String duplicateGroups);
+
+  /// No description provided for @mobile3.
+  ///
+  /// In en, this message translates to:
+  /// **'{groupIndex}. Mobile: {phone}'**
+  String mobile3(String groupIndex, String phone);
+
+  /// No description provided for @similarAccountsPointsDiff.
+  ///
+  /// In en, this message translates to:
+  /// **'{reviewUsers} similar accounts | Points diff: {pointsDiff}'**
+  String similarAccountsPointsDiff(String reviewUsers, String pointsDiff);
+
+  /// No description provided for @suggestedPrimaryAccountHighestPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested primary account (highest points)'**
+  String get suggestedPrimaryAccountHighestPoints;
+
+  /// No description provided for @otherMatchingAccountsManualReviewRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Other matching accounts — manual review required'**
+  String get otherMatchingAccountsManualReviewRequired;
+
+  /// No description provided for @repairConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will repair {count} users by:\n\n• Removing duplicate history entries\n• Recalculating correct totals\n• Updating tier assignments\n\nThis action cannot be undone easily.'**
+  String repairConfirmBody(String count);
+
+  /// No description provided for @repairSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Repaired {repaired}/{total} users successfully!\nVerified: no points lost'**
+  String repairSuccess(String repaired, String total);
+
+  /// No description provided for @repairPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Repaired {repaired}/{total} users.\nSome verification issues - check logs'**
+  String repairPartial(String repaired, String total);
+
+  /// No description provided for @backupUsersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Users ({count})'**
+  String backupUsersCount(String count);
+
+  /// No description provided for @backupBillsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills ({count})'**
+  String backupBillsCount(String count);
+
+  /// No description provided for @openAppForEachCarpenter.
+  ///
+  /// In en, this message translates to:
+  /// **'This will open {app} for each carpenter.\n\nYou must manually tap Send in each app.\n\nContinue?'**
+  String openAppForEachCarpenter(String app);
+
+  /// No description provided for @roleIdPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Role ID: {id}'**
+  String roleIdPreview(String id);
+
+  /// No description provided for @winnersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 winner} other{{count} winners}}'**
+  String winnersCount(int count);
+
+  /// No description provided for @roleRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Role {name} restored.'**
+  String roleRestored(String name);
+
+  /// No description provided for @roleDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Role {name} deleted.'**
+  String roleDeleted(String name);
+
+  /// No description provided for @permissionDeniedSuperAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied. Check that Firestore rules are published and the signed-in account is the configured super admin.'**
+  String get permissionDeniedSuperAdmin;
+
+  /// No description provided for @roleEngineer.
+  ///
+  /// In en, this message translates to:
+  /// **'Engineer'**
+  String get roleEngineer;
+
+  /// No description provided for @roleBuiltInBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get roleBuiltInBadge;
+
+  /// No description provided for @roleCustomBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get roleCustomBadge;
+
+  /// No description provided for @roleProtectedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter is the main role and can’t be deleted'**
+  String get roleProtectedTooltip;
+
+  /// No description provided for @rolesSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{active, plural, other{{active} active}} · {deleted, plural, other{{deleted} deleted}}'**
+  String rolesSummary(int active, int deleted);
+
+  /// No description provided for @rolesLiveSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes sync instantly to registration on every device.'**
+  String get rolesLiveSync;
+
+  /// No description provided for @roleIdHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Created from the name. It can’t be changed later.'**
+  String get roleIdHelp;
+
+  /// No description provided for @roleErrInvalidName.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 2–40 characters with at least two English letters or numbers.'**
+  String get roleErrInvalidName;
+
+  /// No description provided for @roleErrReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'This name is reserved for administrator accounts.'**
+  String get roleErrReserved;
+
+  /// No description provided for @roleErrBuiltIn.
+  ///
+  /// In en, this message translates to:
+  /// **'This matches a built-in role. Restore it from the list instead.'**
+  String get roleErrBuiltIn;
+
+  /// No description provided for @roleErrDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'A role with this ID already exists.'**
+  String get roleErrDuplicate;
+
+  /// No description provided for @roleErrProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter is the main role and can’t be deleted.'**
+  String get roleErrProtected;
+
+  /// No description provided for @roleShowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get roleShowAll;
+
+  /// No description provided for @roleShowActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get roleShowActive;
+
+  /// No description provided for @roleShowDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get roleShowDeleted;
+
+  /// No description provided for @noRolesInFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No roles in this view.'**
+  String get noRolesInFilter;
+
+  /// No description provided for @deactivateBranchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate {name}?'**
+  String deactivateBranchTitle(String name);
+
+  /// No description provided for @deactivateBranchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'New users can’t pick this branch and its members can’t sign in until you activate it again. No data is deleted.'**
+  String get deactivateBranchBody;
+
+  /// No description provided for @activateBranchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate {name}?'**
+  String activateBranchTitle(String name);
+
+  /// No description provided for @activateBranchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The branch will be available for registration and sign-in again.'**
+  String get activateBranchBody;
+
+  /// No description provided for @branchActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch actions'**
+  String get branchActions;
+
+  /// No description provided for @copyBranchId.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy branch ID'**
+  String get copyBranchId;
+
+  /// No description provided for @branchIdCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch ID copied'**
+  String get branchIdCopied;
+
+  /// No description provided for @celebrationOn.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get celebrationOn;
+
+  /// No description provided for @celebrationOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get celebrationOff;
+
+  /// No description provided for @createAdminSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a branch admin who reviews bills and carpenters for one branch.'**
+  String get createAdminSubtitle;
+
+  /// No description provided for @selectBranchRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a branch'**
+  String get selectBranchRequired;
+
+  /// No description provided for @addAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add admin'**
+  String get addAdmin;
+
+  /// No description provided for @branchAdminsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch admins'**
+  String get branchAdminsTitle;
+
+  /// No description provided for @adminsNav.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get adminsNav;
+
+  /// No description provided for @adminsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 admin} other{{count} admins}}'**
+  String adminsCount(int count);
+
+  /// No description provided for @adminActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin actions'**
+  String get adminActions;
+
+  /// No description provided for @editBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit branch'**
+  String get editBranch;
+
+  /// No description provided for @branchUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch updated'**
+  String get branchUpdated;
+
+  /// No description provided for @branchCodeLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The code can’t change — existing members are registered with it.'**
+  String get branchCodeLocked;
+
+  /// No description provided for @editLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editLabel;
+
+  /// No description provided for @editRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit role'**
+  String get editRole;
+
+  /// No description provided for @roleUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Role {name} updated.'**
+  String roleUpdated(String name);
+
+  /// No description provided for @roleIdLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The role ID can’t change — it is stored with user accounts.'**
+  String get roleIdLocked;
+
+  /// No description provided for @roleActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Role actions'**
+  String get roleActions;
+
+  /// No description provided for @editAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit admin'**
+  String get editAdmin;
+
+  /// No description provided for @editDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit details'**
+  String get editDetails;
+
+  /// No description provided for @adminUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin {email} updated.'**
+  String adminUpdated(String email);
+
+  /// No description provided for @adminBranchChangeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving an admin to another branch removes their access to the current one. A branch can have only one admin.'**
+  String get adminBranchChangeNote;
+
+  /// No description provided for @editsSyncNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Name changes are copied to every member’s profile automatically.'**
+  String get editsSyncNote;
+
+  /// No description provided for @noBranchAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is not linked to a branch yet. Ask the super admin to assign your branch.'**
+  String get noBranchAssigned;
+
+  /// No description provided for @loadingBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your branch…'**
+  String get loadingBranch;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

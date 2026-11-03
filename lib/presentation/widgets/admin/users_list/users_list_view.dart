@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -20,7 +23,7 @@ class UsersListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').snapshots(),
+      stream: FirebaseFirestore.instance.collection('users').forAdminBranch().snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -35,10 +38,14 @@ class UsersListView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.error_outline, color: AppColors.error, size: 48),
+                Icon(
+                  Icons.error_outline_rounded,
+                  color: AppColors.error,
+                  size: 48,
+                ),
                 const SizedBox(height: 16),
                 Text(
-                  'Error loading users',
+                  AppLocalizations.of(context)!.errorLoadingUsers,
                   style: AppTypography.bodyMedium().copyWith(
                     color: AppColors.error,
                   ),
@@ -116,23 +123,12 @@ class UsersListView extends StatelessWidget {
         });
 
         if (users.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.people_outline,
-                  color: context.themeTextSecondary,
-                  size: 48,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No carpenters found',
-                  style: AppTypography.bodyMedium().copyWith(
-                    color: context.themeTextSecondary,
-                  ),
-                ),
-              ],
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: EmptyState(
+              icon: Icons.people_outline_rounded,
+              title: AppLocalizations.of(context)!.noCarpentersFound,
+              message: AppLocalizations.of(context)!.carpentersAppearHere,
             ),
           );
         }

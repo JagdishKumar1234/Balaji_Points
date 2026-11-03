@@ -1,5 +1,6 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -41,7 +42,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     setState(() => _isLoading = true);
 
     try {
-      final billDoc = await _firestore.collection('bills').doc(widget.billId).get();
+      final billDoc = await _firestore
+          .collection('bills')
+          .doc(widget.billId)
+          .get();
       if (billDoc.exists) {
         _billData = billDoc.data();
         _billData!['billId'] = billDoc.id;
@@ -87,7 +91,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       case 'rejected':
         return AppColors.error;
       case 'pending':
-        return const Color(0xFFFFA500);
+        return AppColors.warning;
       default:
         return AppColors.textSecondary;
     }
@@ -100,7 +104,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       case 'rejected':
         return 'REJECTED';
       case 'pending':
-        return 'PENDING APPROVAL';
+        return AppLocalizations.of(context)!.pendingApproval2;
       default:
         return status.toUpperCase();
     }
@@ -110,9 +114,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     switch (status.toLowerCase()) {
       case 'approved':
       case 'rejected':
-        return Icons.check_circle;
+        return Icons.check_circle_rounded;
       default:
-        return Icons.schedule;
+        return Icons.schedule_rounded;
     }
   }
 
@@ -121,21 +125,21 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: const Text('Approve Bill'),
+        title: Text(AppLocalizations.of(context)!.approveBillAction),
         content: Text(
-          'Are you sure you want to approve this bill?\n\n₹${_billData!['amount']?.toString() ?? '0'} will be processed.',
+          AppLocalizations.of(
+            context,
+          )!.areYouSureYouWantTo(_billData!['amount']?.toString() ?? '0'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.success,
-            ),
-            child: const Text('Approve'),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
+            child: Text(AppLocalizations.of(context)!.approve),
           ),
         ],
       ),
@@ -155,7 +159,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Bill approved successfully'),
+            content: Text(AppLocalizations.of(context)!.billApproved),
             backgroundColor: AppColors.success,
           ),
         );
@@ -165,7 +169,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.error2('${e.toString()}'),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -180,17 +186,17 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: const Text('Reject Bill'),
-        content: const Text('Are you sure you want to reject this bill?'),
+        title: Text(AppLocalizations.of(context)!.rejectBill),
+        content: Text(AppLocalizations.of(context)!.rejectBillConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Reject'),
+            child: Text(AppLocalizations.of(context)!.reject),
           ),
         ],
       ),
@@ -206,7 +212,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Bill rejected'),
+            content: Text(AppLocalizations.of(context)!.billRejected2),
             backgroundColor: AppColors.error,
           ),
         );
@@ -216,7 +222,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.error2('${e.toString()}'),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -243,7 +251,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) => Center(
                     child: Icon(
-                      Icons.error,
+                      Icons.error_rounded,
                       color: context.themeError,
                       size: 60,
                     ),
@@ -255,7 +263,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               top: 20,
               right: 20,
               child: IconButton(
-                icon: const Icon(Icons.close, color: AppColors.white, size: 30),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.white,
+                  size: 30,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -273,11 +285,14 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Bill Details',
+          AppLocalizations.of(context)!.billDetails,
           style: AppTypography.labelLarge().copyWith(
             fontSize: 18,
             color: AppColors.textPrimary,
@@ -286,17 +301,23 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share, color: AppColors.textPrimary),
+            icon: const Icon(Icons.share_rounded, color: AppColors.textPrimary),
             onPressed: () {},
-            tooltip: 'Share',
+            tooltip: AppLocalizations.of(context)!.share,
           ),
           IconButton(
-            icon: const Icon(Icons.picture_as_pdf, color: AppColors.textPrimary),
+            icon: const Icon(
+              Icons.picture_as_pdf_rounded,
+              color: AppColors.textPrimary,
+            ),
             onPressed: () {},
             tooltip: 'PDF',
           ),
           IconButton(
-            icon: const Icon(Icons.more_vert, color: AppColors.textPrimary),
+            icon: const Icon(
+              Icons.more_vert_rounded,
+              color: AppColors.textPrimary,
+            ),
             onPressed: () {},
           ),
         ],
@@ -310,7 +331,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               child: _billData == null
                   ? Center(
                       child: Text(
-                        'Bill not found',
+                        AppLocalizations.of(context)!.billNotFound,
                         style: AppTypography.bodyMedium().copyWith(
                           color: context.themeTextSecondary,
                         ),
@@ -332,7 +353,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                         const SizedBox(height: 12),
 
                         // Bill Attachment
-                        if (_billData!['imageUrl'] != null && (_billData!['imageUrl'] as String).isNotEmpty)
+                        if (_billData!['imageUrl'] != null &&
+                            (_billData!['imageUrl'] as String).isNotEmpty)
                           _buildAttachmentCard(context),
                         const SizedBox(height: 12),
 
@@ -366,9 +388,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       decoration: BoxDecoration(
         color: statusColor.withValues(alpha: 0.15),
         borderRadius: AppRadius.all16,
-        border: Border(
-          left: BorderSide(color: statusColor, width: 4),
-        ),
+        border: Border(left: BorderSide(color: statusColor, width: 4)),
       ),
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -403,9 +423,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Bill ID',
+            AppLocalizations.of(context)!.billId,
             style: AppTypography.bodySmall().copyWith(
-              fontSize: 10,
+              fontSize: 12,
               color: context.themeTextSecondary,
             ),
           ),
@@ -425,9 +445,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              'Submitted ${_getTimeAgo(createdAt)}',
+              AppLocalizations.of(
+                context,
+              )!.submitted('${_getTimeAgo(createdAt)}'),
               style: AppTypography.bodySmall().copyWith(
-                fontSize: 10,
+                fontSize: 12,
                 color: statusColor,
               ),
             ),
@@ -435,24 +457,30 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.calendar_today, size: 14, color: context.themeTextSecondary),
+              Icon(
+                Icons.calendar_today_rounded,
+                size: 14,
+                color: context.themeTextSecondary,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Submitted On',
+                      AppLocalizations.of(context)!.submittedOn,
                       style: AppTypography.bodySmall().copyWith(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: context.themeTextSecondary,
                       ),
                     ),
                     Text(
                       createdAt != null
-                          ? DateFormat('dd MMM yyyy, hh:mm a').format(createdAt.toDate())
+                          ? DateFormat(
+                              'dd MMM yyyy, hh:mm a',
+                            ).format(createdAt.toDate())
                           : '-',
-                      style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                      style: AppTypography.bodySmall().copyWith(fontSize: 12),
                     ),
                   ],
                 ),
@@ -462,22 +490,26 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           const SizedBox(height: 6),
           Row(
             children: [
-              Icon(Icons.store, size: 14, color: context.themeTextSecondary),
+              Icon(
+                Icons.store_rounded,
+                size: 14,
+                color: context.themeTextSecondary,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Store',
+                      AppLocalizations.of(context)!.store,
                       style: AppTypography.bodySmall().copyWith(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: context.themeTextSecondary,
                       ),
                     ),
                     Text(
                       storeName,
-                      style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                      style: AppTypography.bodySmall().copyWith(fontSize: 12),
                     ),
                   ],
                 ),
@@ -504,13 +536,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     Color getTierColor(String tierName) {
       switch (tierName.toLowerCase()) {
         case 'platinum':
-          return const Color(0xFFE5E4E2);
+          return AppColors.tierPlatinum;
         case 'gold':
-          return const Color(0xFFFFD700);
+          return AppColors.tierGold;
         case 'silver':
-          return const Color(0xFFC0C0C0);
+          return AppColors.tierSilver;
         case 'bronze':
-          return const Color(0xFFCD7F32);
+          return AppColors.tierBronze;
         default:
           return AppColors.textSecondary;
       }
@@ -531,22 +563,31 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.person, size: 18, color: context.themeContentColor),
+                  Icon(
+                    Icons.person_rounded,
+                    size: 18,
+                    color: context.themeContentColor,
+                  ),
                   const SizedBox(width: 6),
                   Text(
-                    'Carpenter Info',
+                    AppLocalizations.of(context)!.carpenterInfo,
                     style: AppTypography.labelLarge().copyWith(fontSize: 13),
                   ),
                 ],
               ),
               ElevatedButton.icon(
                 onPressed: () {
-                  context.push('/admin/carpenter-profile/${_billData!['carpenterId']}');
+                  context.push(
+                    '/admin/carpenter-profile/${_billData!['carpenterId']}',
+                  );
                 },
-                icon: const Icon(Icons.person, size: 14),
-                label: const Text('View Profile'),
+                icon: const Icon(Icons.person_rounded, size: 14),
+                label: Text(AppLocalizations.of(context)!.viewProfile),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   backgroundColor: context.themePrimary,
                 ),
               ),
@@ -567,14 +608,22 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                           width: 48,
                           height: 48,
                           color: context.themeBackground,
-                          child: Icon(Icons.person, size: 26, color: context.themeTextSecondary),
+                          child: Icon(
+                            Icons.person_rounded,
+                            size: 26,
+                            color: context.themeTextSecondary,
+                          ),
                         ),
                       )
                     : Container(
                         width: 48,
                         height: 48,
                         color: context.themeBackground,
-                        child: Icon(Icons.person, size: 26, color: context.themeTextSecondary),
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 26,
+                          color: context.themeTextSecondary,
+                        ),
                       ),
               ),
               const SizedBox(width: 12),
@@ -589,11 +638,17 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        Icon(Icons.phone, size: 10, color: context.themeTextSecondary),
+                        Icon(
+                          Icons.phone_rounded,
+                          size: 10,
+                          color: context.themeTextSecondary,
+                        ),
                         const SizedBox(width: 3),
                         Text(
                           phone,
-                          style: AppTypography.bodySmall().copyWith(fontSize: 10),
+                          style: AppTypography.bodySmall().copyWith(
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -601,7 +656,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: getTierColor(tier),
                             borderRadius: BorderRadius.circular(3),
@@ -609,17 +667,25 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                           child: Text(
                             tier,
                             style: AppTypography.labelSmall().copyWith(
-                              fontSize: 9,
+                              fontSize: 12,
                               color: AppColors.white,
                             ),
                           ),
                         ),
                         const SizedBox(width: 6),
-                        Icon(Icons.star, size: 10, color: context.themeContentColor),
+                        Icon(
+                          Icons.star_rounded,
+                          size: 10,
+                          color: context.themeContentColor,
+                        ),
                         const SizedBox(width: 2),
                         Text(
-                          '${totalPoints.toStringAsFixed(0)} pts',
-                          style: AppTypography.bodySmall().copyWith(fontSize: 9),
+                          AppLocalizations.of(
+                            context,
+                          )!.pts3('${totalPoints.toStringAsFixed(0)}'),
+                          style: AppTypography.bodySmall().copyWith(
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -651,10 +717,14 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.receipt, size: 20, color: context.themeContentColor),
+              Icon(
+                Icons.receipt_rounded,
+                size: 20,
+                color: context.themeContentColor,
+              ),
               const SizedBox(width: 8),
               Text(
-                'Bill Summary',
+                AppLocalizations.of(context)!.billSummary,
                 style: AppTypography.labelLarge().copyWith(fontSize: 14),
               ),
             ],
@@ -671,7 +741,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   ),
                   child: Column(
                     children: [
-                      Icon(Icons.currency_rupee, size: 24, color: AppColors.success),
+                      Icon(
+                        Icons.currency_rupee_rounded,
+                        size: 24,
+                        color: AppColors.success,
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         '₹${amount.toStringAsFixed(0)}',
@@ -682,8 +756,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Bill Amount',
-                        style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                        AppLocalizations.of(context)!.billAmount3,
+                        style: AppTypography.bodySmall().copyWith(fontSize: 12),
                       ),
                     ],
                   ),
@@ -699,7 +773,11 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                   ),
                   child: Column(
                     children: [
-                      Icon(Icons.card_giftcard, size: 24, color: context.themeContentColor),
+                      Icon(
+                        Icons.card_giftcard_rounded,
+                        size: 24,
+                        color: context.themeContentColor,
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         points,
@@ -710,8 +788,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Points to Credit',
-                        style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                        AppLocalizations.of(context)!.pointsToCredit,
+                        style: AppTypography.bodySmall().copyWith(fontSize: 12),
                       ),
                     ],
                   ),
@@ -725,24 +803,32 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 14, color: context.themeContentColor),
+                    Icon(
+                      Icons.calendar_today_rounded,
+                      size: 14,
+                      color: context.themeContentColor,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Bill Date',
+                            AppLocalizations.of(context)!.billDateLabel,
                             style: AppTypography.bodySmall().copyWith(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: context.themeTextSecondary,
                             ),
                           ),
                           Text(
                             billDate != null
-                                ? DateFormat('dd MMM yyyy').format(billDate.toDate())
+                                ? DateFormat(
+                                    'dd MMM yyyy',
+                                  ).format(billDate.toDate())
                                 : '-',
-                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -753,22 +839,28 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.tag, size: 14, color: context.themeContentColor),
+                    Icon(
+                      Icons.tag_rounded,
+                      size: 14,
+                      color: context.themeContentColor,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Bill No.',
+                            AppLocalizations.of(context)!.billNo,
                             style: AppTypography.bodySmall().copyWith(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: context.themeTextSecondary,
                             ),
                           ),
                           Text(
                             billNumber,
-                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 12,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -786,22 +878,28 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.percent, size: 14, color: context.themeContentColor),
+                    Icon(
+                      Icons.percent_rounded,
+                      size: 14,
+                      color: context.themeContentColor,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Points Rate',
+                            AppLocalizations.of(context)!.pointsRate,
                             style: AppTypography.bodySmall().copyWith(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: context.themeTextSecondary,
                             ),
                           ),
                           Text(
-                            '1 pt / ₹1000',
-                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                            AppLocalizations.of(context)!.t1Pt1000,
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -812,22 +910,28 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.category, size: 14, color: context.themeContentColor),
+                    Icon(
+                      Icons.category_rounded,
+                      size: 14,
+                      color: context.themeContentColor,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Bill Type',
+                            AppLocalizations.of(context)!.billType,
                             style: AppTypography.bodySmall().copyWith(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: context.themeTextSecondary,
                             ),
                           ),
                           Text(
-                            'Purchase',
-                            style: AppTypography.bodySmall().copyWith(fontSize: 11),
+                            AppLocalizations.of(context)!.purchase,
+                            style: AppTypography.bodySmall().copyWith(
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -857,10 +961,14 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.attach_file, size: 20, color: context.themeContentColor),
+              Icon(
+                Icons.attach_file_rounded,
+                size: 20,
+                color: context.themeContentColor,
+              ),
               const SizedBox(width: 8),
               Text(
-                'Bill Attachment',
+                AppLocalizations.of(context)!.billAttachment2,
                 style: AppTypography.labelLarge().copyWith(fontSize: 14),
               ),
             ],
@@ -882,7 +990,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
-                    child: Icon(Icons.image_not_supported, color: context.themeTextSecondary),
+                    child: Icon(
+                      Icons.image_not_supported_rounded,
+                      color: context.themeTextSecondary,
+                    ),
                   ),
                 ),
               ),
@@ -891,23 +1002,53 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           const SizedBox(height: 12),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.search, color: context.themeContentColor),
-            title: Text('View Full Size', style: AppTypography.bodySmall()),
-            trailing: Icon(Icons.chevron_right, color: context.themeTextSecondary, size: 18),
+            leading: Icon(
+              Icons.search_rounded,
+              color: context.themeContentColor,
+            ),
+            title: Text(
+              AppLocalizations.of(context)!.viewFullSize,
+              style: AppTypography.bodySmall(),
+            ),
+            trailing: Icon(
+              Icons.chevron_right_rounded,
+              color: context.themeTextSecondary,
+              size: 18,
+            ),
             onTap: _viewFullImage,
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.download, color: context.themeContentColor),
-            title: Text('Download Image', style: AppTypography.bodySmall()),
-            trailing: Icon(Icons.chevron_right, color: context.themeTextSecondary, size: 18),
+            leading: Icon(
+              Icons.download_rounded,
+              color: context.themeContentColor,
+            ),
+            title: Text(
+              AppLocalizations.of(context)!.downloadImage,
+              style: AppTypography.bodySmall(),
+            ),
+            trailing: Icon(
+              Icons.chevron_right_rounded,
+              color: context.themeTextSecondary,
+              size: 18,
+            ),
             onTap: () {},
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.picture_as_pdf, color: context.themeContentColor),
-            title: Text('Generate PDF', style: AppTypography.bodySmall()),
-            trailing: Icon(Icons.chevron_right, color: context.themeTextSecondary, size: 18),
+            leading: Icon(
+              Icons.picture_as_pdf_rounded,
+              color: context.themeContentColor,
+            ),
+            title: Text(
+              AppLocalizations.of(context)!.generatePdf,
+              style: AppTypography.bodySmall(),
+            ),
+            trailing: Icon(
+              Icons.chevron_right_rounded,
+              color: context.themeTextSecondary,
+              size: 18,
+            ),
             onTap: () {},
           ),
         ],
@@ -931,10 +1072,14 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.history, size: 20, color: context.themeContentColor),
+              Icon(
+                Icons.history_rounded,
+                size: 20,
+                color: context.themeContentColor,
+              ),
               const SizedBox(width: 8),
               Text(
-                'Timeline',
+                AppLocalizations.of(context)!.timeline,
                 style: AppTypography.labelLarge().copyWith(fontSize: 14),
               ),
             ],
@@ -942,7 +1087,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           const SizedBox(height: 16),
           _buildTimelineItem(
             context,
-            'Bill Created',
+            AppLocalizations.of(context)!.billCreated,
             createdAt != null
                 ? DateFormat('dd MMM yyyy, hh:mm a').format(createdAt.toDate())
                 : '-',
@@ -951,7 +1096,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           _buildTimelineItem(
             context,
-            'Submitted',
+            AppLocalizations.of(context)!.submittedLabel,
             createdAt != null
                 ? DateFormat('dd MMM yyyy, hh:mm a').format(createdAt.toDate())
                 : '-',
@@ -960,14 +1105,14 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           _buildTimelineItem(
             context,
-            'Waiting for Approval',
-            'Pending action from admin',
+            AppLocalizations.of(context)!.waitingForApproval,
+            AppLocalizations.of(context)!.pendingActionFromAdmin,
             status == 'pending',
             status == 'pending',
           ),
           _buildTimelineItem(
             context,
-            'Approved',
+            AppLocalizations.of(context)!.approvedLabel,
             '--',
             status == 'approved',
             false,
@@ -994,21 +1139,37 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
               height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isCompleted ? AppColors.success : (isActive ? const Color(0xFFFFA500) : context.themeBackground),
+                color: isCompleted
+                    ? AppColors.success
+                    : (isActive ? AppColors.warning : context.themeBackground),
                 border: Border.all(
-                  color: isCompleted ? AppColors.success : (isActive ? const Color(0xFFFFA500) : context.themeBorder),
+                  color: isCompleted
+                      ? AppColors.success
+                      : (isActive ? AppColors.warning : context.themeBorder),
                   width: 2,
                 ),
               ),
               child: isCompleted
-                  ? const Icon(Icons.check, size: 12, color: AppColors.white)
-                  : (isActive ? const Icon(Icons.schedule, size: 12, color: AppColors.white) : null),
+                  ? const Icon(
+                      Icons.check_rounded,
+                      size: 12,
+                      color: AppColors.white,
+                    )
+                  : (isActive
+                        ? const Icon(
+                            Icons.schedule_rounded,
+                            size: 12,
+                            color: AppColors.white,
+                          )
+                        : null),
             ),
             if (title != 'Approved')
               Container(
                 width: 2,
                 height: 40,
-                color: isCompleted ? AppColors.success : (isActive ? const Color(0xFFFFA500) : context.themeBorder),
+                color: isCompleted
+                    ? AppColors.success
+                    : (isActive ? AppColors.warning : context.themeBorder),
               ),
           ],
         ),
@@ -1027,7 +1188,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                 Text(
                   subtitle,
                   style: AppTypography.bodySmall().copyWith(
-                    fontSize: 11,
+                    fontSize: 12,
                     color: context.themeTextSecondary,
                   ),
                 ),
@@ -1046,8 +1207,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         Expanded(
           child: ElevatedButton.icon(
             onPressed: _isProcessing ? null : _rejectBill,
-            icon: const Icon(Icons.close, size: 18),
-            label: const Text('Reject Bill'),
+            icon: const Icon(Icons.close_rounded, size: 18),
+            label: Text(AppLocalizations.of(context)!.rejectBill),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
@@ -1060,8 +1221,8 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
         Expanded(
           child: ElevatedButton.icon(
             onPressed: _isProcessing ? null : _approveBill,
-            icon: const Icon(Icons.check_circle, size: 18),
-            label: const Text('Approve Bill'),
+            icon: const Icon(Icons.check_circle_rounded, size: 18),
+            label: Text(AppLocalizations.of(context)!.approveBillAction),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
               foregroundColor: AppColors.white,
@@ -1081,13 +1242,13 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     final diff = now.difference(date);
 
     if (diff.inMinutes < 1) {
-      return 'just now';
+      return AppLocalizations.of(context)!.justNow2;
     } else if (diff.inMinutes < 60) {
-      return '${diff.inMinutes} min ago';
+      return AppLocalizations.of(context)!.minAgo('${diff.inMinutes}');
     } else if (diff.inHours < 24) {
-      return '${diff.inHours} hour${diff.inHours > 1 ? 's' : ''} ago';
+      return AppLocalizations.of(context)!.hoursAgo(diff.inHours);
     } else {
-      return '${diff.inDays} day${diff.inDays > 1 ? 's' : ''} ago';
+      return AppLocalizations.of(context)!.daysAgo(diff.inDays);
     }
   }
 }

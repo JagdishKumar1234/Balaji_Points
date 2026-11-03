@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -24,7 +26,7 @@ class _SmartDuplicateCleanupScreenState
 
   Future<Map<String, dynamic>> _analyzeAndRecommend() async {
     final db = FirebaseFirestore.instance;
-    final usersSnapshot = await db.collection('users').get();
+    final usersSnapshot = await db.collection('users').forAdminBranch().get();
 
     final phoneMap = <String, List<Map<String, dynamic>>>{};
 
@@ -96,7 +98,10 @@ class _SmartDuplicateCleanupScreenState
     return Scaffold(
       backgroundColor: context.themeBackground,
       appBar: AppBar(
-        title: Text('Smart Duplicate Cleanup', style: AppTypography.h2()),
+        title: Text(
+          AppLocalizations.of(context)!.smartDuplicateCleanup,
+          style: AppTypography.h2(),
+        ),
         backgroundColor: context.themePrimary,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -111,7 +116,7 @@ class _SmartDuplicateCleanupScreenState
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Error: ${snapshot.error}',
+                AppLocalizations.of(context)!.error3('${snapshot.error}'),
                 style: AppTypography.bodyMedium().copyWith(
                   color: context.themeError,
                 ),
@@ -141,18 +146,20 @@ class _SmartDuplicateCleanupScreenState
                         child: Column(
                           children: [
                             Icon(
-                              Icons.check_circle,
+                              Icons.check_circle_rounded,
                               size: 64,
-                              color: Colors.green,
+                              color: AppColors.success,
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No Duplicates Found!',
+                              AppLocalizations.of(context)!.noDuplicatesFound,
                               style: AppTypography.h3(),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'All carpenters have unique phone numbers.',
+                              AppLocalizations.of(
+                                context,
+                              )!.allCarpentersHaveUniquePhoneNumbers,
                               style: AppTypography.bodyMedium().copyWith(
                                 color: context.themeTextMuted,
                               ),
@@ -166,9 +173,9 @@ class _SmartDuplicateCleanupScreenState
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
+                        color: AppColors.error.withValues(alpha: 0.1),
                         border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.3),
+                          color: AppColors.error.withValues(alpha: 0.3),
                         ),
                         borderRadius: AppRadius.md12,
                       ),
@@ -176,26 +183,36 @@ class _SmartDuplicateCleanupScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Potential duplicate accounts — review required',
+                            AppLocalizations.of(
+                              context,
+                            )!.potentialDuplicateAccountsReviewRequired,
                             style: AppTypography.labelLarge().copyWith(
-                              color: Colors.red[700],
+                              color: AppColors.error,
                             ),
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Found ${duplicateGroups.length} duplicate mobile numbers',
+                            AppLocalizations.of(
+                              context,
+                            )!.foundDuplicateMobileNumbers(
+                              '${duplicateGroups.length}',
+                            ),
                             style: AppTypography.bodyMedium(),
                           ),
                           Text(
-                            'Accounts to review: $totalForReview',
+                            AppLocalizations.of(
+                              context,
+                            )!.accountsToReview('$totalForReview'),
                             style: AppTypography.bodyMedium().copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.red,
+                              color: AppColors.error,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'All records are retained. The highest-points profile is only a suggested primary account.',
+                            AppLocalizations.of(
+                              context,
+                            )!.allRecordsAreRetainedTheHighest,
                             style: AppTypography.bodySmall().copyWith(
                               color: context.themeTextMuted,
                             ),
@@ -205,7 +222,9 @@ class _SmartDuplicateCleanupScreenState
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Potential duplicate groups (${duplicateGroups.length})',
+                      AppLocalizations.of(
+                        context,
+                      )!.potentialDuplicateGroups('${duplicateGroups.length}'),
                       style: AppTypography.h3(),
                     ),
                     const SizedBox(height: 12),
@@ -245,7 +264,10 @@ class _DuplicateGroupCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        border: Border.all(color: Colors.red.withValues(alpha: 0.3), width: 2),
+        border: Border.all(
+          color: AppColors.error.withValues(alpha: 0.3),
+          width: 2,
+        ),
         borderRadius: AppRadius.all24,
       ),
       child: Column(
@@ -255,7 +277,7 @@ class _DuplicateGroupCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
+              color: AppColors.error.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24),
                 topRight: Radius.circular(24),
@@ -268,16 +290,21 @@ class _DuplicateGroupCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$groupIndex. Mobile: $phone',
+                      AppLocalizations.of(
+                        context,
+                      )!.mobile3('$groupIndex', '$phone'),
                       style: AppTypography.bodyLarge().copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${reviewUsers.length + 1} similar accounts | Points diff: ${pointsDiff.toStringAsFixed(0)}',
+                      AppLocalizations.of(context)!.similarAccountsPointsDiff(
+                        '${reviewUsers.length + 1}',
+                        '${pointsDiff.toStringAsFixed(0)}',
+                      ),
                       style: AppTypography.bodySmall().copyWith(
-                        color: Colors.red[700],
+                        color: AppColors.error,
                       ),
                     ),
                   ],
@@ -288,11 +315,11 @@ class _DuplicateGroupCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: AppColors.error,
                     borderRadius: AppRadius.sm8,
                   ),
                   child: Text(
-                    'Review only',
+                    AppLocalizations.of(context)!.reviewOnly,
                     style: AppTypography.labelSmall().copyWith(
                       color: Colors.white,
                     ),
@@ -309,9 +336,11 @@ class _DuplicateGroupCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Suggested primary account (highest points)',
+                  AppLocalizations.of(
+                    context,
+                  )!.suggestedPrimaryAccountHighestPoints,
                   style: AppTypography.labelLarge().copyWith(
-                    color: Colors.green[700],
+                    color: AppColors.success,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -328,9 +357,11 @@ class _DuplicateGroupCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Other matching accounts — manual review required',
+                    AppLocalizations.of(
+                      context,
+                    )!.otherMatchingAccountsManualReviewRequired,
                     style: AppTypography.labelLarge().copyWith(
-                      color: Colors.red[700],
+                      color: AppColors.error,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -367,8 +398,8 @@ class _AccountCard extends StatelessWidget {
         color: context.themeBackground,
         border: Border.all(
           color: isKeep
-              ? Colors.green.withValues(alpha: 0.5)
-              : Colors.red.withValues(alpha: 0.5),
+              ? AppColors.success.withValues(alpha: 0.5)
+              : AppColors.error.withValues(alpha: 0.5),
           width: 2,
         ),
         borderRadius: AppRadius.md12,
@@ -406,13 +437,13 @@ class _AccountCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.2),
+                    color: AppColors.success.withValues(alpha: 0.2),
                     borderRadius: AppRadius.sm8,
                   ),
                   child: Text(
-                    '⭐ Keep',
+                    AppLocalizations.of(context)!.keep,
                     style: AppTypography.labelSmall().copyWith(
-                      color: Colors.green[700],
+                      color: AppColors.success,
                     ),
                   ),
                 )
@@ -423,26 +454,34 @@ class _AccountCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.15),
+                    color: AppColors.warning.withValues(alpha: 0.15),
                     borderRadius: AppRadius.sm8,
                   ),
                   child: Text(
-                    'Review only',
+                    AppLocalizations.of(context)!.reviewOnly,
                     style: AppTypography.labelSmall().copyWith(
-                      color: Colors.orange[800],
+                      color: AppColors.warning,
                     ),
                   ),
                 ),
             ],
           ),
           const SizedBox(height: 8),
-          _InfoText('Email', user['email'] as String),
           _InfoText(
-            'Status',
-            user['isActive'] ? 'Active' : 'Inactive',
-            color: user['isActive'] ? Colors.green : Colors.orange,
+            AppLocalizations.of(context)!.email,
+            user['email'] as String,
           ),
-          _InfoText('Created', _formatDate(user['createdAt'] as DateTime)),
+          _InfoText(
+            AppLocalizations.of(context)!.status,
+            user['isActive']
+                ? AppLocalizations.of(context)!.active
+                : AppLocalizations.of(context)!.inactive,
+            color: user['isActive'] ? AppColors.success : AppColors.warning,
+          ),
+          _InfoText(
+            AppLocalizations.of(context)!.createdLabel,
+            _formatDate(user['createdAt'] as DateTime),
+          ),
           _InfoText('ID', user['id'] as String, mono: true),
         ],
       ),

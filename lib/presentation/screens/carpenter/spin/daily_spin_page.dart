@@ -3,6 +3,8 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balaji_points/providers/daily_spin_provider.dart';
@@ -76,7 +78,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
         title: Text(
-          '🎉 Congratulations!',
+          AppLocalizations.of(context)!.congratulations,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -88,12 +90,12 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'You won',
+              AppLocalizations.of(context)!.youWonLabel,
               style: TextStyle(fontSize: 18, color: context.themeTextSecondary),
             ),
             const SizedBox(height: 10),
             Text(
-              '$points Points!',
+              AppLocalizations.of(context)!.pointsWon('$points'),
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -102,7 +104,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
             ),
             const SizedBox(height: 20),
             Text(
-              'Points have been added to your account.',
+              AppLocalizations.of(context)!.pointsAddedToAccount,
               style: TextStyle(fontSize: 14, color: context.themeTextSecondary),
               textAlign: TextAlign.center,
             ),
@@ -117,15 +119,17 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.themeSecondary,
+                foregroundColor: context.themeOnSecondary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
                   vertical: 12,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: AppRadius.md12,
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
               ),
-              child: const Text('Great!', style: TextStyle(fontSize: 16)),
+              child: Text(
+                AppLocalizations.of(context)!.great,
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -138,7 +142,9 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
     final spinState = ref.watch(dailySpinProvider);
     final theme = Theme.of(context);
     final light = theme.brightness == Brightness.light;
-    final carpenterBg = light ? context.themeBackground : theme.scaffoldBackgroundColor;
+    final carpenterBg = light
+        ? context.themeBackground
+        : theme.scaffoldBackgroundColor;
     final appBarBg = light
         ? context.themeBackground
         : (theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor);
@@ -156,7 +162,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
           if (_isSpinning) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Please wait for spin to complete'),
+                content: Text(AppLocalizations.of(context)!.pleaseWaitForSpin),
                 backgroundColor: AppColors.warning,
               ),
             );
@@ -175,7 +181,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: const Text('Daily Spin'),
+          title: Text(AppLocalizations.of(context)!.dailySpin),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -185,9 +191,10 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const BranchBanner(margin: EdgeInsets.fromLTRB(0, 0, 0, 16)),
                   const SizedBox(height: 40),
                   Text(
-                    'Spin & Win Points!',
+                    AppLocalizations.of(context)!.spinAndWin,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -197,8 +204,11 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Get your daily spin and win exciting points',
-                    style: TextStyle(fontSize: 16, color: context.themeTextSecondary),
+                    AppLocalizations.of(context)!.spinAndWinSubtitle,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: context.themeTextSecondary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 60),
@@ -225,8 +235,9 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: context.themeSecondary
-                                    .withValues(alpha: 0.3),
+                                color: context.themeSecondary.withValues(
+                                  alpha: 0.3,
+                                ),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -249,13 +260,15 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                                   color: AppColors.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.black.withValues(alpha: 0.1),
+                                      color: AppColors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
                                       blurRadius: 10,
                                     ),
                                   ],
                                 ),
                                 child: Icon(
-                                  Icons.radio_button_checked,
+                                  Icons.radio_button_checked_rounded,
                                   size: 40,
                                   color: context.themeSecondary,
                                 ),
@@ -277,7 +290,9 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.themeSecondary,
-                        disabledBackgroundColor: context.themeBorder,
+                        foregroundColor: context.themeOnSecondary,
+                        disabledBackgroundColor: context.themeSoftSurface,
+                        disabledForegroundColor: context.themeTextSecondary,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 60,
                           vertical: 18,
@@ -287,11 +302,15 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                         ),
                       ),
                       child: Text(
-                        _isSpinning ? 'Spinning...' : 'Spin Now!',
-                        style: const TextStyle(
+                        _isSpinning
+                            ? AppLocalizations.of(context)!.spinning
+                            : AppLocalizations.of(context)!.spinNow2,
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: spinState.canSpin && !_isSpinning
+                              ? context.themeOnSecondary
+                              : context.themeTextSecondary,
                         ),
                       ),
                     )
@@ -307,18 +326,19 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                       decoration: BoxDecoration(
                         color: context.themeSoftSurface,
                         borderRadius: AppRadius.md12,
-                        border: Border.all(
-                          color: context.themeBorder,
-                        ),
+                        border: Border.all(color: context.themeBorder),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.info_outline_rounded, color: context.themePrimary),
+                          Icon(
+                            Icons.info_outline_rounded,
+                            color: context.themePrimary,
+                          ),
                           const SizedBox(width: 10),
                           Flexible(
                             child: Text(
-                              'You\'ve already spun today!\nCome back tomorrow for another chance.',
+                              AppLocalizations.of(context)!.alreadySpunToday,
                               style: AppTypography.bodySmall(
                                 color: context.themeTextPrimary,
                               ),

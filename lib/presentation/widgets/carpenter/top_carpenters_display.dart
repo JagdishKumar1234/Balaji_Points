@@ -84,7 +84,7 @@ class TopCarpentersDisplay extends StatelessWidget {
         children: [
           // Trophy icon and rank
           Icon(
-            Icons.emoji_events,
+            Icons.emoji_events_rounded,
             size: rank == 1 ? 50 : 40,
             color: trophyColor,
           ),
@@ -125,7 +125,7 @@ class TopCarpentersDisplay extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.monetization_on, color: trophyColor, size: 16),
+              Icon(Icons.monetization_on_rounded, color: trophyColor, size: 16),
               const SizedBox(width: 2),
               Text(
                 _formatPoints(carpenter.points),
@@ -143,14 +143,7 @@ class TopCarpentersDisplay extends StatelessWidget {
           Container(
             height: podiumHeight,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  trophyColor.withValues(alpha: 0.7),
-                  trophyColor.withValues(alpha: 0.5),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+              color: trophyColor.withValues(alpha: 0.7),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(8),
               ),

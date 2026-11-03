@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
@@ -52,7 +52,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final mq = MediaQuery.of(context);
 
     // Resolve role — show content immediately; nav bar appears once role is known
@@ -64,19 +63,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     final isAdmin = role == 'admin';
     final showNav = roleAsync.hasValue && !isAdmin && !context.isWideScreen;
 
-    // Apply light-mode canvas override (matches fintech premium feel)
-    final shellTheme = isDark
-        ? theme
-        : theme.copyWith(
-            scaffoldBackgroundColor: context.themeBackground,
-            colorScheme: theme.colorScheme.copyWith(
-              surface: context.themeBackground,
-            ),
-            appBarTheme: theme.appBarTheme.copyWith(
-              backgroundColor: context.themeBackground,
-              surfaceTintColor: AppColors.transparent,
-            ),
-          );
+    // The app theme already matches the UI spec (grey canvas, white cards),
+    // so the shell no longer overrides surface colours.
+    final shellTheme = theme;
 
     // Active tab index from current route
     final path = GoRouterState.of(context).uri.path;
@@ -89,29 +78,29 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         : 0;
 
     final navItems = <RoleNavigationItem>[
-      const RoleNavigationItem(
-        label: 'Dashboard',
+      RoleNavigationItem(
+        label: AppLocalizations.of(context)!.dashboard,
         icon: Icons.home_outlined,
         selectedIcon: Icons.home_rounded,
       ),
-      const RoleNavigationItem(
-        label: 'Wallet',
+      RoleNavigationItem(
+        label: AppLocalizations.of(context)!.wallet,
         icon: Icons.account_balance_wallet_outlined,
         selectedIcon: Icons.account_balance_wallet_rounded,
       ),
       if (showAddBill)
-        const RoleNavigationItem(
-          label: 'Add bill',
+        RoleNavigationItem(
+          label: AppLocalizations.of(context)!.addBill,
           icon: Icons.add_circle_outline_rounded,
           selectedIcon: Icons.add_circle_rounded,
         ),
-      const RoleNavigationItem(
-        label: 'Notifications',
+      RoleNavigationItem(
+        label: AppLocalizations.of(context)!.notifications,
         icon: Icons.notifications_outlined,
         selectedIcon: Icons.notifications_rounded,
       ),
-      const RoleNavigationItem(
-        label: 'Profile',
+      RoleNavigationItem(
+        label: AppLocalizations.of(context)!.profile,
         icon: Icons.person_outline_rounded,
         selectedIcon: Icons.person_rounded,
       ),
@@ -153,7 +142,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             child: Scaffold(
               backgroundColor: t.scaffoldBackgroundColor,
               body: ResponsiveRoleNavigation(
-                roleLabel: role?.replaceAll('_', ' ') ?? 'Member',
+                roleLabel:
+                    role?.replaceAll('_', ' ') ??
+                    AppLocalizations.of(context)!.member,
                 selectedIndex: navPaths.indexOf(selectedPath),
                 items: navItems,
                 onSelected: (index) => GoRouter.of(context).go(navPaths[index]),
@@ -164,7 +155,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                       padding: EdgeInsets.only(
                         bottom: showNav ? bottomChromeHeight : 0,
                       ),
-                      child: widget.child ?? const SizedBox.shrink(),
+                      // Carpenter screens are phone-designed: on tablet /
+                      // web keep them at a readable width, centred.
+                      child: !isAdmin && !context.windowSize.isCompact
+                          ? ColoredBox(
+                              color: t.scaffoldBackgroundColor,
+                              child: ReadableWidth(
+                                child: widget.child ?? const SizedBox.shrink(),
+                              ),
+                            )
+                          : widget.child ?? const SizedBox.shrink(),
                     ),
 
                     // ── Bottom nav bar ──

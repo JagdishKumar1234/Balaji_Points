@@ -77,7 +77,9 @@ class _SplashPageState extends State<SplashPage> {
         final bioEnabled = await _sessionService.isBiometricEnabled();
         if (bioEnabled) {
           final authenticated = await BiometricService().authenticate(
-            localizedReason: 'Verify your identity to open Balaji Points',
+            localizedReason: AppLocalizations.of(
+              context,
+            )!.verifyYourIdentityToOpenBalaji,
           );
           if (!mounted) return;
           if (!authenticated) {
@@ -152,7 +154,8 @@ class _SplashPageState extends State<SplashPage> {
                               _Logo().enterHero(),
                               const SizedBox(height: AppSpacing.xl2),
                               Text(
-                                l10n?.appName ?? 'Balaji Points',
+                                l10n?.appName ??
+                                    AppLocalizations.of(context)!.appName,
                                 textAlign: TextAlign.center,
                                 style: AppTypography.displaySmall(
                                   color: context.themePrimary,
@@ -161,7 +164,9 @@ class _SplashPageState extends State<SplashPage> {
                               const SizedBox(height: AppSpacing.sm),
                               Text(
                                 l10n?.rewardsLoyaltyProgram ??
-                                    'Rewards & Loyalty Program',
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.rewardsLoyaltyProgram,
                                 textAlign: TextAlign.center,
                                 style: AppTypography.bodyLarge(
                                   color: context.themeTextSecondary,
@@ -251,11 +256,7 @@ class _Logo extends StatelessWidget {
               height: logoSize,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(logoBorderRadius),
-                gradient: LinearGradient(
-                  colors: [context.themePrimary, context.themeSecondary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: AppColors.primary,
               ),
               child: Center(
                 child: Icon(

@@ -7,6 +7,7 @@
  *  2. onBillStatusChanged        – points + tier + history on bill approval/rejection
  *  3. onPointsChanged            – tier recalculation safety-net on user_points write
  *  4. onUserDeleted              – cascade-delete user_points / bills / points_history
+ *  5. onBranchRenamed / onRoleRenamed – copy renamed branch / role names onto users
  *
  * Branch-isolation contract (applied in every trigger that touches user data):
  *   bill.branchId  must equal  user.branchId
@@ -215,6 +216,166 @@ exports.updateBranchAdminPassword = onCall(async (request) => {
     throw new HttpsError("internal", "Unable to update the admin password.");
   }
   return {success: true};
+});
+
+exports.updateBranchAdmin = onCall(async (request) => {
+  const editorId = await requireSuperAdmin(request);
+  const data = request.data || {};
+  const uid = String(data.uid || "").trim();
+  const email = String(data.email || "").trim().toLowerCase();
+  const firstName = String(data.firstName || "").trim();
+  const lastName = String(data.lastName || "").trim();
+  const phone = String(data.phone || "").replace(/\D/g, "");
+  const branchId = String(data.branchId || "").trim();
+
+  if (!uid || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !firstName ||
+      firstName.length > 60 || lastName.length > 60 || !/^\d{10}$/.test(phone) || !branchId) {
+    throw new HttpsError("invalid-argument", "Check the admin details.");
+  }
+  const userRef = db.collection("users").doc(uid);
+  const profile = await userRef.get();
+  if (!profile.exists || profile.data().role !== "admin") {
+    throw new HttpsError("not-found", "Branch admin account was not found.");
+  }
+  const before = profile.data();
+  const previousEmail = String(before.email || "").toLowerCase();
+  const displayName = `${firstName} ${lastName}`.trim();
+
+  // 1. Firebase Auth (sign-in email + display name).
+  try {
+    const authUpdate = {displayName};
+    if (email !== previousEmail) authUpdate.email = email;
+    await admin.auth().updateUser(uid, authUpdate);
+  } catch (error) {
+    if (error.code === "auth/email-already-exists") {
+      throw new HttpsError("already-exists", "That email already has an account.");
+    }
+    if (error.code !== "auth/user-not-found") {
+      console.error("updateBranchAdmin auth update failed", error);
+      throw new HttpsError("internal", "Unable to update the admin account.");
+    }
+  }
+
+  // 2. Profile + branch assignment, atomically. One admin per branch.
+  let branchName = before.branchName || branchId;
+  try {
+    await db.runTransaction(async (transaction) => {
+      const current = await transaction.get(userRef);
+      if (!current.exists || current.data().role !== "admin") {
+        throw new HttpsError("failed-precondition", "Admin account changed during update.");
+      }
+      const oldBranchId = String(current.data().branchId || "");
+      const newBranchRef = db.collection("branches").doc(branchId);
+      const newBranch = await transaction.get(newBranchRef);
+      if (!newBranch.exists) {
+        throw new HttpsError("failed-precondition", "Choose an existing branch.");
+      }
+      const update = {
+        firstName,
+        lastName,
+        phone,
+        email,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedBy: editorId,
+      };
+      const branch = newBranch.data();
+      branchName = branch.name || branchId;
+      if (branchId !== oldBranchId) {
+        if (branch.isActive !== true) {
+          throw new HttpsError("failed-precondition", "Choose an active branch.");
+        }
+        const members = await transaction.get(
+            db.collection("users").where("branchId", "==", branchId));
+        const taken = members.docs.some((doc) => doc.id !== uid &&
+          (doc.data().role || doc.data().roleId) === "admin");
+        if (taken) {
+          throw new HttpsError("already-exists", "This branch already has an admin.");
+        }
+        let oldBranch;
+        const oldBranchRef = oldBranchId ? db.collection("branches").doc(oldBranchId) : null;
+        if (oldBranchRef) oldBranch = await transaction.get(oldBranchRef);
+        Object.assign(update, {
+          branchId,
+          branchCode: branch.branchCode || branchId,
+          branchName,
+          branchShortName: branch.shortName || branch.name || branchId,
+        });
+        if (oldBranch && oldBranch.exists && oldBranch.data().adminUid === uid) {
+          transaction.update(oldBranchRef, {
+            adminUid: admin.firestore.FieldValue.delete(),
+            adminAssignedAt: admin.firestore.FieldValue.delete(),
+          });
+        }
+        transaction.set(newBranchRef, {
+          adminUid: uid,
+          adminAssignedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, {merge: true});
+      }
+      transaction.update(userRef, update);
+    });
+  } catch (error) {
+    // Keep Auth and Firestore consistent: undo the email change.
+    if (email !== previousEmail && previousEmail) {
+      await admin.auth().updateUser(uid, {email: previousEmail}).catch(() => {});
+    }
+    if (error instanceof HttpsError) throw error;
+    console.error("updateBranchAdmin failed", error);
+    throw new HttpsError("internal", "Unable to update the admin account.");
+  }
+  return {uid, email, branchName};
+});
+
+/**
+ * Writes the same field values to every user matching a query, in batches.
+ * @param {object} query - Firestore query selecting the users.
+ * @param {object} values - Field values to set.
+ * @return {Promise<number>} Number of updated documents.
+ */
+async function updateUsersWhere(query, values) {
+  const snapshot = await query.get();
+  let count = 0;
+  for (let i = 0; i < snapshot.docs.length; i += 450) {
+    const batch = db.batch();
+    for (const doc of snapshot.docs.slice(i, i + 450)) {
+      batch.update(doc.ref, values);
+      count++;
+    }
+    await batch.commit();
+  }
+  return count;
+}
+
+// Users keep a copy of their branch name for fast display. When a super admin
+// renames a branch, copy the new name onto every member of that branch.
+exports.onBranchRenamed = onDocumentWritten("branches/{branchId}", async (event) => {
+  const before = event.data.before.exists ? event.data.before.data() : null;
+  const after = event.data.after.exists ? event.data.after.data() : null;
+  if (!before || !after) return;
+  if (before.name === after.name && before.shortName === after.shortName) return;
+  const branchId = event.params.branchId;
+  const count = await updateUsersWhere(
+      db.collection("users").where("branchId", "==", branchId), {
+        branchName: after.name || branchId,
+        branchShortName: after.shortName || after.name || branchId,
+      });
+  console.log(`onBranchRenamed: ${branchId} → updated ${count} users`);
+});
+
+// Users keep a copy of their role name. When a role is renamed, copy it.
+exports.onRoleRenamed = onDocumentWritten("roles/{roleId}", async (event) => {
+  const before = event.data.before.exists ? event.data.before.data() : null;
+  const after = event.data.after.exists ? event.data.after.data() : null;
+  if (!after) return;
+  if (before && before.name === after.name &&
+      (before.abbreviation || "") === (after.abbreviation || "")) return;
+  const roleId = event.params.roleId;
+  if (roleId === "admin" || roleId === "super_admin") return;
+  const count = await updateUsersWhere(
+      db.collection("users").where("roleId", "==", roleId), {
+        roleName: after.name,
+        roleAbbreviation: after.abbreviation || "",
+      });
+  console.log(`onRoleRenamed: ${roleId} → updated ${count} users`);
 });
 
 exports.deleteBranchAdmin = onCall(async (request) => {
