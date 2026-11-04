@@ -86,153 +86,286 @@ class HomeHeroCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      padding: const EdgeInsets.all(16),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [AppColors.primary, AppColors.primaryLight],
         ),
-        borderRadius: AppRadius.all16,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.45)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.25),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            color: AppColors.primary.withValues(alpha: 0.30),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              MemberAvatar(
-                name: homeState.displayName,
-                imageUrl: homeState.profileImage,
-                size: 56,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
+          const Positioned.fill(
+            child: RepaintBoundary(child: CustomPaint(painter: _HeroArcs())),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      greeting,
-                      style: AppTypography.caption(
-                        color: AppColors.onPrimaryMuted,
+                    MemberAvatar(
+                      name: homeState.displayName,
+                      imageUrl: homeState.profileImage,
+                      size: 58,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            greeting,
+                            style: AppTypography.caption(
+                              color: AppColors.onPrimaryMuted,
+                            ),
+                          ),
+                          Text(
+                            homeState.displayName,
+                            style: AppTypography.h5(color: AppColors.white),
+                          ),
+                          const SizedBox(height: 6),
+                          RoleTag(
+                            label: memberRoleName(context, homeState.userData),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      homeState.displayName,
-                      style: AppTypography.h5(color: AppColors.white),
-                    ),
-                    const SizedBox(height: 6),
-                    RoleTag(label: memberRoleName(context, homeState.userData)),
+                    const SizedBox(width: 8),
+                    _TierBadge(tier: tier),
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              _TierBadge(tier: tier),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 18),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      l10n.totalPoints,
-                      style: AppTypography.caption(
-                        color: AppColors.onPrimaryMuted,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.totalPoints,
+                            style: AppTypography.caption(
+                              color: AppColors.onPrimaryMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.stars_rounded,
+                                color: AppColors.gold,
+                                size: 30,
+                              ),
+                              const SizedBox(width: 6),
+                              // Shrinks a very large balance rather than
+                              // cutting it.
+                              Flexible(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    PointsUtils.formatPoints(homeState.points),
+                                    maxLines: 1,
+                                    style:
+                                        AppTypography.h1(
+                                          color: AppColors.gold,
+                                        ).copyWith(
+                                          fontSize: 38,
+                                          fontWeight: FontWeight.w800,
+                                          height: 1.1,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    // Shrinks a very large balance rather than cutting it.
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        PointsUtils.formatPoints(homeState.points),
-                        maxLines: 1,
-                        style: AppTypography.h1(color: AppColors.gold),
-                      ),
-                    ),
+                    const SizedBox(width: 12),
+                    _RankMedal(label: l10n.rankShort, rank: homeState.userRank),
                   ],
                 ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    l10n.rankShort,
-                    style: AppTypography.caption(
-                      color: AppColors.onPrimaryMuted,
+                const SizedBox(height: 14),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: AppColors.white.withValues(alpha: 0.10),
                     ),
                   ),
-                  Text(
-                    homeState.userRank != null ? '#${homeState.userRank}' : '—',
-                    style: AppTypography.h4(color: AppColors.white),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (isPlatinum)
-            Row(
-              children: [
-                const Icon(
-                  Icons.workspace_premium_rounded,
-                  size: 16,
-                  color: AppColors.gold,
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10n.platinumHighestTier,
-                    style: AppTypography.caption(color: AppColors.goldSoft),
-                  ),
-                ),
-              ],
-            )
-          else ...[
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.ptsToNextLabel(
-                      PointsUtils.formatPoints(pointsToNext),
-                      _tierNextLabel(tier),
-                    ),
-                    style: AppTypography.caption(
-                      color: AppColors.onPrimaryMuted,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${(progress * 100).toStringAsFixed(0)}%',
-                  style: AppTypography.caption(color: AppColors.goldSoft),
+                  child: isPlatinum
+                      ? Row(
+                          children: [
+                            const Icon(
+                              Icons.workspace_premium_rounded,
+                              size: 18,
+                              color: AppColors.gold,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                l10n.platinumHighestTier,
+                                style: AppTypography.bodySmall(
+                                  color: AppColors.goldSoft,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.trending_up_rounded,
+                                  size: 16,
+                                  color: AppColors.gold,
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    l10n.ptsToNextLabel(
+                                      PointsUtils.formatPoints(pointsToNext),
+                                      _tierNextLabel(tier),
+                                    ),
+                                    style: AppTypography.bodySmall(
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${(progress * 100).toStringAsFixed(0)}%',
+                                  style: AppTypography.labelMedium(
+                                    color: AppColors.gold,
+                                  ).copyWith(fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            _TierProgressBar(progress: progress),
+                          ],
+                        ),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            ClipRRect(
-              borderRadius: AppRadius.pill,
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 6,
-                backgroundColor: AppColors.white.withValues(alpha: 0.16),
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.gold),
-              ),
-            ),
-          ],
+          ),
         ],
+      ),
+    );
+  }
+}
+
+/// Soft gold arcs in the top-right corner, drawn rather than loaded as an image.
+class _HeroArcs extends CustomPainter {
+  const _HeroArcs();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centre = Offset(size.width + 6, -6);
+    final stroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = AppColors.gold.withValues(alpha: 0.13);
+    for (final (radius, width) in [(70.0, 14.0), (112.0, 8.0), (150.0, 3.0)]) {
+      canvas.drawCircle(centre, radius, stroke..strokeWidth = width);
+    }
+    canvas.drawCircle(
+      Offset(-20, size.height + 10),
+      90,
+      Paint()..color = AppColors.white.withValues(alpha: 0.035),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_HeroArcs oldDelegate) => false;
+}
+
+class _RankMedal extends StatelessWidget {
+  const _RankMedal({required this.label, required this.rank});
+
+  final String label;
+  final int? rank;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 68, minHeight: 68),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.white.withValues(alpha: 0.08),
+        border: Border.all(color: AppColors.gold, width: 1.5),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            rank != null ? '#$rank' : '—',
+            style: AppTypography.h5(color: AppColors.white),
+          ),
+          Text(
+            label,
+            style: AppTypography.caption(color: AppColors.onPrimaryMuted),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Gold gradient bar, with a soft glow so it stands out on the navy.
+class _TierProgressBar extends StatelessWidget {
+  const _TierProgressBar({required this.progress});
+
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      value: '${(progress * 100).round()}%',
+      child: Container(
+        height: 8,
+        decoration: BoxDecoration(
+          color: AppColors.white.withValues(alpha: 0.16),
+          borderRadius: AppRadius.pill,
+        ),
+        alignment: Alignment.centerLeft,
+        child: FractionallySizedBox(
+          widthFactor: progress,
+          heightFactor: 1,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.gold, AppColors.goldSoft],
+              ),
+              borderRadius: AppRadius.pill,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.gold.withValues(alpha: 0.5),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -274,10 +407,10 @@ class HomeHeroCardShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      height: 216,
+      height: 252,
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        borderRadius: AppRadius.all16,
+        borderRadius: BorderRadius.circular(22),
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
   }

@@ -36,15 +36,14 @@ class WalletState {
     bool? idsLoaded,
     int? pendingCount,
     int? approvedCount,
-  }) =>
-      WalletState(
-        loading: loading ?? this.loading,
-        error: error ?? this.error,
-        carpenterIds: carpenterIds ?? this.carpenterIds,
-        idsLoaded: idsLoaded ?? this.idsLoaded,
-        pendingCount: pendingCount ?? this.pendingCount,
-        approvedCount: approvedCount ?? this.approvedCount,
-      );
+  }) => WalletState(
+    loading: loading ?? this.loading,
+    error: error ?? this.error,
+    carpenterIds: carpenterIds ?? this.carpenterIds,
+    idsLoaded: idsLoaded ?? this.idsLoaded,
+    pendingCount: pendingCount ?? this.pendingCount,
+    approvedCount: approvedCount ?? this.approvedCount,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -61,7 +60,6 @@ class WalletNotifier extends Notifier<WalletState> {
   }
 
   Future<void> refresh() async {
-    state = state.copyWith(loading: true);
     await _loadCarpenterIds();
     state = state.copyWith(loading: false);
   }
@@ -94,42 +92,48 @@ class WalletNotifier extends Notifier<WalletState> {
 // Providers
 // ---------------------------------------------------------------------------
 
-final walletProvider = NotifierProvider<WalletNotifier, WalletState>(WalletNotifier.new);
-
-/// Live stream of bills for the current carpenter IDs.
-/// Re-created whenever [carpenterIds] changes (keyed by the sorted id list).
-final billsStreamProvider = StreamProvider.family<QuerySnapshot, List<String>>(
-  (ref, ids) {
-    if (ids.isEmpty) return const Stream.empty();
-    return FirebaseFirestore.instance
-        .collection('bills')
-        .where('carpenterId', whereIn: ids)
-        .orderBy('createdAt', descending: true)
-        .limit(20)
-        .snapshots();
-  },
+final walletProvider = NotifierProvider<WalletNotifier, WalletState>(
+  WalletNotifier.new,
 );
 
-final pendingBillsCountProvider = StreamProvider.family<int, List<String>>(
-  (ref, ids) {
-    if (ids.isEmpty) return Stream.value(0);
-    return FirebaseFirestore.instance
-        .collection('bills')
-        .where('carpenterId', whereIn: ids)
-        .where('status', isEqualTo: 'pending')
-        .snapshots()
-        .map((snap) => snap.docs.length);
-  },
+final walletFirestoreProvider = Provider<FirebaseFirestore>(
+  (ref) => FirebaseFirestore.instance,
 );
 
-final approvedBillsCountProvider = StreamProvider.family<int, List<String>>(
-  (ref, ids) {
-    if (ids.isEmpty) return Stream.value(0);
-    return FirebaseFirestore.instance
-        .collection('bills')
-        .where('carpenterId', whereIn: ids)
-        .where('status', isEqualTo: 'approved')
-        .snapshots()
-        .map((snap) => snap.docs.length);
-  },
-);
+/// One member's bills, live, kept for the whole session: coming back to the
+/// wallet shows them at once, and new data arrives silently.
+///
+/// Separate per member (the key is their ids), so nobody can ever see a list
+/// left over from the previous login. Must be invalidated on logout.
+final walletBillsProvider = StreamProvider.family<QuerySnapshot, String>((
+  ref,
+  key,
+) {
+  return ref
+      .watch(walletFirestoreProvider)
+      .collection('bills')
+      .where('carpenterId', whereIn: key.split('|'))
+      .orderBy('createdAt', descending: true)
+      .snapshots();
+});
+
+/// The logged-in member's bills.
+final currentWalletBillsProvider = Provider<AsyncValue<QuerySnapshot>>((ref) {
+  final key = ref.watch(
+    walletProvider.select((wallet) => wallet.carpenterIds.join('|')),
+  );
+  if (key.isEmpty) return const AsyncLoading();
+  return ref.watch(walletBillsProvider(key));
+});
+
+/// Bills with [status], or all of them for `all`.
+List<QueryDocumentSnapshot> billsWithStatus(
+  List<QueryDocumentSnapshot> bills,
+  String status,
+) => status == 'all'
+    ? bills
+    : bills
+          .where(
+            (bill) => (bill.data() as Map<String, dynamic>)['status'] == status,
+          )
+          .toList();

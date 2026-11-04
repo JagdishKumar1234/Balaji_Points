@@ -5,8 +5,9 @@ import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
-/// Facebook-style bottom tab bar: white/dark surface, active tab highlighted
-/// with a filled pill, center Add Bill button raised as a blue circle.
+/// Navy tab bar with rounded top corners: the active tab is a gold pill, and
+/// Add Bill is a gold button raised above the bar. Labels shrink slightly
+/// rather than ever being cut.
 class CarpenterBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
@@ -44,58 +45,109 @@ class CarpenterBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        color: context.themeChrome,
-        border: Border(top: BorderSide(color: context.themeBorder, width: 1)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    // The bar has a fixed height, so very large system text is limited here.
+    return MediaQuery.withClampedTextScaling(
+      maxScaleFactor: 1.15,
+      child: Stack(
         children: [
-          SizedBox(
-            height: CarpenterShellLayout.navBarHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _NavTab(
-                  index: 0,
-                  currentIndex: currentIndex,
-                  icon: Icons.home_rounded,
-                  activeIcon: Icons.home_rounded,
-                  label: l10n.home,
-                  onTap: onTabSelected,
+          // Starts lower than the widget, leaving room for the raised button.
+          Positioned.fill(
+            top: CarpenterShellLayout.navBarRaise,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [AppColors.primaryLight, AppColors.primary],
                 ),
-                _NavTab(
-                  index: 1,
-                  currentIndex: currentIndex,
-                  icon: Icons.account_balance_wallet_outlined,
-                  activeIcon: Icons.account_balance_wallet_rounded,
-                  label: l10n.earn,
-                  onTap: onTabSelected,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(22),
                 ),
-                if (showAddBill)
-                  _CenterAddButton(onTap: onAddBillTap, label: l10n.addPoints),
-                _NavTab(
-                  index: 2,
-                  currentIndex: currentIndex,
-                  icon: Icons.notifications_outlined,
-                  activeIcon: Icons.notifications_rounded,
-                  label: l10n.notifications,
-                  onTap: onTabSelected,
-                ),
-                _NavTab(
-                  index: 3,
-                  currentIndex: currentIndex,
-                  icon: Icons.person_outline_rounded,
-                  activeIcon: Icons.person_rounded,
-                  label: l10n.profile,
-                  onTap: onTabSelected,
-                ),
-              ],
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.28),
+                    blurRadius: 16,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
             ),
           ),
-          if (bottomInset > 0) SizedBox(height: bottomInset),
+          Padding(
+            padding: EdgeInsets.only(bottom: bottomInset),
+            child: SizedBox(
+              height: CarpenterShellLayout.navBarHeight,
+              child: Row(
+                children: [
+                  _NavTab(
+                    index: 0,
+                    currentIndex: currentIndex,
+                    icon: Icons.home_outlined,
+                    activeIcon: Icons.home_rounded,
+                    label: l10n.home,
+                    onTap: onTabSelected,
+                  ),
+                  _NavTab(
+                    index: 1,
+                    currentIndex: currentIndex,
+                    icon: Icons.account_balance_wallet_outlined,
+                    activeIcon: Icons.account_balance_wallet_rounded,
+                    label: l10n.wallet,
+                    onTap: onTabSelected,
+                  ),
+                  if (showAddBill)
+                    _CenterAddButton(
+                      onTap: onAddBillTap,
+                      label: l10n.navAddBill,
+                    ),
+                  _NavTab(
+                    index: 2,
+                    currentIndex: currentIndex,
+                    icon: Icons.notifications_outlined,
+                    activeIcon: Icons.notifications_rounded,
+                    label: l10n.navAlerts,
+                    semanticLabel: l10n.notifications,
+                    onTap: onTabSelected,
+                  ),
+                  _NavTab(
+                    index: 3,
+                    currentIndex: currentIndex,
+                    icon: Icons.person_outline_rounded,
+                    activeIcon: Icons.person_rounded,
+                    label: l10n.profile,
+                    onTap: onTabSelected,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+/// One line of tab text that scales down to fit instead of being cut.
+class _NavLabel extends StatelessWidget {
+  const _NavLabel(this.text, {required this.color, this.bold = false});
+
+  final String text;
+  final Color color;
+  final bool bold;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          text,
+          maxLines: 1,
+          style: AppTypography.navLabel(
+            color: color,
+          ).copyWith(fontWeight: bold ? FontWeight.w700 : FontWeight.w500),
+        ),
       ),
     );
   }
@@ -107,6 +159,7 @@ class _NavTab extends StatelessWidget {
   final IconData icon;
   final IconData activeIcon;
   final String label;
+  final String? semanticLabel;
   final ValueChanged<int> onTap;
 
   const _NavTab({
@@ -116,55 +169,56 @@ class _NavTab extends StatelessWidget {
     required this.activeIcon,
     required this.label,
     required this.onTap,
+    this.semanticLabel,
   });
 
   @override
   Widget build(BuildContext context) {
     final selected = index == currentIndex;
-    // Spec: active = brand ink on gold-soft pill, inactive = secondary text.
-    final activeColor = context.themeContentColor;
-    final inactiveColor = context.themeTextSecondary;
-    final pillBg = context.themePendingSoft;
 
     return Expanded(
       child: Semantics(
         selected: selected,
         button: true,
-        child: InkWell(
-          onTap: () => onTap(index),
-          splashColor: activeColor.withValues(alpha: 0.08),
-          highlightColor: Colors.transparent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon with active pill background
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
+        label: semanticLabel ?? label,
+        excludeSemantics: true,
+        // The strip above the bar belongs to the page, so taps there reach it.
+        child: Padding(
+          padding: const EdgeInsets.only(top: CarpenterShellLayout.navBarRaise),
+          child: InkWell(
+            onTap: () => onTap(index),
+            splashColor: AppColors.gold.withValues(alpha: 0.14),
+            highlightColor: Colors.transparent,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected ? AppColors.gold : Colors.transparent,
+                    borderRadius: AppRadius.pill,
+                  ),
+                  child: Icon(
+                    selected ? activeIcon : icon,
+                    size: 22,
+                    color: selected
+                        ? AppColors.primary
+                        : AppColors.onPrimaryMuted,
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: selected ? pillBg : Colors.transparent,
-                  borderRadius: AppRadius.md12,
+                const SizedBox(height: 3),
+                _NavLabel(
+                  label,
+                  bold: selected,
+                  color: selected ? AppColors.gold : AppColors.onPrimaryMuted,
                 ),
-                child: Icon(
-                  selected ? activeIcon : icon,
-                  size: 24,
-                  color: selected ? activeColor : inactiveColor,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.navLabel(
-                  color: selected ? activeColor : inactiveColor,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -181,39 +235,37 @@ class _CenterAddButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        // Semantics label comes from the visible text below.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Raised circle — floats slightly above bar
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                // Main action — gold with navy glyph (spec CTA colours).
-                color: AppColors.gold,
-                shape: BoxShape.circle,
-                boxShadow: AppColors.shadowLevel2,
+      child: Semantics(
+        button: true,
+        label: label,
+        excludeSemantics: true,
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // The navy ring joins the button to the bar over any page content.
+              Container(
+                key: const ValueKey('nav-add-bill'),
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: AppColors.gold,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primary, width: 3),
+                ),
+                child: const Icon(
+                  Icons.add_rounded,
+                  color: AppColors.primary,
+                  size: 28,
+                ),
               ),
-              child: const Icon(
-                Icons.add_rounded,
-                color: AppColors.primary,
-                size: 24,
-              ),
-            ),
-            const SizedBox(height: 1),
-            // Label
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.navLabel(color: context.themeContentColor),
-            ),
-          ],
+              const SizedBox(height: 1),
+              _NavLabel(label, bold: true, color: AppColors.gold),
+              const SizedBox(height: 6),
+            ],
+          ),
         ),
       ),
     );

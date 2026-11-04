@@ -3097,6 +3097,18 @@ abstract class AppLocalizations {
   /// **'Position'**
   String get diwaliPosition;
 
+  /// No description provided for @navAddBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Bill'**
+  String get navAddBill;
+
+  /// No description provided for @navAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get navAlerts;
+
   /// No description provided for @readMore.
   ///
   /// In en, this message translates to:

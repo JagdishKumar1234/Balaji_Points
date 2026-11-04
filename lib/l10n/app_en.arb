@@ -667,6 +667,8 @@
   "diwaliYourPrize": "Your Diwali prize",
   "diwaliYou": "You",
   "diwaliPosition": "Position",
+  "navAddBill": "Add Bill",
+  "navAlerts": "Alerts",
   "readMore": "Read more",
   "showLess": "Show less",
   "diwaliPrizeLoadFailed": "Could not load the Diwali prize list. Please try again.",

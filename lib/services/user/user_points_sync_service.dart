@@ -11,7 +11,8 @@ import 'package:balaji_points/services/user/user_points_service.dart';
 /// All screens (home/wallet/profile) listen here — never read [users.totalPoints].
 class UserPointsSyncService {
   UserPointsSyncService._internal();
-  static final UserPointsSyncService _instance = UserPointsSyncService._internal();
+  static final UserPointsSyncService _instance =
+      UserPointsSyncService._internal();
   factory UserPointsSyncService() => _instance;
 
   final UserPointsService _userPointsService = UserPointsService();
@@ -39,10 +40,26 @@ class UserPointsSyncService {
     if (_isSyncing && !force) return;
     _isSyncing = true;
     try {
-      final pointsDocRef = await _userPointsService.resolveCurrentUserPointsDocRef();
+      final pointsDocRef = await _userPointsService
+          .resolveCurrentUserPointsDocRef();
       if (pointsDocRef == null) {
         pointsData.value = null;
         return;
+      }
+
+      // Show the last known points from this phone straight away. The server
+      // value replaces them moments later, and this document is the user's own.
+      if (pointsData.value == null) {
+        try {
+          final saved = await pointsDocRef.get(
+            const GetOptions(source: Source.cache),
+          );
+          if (saved.exists && pointsData.value == null) {
+            pointsData.value = saved.data();
+          }
+        } catch (_) {
+          // Nothing saved yet: wait for the server below.
+        }
       }
 
       Map<String, dynamic>? latest;
@@ -113,12 +130,11 @@ class CarpenterPointsState {
     double? totalPoints,
     String? tier,
     bool? loaded,
-  }) =>
-      CarpenterPointsState(
-        totalPoints: totalPoints ?? this.totalPoints,
-        tier: tier ?? this.tier,
-        loaded: loaded ?? this.loaded,
-      );
+  }) => CarpenterPointsState(
+    totalPoints: totalPoints ?? this.totalPoints,
+    tier: tier ?? this.tier,
+    loaded: loaded ?? this.loaded,
+  );
 }
 
 class CarpenterPointsNotifier extends Notifier<CarpenterPointsState> {
@@ -154,8 +170,8 @@ class CarpenterPointsNotifier extends Notifier<CarpenterPointsState> {
     _apply();
   }
 
+  /// Updates silently: the current points stay on screen meanwhile.
   Future<void> refresh() async {
-    state = state.copyWith(loaded: false);
     await _syncService.refresh();
     _apply();
   }
@@ -192,5 +208,5 @@ class CarpenterPointsNotifier extends Notifier<CarpenterPointsState> {
 
 final carpenterPointsProvider =
     NotifierProvider<CarpenterPointsNotifier, CarpenterPointsState>(
-  CarpenterPointsNotifier.new,
-);
+      CarpenterPointsNotifier.new,
+    );

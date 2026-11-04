@@ -1567,6 +1567,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get diwaliPosition => 'இடம்';
 
   @override
+  String get navAddBill => 'பில் சேர்';
+
+  @override
+  String get navAlerts => 'அறிவிப்பு';
+
+  @override
   String get readMore => 'மேலும் படிக்க';
 
   @override

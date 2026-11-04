@@ -117,15 +117,15 @@ class AppUpdateService {
         'Force flag: $forceFlag',
       );
 
-      final isBelowMinimum =
-          minimumVersion.isNotEmpty &&
-          compareVersionStrings(currentVersion, minimumVersion) < 0;
-      final isBelowLatest =
-          latestVersion.isNotEmpty &&
-          compareVersionStrings(currentVersion, latestVersion) < 0;
-      final needsForceUpdate = isBelowMinimum || (forceFlag && isBelowLatest);
-      final needsOptionalUpdate = !needsForceUpdate && isBelowLatest;
-      final targetVersion = isBelowMinimum ? minimumVersion : latestVersion;
+      final decision = decideUpdate(
+        current: currentVersion,
+        latest: latestVersion,
+        minimum: minimumVersion,
+        forceFlag: forceFlag,
+      );
+      final needsForceUpdate = decision.force;
+      final needsOptionalUpdate = decision.optional;
+      final targetVersion = decision.target;
 
       if (!needsForceUpdate && !needsOptionalUpdate) {
         AppLogger.update('Decision: current version is allowed; continuing.');
@@ -299,6 +299,26 @@ class AppUpdateService {
     );
   }
 
+  /// The update rule: below the minimum always blocks, and with the force flag
+  /// on, so does anything below the latest.
+  AppUpdateDecision decideUpdate({
+    required String current,
+    required String latest,
+    required String minimum,
+    required bool forceFlag,
+  }) {
+    final isBelowMinimum =
+        minimum.isNotEmpty && compareVersionStrings(current, minimum) < 0;
+    final isBelowLatest =
+        latest.isNotEmpty && compareVersionStrings(current, latest) < 0;
+    final force = isBelowMinimum || (forceFlag && isBelowLatest);
+    return AppUpdateDecision(
+      force: force,
+      optional: !force && isBelowLatest,
+      target: isBelowMinimum ? minimum : latest,
+    );
+  }
+
   /// Compares two semantic version strings.
   ///
   /// Returns a negative value when `a < b`, zero when equal, and positive when
@@ -320,6 +340,22 @@ class AppUpdateService {
     }
     return 0;
   }
+}
+
+class AppUpdateDecision {
+  const AppUpdateDecision({
+    required this.force,
+    required this.optional,
+    required this.target,
+  });
+
+  /// Block the app until it is updated.
+  final bool force;
+
+  /// Offer the update, and allow "Maybe later".
+  final bool optional;
+
+  final String target;
 }
 
 class AppUpdateInfo {

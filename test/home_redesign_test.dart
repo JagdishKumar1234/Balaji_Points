@@ -90,12 +90,42 @@ void main() {
       expect(find.text('—'), findsOneWidget);
     });
 
+    testWidgets('the gold progress bar actually fills', (tester) async {
+      await _pump(tester, HomeHeroCard(homeState: _state()));
+      final track = tester.getSize(
+        find
+            .ancestor(
+              of: find.byType(FractionallySizedBox),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+      final fill = tester.getSize(
+        find.descendant(
+          of: find.byType(FractionallySizedBox),
+          matching: find.byType(DecoratedBox),
+        ),
+      );
+      expect(fill.height, 8);
+      expect(fill.width, closeTo(track.width * 0.5, 1));
+    });
+
+    testWidgets('0% and 100% progress both draw safely', (tester) async {
+      await _pump(tester, HomeHeroCard(homeState: _state(points: 2000)));
+      expect(find.text('0%'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await _pump(tester, HomeHeroCard(homeState: _state(points: 5000)));
+      expect(find.text('100%'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('Platinum has no progress bar', (tester) async {
       await _pump(
         tester,
         HomeHeroCard(homeState: _state(tier: 'Platinum', points: 12000)),
       );
-      expect(find.byType(LinearProgressIndicator), findsNothing);
+      expect(find.text('Platinum'), findsOneWidget);
+      expect(find.textContaining('pts to'), findsNothing);
     });
 
     testWidgets('uses no photo banner, so nothing large to decode', (

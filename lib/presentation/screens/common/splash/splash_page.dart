@@ -104,8 +104,8 @@ class _SplashPageState extends State<SplashPage> {
         } else if (normalizedRole == 'admin') {
           context.go('/admin');
         } else {
-          await UserPointsSyncService().syncNow(force: true);
-          if (!mounted) return;
+          // Not awaited: home opens now and fills in as the data arrives.
+          unawaited(UserPointsSyncService().syncNow(force: true));
           context.go('/');
         }
       } else {
@@ -158,12 +158,12 @@ class SplashView extends StatelessWidget {
                         horizontal: AppSpacing.lg,
                         vertical: AppSpacing.md,
                       ),
-                      // Equal space above and below keeps the logo and loader
-                      // at the exact centre, where the native launch logo was.
+                      // Equal space above and below keeps the logo at the exact
+                      // centre, where the native launch logo was.
                       child: Column(
                         children: [
                           const Expanded(child: SizedBox.shrink()),
-                          _LogoWithLoader(animate: animate),
+                          _AnimatedLogo(animate: animate),
                           Expanded(
                             child: Column(
                               children: [
@@ -189,6 +189,19 @@ class SplashView extends StatelessWidget {
                                     ),
                                   ),
                                   3,
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                entrance(
+                                  SizedBox.square(
+                                    dimension: 22,
+                                    child: CircularProgressIndicator(
+                                      key: const ValueKey('splash-loader'),
+                                      strokeWidth: 2.5,
+                                      strokeCap: StrokeCap.round,
+                                      color: context.themeGold,
+                                    ),
+                                  ),
+                                  4,
                                 ),
                                 const Spacer(),
                                 const SizedBox(height: AppSpacing.md),
@@ -221,60 +234,26 @@ class SplashView extends StatelessWidget {
   }
 }
 
-/// The logo settles into place at the centre of the screen, with the loader
-/// spinning in a ring around it.
-class _LogoWithLoader extends StatelessWidget {
-  const _LogoWithLoader({required this.animate});
+/// The logo settles into place at the centre of the screen.
+class _AnimatedLogo extends StatelessWidget {
+  const _AnimatedLogo({required this.animate});
 
   final bool animate;
 
   @override
   Widget build(BuildContext context) {
-    final size = ResponsiveTypography.getLogoSize(context) * 1.4;
-    // Wide enough for the ring to clear the logo's corners.
-    final ringSize = size * 1.42;
-
-    final logo = BrandLogo(size: size);
-
-    final loader = SizedBox(
-      width: ringSize,
-      height: ringSize,
-      child: CircularProgressIndicator(
-        key: const ValueKey('splash-loader'),
-        strokeWidth: 3,
-        strokeCap: StrokeCap.round,
-        color: context.themeGold,
-        backgroundColor: context.themeGold.withValues(alpha: 0.14),
-      ),
+    final logo = BrandLogo(
+      size: ResponsiveTypography.getLogoSize(context) * 1.4,
     );
-
-    return SizedBox(
-      width: ringSize,
-      height: ringSize,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          if (animate)
-            loader.fadeIn(
-              delay: const Duration(milliseconds: 200),
-              duration: const Duration(milliseconds: 300),
-            )
-          else
-            loader,
-          if (animate)
-            logo
-                .animate()
-                .fadeIn(duration: const Duration(milliseconds: 220))
-                .scaleXY(
-                  begin: 0.86,
-                  end: 1,
-                  duration: const Duration(milliseconds: 520),
-                  curve: Curves.easeOutBack,
-                )
-          else
-            logo,
-        ],
-      ),
-    );
+    if (!animate) return logo;
+    return logo
+        .animate()
+        .fadeIn(duration: const Duration(milliseconds: 220))
+        .scaleXY(
+          begin: 0.86,
+          end: 1,
+          duration: const Duration(milliseconds: 520),
+          curve: Curves.easeOutBack,
+        );
   }
 }

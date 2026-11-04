@@ -85,21 +85,20 @@ class HomeState {
     bool? offersLoading,
     GreetingItem? greeting,
     bool? greetingLoading,
-  }) =>
-      HomeState(
-        loading: loading ?? this.loading,
-        error: error ?? this.error,
-        userData: userData ?? this.userData,
-        points: points ?? this.points,
-        userDocId: userDocId ?? this.userDocId,
-        userRank: clearUserRank ? null : (userRank ?? this.userRank),
-        topCarpenters: topCarpenters ?? this.topCarpenters,
-        rankingsLoading: rankingsLoading ?? this.rankingsLoading,
-        offers: offers ?? this.offers,
-        offersLoading: offersLoading ?? this.offersLoading,
-        greeting: greeting ?? this.greeting,
-        greetingLoading: greetingLoading ?? this.greetingLoading,
-      );
+  }) => HomeState(
+    loading: loading ?? this.loading,
+    error: error ?? this.error,
+    userData: userData ?? this.userData,
+    points: points ?? this.points,
+    userDocId: userDocId ?? this.userDocId,
+    userRank: clearUserRank ? null : (userRank ?? this.userRank),
+    topCarpenters: topCarpenters ?? this.topCarpenters,
+    rankingsLoading: rankingsLoading ?? this.rankingsLoading,
+    offers: offers ?? this.offers,
+    offersLoading: offersLoading ?? this.offersLoading,
+    greeting: greeting ?? this.greeting,
+    greetingLoading: greetingLoading ?? this.greetingLoading,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -122,14 +121,15 @@ class HomeNotifier extends Notifier<HomeState> {
             : state.userData,
       );
     });
-    _load();
+    // Runs after build returns: state cannot be read until then.
+    Future.microtask(_load);
     return const HomeState();
   }
 
   // ── Public API ──────────────────────────────────────────────────────────────
 
+  /// Updates silently: what is on screen stays until the new data arrives.
   Future<void> refresh() async {
-    state = state.copyWith(loading: true);
     await ref.read(carpenterPointsProvider.notifier).refresh();
     await _load();
   }
@@ -143,13 +143,75 @@ class HomeNotifier extends Notifier<HomeState> {
 
   Future<void> _load() async {
     try {
-      await ref.read(carpenterPointsProvider.notifier).ensureLoaded();
-      await _loadUser();
-      await Future.wait([_loadOffers(), _refreshRankings(), _loadGreeting()]);
-      state = state.copyWith(loading: false);
+      await _seedFromSession();
+      // Nothing waits on anything it does not need, so each card appears as
+      // soon as its own data does. The points card does not wait for rankings.
+      await Future.wait([
+        _loadProfileThenRankings(),
+        _loadOffers(),
+        _loadGreeting(),
+        _showCachedRankings(),
+      ]);
     } catch (e, st) {
       AppLogger.error('HomeNotifier load failed', e, st);
-      state = state.copyWith(loading: false, error: e.toString());
+    } finally {
+      // Whatever failed, never leave the screen on its loader forever.
+      state = state.copyWith(
+        loading: false,
+        offersLoading: false,
+        greetingLoading: false,
+        rankingsLoading: false,
+      );
+    }
+  }
+
+  /// The name saved at login, so the points card can show straight away.
+  Future<void> _seedFromSession() async {
+    if (state.userData != null) return;
+    try {
+      final first = (await _session.getFirstName())?.trim() ?? '';
+      final last = (await _session.getLastName())?.trim() ?? '';
+      if (first.isEmpty && last.isEmpty) return;
+      state = state.copyWith(
+        loading: false,
+        userData: {
+          'firstName': first,
+          'lastName': last,
+          'profileImage': await _session.getProfileImage() ?? '',
+          'phone': await _session.getPhoneNumber() ?? '',
+          'role': await _session.getUserRole() ?? '',
+          'branchId': await _session.getBranchId() ?? '',
+        },
+      );
+    } catch (e) {
+      AppLogger.warning('Could not read the saved profile: $e');
+    }
+  }
+
+  Future<void> _loadProfileThenRankings() async {
+    try {
+      await ref.read(carpenterPointsProvider.notifier).ensureLoaded();
+      await _loadUser();
+    } catch (e, st) {
+      AppLogger.error('HomeNotifier load failed', e, st);
+      state = state.copyWith(error: e.toString());
+    } finally {
+      state = state.copyWith(loading: false);
+    }
+    await _refreshRankings();
+  }
+
+  /// Last known rankings from this phone, shown until the server replies.
+  Future<void> _showCachedRankings() async {
+    try {
+      final ranked = await _fetchRanked(source: Source.cache);
+      if (ranked.isEmpty || state.topCarpenters.isNotEmpty) return;
+      state = state.copyWith(
+        topCarpenters: ranked.take(10).toList(),
+        rankingsLoading: false,
+      );
+    } catch (_) {
+      // Nothing saved yet (first launch): the loader stays until the server.
     }
   }
 
@@ -170,7 +232,9 @@ class HomeNotifier extends Notifier<HomeState> {
                 if (carpenterPoints.loaded) 'tier': carpenterPoints.tier,
               }
             : profileData,
-        points: carpenterPoints.loaded ? carpenterPoints.totalPoints : state.points,
+        points: carpenterPoints.loaded
+            ? carpenterPoints.totalPoints
+            : state.points,
         userDocId: docId,
       );
     } catch (e) {
@@ -179,46 +243,54 @@ class HomeNotifier extends Notifier<HomeState> {
   }
 
   Future<void> _loadOffers() async {
-    state = state.copyWith(offersLoading: true);
+    final query = _firestore
+        .collection('offers')
+        .where('isActive', isEqualTo: true)
+        .limit(10);
+    if (state.offers.isEmpty) {
+      try {
+        final cached = await query.get(const GetOptions(source: Source.cache));
+        if (cached.docs.isNotEmpty) _applyOffers(cached);
+      } catch (_) {
+        // Nothing saved yet: the loader stays until the server replies.
+      }
+    }
     try {
-      final snap = await _firestore
-          .collection('offers')
-          .where('isActive', isEqualTo: true)
-          .limit(10)
-          .get();
-
-      // Sort newest-first in memory (avoids requiring a Firestore composite index)
-      final sorted = snap.docs.toList()
-        ..sort((a, b) {
-          final at = a.data()['createdAt'];
-          final bt = b.data()['createdAt'];
-          if (at == null && bt == null) return 0;
-          if (at == null) return 1;
-          if (bt == null) return -1;
-          return (bt as dynamic).compareTo(at as dynamic);
-        });
-
-      final offers = sorted.map((doc) {
-        final d = doc.data();
-        return OfferItem(
-          title: d['title'] as String? ?? '',
-          description: d['description'] as String? ?? '',
-          actionText: (d['bannerUrl'] != null && d['bannerUrl'] != '')
-              ? 'View Offer'
-              : 'Learn More',
-          imageUrl: d['bannerUrl'] as String?,
-        );
-      }).toList();
-
-      state = state.copyWith(offers: offers, offersLoading: false);
+      _applyOffers(await query.get());
     } catch (e, st) {
       AppLogger.error('HomeNotifier offers load failed', e, st);
       state = state.copyWith(offersLoading: false);
     }
   }
 
+  void _applyOffers(QuerySnapshot<Map<String, dynamic>> snap) {
+    // Sort newest-first in memory (avoids requiring a Firestore composite index)
+    final sorted = snap.docs.toList()
+      ..sort((a, b) {
+        final at = a.data()['createdAt'];
+        final bt = b.data()['createdAt'];
+        if (at == null && bt == null) return 0;
+        if (at == null) return 1;
+        if (bt == null) return -1;
+        return (bt as dynamic).compareTo(at as dynamic);
+      });
+
+    final offers = sorted.map((doc) {
+      final d = doc.data();
+      return OfferItem(
+        title: d['title'] as String? ?? '',
+        description: d['description'] as String? ?? '',
+        actionText: (d['bannerUrl'] != null && d['bannerUrl'] != '')
+            ? 'View Offer'
+            : 'Learn More',
+        imageUrl: d['bannerUrl'] as String?,
+      );
+    }).toList();
+
+    state = state.copyWith(offers: offers, offersLoading: false);
+  }
+
   Future<void> _loadGreeting() async {
-    state = state.copyWith(greetingLoading: true);
     try {
       final snap = await _firestore
           .collection('greetings')
@@ -247,7 +319,6 @@ class HomeNotifier extends Notifier<HomeState> {
   }
 
   Future<void> _refreshRankings() async {
-    state = state.copyWith(rankingsLoading: true);
     try {
       final ranked = await _fetchRanked();
       final docId = state.userDocId;
@@ -270,15 +341,18 @@ class HomeNotifier extends Notifier<HomeState> {
     }
   }
 
-  Future<List<CarpenterRank>> _fetchRanked() async {
+  Future<List<CarpenterRank>> _fetchRanked({
+    Source source = Source.serverAndCache,
+  }) async {
     // Leaderboard is per branch: all member roles compete within their store.
     final branchId = await CurrentBranchService().resolveBranchId();
+    final options = GetOptions(source: source);
     final qs = branchId == null
-        ? await _firestore.collection('users').get()
+        ? await _firestore.collection('users').get(options)
         : await _firestore
               .collection('users')
               .where('branchId', isEqualTo: branchId)
-              .get();
+              .get(options);
     final docId = state.userDocId;
 
     final carpenters = <CarpenterRank>[];
@@ -290,26 +364,31 @@ class HomeNotifier extends Notifier<HomeState> {
       final ln = (d['lastName'] as String? ?? '').trim();
       final name = '$fn $ln'.trim();
 
-      carpenters.add(CarpenterRank(
-        rank: 0,
-        name: name.isEmpty ? 'Member' : name,
-        points: _asInt(d['totalPoints']),
-        imageUrl: d['profileImage'] as String?,
-        userId: doc.id,
-        isCurrentUser: doc.id == docId,
-      ));
+      carpenters.add(
+        CarpenterRank(
+          rank: 0,
+          name: name.isEmpty ? 'Member' : name,
+          points: _asInt(d['totalPoints']),
+          imageUrl: d['profileImage'] as String?,
+          userId: doc.id,
+          isCurrentUser: doc.id == docId,
+        ),
+      );
     }
 
     carpenters.sort((a, b) => b.points.compareTo(a.points));
 
-    return List.generate(carpenters.length, (i) => CarpenterRank(
-      rank: i + 1,
-      name: carpenters[i].name,
-      points: carpenters[i].points,
-      imageUrl: carpenters[i].imageUrl,
-      userId: carpenters[i].userId,
-      isCurrentUser: carpenters[i].isCurrentUser,
-    ));
+    return List.generate(
+      carpenters.length,
+      (i) => CarpenterRank(
+        rank: i + 1,
+        name: carpenters[i].name,
+        points: carpenters[i].points,
+        imageUrl: carpenters[i].imageUrl,
+        userId: carpenters[i].userId,
+        isCurrentUser: carpenters[i].isCurrentUser,
+      ),
+    );
   }
 
   Future<String?> _resolveDocId() async {
@@ -342,4 +421,6 @@ class HomeNotifier extends Notifier<HomeState> {
 // Provider
 // ---------------------------------------------------------------------------
 
-final homeProvider = NotifierProvider<HomeNotifier, HomeState>(HomeNotifier.new);
+final homeProvider = NotifierProvider<HomeNotifier, HomeState>(
+  HomeNotifier.new,
+);

@@ -1567,6 +1567,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get diwaliPosition => 'स्थान';
 
   @override
+  String get navAddBill => 'बिल जोड़ें';
+
+  @override
+  String get navAlerts => 'सूचनाएं';
+
+  @override
   String get readMore => 'और पढ़ें';
 
   @override

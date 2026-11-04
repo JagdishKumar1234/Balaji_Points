@@ -10,7 +10,6 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:balaji_points/core/design/app_animations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -184,6 +183,7 @@ class _HomePageState extends ConsumerState<HomePage>
         ref.invalidate(celebrationPopupShownProvider);
         ref.invalidate(homeProvider);
         ref.invalidate(walletProvider);
+        ref.invalidate(walletBillsProvider);
         await _sessionService.clearSession();
         if (context.mounted) context.go('/login');
       } catch (e) {

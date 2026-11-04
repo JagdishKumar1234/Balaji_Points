@@ -40,26 +40,35 @@ void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
 
   group('SplashView', () {
-    testWidgets('loader and logo sit at the exact centre of the screen', (
+    testWidgets('logo sits at the exact centre of the screen', (tester) async {
+      await _pumpSplash(tester);
+      await tester.pump(const Duration(seconds: 2));
+
+      final logo = tester.getCenter(find.byType(Image));
+      expect(logo.dx, 195);
+      expect(logo.dy, 422);
+    });
+
+    testWidgets('loader is small and below the text, not around the logo', (
       tester,
     ) async {
       await _pumpSplash(tester);
       await tester.pump(const Duration(seconds: 2));
 
-      final loader = tester.getCenter(find.byKey(_loader));
-      expect(loader.dx, 195);
-      expect(loader.dy, 422);
-      expect(tester.getCenter(find.byType(Image)), loader);
-    });
-
-    testWidgets('loader ring clears the logo and the title', (tester) async {
-      await _pumpSplash(tester);
-      await tester.pump(const Duration(seconds: 2));
-
-      final ring = tester.getRect(find.byKey(_loader));
-      final logo = tester.getRect(find.byType(Image));
-      expect(ring.width, greaterThan(logo.width));
-      expect(ring.bottom, lessThan(tester.getTopLeft(find.text('Balaji Points')).dy));
+      final loader = tester.getRect(find.byKey(_loader));
+      expect(loader.width, 22);
+      expect(loader.center.dx, 195);
+      expect(
+        loader.top,
+        greaterThan(
+          tester.getRect(find.text('Rewards & Loyalty Program')).bottom,
+        ),
+      );
+      expect(
+        loader.bottom,
+        lessThan(tester.getTopLeft(find.textContaining('Powered by')).dy),
+      );
+      expect(loader.overlaps(tester.getRect(find.byType(Image))), isFalse);
     });
 
     testWidgets('title is above the footer', (tester) async {

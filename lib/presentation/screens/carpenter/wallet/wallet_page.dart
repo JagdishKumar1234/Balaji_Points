@@ -84,12 +84,12 @@ class WalletPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Total points card with tier progress
-                    walletState.loading || pointsLoading
+                    pointsLoading
                         ? _ShimmerPointsCard()
                         : _DesignPointsCard(
                             points: carpenterPoints.totalPoints,
                             tier: carpenterPoints.tier,
-                          ).enterCard(delay: AppAnimations.stagger(1)),
+                          ),
                     const SizedBox(height: 16),
 
                     // Status pills row (Pending, Approved, Rejected)
@@ -100,10 +100,8 @@ class WalletPage extends ConsumerWidget {
                             icon: Icons.schedule_rounded,
                             label: l10n.pending,
                             color: AppColors.warning,
-                            child: walletState.loading || !idsReady
-                                ? _statLoading(context)
-                                : _PendingCount(ids: ids),
-                          ).fadeIn(delay: AppAnimations.stagger(2)),
+                            child: _BillCount(status: 'pending'),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -111,10 +109,8 @@ class WalletPage extends ConsumerWidget {
                             icon: Icons.check_circle_rounded,
                             label: l10n.approved,
                             color: AppColors.success,
-                            child: walletState.loading || !idsReady
-                                ? _statLoading(context)
-                                : _ApprovedCount(ids: ids),
-                          ).fadeIn(delay: AppAnimations.stagger(2)),
+                            child: _BillCount(status: 'approved'),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -122,26 +118,22 @@ class WalletPage extends ConsumerWidget {
                             icon: Icons.cancel_rounded,
                             label: AppLocalizations.of(context)!.rejectedLabel,
                             color: AppColors.error,
-                            child: walletState.loading || !idsReady
-                                ? _statLoading(context)
-                                : _RejectedCount(ids: ids),
-                          ).fadeIn(delay: AppAnimations.stagger(2)),
+                            child: _BillCount(status: 'rejected'),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
 
                     // Bill History section with filter tabs
-                    _BillHistorySectionHeader().fadeIn(
-                      delay: AppAnimations.stagger(3),
-                    ),
+                    _BillHistorySectionHeader(),
                     const SizedBox(height: 12),
 
                     // Bill history with filter
                     if (!idsReady)
                       const _BillsLoading()
                     else
-                      _BillHistoryTableWithFilter(ids: ids),
+                      const _BillHistoryTableWithFilter(),
 
                     const SizedBox(height: 16),
                   ],
@@ -151,13 +143,6 @@ class WalletPage extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _statLoading(BuildContext context) {
-    return Text(
-      '...',
-      style: AppTypography.h4(color: context.themeTextPrimary),
     );
   }
 }
@@ -460,77 +445,20 @@ class _StatusPill extends StatelessWidget {
 // Live count widgets
 // ---------------------------------------------------------------------------
 
-class _PendingCount extends StatelessWidget {
-  final List<String> ids;
-  const _PendingCount({required this.ids});
+/// How many bills have [status]: a small loader only until the first result.
+class _BillCount extends ConsumerWidget {
+  final String status;
+  const _BillCount({required this.status});
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: ids)
-          .where('status', isEqualTo: 'pending')
-          .snapshots(),
-      builder: (context, snap) {
-        final count = snap.hasData ? snap.data!.docs.length : 0;
-        return Text(
-          '$count',
-          style: AppTypography.h4(
-            color: context.themeTextPrimary,
-          ).copyWith(fontWeight: FontWeight.w800),
-        );
-      },
-    );
-  }
-}
-
-class _ApprovedCount extends StatelessWidget {
-  final List<String> ids;
-  const _ApprovedCount({required this.ids});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: ids)
-          .where('status', isEqualTo: 'approved')
-          .snapshots(),
-      builder: (context, snap) {
-        final count = snap.hasData ? snap.data!.docs.length : 0;
-        return Text(
-          '$count',
-          style: AppTypography.h4(
-            color: context.themeTextPrimary,
-          ).copyWith(fontWeight: FontWeight.w800),
-        );
-      },
-    );
-  }
-}
-
-class _RejectedCount extends StatelessWidget {
-  final List<String> ids;
-  const _RejectedCount({required this.ids});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: ids)
-          .where('status', isEqualTo: 'rejected')
-          .snapshots(),
-      builder: (context, snap) {
-        final count = snap.hasData ? snap.data!.docs.length : 0;
-        return Text(
-          '$count',
-          style: AppTypography.h4(
-            color: context.themeTextPrimary,
-          ).copyWith(fontWeight: FontWeight.w800),
-        );
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bills = ref.watch(currentWalletBillsProvider).asData?.value;
+    if (bills == null) return const AppLoader(size: 18, strokeWidth: 2);
+    return Text(
+      '${billsWithStatus(bills.docs, status).length}',
+      style: AppTypography.h4(
+        color: context.themeTextPrimary,
+      ).copyWith(fontWeight: FontWeight.w800),
     );
   }
 }
@@ -623,8 +551,7 @@ class _BillsLoading extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _BillHistoryTableWithFilter extends ConsumerStatefulWidget {
-  final List<String> ids;
-  const _BillHistoryTableWithFilter({required this.ids});
+  const _BillHistoryTableWithFilter();
 
   @override
   ConsumerState<_BillHistoryTableWithFilter> createState() =>
@@ -676,7 +603,7 @@ class _BillHistoryTableWithFilterState
         ),
         const SizedBox(height: 12),
         // Bill list based on filter
-        _BillListByFilter(ids: widget.ids, filter: selectedFilter),
+        _BillListByFilter(filter: selectedFilter),
       ],
     );
   }
@@ -731,81 +658,59 @@ class _FilterTab extends StatelessWidget {
 // Bill List by Filter
 // ---------------------------------------------------------------------------
 
-class _BillListByFilter extends StatelessWidget {
-  final List<String> ids;
+class _BillListByFilter extends ConsumerWidget {
   final String filter;
 
-  const _BillListByFilter({required this.ids, required this.filter});
+  const _BillListByFilter({required this.filter});
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _buildStream(),
-      builder: (context, snap) {
-        if (snap.hasError) {
-          return _errorCard(context, snap.error.toString());
-        }
-        if (snap.connectionState == ConnectionState.waiting) {
-          return const _BillsLoading();
-        }
-
-        if (!snap.hasData || snap.data!.docs.isEmpty) {
-          return _emptyCard(context);
-        }
-
-        final bills = snap.data!.docs;
-        double approvedTotal = 0;
-        int approvedCount = 0;
-
-        for (final doc in bills) {
-          final bill = doc.data() as Map<String, dynamic>;
-          if ((bill['status'] as String?) == 'approved') {
-            approvedTotal += (bill['pointsEarned'] as num?)?.toDouble() ?? 0;
-            approvedCount++;
-          }
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Bill list
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: bills.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                final billData = bills[index].data() as Map<String, dynamic>;
-                return _DesignBillCard(bill: billData);
-              },
-            ),
-            const SizedBox(height: 12),
-            // Summary card
-            _SummaryCard(
-              approvedCount: approvedCount,
-              approvedTotal: approvedTotal,
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Stream<QuerySnapshot> _buildStream() {
-    if (filter == 'all') {
-      return FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: ids)
-          .orderBy('createdAt', descending: true)
-          .snapshots();
-    } else {
-      return FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', whereIn: ids)
-          .where('status', isEqualTo: filter)
-          .orderBy('createdAt', descending: true)
-          .snapshots();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final billsAsync = ref.watch(currentWalletBillsProvider);
+    final allBills = billsAsync.asData?.value;
+    if (allBills == null) {
+      if (billsAsync.hasError) {
+        return _errorCard(context, billsAsync.error.toString());
+      }
+      return const _BillsLoading();
     }
+    final bills = billsWithStatus(allBills.docs, filter);
+    if (bills.isEmpty) {
+      return _emptyCard(context);
+    }
+
+    double approvedTotal = 0;
+    int approvedCount = 0;
+
+    for (final doc in bills) {
+      final bill = doc.data() as Map<String, dynamic>;
+      if ((bill['status'] as String?) == 'approved') {
+        approvedTotal += (bill['pointsEarned'] as num?)?.toDouble() ?? 0;
+        approvedCount++;
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Bill list
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: bills.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final billData = bills[index].data() as Map<String, dynamic>;
+            return _DesignBillCard(bill: billData);
+          },
+        ),
+        const SizedBox(height: 12),
+        // Summary card
+        _SummaryCard(
+          approvedCount: approvedCount,
+          approvedTotal: approvedTotal,
+        ),
+      ],
+    );
   }
 
   Widget _errorCard(BuildContext context, String error) {

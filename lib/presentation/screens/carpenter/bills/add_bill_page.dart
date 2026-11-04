@@ -1,3 +1,6 @@
+import 'package:balaji_points/providers/branch_celebration_provider.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -19,14 +22,14 @@ import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/services/branch/branch_celebration_service.dart';
 
-class AddBillPage extends StatefulWidget {
+class AddBillPage extends ConsumerStatefulWidget {
   const AddBillPage({super.key});
 
   @override
-  State<AddBillPage> createState() => _AddBillPageState();
+  ConsumerState<AddBillPage> createState() => _AddBillPageState();
 }
 
-class _AddBillPageState extends State<AddBillPage> {
+class _AddBillPageState extends ConsumerState<AddBillPage> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _siteNameController = TextEditingController();
@@ -55,6 +58,11 @@ class _AddBillPageState extends State<AddBillPage> {
   void initState() {
     super.initState();
     _billDate = DateTime.now();
+    // The app shell already knows this, so the form opens with no loader.
+    _celebrationEnabled = ref
+        .read(branchCelebrationEnabledProvider)
+        .asData
+        ?.value;
     _celebrationSubscription = BranchCelebrationService()
         .watchCurrentBranchEnabled()
         .listen(
@@ -824,7 +832,7 @@ class _AddBillPageState extends State<AddBillPage> {
   @override
   Widget build(BuildContext context) {
     if (_celebrationEnabled == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: AppLoader()));
     }
     if (_celebrationEnabled == true) {
       return Scaffold(

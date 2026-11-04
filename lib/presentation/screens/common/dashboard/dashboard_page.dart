@@ -121,7 +121,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       _ => '/',
     };
 
-    final bottomChromeHeight = CarpenterShellLayout.chromeHeight(mq);
+    final contentBottomPadding = CarpenterShellLayout.contentBottomPadding(mq);
 
     return Theme(
       data: shellTheme,
@@ -153,7 +153,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     // ── Page content with bottom padding so it clears the nav bar ──
                     Padding(
                       padding: EdgeInsets.only(
-                        bottom: showNav ? bottomChromeHeight : 0,
+                        bottom: showNav ? contentBottomPadding : 0,
                       ),
                       // Carpenter screens are phone-designed: on tablet /
                       // web keep them at a readable width, centred.

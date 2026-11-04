@@ -16,6 +16,7 @@ import 'package:balaji_points/providers/loading_provider.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/member_identity.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/screens/carpenter/profile/widgets/profile_widgets.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
@@ -47,6 +48,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Show what the app already has at once; the load below updates it silently.
+    final known = ref.read(homeProvider).userData;
+    if (known != null) {
+      _userData = known;
+      _isLoading = false;
+    }
     _loadUserData();
     _loadAppVersion();
   }
@@ -171,6 +178,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
         ref.invalidate(celebrationPopupShownProvider);
         ref.invalidate(homeProvider);
         ref.invalidate(walletProvider);
+        ref.invalidate(walletBillsProvider);
         await _sessionService.clearSession();
         if (context.mounted) context.go('/login');
       } catch (e) {
@@ -540,11 +548,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             child: Container(
               color: theme.colorScheme.surface,
               child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: context.themePrimary,
-                      ),
-                    )
+                  ? const Center(child: AppLoader())
                   : RefreshIndicator(
                       onRefresh: _handleRefresh,
                       color: context.themePrimary,

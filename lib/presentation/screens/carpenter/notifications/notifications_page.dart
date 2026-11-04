@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -39,6 +40,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
   String? _userRole;
   bool _isLoading = true;
 
+  /// The list last shown, so returning to this screen needs no loader. Keyed by
+  /// user, and only used once the session confirms who is logged in.
+  static String? _savedKey;
+  static List<QueryDocumentSnapshot>? _savedList;
+
+  String get _listKey => '$_userId|$_resolvedIsAdmin';
+
+  List<QueryDocumentSnapshot>? get _knownList =>
+      _savedKey == _listKey ? _savedList : null;
+
   bool get _resolvedIsAdmin {
     if (widget.mode == NotificationsPageMode.admin) return true;
     if (widget.mode == NotificationsPageMode.carpenter) return false;
@@ -60,6 +71,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _loadUserData() async {
     final userId = await _sessionService.getUserId();
     final userRole = await _sessionService.getUserRole();
+    if (!mounted) return;
     setState(() {
       _userId = userId;
       _userRole = userRole;
@@ -424,8 +436,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) =>
-              const Center(child: CircularProgressIndicator()),
+          builder: (context) => const Center(child: AppLoader()),
         );
       }
 
@@ -591,10 +602,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Reading the session takes a moment: show the screen's header, not a loader.
     if (_isLoading) {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator()),
+        body: Column(
+          children: [
+            HomeNavBar(
+              title: AppLocalizations.of(context)!.notifications,
+              showLogo: false,
+              showProfileButton: false,
+              showBackButton: widget.mode == NotificationsPageMode.admin,
+            ),
+          ],
+        ),
       );
     }
 
@@ -640,6 +661,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 actions: [
                   StreamBuilder<List<QueryDocumentSnapshot>>(
                     stream: _mergedNotificationsStream,
+                    initialData: _knownList,
                     builder: (context, snapshot) {
                       final hasNotifications =
                           snapshot.hasData && snapshot.data!.isNotEmpty;
@@ -666,15 +688,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
               child: SafeArea(
                 top: false,
                 child: _mergedNotificationsStream == null
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const Center(child: AppLoader())
                     : StreamBuilder<List<QueryDocumentSnapshot>>(
                         stream: _mergedNotificationsStream,
+                        initialData: _knownList,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
+                          if (snapshot.hasData) {
+                            _savedKey = _listKey;
+                            _savedList = snapshot.data;
+                          } else if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
+                            return const Center(child: AppLoader());
                           }
 
                           if (snapshot.hasError) {
