@@ -207,60 +207,71 @@ class AuthFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(height: AppSpacing.xl),
-
-        Text(
-          AppLocalizations.of(context)!.poweredBy,
-          style: AppTypography.bodySmall(color: context.themeTextSecondary),
-          textAlign: TextAlign.center,
-        ),
-
-        const SizedBox(height: 8),
-
-        Container(
-          constraints: const BoxConstraints(maxWidth: 320),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '✦',
-                style: TextStyle(
-                  color: context.themeGold,
-                  fontSize: 14,
-                  height: 1.0,
-                ),
-              ),
-              const SizedBox(width: 10),
-
-              Flexible(
-                child: Text(
-                  companyName,
-                  style: AppTypography.bodyMedium(
-                    color: context.themeTextPrimary,
-                  ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.3),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 10),
-
-              Text(
-                '✦',
-                style: TextStyle(
-                  color: context.themeGold,
-                  fontSize: 14,
-                  height: 1.0,
-                ),
-              ),
-            ],
+    // The page scrolls over a light background and the navy curve, so the
+    // footer brings its own background to stay readable on both.
+    return Container(
+      margin: const EdgeInsets.only(top: AppSpacing.xl),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            AppLocalizations.of(context)!.poweredBy,
+            style: AppTypography.bodySmall(color: context.themeTextSecondary),
+            textAlign: TextAlign.center,
           ),
-        ),
-      ],
+
+          const SizedBox(height: 8),
+
+          Container(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '✦',
+                  style: TextStyle(
+                    color: context.themeGold,
+                    fontSize: 14,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                Flexible(
+                  child: Text(
+                    companyName,
+                    style: AppTypography.bodyMedium(
+                      color: context.themeTextPrimary,
+                    ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.3),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                Text(
+                  '✦',
+                  style: TextStyle(
+                    color: context.themeGold,
+                    fontSize: 14,
+                    height: 1.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

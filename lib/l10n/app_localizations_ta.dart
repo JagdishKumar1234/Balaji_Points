@@ -1513,6 +1513,18 @@ class AppLocalizationsTa extends AppLocalizations {
   String get menu => 'மெனு';
 
   @override
+  String get diwaliYourPrize => 'உங்கள் தீபாவளி பரிசு';
+
+  @override
+  String get diwaliYou => 'நீங்கள்';
+
+  @override
+  String get readMore => 'மேலும் படிக்க';
+
+  @override
+  String get showLess => 'குறைவாகக் காட்டு';
+
+  @override
   String get diwaliPrizeLoadFailed => 'தீபாவளி பரிசுப் பட்டியலை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
 
   @override

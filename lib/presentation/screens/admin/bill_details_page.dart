@@ -138,7 +138,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
+            style: ElevatedButton.styleFrom( foregroundColor: AppColors.white,backgroundColor: AppColors.success),
             child: Text(AppLocalizations.of(context)!.approve),
           ),
         ],
@@ -195,7 +195,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            style: ElevatedButton.styleFrom( foregroundColor: AppColors.white,backgroundColor: AppColors.error),
             child: Text(AppLocalizations.of(context)!.reject),
           ),
         ],
@@ -588,6 +588,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                     horizontal: 10,
                     vertical: 6,
                   ),
+                  foregroundColor: context.themeOnPrimary,
                   backgroundColor: context.themePrimary,
                 ),
               ),

@@ -312,6 +312,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                 icon: const Icon(Icons.add_rounded, size: 18),
                 label: Text(l10n.add, style: const TextStyle(fontSize: 13)),
                 style: ElevatedButton.styleFrom(
+                  foregroundColor: context.themeOnPrimary,
                   backgroundColor: context.themePrimary,
                   shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
                   padding: const EdgeInsets.symmetric(

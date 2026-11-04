@@ -486,6 +486,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(dialogContext),
                   style: ElevatedButton.styleFrom(
+                    foregroundColor: context.themeOnPrimary,
                     backgroundColor: context.themePrimary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(

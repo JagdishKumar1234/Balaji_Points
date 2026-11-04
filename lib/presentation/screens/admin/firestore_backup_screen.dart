@@ -298,6 +298,7 @@ Copy the JSON data below to save as backup file
                       : AppLocalizations.of(context)!.startBackup,
                 ),
                 style: ElevatedButton.styleFrom(
+                  foregroundColor: context.themeOnPrimary,
                   backgroundColor: context.themePrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,

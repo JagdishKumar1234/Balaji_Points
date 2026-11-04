@@ -187,6 +187,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
                     child: ElevatedButton(
                       onPressed: _createCarpenter,
                       style: ElevatedButton.styleFrom(
+                        foregroundColor: context.themeOnPrimary,
                         backgroundColor: context.themePrimary,
                       ),
                       child: Text(AppLocalizations.of(context)!.create),

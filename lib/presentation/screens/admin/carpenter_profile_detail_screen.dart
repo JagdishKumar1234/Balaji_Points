@@ -76,11 +76,11 @@ class _CarpenterProfileDetailScreenState
       return;
     }
 
-    if (pin.length < 4 || pin.length > 6) {
+    if (pin.length != 4) {
       if (mounted) {
         ScaffoldMessenger.of(dialogContext).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.pinMustBe46Digits),
+            content: Text(AppLocalizations.of(context)!.enter4Digits),
             backgroundColor: AppColors.error,
           ),
         );
@@ -202,14 +202,14 @@ class _CarpenterProfileDetailScreenState
                 controller: pinController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.newPin46Digits,
+                  labelText: AppLocalizations.of(context)!.newPinLabel,
                   hintText: '0000',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 keyboardType: TextInputType.number,
-                maxLength: 6,
+                maxLength: 4,
               ),
               const SizedBox(height: 12),
               TextField(
@@ -223,7 +223,7 @@ class _CarpenterProfileDetailScreenState
                   ),
                 ),
                 keyboardType: TextInputType.number,
-                maxLength: 6,
+                maxLength: 4,
               ),
             ],
           ),
@@ -1101,6 +1101,7 @@ class _CarpenterProfileDetailScreenState
               }
             },
             style: ElevatedButton.styleFrom(
+              foregroundColor: context.themeOnPrimary,
               backgroundColor: context.themePrimary,
             ),
             child: AppText.body(
@@ -1569,6 +1570,7 @@ class _CarpenterProfileDetailScreenState
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
+              foregroundColor: AppColors.white,
               backgroundColor: AppColors.success,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -1649,6 +1651,7 @@ class _CarpenterProfileDetailScreenState
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
+              foregroundColor: context.themeOnError,
               backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

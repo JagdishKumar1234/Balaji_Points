@@ -612,7 +612,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                     ),
                     decoration: BoxDecoration(
                       color: canSpin
-                          ? AppColors.success
+                          ? AppColors.successSoft
                           : context.themeSoftSurface,
                       borderRadius: AppRadius.md12,
                       border: Border.all(
@@ -630,7 +630,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                               ? Icons.check_circle_rounded
                               : Icons.schedule_rounded,
                           color: canSpin
-                              ? AppColors.success
+                              ? AppColors.successText
                               : context.themeSecondary,
                           size: 20,
                         ),
@@ -638,7 +638,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                         AppText.section(
                           statusText,
                           color: canSpin
-                              ? AppColors.success
+                              ? AppColors.successText
                               : context.themeSecondary,
                         ),
                       ],

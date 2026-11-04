@@ -59,6 +59,7 @@ class _OffersManagementState extends State<OffersManagement> {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
+              foregroundColor: context.themeOnError,
               backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
             ),

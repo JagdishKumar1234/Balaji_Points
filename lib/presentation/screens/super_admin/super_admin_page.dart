@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -80,6 +81,7 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
           // Brand navy in light AND dark (themePrimary turns blue in dark).
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
           iconTheme: const IconThemeData(color: AppColors.white),
           actionsIconTheme: const IconThemeData(color: AppColors.white),
           shape: const Border(),

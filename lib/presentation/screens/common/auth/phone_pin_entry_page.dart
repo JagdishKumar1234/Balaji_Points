@@ -110,6 +110,7 @@ class _PhonePinEntryPageState extends ConsumerState<PhonePinEntryPage> {
                             onPressed: () => context.go('/login'),
                             child: Text(
                               AppLocalizations.of(context)!.backToOtherSignIn,
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ],

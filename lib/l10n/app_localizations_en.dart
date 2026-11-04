@@ -1513,6 +1513,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
+  String get diwaliYourPrize => 'Your Diwali prize';
+
+  @override
+  String get diwaliYou => 'You';
+
+  @override
+  String get readMore => 'Read more';
+
+  @override
+  String get showLess => 'Show less';
+
+  @override
   String get diwaliPrizeLoadFailed => 'Could not load the Diwali prize list. Please try again.';
 
   @override

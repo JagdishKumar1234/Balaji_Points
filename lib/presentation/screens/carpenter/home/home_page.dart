@@ -178,6 +178,9 @@ class _HomePageState extends ConsumerState<HomePage>
       try {
         await _fcmService.deleteToken();
         ref.read(carpenterPointsProvider.notifier).resetForLogout();
+        // The next person to log in on this phone may be in another branch.
+        ref.invalidate(branchCelebrationEnabledProvider);
+        ref.invalidate(celebrationPopupShownProvider);
         ref.invalidate(homeProvider);
         ref.invalidate(walletProvider);
         await _sessionService.clearSession();
@@ -236,10 +239,12 @@ class _HomePageState extends ConsumerState<HomePage>
         currentPath == '/' &&
         userRole == 'carpenter' &&
         celebrationEnabled &&
-        !_celebrationShownThisEntry) {
+        !_celebrationShownThisEntry &&
+        !ref.read(celebrationPopupShownProvider)) {
       _celebrationShownThisEntry = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || GoRouterState.of(context).uri.path != '/') return;
+        ref.read(celebrationPopupShownProvider.notifier).mark(true);
         unawaited(_showDiwaliCelebration(branchId, branchName));
       });
     }
@@ -490,6 +495,7 @@ class _HomePageState extends ConsumerState<HomePage>
     }
     if (resolvedBranchId.isEmpty) {
       _celebrationShownThisEntry = false;
+      ref.read(celebrationPopupShownProvider.notifier).mark(false);
       return;
     }
     String branchName = fallbackBranchName;
@@ -502,15 +508,16 @@ class _HomePageState extends ConsumerState<HomePage>
           : fallbackBranchName;
     }
     if (!mounted || GoRouterState.of(context).uri.path != '/') return;
-    late final List<BranchCelebrationEntry> leaderboard;
+    late final BranchCelebrationSummary summary;
     try {
-      leaderboard = await ref.read(
-        branchCelebrationLeaderboardProvider(resolvedBranchId).future,
+      summary = await ref.read(
+        branchCelebrationSummaryProvider(resolvedBranchId).future,
       );
     } catch (error) {
       AppLogger.warning('Could not load branch celebration users: $error');
       if (mounted) {
         _celebrationShownThisEntry = false;
+        ref.read(celebrationPopupShownProvider.notifier).mark(false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!.diwaliPrizeLoadFailed),
@@ -525,7 +532,7 @@ class _HomePageState extends ConsumerState<HomePage>
       barrierDismissible: true,
       builder: (_) => DiwaliCelebrationDialog(
         branchName: branchName,
-        leaderboard: leaderboard,
+        summary: summary,
       ),
     );
   }

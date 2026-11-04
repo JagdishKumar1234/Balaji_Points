@@ -1,3 +1,4 @@
+import 'package:balaji_points/providers/branch_celebration_provider.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -163,6 +164,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
       try {
         await _fcmService.deleteToken();
         ref.read(carpenterPointsProvider.notifier).resetForLogout();
+        // The next person to log in on this phone may be in another branch.
+        ref.invalidate(branchCelebrationEnabledProvider);
+        ref.invalidate(celebrationPopupShownProvider);
         ref.invalidate(homeProvider);
         ref.invalidate(walletProvider);
         await _sessionService.clearSession();

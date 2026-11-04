@@ -2989,6 +2989,30 @@ abstract class AppLocalizations {
   /// **'Menu'**
   String get menu;
 
+  /// No description provided for @diwaliYourPrize.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Diwali prize'**
+  String get diwaliYourPrize;
+
+  /// No description provided for @diwaliYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get diwaliYou;
+
+  /// No description provided for @readMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get readMore;
+
+  /// No description provided for @showLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get showLess;
+
   /// No description provided for @diwaliPrizeLoadFailed.
   ///
   /// In en, this message translates to:

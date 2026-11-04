@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:balaji_points/core/design/app_animations.dart';
@@ -117,9 +118,24 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   @override
+  Widget build(BuildContext context) => const SplashView();
+}
+
+/// The splash screen's appearance, with no startup logic.
+class SplashView extends StatelessWidget {
+  const SplashView({super.key});
+
+  static const Duration _stagger = Duration(milliseconds: 90);
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final animate = !MediaQuery.disableAnimationsOf(context);
+
+    Widget entrance(Widget child, int step) => animate
+        ? child.enterHero(delay: AppAnimations.stagger(step, step: _stagger))
+        : child;
 
     return PopScope(
       canPop: false,
@@ -128,87 +144,73 @@ class _SplashPageState extends State<SplashPage> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // Modern gradient background
             AuthBackground(isDark: isDark),
-
-            // Content
             SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) => SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
+              // Scrolls only when the content cannot fit, such as on a short
+              // screen with large text.
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.lg,
                         vertical: AppSpacing.md,
                       ),
+                      // Equal space above and below keeps the logo and loader
+                      // at the exact centre, where the native launch logo was.
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // ── Brand ──
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _Logo().enterHero(),
-                              const SizedBox(height: AppSpacing.xl2),
-                              Text(
-                                l10n?.appName ??
-                                    AppLocalizations.of(context)!.appName,
-                                textAlign: TextAlign.center,
-                                style: AppTypography.displaySmall(
-                                  color: context.themePrimary,
-                                ).copyWith(letterSpacing: 1.2),
-                              ).enterHero(delay: AppAnimations.stagger(1)),
-                              const SizedBox(height: AppSpacing.sm),
-                              Text(
-                                l10n?.rewardsLoyaltyProgram ??
-                                    AppLocalizations.of(
-                                      context,
-                                    )!.rewardsLoyaltyProgram,
-                                textAlign: TextAlign.center,
-                                style: AppTypography.bodyLarge(
-                                  color: context.themeTextSecondary,
-                                ),
-                              ).fadeIn(
-                                delay: AppAnimations.stagger(2),
-                                duration: AppAnimations.medium,
-                              ),
-                            ],
-                          ),
-
-                          // Keep progress and attribution together at the
-                          // bottom; the scroll view handles short screens.
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: context.themePrimary.withValues(
-                                    alpha: 0.7,
+                          const Expanded(child: SizedBox.shrink()),
+                          _LogoWithLoader(animate: animate),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: AppSpacing.md),
+                                entrance(
+                                  Text(
+                                    l10n?.appName ?? 'Balaji Points',
+                                    textAlign: TextAlign.center,
+                                    style: AppTypography.displaySmall(
+                                      color: context.themePrimary,
+                                    ).copyWith(letterSpacing: 1.2),
                                   ),
+                                  2,
                                 ),
-                              ).fadeIn(delay: AppAnimations.stagger(3)),
-                              const SizedBox(height: AppSpacing.xl),
-                              Text(
-                                '${l10n?.poweredBy ?? 'Powered by'}\n'
-                                '${l10n?.companyName ?? 'Shri Balaji Plywood & Hardware'}',
-                                textAlign: TextAlign.center,
-                                style: AppTypography.labelMedium(
-                                  color: context.themePrimary,
-                                ).copyWith(height: 1.5),
-                              ).fadeIn(delay: AppAnimations.stagger(4)),
-                            ],
+                                const SizedBox(height: AppSpacing.sm),
+                                entrance(
+                                  Text(
+                                    l10n?.rewardsLoyaltyProgram ??
+                                        'Rewards & Loyalty Program',
+                                    textAlign: TextAlign.center,
+                                    style: AppTypography.bodyLarge(
+                                      color: context.themeTextSecondary,
+                                    ),
+                                  ),
+                                  3,
+                                ),
+                                const Spacer(),
+                                const SizedBox(height: AppSpacing.md),
+                                entrance(
+                                  Text(
+                                    '${l10n?.poweredBy ?? 'Powered by'}\n'
+                                    '${l10n?.companyName ?? 'Shri Balaji Plywood & Hardware'}',
+                                    textAlign: TextAlign.center,
+                                    // Sits on the navy curve of AuthBackground.
+                                    style: AppTypography.labelMedium(
+                                      color: AppColors.white,
+                                    ).copyWith(height: 1.5),
+                                  ),
+                                  5,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
           ],
@@ -218,56 +220,90 @@ class _SplashPageState extends State<SplashPage> {
   }
 }
 
-class _Logo extends StatelessWidget {
-  const _Logo();
+/// The logo settles into place at the centre of the screen, with the loader
+/// spinning in a ring around it.
+class _LogoWithLoader extends StatelessWidget {
+  const _LogoWithLoader({required this.animate});
+
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
-    // Get responsive logo size
-    final logoSize = context.responsiveLogoSize;
-    final logoBorderRadius = context.responsiveLogoBorderRadius;
-    final logoShadowBlur = ResponsiveTypography.getLogoShadowBlur(context);
-    final fallbackIconSize = logoSize * 0.5; // Icon is 50% of logo size
+    final size = ResponsiveTypography.getLogoSize(context) * 1.4;
+    final radius = size * 0.22;
+    // Wide enough for the ring to clear the logo's corners.
+    final ringSize = size * 1.42;
 
-    return Container(
-      width: logoSize,
-      height: logoSize,
+    final logo = Container(
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(logoBorderRadius),
+        borderRadius: BorderRadius.circular(radius),
         boxShadow: [
           BoxShadow(
-            color: context.themePrimary.withValues(alpha: 0.2),
-            blurRadius: logoShadowBlur,
-            offset: Offset(0, logoShadowBlur * 0.3),
+            color: AppColors.primary.withValues(alpha: 0.22),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(logoBorderRadius),
-        child: Image.asset(
-          'assets/images/balaji_point_logo.png',
-          width: logoSize,
-          height: logoSize,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            // Fallback gradient icon - responsive size
-            return Container(
-              width: logoSize,
-              height: logoSize,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(logoBorderRadius),
-                color: AppColors.primary,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.card_giftcard_rounded,
-                  color: AppColors.white,
-                  size: fallbackIconSize,
-                ),
-              ),
-            );
-          },
+      child: Image.asset(
+        'assets/images/splash_logo.png',
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radius),
+            color: AppColors.primary,
+          ),
+          child: Icon(
+            Icons.card_giftcard_rounded,
+            color: AppColors.white,
+            size: size * 0.5,
+          ),
         ),
+      ),
+    );
+
+    final loader = SizedBox(
+      width: ringSize,
+      height: ringSize,
+      child: CircularProgressIndicator(
+        key: const ValueKey('splash-loader'),
+        strokeWidth: 3,
+        strokeCap: StrokeCap.round,
+        color: context.themeGold,
+        backgroundColor: context.themeGold.withValues(alpha: 0.14),
+      ),
+    );
+
+    return SizedBox(
+      width: ringSize,
+      height: ringSize,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (animate)
+            loader.fadeIn(
+              delay: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 300),
+            )
+          else
+            loader,
+          if (animate)
+            logo
+                .animate()
+                .fadeIn(duration: const Duration(milliseconds: 220))
+                .scaleXY(
+                  begin: 0.86,
+                  end: 1,
+                  duration: const Duration(milliseconds: 520),
+                  curve: Curves.easeOutBack,
+                )
+          else
+            logo,
+        ],
       ),
     );
   }

@@ -269,6 +269,7 @@ class _ExportUsersBeforeCleanupScreenState
                       : AppLocalizations.of(context)!.exportToPdf,
                 ),
                 style: ElevatedButton.styleFrom(
+                  foregroundColor: context.themeOnPrimary,
                   backgroundColor: context.themePrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,

@@ -42,6 +42,7 @@ class _AddBillPageState extends State<AddBillPage> {
   bool _isSubmitting = false;
   StreamSubscription<bool>? _celebrationSubscription;
   bool? _celebrationEnabled;
+  bool _profileChecked = false;
 
   bool _hasFormData() {
     return _amountController.text.trim().isNotEmpty ||
@@ -60,11 +61,20 @@ class _AddBillPageState extends State<AddBillPage> {
         .listen(
           (enabled) {
             if (mounted) setState(() => _celebrationEnabled = enabled);
+            if (!enabled) _checkProfileOnce();
           },
           onError: (_) {
             if (mounted) setState(() => _celebrationEnabled = false);
+            _checkProfileOnce();
           },
         );
+  }
+
+  /// While bills are paused the paused message is all the user needs, so the
+  /// profile is only checked once bills are open.
+  void _checkProfileOnce() {
+    if (_profileChecked) return;
+    _profileChecked = true;
     _checkProfileCompletion();
   }
 
@@ -818,10 +828,13 @@ class _AddBillPageState extends State<AddBillPage> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (_celebrationEnabled == true) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) context.go('/');
-      });
       return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.addBill),
+          leading: BackButton(
+            onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          ),
+        ),
         body: Center(
           child: Card.filled(
             child: Padding(

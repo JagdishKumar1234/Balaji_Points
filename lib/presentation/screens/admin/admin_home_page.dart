@@ -277,6 +277,12 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             return;
           }
 
+          // From a section, Back returns to the dashboard.
+          if (!_showDashboard) {
+            _backToDashboard();
+            return;
+          }
+
           // Handle double-tap exit
           await handleDoubleTapExit();
         }

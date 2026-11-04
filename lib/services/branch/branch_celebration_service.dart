@@ -6,20 +6,16 @@ import 'package:balaji_points/services/branch/branch_service.dart';
 
 class BranchCelebrationEntry {
   const BranchCelebrationEntry({
-    required this.userId,
     required this.name,
-    required this.mobileNumber,
     required this.points,
     required this.rank,
-    required this.tier,
+    this.isCurrentUser = false,
   });
 
-  final String userId;
   final String name;
-  final String mobileNumber;
   final double points;
   final int rank;
-  final String tier;
+  final bool isCurrentUser;
 
   int get rewardAmount => (points * 10).round();
 
@@ -42,6 +38,20 @@ class BranchCelebrationEntry {
     3 => '3rd prize',
     _ => null,
   };
+}
+
+/// What the Diwali popup may show. It deliberately holds only the top three and
+/// the logged-in carpenter: never the rest of the branch or any phone number.
+class BranchCelebrationSummary {
+  const BranchCelebrationSummary({
+    required this.topThree,
+    required this.currentUser,
+  });
+
+  final List<BranchCelebrationEntry> topThree;
+
+  /// Null when the logged-in user is not a carpenter in this branch.
+  final BranchCelebrationEntry? currentUser;
 }
 
 class BranchCelebrationService {
@@ -110,7 +120,7 @@ class BranchCelebrationService {
     return null;
   }
 
-  Future<List<BranchCelebrationEntry>> loadBranchCarpenters(
+  Future<BranchCelebrationSummary> loadCelebrationSummary(
     String branchId,
   ) async {
     final users = await _firestore
@@ -137,9 +147,7 @@ class BranchCelebrationService {
     }
 
     final rows =
-        <
-          ({String id, String name, String mobile, String tier, double points})
-        >[];
+        <({String id, String uid, String phone, String name, double points})>[];
     for (final userDoc in memberDocs) {
       final data = userDoc.data();
       final uid = data['uid'] as String? ?? '';
@@ -156,12 +164,9 @@ class BranchCelebrationService {
       final fullName = '$firstName $lastName'.trim();
       rows.add((
         id: userDoc.id,
+        uid: uid,
+        phone: phone,
         name: fullName.isEmpty ? 'Carpenter' : fullName,
-        mobile: phone,
-        tier:
-            (pointsData?['tier'] as String? ??
-            data['tier'] as String? ??
-            'Bronze'),
         points: resolvedPoints,
       ));
     }
@@ -172,21 +177,33 @@ class BranchCelebrationService {
           ? byPoints
           : a.name.toLowerCase().compareTo(b.name.toLowerCase());
     });
-    return [
-      for (var index = 0; index < rows.length; index++)
-        BranchCelebrationEntry(
-          userId: rows[index].id,
-          name: rows[index].name,
-          mobileNumber: rows[index].mobile,
-          points: rows[index].points,
-          rank: index + 1,
-          tier: index < 10
-              ? 'Gold'
-              : index < 30
-              ? 'Silver'
-              : 'Bronze',
-        ),
-    ];
+
+    final sessionId = (await _session.getUserId())?.trim() ?? '';
+    final sessionPhone = (await _session.getPhoneNumber())?.trim() ?? '';
+    var currentIndex = sessionId.isEmpty
+        ? -1
+        : rows.indexWhere((row) => row.id == sessionId);
+    if (currentIndex < 0 && sessionId.isNotEmpty) {
+      currentIndex = rows.indexWhere((row) => row.uid == sessionId);
+    }
+    if (currentIndex < 0 && sessionPhone.isNotEmpty) {
+      currentIndex = rows.indexWhere((row) => row.phone == sessionPhone);
+    }
+
+    BranchCelebrationEntry entryAt(int index) => BranchCelebrationEntry(
+      name: rows[index].name,
+      points: rows[index].points,
+      rank: index + 1,
+      isCurrentUser: index == currentIndex,
+    );
+
+    return BranchCelebrationSummary(
+      topThree: [
+        for (var index = 0; index < rows.length && index < 3; index++)
+          entryAt(index),
+      ],
+      currentUser: currentIndex < 0 ? null : entryAt(currentIndex),
+    );
   }
 
   static double _asDouble(dynamic value) =>

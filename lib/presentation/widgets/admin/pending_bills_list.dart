@@ -248,6 +248,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
+              foregroundColor: context.themeOnError,
               backgroundColor: context.themeError,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

@@ -24,6 +24,10 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
+  bool _expanded = false;
+
+  /// Lines shown before a long greeting needs "Read more".
+  static const int _collapsedLines = 4;
 
   @override
   void initState() {
@@ -98,6 +102,37 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMessage(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final message = widget.greeting.message;
+    final isLong =
+        message.length > 140 ||
+        '\n'.allMatches(message).length >= _collapsedLines;
+    final collapse = isLong && !_expanded;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppText.body(
+          message,
+          color: context.themeTextPrimary,
+          maxLines: collapse ? _collapsedLines : null,
+          overflow: collapse ? TextOverflow.ellipsis : null,
+        ),
+        if (isLong)
+          TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(48, 40),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            onPressed: () => setState(() => _expanded = !_expanded),
+            child: Text(_expanded ? l10n.showLess : l10n.readMore),
+          ),
+      ],
     );
   }
 
@@ -209,10 +244,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                           color: context.themePrimary,
                         ),
                         const SizedBox(height: 4),
-                        AppText.body(
-                          widget.greeting.message,
-                          color: context.themeTextPrimary,
-                        ),
+                        _buildMessage(context),
                       ],
                     ),
                   ),
@@ -257,10 +289,7 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
                       color: context.themePrimary,
                     ),
                     const SizedBox(height: 8),
-                    AppText.body(
-                      widget.greeting.message,
-                      color: context.themeTextPrimary,
-                    ),
+                    _buildMessage(context),
                   ],
                 ),
               ),

@@ -1424,6 +1424,7 @@ class _DesignBillCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
+                    foregroundColor: context.themeOnPrimary,
                     backgroundColor: context.themePrimary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),

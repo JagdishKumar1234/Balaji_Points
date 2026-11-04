@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.19+30
+version: 1.1.1+32
 
 environment:
   sdk: ^3.9.2
@@ -99,6 +99,7 @@ flutter:
     # Nunito (bundled so text renders offline; google_fonts picks these up)
     - assets/google_fonts/
     - assets/images/balaji_point_logo.png
+    - assets/images/splash_logo.png
     # Furniture / plywood showcase images used on home screen
     - assets/images/background_image.png
     - assets/images/furniture/brown_kitchen_cabinet.jpeg

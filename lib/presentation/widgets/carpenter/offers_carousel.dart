@@ -32,7 +32,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 220,
+          height: 260,
           child: PageView.builder(
             controller: _pageController,
             onPageChanged: (index) {
@@ -60,9 +60,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
 
   Widget _buildOfferCard(BuildContext context, OfferItem offer) {
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
       decoration: BoxDecoration(
         borderRadius: AppRadius.forCard,
         boxShadow: [
@@ -75,138 +73,209 @@ class _OffersCarouselState extends State<OffersCarousel> {
       ),
       child: ClipRRect(
         borderRadius: AppRadius.forCard,
-        child: Stack(
-          children: [
-            if (offer.imageUrl != null && offer.imageUrl!.isNotEmpty)
-              Positioned.fill(
-                child: Image.network(
-                  offer.imageUrl!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
-                    return ColoredBox(color: AppColors.primaryLight);
-                  },
-                ),
-              )
-            else
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(color: AppColors.primary),
-                ),
+        child: offer.imageUrl != null && offer.imageUrl!.isNotEmpty
+            ? _buildImageOffer(context, offer)
+            : Stack(
+                children: [
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: AppColors.primary),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: CustomPaint(painter: _OfferPatternPainter()),
+                  ),
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppColors.black.withValues(alpha: 0.35),
+                            AppColors.black.withValues(alpha: 0.55),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (offer.title.isNotEmpty)
+                          Text(
+                            offer.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.buttonMedium().copyWith(
+                              color: AppColors.white,
+                              fontSize: 24.0,
+                            ),
+                          ),
+                        if (offer.title.isNotEmpty &&
+                            offer.description.isNotEmpty)
+                          const SizedBox(height: AppSpacing.sm),
+                        if (offer.description.isNotEmpty)
+                          Text(
+                            offer.description,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodyMedium().copyWith(
+                              color: AppColors.white.withValues(alpha: 0.9),
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        if (offer.actionText.isNotEmpty &&
+                            (offer.title.isNotEmpty ||
+                                offer.description.isNotEmpty))
+                          const SizedBox(height: AppSpacing.md),
+                        if (offer.actionText.isNotEmpty)
+                          _buildAction(context, offer),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            Positioned.fill(
-              child: CustomPaint(painter: _OfferPatternPainter()),
+      ),
+    );
+  }
+
+  /// Banner images usually have their own text, so the title goes below the
+  /// image rather than over it.
+  Widget _buildImageOffer(BuildContext context, OfferItem offer) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: InkWell(
+            onTap: () => _showFullImage(context, offer.imageUrl!),
+            child: Image.network(
+              offer.imageUrl!,
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+              errorBuilder: (context, error, stackTrace) {
+                return ColoredBox(color: AppColors.primaryLight);
+              },
             ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.black.withValues(alpha: 0.35),
-                      AppColors.black.withValues(alpha: 0.55),
+          ),
+        ),
+        ColoredBox(
+          color: colors.surface,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (offer.title.isNotEmpty)
+                        Text(
+                          offer.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.labelLarge(
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      if (offer.description.isNotEmpty)
+                        Text(
+                          offer.description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.bodySmall(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (offer.title.isNotEmpty)
-                    Text(
-                      offer.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.buttonMedium().copyWith(
-                        color: AppColors.white,
-                        fontSize: 24.0,
-                      ),
-                    ),
-                  if (offer.title.isNotEmpty && offer.description.isNotEmpty)
-                    const SizedBox(height: AppSpacing.sm),
-                  if (offer.description.isNotEmpty)
-                    Text(
-                      offer.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.bodyMedium().copyWith(
-                        color: AppColors.white.withValues(alpha: 0.9),
-                        fontSize: 16.0,
-                      ),
-                    ),
-                  if (offer.actionText.isNotEmpty &&
-                      (offer.title.isNotEmpty || offer.description.isNotEmpty))
-                    const SizedBox(height: AppSpacing.md),
-                  if (offer.actionText.isNotEmpty)
-                    InkWell(
-                      onTap: () {
-                        if (offer.imageUrl != null &&
-                            offer.imageUrl!.isNotEmpty) {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: AppRadius.forCard,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: AppRadius.forCard,
-                                  child: Image.network(
-                                    offer.imageUrl!,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        color: context.themeBorder,
-                                        height: 220.0,
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.broken_image_rounded,
-                                            size: 40.0,
-                                            color: context.themeTextSecondary,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xl,
-                          vertical: AppSpacing.sm + 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(
-                            20.0,
-                          ),
-                        ),
-                        child: Text(
-                          offer.actionText,
-                          style: AppTypography.buttonMedium().copyWith(
-                            color: AppColors.primary,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
+                if (offer.actionText.isNotEmpty) ...[
+                  const SizedBox(width: AppSpacing.sm),
+                  _buildAction(
+                    context,
+                    offer,
+                    background: context.themePrimary,
+                    foreground: context.themeOnPrimary,
+                  ),
                 ],
-              ),
+              ],
             ),
-          ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAction(
+    BuildContext context,
+    OfferItem offer, {
+    Color background = AppColors.white,
+    Color foreground = AppColors.primary,
+  }) {
+    return InkWell(
+      onTap: () {
+        if (offer.imageUrl != null && offer.imageUrl!.isNotEmpty) {
+          _showFullImage(context, offer.imageUrl!);
+        }
+      },
+      borderRadius: BorderRadius.circular(20.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Text(
+          offer.actionText,
+          style: AppTypography.buttonMedium().copyWith(
+            color: foreground,
+            fontSize: 14.0,
+          ),
         ),
       ),
+    );
+  }
+
+  void _showFullImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
+          child: ClipRRect(
+            borderRadius: AppRadius.forCard,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: context.themeBorder,
+                  height: 220.0,
+                  child: Center(
+                    child: Icon(
+                      Icons.broken_image_rounded,
+                      size: 40.0,
+                      color: context.themeTextSecondary,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 

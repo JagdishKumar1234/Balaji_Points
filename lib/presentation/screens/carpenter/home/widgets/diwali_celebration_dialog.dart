@@ -14,11 +14,11 @@ class DiwaliCelebrationDialog extends StatefulWidget {
   const DiwaliCelebrationDialog({
     super.key,
     required this.branchName,
-    required this.leaderboard,
+    required this.summary,
   });
 
   final String branchName;
-  final List<BranchCelebrationEntry> leaderboard;
+  final BranchCelebrationSummary summary;
 
   @override
   State<DiwaliCelebrationDialog> createState() =>
@@ -61,7 +61,7 @@ class _DiwaliCelebrationDialogState extends State<DiwaliCelebrationDialog>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final compact = size.width < 700;
+    final summary = widget.summary;
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       clipBehavior: Clip.antiAlias,
@@ -71,30 +71,48 @@ class _DiwaliCelebrationDialogState extends State<DiwaliCelebrationDialog>
         scale: CurvedAnimation(parent: _entrance, curve: Curves.easeOutBack),
         child: FadeTransition(
           opacity: _entrance,
-          child: SizedBox(
-            width: math.min(size.width - 24, 1040.0),
-            height: math.min(size.height - 32, 900.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: math.min(size.width - 24, 520.0),
+              maxHeight: size.height - 32,
+            ),
             child: Stack(
               children: [
                 Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    _CelebrationHeader(
-                      branchName: widget.branchName,
-                      carpenterCount: widget.leaderboard.length,
-                      animation: _fireworks,
-                    ),
-                    Expanded(
-                      child: widget.leaderboard.isEmpty
-                          ? _ReportMessage(
+                    Flexible(
+                      child: ListView(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        children: [
+                          _CelebrationHeader(
+                            branchName: widget.branchName,
+                            animation: _fireworks,
+                          ),
+                          if (summary.topThree.isEmpty)
+                            _ReportMessage(
                               icon: Icons.groups_2_outlined,
                               message: AppLocalizations.of(
                                 context,
                               )!.noCarpenterAccountsAreListedFor,
                             )
-                          : _RewardReportBody(
-                              entries: widget.leaderboard,
-                              compact: compact,
+                          else
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (summary.currentUser != null) ...[
+                                    _YourPrizeCard(entry: summary.currentUser!),
+                                    const SizedBox(height: AppSpacing.md),
+                                  ],
+                                  _TopThreeList(entries: summary.topThree),
+                                ],
+                              ),
                             ),
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -142,19 +160,19 @@ class _DiwaliCelebrationDialogState extends State<DiwaliCelebrationDialog>
 class _CelebrationHeader extends StatelessWidget {
   const _CelebrationHeader({
     required this.branchName,
-    required this.carpenterCount,
     required this.animation,
   });
 
   final String branchName;
-  final int carpenterCount;
   final Animation<double> animation;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 190,
-      width: double.infinity,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: 150,
+        minWidth: double.infinity,
+      ),
       child: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
@@ -209,23 +227,12 @@ class _CelebrationHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  AppLocalizations.of(
-                    context,
-                  )!.carpenters('$branchName', '$carpenterCount'),
+                  branchName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodyMedium(
                     color: Colors.white.withValues(alpha: .9),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  AppLocalizations.of(context)!.carpenterRewardBonusReport(
-                    DateFormat('dd/MM/yyyy').format(DateTime.now()),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.caption(color: const Color(0xFFFFD166)),
                 ),
               ],
             ),
@@ -320,307 +327,50 @@ class _FirecrackerPainter extends CustomPainter {
       oldDelegate.progress != progress;
 }
 
-class _RewardReportBody extends StatelessWidget {
-  const _RewardReportBody({required this.entries, required this.compact});
-
-  final List<BranchCelebrationEntry> entries;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final totalPoints = entries.fold<double>(
-      0,
-      (sum, entry) => sum + entry.points,
-    );
-    final totalReward = (totalPoints * 10).round();
-    final totalBonus = entries.fold<int>(
-      0,
-      (sum, entry) => sum + entry.bonusAmount,
-    );
-    final sections =
-        <
-          ({
-            String title,
-            String subtitle,
-            List<BranchCelebrationEntry> rows,
-            Color color,
-          })
-        >[
-          (
-            title: AppLocalizations.of(context)!.topPerformersGoldTier,
-            subtitle: AppLocalizations.of(context)!.ranks110,
-            rows: entries.where((entry) => entry.rank <= 10).toList(),
-            color: const Color(0xFFB77900),
-          ),
-          (
-            title: AppLocalizations.of(context)!.highPerformersSilverTier,
-            subtitle: AppLocalizations.of(context)!.ranks1130,
-            rows: entries
-                .where((entry) => entry.rank >= 11 && entry.rank <= 30)
-                .toList(),
-            color: Theme.of(context).colorScheme.outline,
-          ),
-          (
-            title: AppLocalizations.of(context)!.activePerformersBronzeTier,
-            subtitle: AppLocalizations.of(context)!.ranks31Onwards,
-            rows: entries.where((entry) => entry.rank >= 31).toList(),
-            color: const Color(0xFF9A5B32),
-          ),
-        ];
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [
-        Text(
-          AppLocalizations.of(context)!.totalCarpenters('${entries.length}'),
-          style: AppTypography.labelLarge(
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: [
-            _SummaryTile(
-              label: AppLocalizations.of(context)!.totalPoints2,
-              value: _formatPoints(totalPoints),
-              icon: Icons.stars_rounded,
-            ),
-            _SummaryTile(
-              label: AppLocalizations.of(context)!.totalReward,
-              value: _formatCurrency(totalReward),
-              icon: Icons.currency_rupee_rounded,
-            ),
-            _SummaryTile(
-              label: AppLocalizations.of(context)!.totalBonus,
-              value: _formatCurrency(totalBonus),
-              icon: Icons.card_giftcard_rounded,
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _PrizeHighlights(entries: entries.take(3).toList()),
-        const SizedBox(height: AppSpacing.md),
-        for (final section in sections)
-          if (section.rows.isNotEmpty) ...[
-            _SectionHeading(
-              title: section.title,
-              subtitle: section.subtitle,
-              color: section.color,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            if (compact)
-              ...section.rows.map((entry) => _CompactReportRow(entry: entry))
-            else
-              _WideReportTable(entries: section.rows),
-            const SizedBox(height: AppSpacing.md),
-          ],
-        Card.filled(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              children: [
-                const Icon(Icons.summarize_rounded),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context)!.carpentersPointsRewardBonus(
-                      '${entries.length}',
-                      '${_formatPoints(totalPoints)}',
-                      '${_formatCurrency(totalReward)}',
-                      '${_formatCurrency(totalBonus)}',
-                    ),
-                    style: AppTypography.labelLarge(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PrizeHighlights extends StatelessWidget {
-  const _PrizeHighlights({required this.entries});
-
-  final List<BranchCelebrationEntry> entries;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Wrap(
-      alignment: WrapAlignment.center,
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children: entries.map((entry) {
-        final medal = switch (entry.rank) {
-          1 => const Color(0xFFB77900),
-          2 => colors.outline,
-          _ => const Color(0xFF9A5B32),
-        };
-        return SizedBox(
-          width: 220,
-          child: Card.filled(
-            color: entry.rank == 1
-                ? colors.tertiaryContainer
-                : colors.surfaceContainerLow,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                children: [
-                  Icon(Icons.emoji_events_rounded, color: medal, size: 28),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${entry.rank}${_ordinalSuffix(entry.rank)} Prize',
-                    style: AppTypography.labelLarge(color: medal),
-                  ),
-                  Text(
-                    entry.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodyMedium(color: colors.onSurface),
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.bonus(
-                      '${_formatCurrency(entry.bonusAmount)}',
-                      '${entry.giftDetails}',
-                    ),
-                    textAlign: TextAlign.center,
-                    style: AppTypography.bodySmall(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _SectionHeading extends StatelessWidget {
-  const _SectionHeading({
-    required this.title,
-    required this.subtitle,
-    required this.color,
-  });
-
-  final String title;
-  final String subtitle;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 5,
-          height: 34,
-          decoration: BoxDecoration(color: color, borderRadius: AppRadius.pill),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: Text(title, style: AppTypography.labelLarge(color: color)),
-        ),
-        Text(
-          subtitle,
-          style: AppTypography.caption(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _CompactReportRow extends StatelessWidget {
-  const _CompactReportRow({required this.entry});
+/// The logged-in carpenter's own points and prize.
+class _YourPrizeCard extends StatelessWidget {
+  const _YourPrizeCard({required this.entry});
 
   final BranchCelebrationEntry entry;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colors = Theme.of(context).colorScheme;
-    final isWinner = entry.bonusAmount > 0;
     return Card.filled(
-      color: isWinner
-          ? colors.tertiaryContainer.withValues(alpha: .5)
-          : colors.surfaceContainerLow,
-      margin: const EdgeInsets.only(bottom: 6),
+      margin: EdgeInsets.zero,
+      color: colors.tertiaryContainer,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 6, 10, 10),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                backgroundColor: isWinner
-                    ? colors.tertiaryContainer
-                    : colors.surfaceContainerHighest,
-                child: Text(
-                  '${entry.rank}',
-                  style: AppTypography.labelLarge(color: colors.primary),
-                ),
-              ),
-              title: Text(
-                entry.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                entry.mobileNumber.isEmpty
-                    ? AppLocalizations.of(context)!.mobileNumberUnavailable
-                    : entry.mobileNumber,
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    _formatPoints(entry.points),
-                    style: AppTypography.labelLarge(color: colors.primary),
-                  ),
-                  Text(
-                    'points',
-                    style: AppTypography.caption(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+            Text(
+              l10n.diwaliYourPrize,
+              style: AppTypography.labelLarge(
+                color: colors.onTertiaryContainer,
               ),
             ),
-            const Divider(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.xs,
+              spacing: AppSpacing.xl,
+              runSpacing: AppSpacing.sm,
               children: [
-                _RowMetric(
-                  label: AppLocalizations.of(context)!.homeTierSuffix,
-                  value: entry.tier,
+                _PrizeValue(
+                  label: l10n.myPoints,
+                  value: _formatPoints(entry.points),
                 ),
-                _RowMetric(
-                  label: AppLocalizations.of(context)!.reward,
+                _PrizeValue(
+                  label: l10n.reward,
                   value: _formatCurrency(entry.rewardAmount),
                 ),
-                _RowMetric(
-                  label: AppLocalizations.of(context)!.bonus2,
-                  value: entry.bonusAmount == 0
-                      ? AppLocalizations.of(context)!.nil
-                      : _formatCurrency(entry.bonusAmount),
-                ),
-                _RowMetric(
-                  label: AppLocalizations.of(context)!.gift,
-                  value: entry.giftDetails,
-                ),
+                if (entry.bonusAmount > 0) ...[
+                  _PrizeValue(
+                    label: l10n.bonus2,
+                    value: _formatCurrency(entry.bonusAmount),
+                  ),
+                  _PrizeValue(label: l10n.gift, value: entry.giftDetails),
+                ],
               ],
             ),
           ],
@@ -630,170 +380,110 @@ class _CompactReportRow extends StatelessWidget {
   }
 }
 
-class _WideReportTable extends StatelessWidget {
-  const _WideReportTable({required this.entries});
+class _PrizeValue extends StatelessWidget {
+  const _PrizeValue({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onTertiaryContainer;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value, style: AppTypography.h4(color: color)),
+        Text(label, style: AppTypography.caption(color: color)),
+      ],
+    );
+  }
+}
+
+/// The branch's top three, showing name, points and prize only.
+class _TopThreeList extends StatelessWidget {
+  const _TopThreeList({required this.entries});
 
   final List<BranchCelebrationEntry> entries;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colors = Theme.of(context).colorScheme;
-    return Card.filled(
-      color: colors.surfaceContainerLow,
-      clipBehavior: Clip.antiAlias,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          headingRowColor: WidgetStatePropertyAll(
-            colors.surfaceContainerHighest,
-          ),
-          columnSpacing: 18,
-          dataRowMinHeight: 48,
-          dataRowMaxHeight: 64,
-          columns: [
-            const DataColumn(label: Text('S.No')),
-            DataColumn(label: Text(AppLocalizations.of(context)!.name)),
-            DataColumn(label: Text(AppLocalizations.of(context)!.mobileNumber)),
-            DataColumn(
-              label: Text(AppLocalizations.of(context)!.homeTierSuffix),
-            ),
-            DataColumn(
-              label: Text(AppLocalizations.of(context)!.pointsLabel),
-              numeric: true,
-            ),
-            DataColumn(
-              label: Text(AppLocalizations.of(context)!.reward2),
-              numeric: true,
-            ),
-            DataColumn(
-              label: Text(AppLocalizations.of(context)!.bonus3),
-              numeric: true,
-            ),
-            DataColumn(label: Text(AppLocalizations.of(context)!.giftDetails)),
-            DataColumn(label: Text(AppLocalizations.of(context)!.remarks)),
-          ],
-          rows: entries
-              .map(
-                (entry) => DataRow(
-                  color: entry.bonusAmount > 0
-                      ? WidgetStatePropertyAll(
-                          colors.tertiaryContainer.withValues(alpha: .28),
-                        )
-                      : null,
-                  cells: [
-                    DataCell(Text('${entry.rank}')),
-                    DataCell(
-                      SizedBox(
-                        width: 150,
-                        child: Text(
-                          entry.name,
-                          maxLines: 2,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.topCarpenters,
+          style: AppTypography.labelLarge(color: colors.onSurface),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        for (final entry in entries)
+          Card.filled(
+            color: colors.surfaceContainerLow,
+            margin: const EdgeInsets.only(bottom: 6),
+            // Not a ListTile, whose fixed height clips large system text.
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.emoji_events_rounded,
+                    size: 30,
+                    color: switch (entry.rank) {
+                      1 => const Color(0xFFB77900),
+                      2 => colors.outline,
+                      _ => const Color(0xFF9A5B32),
+                    },
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry.isCurrentUser
+                              ? '${entry.name} (${l10n.diwaliYou})'
+                              : entry.name,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: AppTypography.labelLarge(
+                            color: colors.onSurface,
+                          ),
+                        ),
+                        Text(
+                          l10n.bonus(
+                            _formatCurrency(entry.bonusAmount),
+                            entry.giftDetails,
+                          ),
+                          style: AppTypography.caption(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _formatPoints(entry.points),
+                        style: AppTypography.labelLarge(color: colors.primary),
+                      ),
+                      Text(
+                        l10n.pointsLabel,
+                        style: AppTypography.caption(
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
-                    ),
-                    DataCell(
-                      Text(
-                        entry.mobileNumber.isEmpty ? '—' : entry.mobileNumber,
-                      ),
-                    ),
-                    DataCell(Text(entry.tier)),
-                    DataCell(Text(_formatPoints(entry.points))),
-                    DataCell(Text(_formatCurrency(entry.rewardAmount))),
-                    DataCell(
-                      Text(
-                        entry.bonusAmount == 0
-                            ? AppLocalizations.of(context)!.nil
-                            : _formatCurrency(entry.bonusAmount),
-                      ),
-                    ),
-                    DataCell(
-                      SizedBox(width: 120, child: Text(entry.giftDetails)),
-                    ),
-                    const DataCell(Text('—')),
-                  ],
-                ),
-              )
-              .toList(),
-        ),
-      ),
-    );
-  }
-}
-
-class _SummaryTile extends StatelessWidget {
-  const _SummaryTile({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
-
-  final String label;
-  final String value;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Card.filled(
-      color: colors.surfaceContainerLow,
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 20, color: colors.primary),
-            const SizedBox(width: AppSpacing.sm),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: AppTypography.labelLarge(color: colors.primary),
-                ),
-                Text(
-                  label,
-                  style: AppTypography.caption(color: colors.onSurfaceVariant),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RowMetric extends StatelessWidget {
-  const _RowMetric({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 130,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: AppTypography.caption(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.labelLarge(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -830,9 +520,3 @@ String _formatCurrency(int amount) => NumberFormat.currency(
   symbol: '₹',
   decimalDigits: 0,
 ).format(amount);
-String _ordinalSuffix(int rank) => switch (rank) {
-  1 => 'st',
-  2 => 'nd',
-  3 => 'rd',
-  _ => 'th',
-};
