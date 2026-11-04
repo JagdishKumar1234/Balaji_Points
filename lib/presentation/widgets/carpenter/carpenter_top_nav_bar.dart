@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 
 /// Modern flat top nav bar — no bottom border.
 /// Layout: [Hamburger] [Logo square + App name + Branch subtitle] → [Actions]
-class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget {
+class CarpenterTopNavBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final Widget? leading;
   final String title;
   final String? subtitle;
@@ -91,11 +92,13 @@ class CarpenterTopNavBar extends StatelessWidget implements PreferredSizeWidget 
 
                       // Center: logo + title/subtitle OR custom center widget
                       Expanded(
-                        child: center ?? _DefaultCenter(
-                          title: title,
-                          subtitle: subtitle,
-                          fg: fg,
-                        ),
+                        child:
+                            center ??
+                            _DefaultCenter(
+                              title: title,
+                              subtitle: subtitle,
+                              fg: fg,
+                            ),
                       ),
 
                       // Actions (cart icon etc.)

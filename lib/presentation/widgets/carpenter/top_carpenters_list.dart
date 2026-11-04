@@ -1,9 +1,14 @@
-import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/utils/points_utils.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/presentation/widgets/carpenter/member_identity.dart';
 import 'package:flutter/material.dart';
 import 'top_carpenters_display.dart';
 
+/// The branch's top members. Points sit under the name so that the name has
+/// the full width of the row and always shows in full.
 class TopCarpentersList extends StatelessWidget {
   final List<CarpenterRank> carpenters;
   final bool showViewAll;
@@ -14,20 +19,6 @@ class TopCarpentersList extends StatelessWidget {
     this.showViewAll = true,
   });
 
-  /// Get initials from name (e.g., "Ramesh Kumar" -> "RK")
-  String _getInitials(String name) {
-    final parts = name.trim().split(' ');
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) {
-      return parts[0].isNotEmpty ? parts[0][0].toUpperCase() : '?';
-    }
-    final firstInitial = parts[0].isNotEmpty ? parts[0][0] : '';
-    final lastInitial = parts[parts.length - 1].isNotEmpty
-        ? parts[parts.length - 1][0]
-        : '';
-    return (firstInitial + lastInitial).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     if (carpenters.isEmpty) {
@@ -35,138 +26,88 @@ class TopCarpentersList extends StatelessWidget {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ...carpenters.map(
-          (carpenter) => _buildLeaderboardCard(context, carpenter),
-        ),
+        for (final carpenter in carpenters) _LeaderboardRow(carpenter),
       ],
     );
   }
+}
 
-  Widget _buildLeaderboardCard(BuildContext context, CarpenterRank carpenter) {
-    // Determine rank badge color based on position
-    Color rankBgColor;
-    Color rankTextColor;
+class _LeaderboardRow extends StatelessWidget {
+  const _LeaderboardRow(this.member);
 
-    if (carpenter.rank == 1) {
-      rankBgColor = AppColors.warning;
-      rankTextColor = AppColors.white;
-    } else if (carpenter.rank == 2) {
-      rankBgColor = context.themeBorder;
-      rankTextColor = context.themeTextSecondary;
-    } else if (carpenter.rank == 3) {
-      rankBgColor = context.themeSecondary.withValues(alpha: 0.15);
-      rankTextColor = context.themeSecondary;
-    } else {
-      rankBgColor = context.themeSecondary.withValues(alpha: 0.1);
-      rankTextColor = context.themeSecondary;
-    }
+  final CarpenterRank member;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isTopThree = member.rank <= 3;
+    final isMe = member.isCurrentUser;
+    final highlight = isDark ? AppColors.darkPendingSoft : AppColors.goldSoft;
+    final name = isMe
+        ? '${member.name} (${AppLocalizations.of(context)!.diwaliYou})'
+        : member.name;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: context.themeSurface,
-        borderRadius: AppRadius.all16,
-        border: Border.all(
-          color: context.themeSecondary.withValues(alpha: 0.2),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: isMe ? highlight : context.themeCard,
+        borderRadius: AppRadius.md12,
+        border: Border.all(color: isMe ? AppColors.gold : context.themeBorder),
       ),
       child: Row(
         children: [
-          // Rank badge - Simple number for all ranks
           Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: rankBgColor,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '${carpenter.rank}',
-                style: TextStyle(
-                  color: rankTextColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-
-          // Initials only (no profile images)
-          Container(
-            width: 50,
-            height: 50,
+            width: 30,
+            height: 30,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: rankBgColor,
-              border: Border.all(
-                color: context.themeSecondary.withValues(alpha: 0.3),
-                width: 2,
-              ),
+              color: isTopThree ? AppColors.gold : context.themeSoftSurface,
             ),
-            child: Center(
-              child: Text(
-                _getInitials(carpenter.name),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: rankTextColor,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-
-          // Name
-          Expanded(
             child: Text(
-              carpenter.name,
-              style: AppTypography.section(
-                color: context.themeTextPrimary,
-              ).copyWith(fontSize: 16),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              '${member.rank}',
+              style: AppTypography.labelMedium(
+                color: isTopThree
+                    ? AppColors.primary
+                    : context.themeContentColor,
+              ).copyWith(fontWeight: FontWeight.w800),
             ),
           ),
-          const SizedBox(width: 12),
-
-          // Points
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.warning.withValues(alpha: 0.15),
-              borderRadius: AppRadius.md12,
-              border: Border.all(
-                color: AppColors.warning.withValues(alpha: 0.4),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          const SizedBox(width: 10),
+          // Initials only: this list shows other people, so no photos.
+          MemberAvatar(name: member.name, size: 40),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.monetization_on_rounded,
-                  color: AppColors.warning,
-                  size: 20,
-                ),
-                const SizedBox(width: 4),
                 Text(
-                  _formatPoints(carpenter.points),
-                  style: AppTypography.section(
+                  name,
+                  style: AppTypography.labelLarge(
                     color: context.themeTextPrimary,
-                  ).copyWith(fontWeight: FontWeight.w700, fontSize: 16),
+                  ).copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.stars_rounded,
+                      size: 15,
+                      color: AppColors.gold,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.ptsValue(PointsUtils.formatPoints(member.points)),
+                      style: AppTypography.bodySmall(
+                        color: context.themeTextSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -174,12 +115,5 @@ class TopCarpentersList extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _formatPoints(int points) {
-    if (points >= 1000) {
-      return '${(points / 1000).toStringAsFixed(1)}K';
-    }
-    return points.toString();
   }
 }

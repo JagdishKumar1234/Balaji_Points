@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -59,68 +60,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
 
   // ---------------- IMAGE VIEWER ----------------
   void _viewBillImage(String imageUrl) {
-    final l10n = AppLocalizations.of(context)!;
-
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: AppColors.black.withValues(alpha: 0.87),
-        child: Stack(
-          children: [
-            Center(
-              child: InteractiveViewer(
-                child: imageUrl.isNotEmpty
-                    ? Image.network(
-                        imageUrl,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.error_rounded,
-                              color: context.themeError,
-                              size: 60,
-                            ),
-                            AppText.body(
-                              l10n.failedToLoadImage,
-                              color: AppColors.white,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.image_not_supported_rounded,
-                            size: 60,
-                            color: context.themeTextSecondary,
-                          ),
-                          Text(
-                            l10n.noImageAvailable,
-                            style: const TextStyle(color: AppColors.white),
-                          ),
-                        ],
-                      ),
-              ),
-            ),
-            // Close button
-            Positioned(
-              top: 20,
-              right: 20,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.close_rounded,
-                  color: AppColors.white,
-                  size: 30,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    if (imageUrl.isEmpty) return;
+    showFullScreenImage(context, imageUrl);
   }
 
   // ---------------- FETCH CARPENTER DATA ----------------
@@ -1073,7 +1014,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
             stream: _firestore
-                .collection('bills').forAdminBranch()
+                .collection('bills')
+                .forAdminBranch()
                 .where('status', whereIn: ['approved', 'rejected'])
                 .snapshots(),
             builder: (_, snap) {

@@ -58,9 +58,9 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
       return;
     }
 
-    if (pin.isEmpty || pin.length < 4) {
+    if (pin.length != 4) {
       _showSnack(
-        AppLocalizations.of(context)!.pinMustBeAtLeast4,
+        AppLocalizations.of(context)!.enter4Digits,
         isError: true,
       );
       return;
@@ -142,7 +142,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
               controller: _pinController,
               keyboardType: TextInputType.number,
               obscureText: true,
-              maxLength: 6,
+              maxLength: 4,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.pin46Digits,
                 hintText: AppLocalizations.of(context)!.enterPin,

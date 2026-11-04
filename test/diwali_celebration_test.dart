@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_theme.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/diwali_celebration_dialog.dart';
@@ -9,10 +10,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class _FakeSession implements SessionService {
-  _FakeSession({this.userId, this.phone});
+  _FakeSession({this.userId, this.phone, this.role, this.branchId});
 
   final String? userId;
   final String? phone;
+  final String? role;
+  final String? branchId;
+
+  @override
+  Future<String?> getUserRole() async => role;
+  @override
+  Future<String?> getBranchId() async => branchId;
 
   @override
   Future<String?> getUserId() async => userId;
@@ -69,6 +77,7 @@ Future<BranchCelebrationSummary> _load({String? userId, String? phone}) async {
 Future<void> _pumpDialog(
   WidgetTester tester,
   BranchCelebrationSummary summary, {
+  String branchName = 'Erode',
   Size size = const Size(390, 844),
   double textScale = 1,
   bool dark = false,
@@ -91,7 +100,7 @@ Future<void> _pumpDialog(
         child: child!,
       ),
       home: Scaffold(
-        body: DiwaliCelebrationDialog(branchName: 'Erode', summary: summary),
+        body: DiwaliCelebrationDialog(branchName: branchName, summary: summary),
       ),
     ),
   );
@@ -103,6 +112,97 @@ Future<void> _finish(WidgetTester tester) =>
 
 void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
+
+  group('the four member roles', () {
+    test('only those roles, and older accounts, count as members', () {
+      for (final role in [
+        'carpenter',
+        'architect',
+        'engineer',
+        'interior_designer',
+        'Architect',
+        '',
+        null,
+      ]) {
+        expect(AppConstants.isMemberRole(role), isTrue, reason: '$role');
+      }
+      for (final role in ['admin', 'super_admin', 'dealer']) {
+        expect(AppConstants.isMemberRole(role), isFalse, reason: role);
+      }
+    });
+
+    test(
+      'all four are ranked together; staff and other branches are not',
+      () async {
+        final db = FakeFirebaseFirestore();
+        const people = {
+          'c': ('Chitra', 'carpenter', 'b1', 100),
+          'a': ('Arun', 'architect', 'b1', 400),
+          'e': ('Ezhil', 'engineer', 'b1', 300),
+          'i': ('Indu', 'interior_designer', 'b1', 200),
+          'staff': ('Staff', 'admin', 'b1', 900),
+          'boss': ('Boss', 'super_admin', 'b1', 900),
+          'away': ('Away', 'architect', 'b2', 900),
+        };
+        for (final entry in people.entries) {
+          final (name, role, branch, points) = entry.value;
+          await db.collection('users').doc(entry.key).set({
+            'firstName': name,
+            'role': role,
+            'branchId': branch,
+            'totalPoints': points,
+          });
+        }
+        final summary = await BranchCelebrationService(
+          firestore: db,
+          session: _FakeSession(userId: 'i'),
+        ).loadCelebrationSummary('b1');
+        expect(summary.topThree.map((e) => e.name), ['Arun', 'Ezhil', 'Indu']);
+        expect(summary.currentUser!.name, 'Indu');
+        expect(summary.currentUser!.rank, 3);
+      },
+    );
+
+    Future<bool> enabledFor(String? role) async {
+      final db = FakeFirebaseFirestore();
+      await db.collection('branches').doc('b1').set({
+        'diwaliCelebrationEnabled': true,
+      });
+      return BranchCelebrationService(
+        firestore: db,
+        session: _FakeSession(role: role, branchId: 'b1'),
+      ).watchCurrentBranchEnabled().first;
+    }
+
+    for (final role in [
+      'carpenter',
+      'architect',
+      'engineer',
+      'interior_designer',
+    ]) {
+      test('$role gets the celebration', () async {
+        expect(await enabledFor(role), isTrue);
+      });
+    }
+
+    for (final role in ['admin', 'super_admin', null]) {
+      test('$role does not get the celebration', () async {
+        expect(await enabledFor(role), isFalse);
+      });
+    }
+
+    test('a switched-off branch shows it to nobody', () async {
+      final db = FakeFirebaseFirestore();
+      await db.collection('branches').doc('b1').set({
+        'diwaliCelebrationEnabled': false,
+      });
+      final enabled = await BranchCelebrationService(
+        firestore: db,
+        session: _FakeSession(role: 'architect', branchId: 'b1'),
+      ).watchCurrentBranchEnabled().first;
+      expect(enabled, isFalse);
+    });
+  });
 
   group('loadCelebrationSummary', () {
     test('returns only the top three, in order', () async {
@@ -118,6 +218,44 @@ void main() {
       expect(me.rewardAmount, 1000);
       expect(me.bonusAmount, 0);
       expect(me.isCurrentUser, isTrue);
+    });
+
+    test('the card gets a position and both parts of the name', () async {
+      final db = FakeFirebaseFirestore();
+      await db.collection('users').doc('me').set({
+        'firstName': 'Esha',
+        'lastName': 'Raman',
+        'role': 'carpenter',
+        'branchId': 'b1',
+        'totalPoints': 10,
+      });
+      await db.collection('users').doc('top').set({
+        'firstName': 'Asha',
+        'role': 'carpenter',
+        'branchId': 'b1',
+        'totalPoints': 50,
+      });
+      final me = (await BranchCelebrationService(
+        firestore: db,
+        session: _FakeSession(userId: 'me'),
+      ).loadCelebrationSummary('b1')).currentUser!;
+      expect(me.name, 'Esha Raman');
+      expect(me.rank, 2);
+    });
+
+    test('a Google account with only a display name shows it', () async {
+      final db = FakeFirebaseFirestore();
+      await db.collection('users').doc('me').set({
+        'displayName': 'Esha Raman',
+        'role': 'carpenter',
+        'branchId': 'b1',
+        'totalPoints': 10,
+      });
+      final me = (await BranchCelebrationService(
+        firestore: db,
+        session: _FakeSession(userId: 'me'),
+      ).loadCelebrationSummary('b1')).currentUser!;
+      expect(me.name, 'Esha Raman');
     });
 
     test('an account with no role saved is found', () async {
@@ -164,7 +302,51 @@ void main() {
       expect(find.text('Asha'), findsOneWidget);
       expect(find.text('Chitra'), findsOneWidget);
       expect(find.textContaining('Dinesh'), findsNothing);
-      expect(find.textContaining('Esha'), findsNothing);
+      await _finish(tester);
+    });
+
+    testWidgets('a long branch name is shown in full, not cut', (tester) async {
+      const name =
+          'Sri Balaji Plywood and Hardwares, 150 VCTV Main Road, Erode';
+      await _pumpDialog(
+        tester,
+        await load(tester, 'e'),
+        branchName: name,
+        size: const Size(320, 568),
+      );
+      final text = tester.widget<Text>(find.text(name));
+      expect(text.maxLines, isNull);
+      expect(text.overflow, isNot(TextOverflow.ellipsis));
+      expect(
+        tester.getSize(find.text(name)).height,
+        greaterThan(30),
+        reason: 'should wrap onto more than one line',
+      );
+      expect(tester.takeException(), isNull);
+      await _finish(tester);
+    });
+
+    testWidgets('my card shows my full name, points and position', (
+      tester,
+    ) async {
+      await _pumpDialog(
+        tester,
+        const BranchCelebrationSummary(
+          topThree: [
+            BranchCelebrationEntry(name: 'Asha', points: 500, rank: 1),
+          ],
+          currentUser: BranchCelebrationEntry(
+            name: 'Esha Kumar Raman',
+            points: 100,
+            rank: 42,
+            isCurrentUser: true,
+          ),
+        ),
+      );
+      expect(find.text('Esha Kumar Raman'), findsOneWidget);
+      expect(find.text('100.00'), findsOneWidget);
+      expect(find.text('#42'), findsOneWidget);
+      expect(find.text('Position'), findsOneWidget);
       await _finish(tester);
     });
 

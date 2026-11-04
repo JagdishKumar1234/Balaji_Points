@@ -12,7 +12,9 @@ import 'app_loader.dart';
 ///   secondary — surface fill, 1 px grey outline, brand ink label.
 ///   outline   — alias of secondary.
 ///   danger    — surface fill, red outline + red label (destructive).
-enum AppButtonVariant { primary, secondary, outline, gold, danger }
+///   strong    — solid navy (white in dark mode). A second action that has to
+///               stand out next to the gold one.
+enum AppButtonVariant { primary, secondary, outline, gold, danger, strong }
 
 class AppButton extends StatelessWidget {
   final String label;
@@ -91,6 +93,17 @@ class AppButton extends StatelessWidget {
     this.verticalPadding = 14,
   }) : variant = AppButtonVariant.danger;
 
+  const AppButton.strong({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.isLoading = false,
+    this.fullWidth = true,
+    this.width,
+    this.icon,
+    this.verticalPadding = 14,
+  }) : variant = AppButtonVariant.strong;
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -156,6 +169,8 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.primary:
       case AppButtonVariant.gold:
         return AppColors.gold;
+      case AppButtonVariant.strong:
+        return isDark ? AppColors.white : AppColors.primary;
       case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
       case AppButtonVariant.danger:
@@ -169,6 +184,8 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.primary:
       case AppButtonVariant.gold:
         return AppColors.primary;
+      case AppButtonVariant.strong:
+        return isDark ? AppColors.primary : AppColors.white;
       case AppButtonVariant.secondary:
       case AppButtonVariant.outline:
         return context.themeContentColor;

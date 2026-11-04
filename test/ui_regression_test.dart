@@ -58,6 +58,30 @@ void main() {
     expect(problems, isEmpty);
   });
 
+  test('the branch card is only on the two home screens', () {
+    final users = Directory('lib/presentation')
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where(
+          (file) =>
+              file.path.endsWith('.dart') &&
+              file.readAsStringSync().contains('BranchBanner('),
+        )
+        .map((file) => file.path.split('/').last)
+        .toSet();
+    expect(users, {
+      'branch_banner.dart',
+      'home_page.dart',
+      'admin_home_page.dart',
+    });
+    expect(
+      File(
+        'lib/presentation/screens/admin/admin_home_page.dart',
+      ).readAsStringSync(),
+      contains(RegExp(r'if \(_showDashboard\)\s+const BranchBanner\(')),
+    );
+  });
+
   test('spin status colours are readable together', () {
     double luminance(Color color) => color.computeLuminance();
     final text = luminance(AppColors.successText);

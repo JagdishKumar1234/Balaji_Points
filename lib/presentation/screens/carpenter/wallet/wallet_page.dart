@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,6 @@ import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
-import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 
 class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
@@ -69,7 +69,6 @@ class WalletPage extends ConsumerWidget {
               ),
             ],
           ),
-          const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -1329,119 +1328,7 @@ class _DesignBillCard extends StatelessWidget {
   }
 
   void _viewAttachmentModal(BuildContext context, String url) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) => Dialog(
-        backgroundColor: context.themeSurface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.billAttachment,
-                    style: AppTypography.h5(
-                      color: context.themeTextPrimary,
-                    ).copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: context.themeTextPrimary.withValues(alpha: 0.1),
-                        borderRadius: AppRadius.sm8,
-                      ),
-                      child: Icon(
-                        Icons.close_rounded,
-                        size: 20,
-                        color: context.themeTextPrimary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Image.network(
-                  url,
-                  fit: BoxFit.contain,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                            : null,
-                        color: context.themePrimary,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline_rounded,
-                            size: 48,
-                            color: context.themeError,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            AppLocalizations.of(context)!.failedToLoadImage,
-                            style: AppTypography.bodySmall(
-                              color: context.themeError,
-                            ).copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            error.toString(),
-                            style: AppTypography.labelSmall(
-                              color: context.themeError.withValues(alpha: 0.7),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: context.themeOnPrimary,
-                    backgroundColor: context.themePrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.close,
-                    style: AppTypography.bodySmall(
-                      color: AppColors.white,
-                    ).copyWith(fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    showFullScreenImage(context, url);
   }
 
   Color _getStatusColor(String status) {

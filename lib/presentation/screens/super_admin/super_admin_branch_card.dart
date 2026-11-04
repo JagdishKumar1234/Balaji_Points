@@ -123,8 +123,6 @@ class SuperAdminBranchCard extends StatelessWidget {
                     children: [
                       Text(
                         _title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.section(
                           color: context.themeTextPrimary,
                         ),
@@ -132,8 +130,6 @@ class SuperAdminBranchCard extends StatelessWidget {
                       if (shortName.isNotEmpty && shortName != name)
                         Text(
                           name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           style: AppTypography.caption(color: secondary),
                         ),
                     ],

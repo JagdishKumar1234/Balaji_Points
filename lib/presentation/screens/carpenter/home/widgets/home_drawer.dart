@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/providers/home_provider.dart';
+import 'package:balaji_points/presentation/widgets/carpenter/member_identity.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
+import 'package:balaji_points/providers/home_provider.dart';
 
 class HomeDrawer extends StatelessWidget {
   final HomeState homeState;
@@ -24,286 +26,278 @@ class HomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final mq = MediaQuery.of(context);
-    final topInset = mq.padding.top;
-    final drawerFooterBottom =
-        CarpenterShellLayout.chromeHeight(mq) + AppSpacing.sm;
-    final titleColor = isDark ? AppColors.white : context.themeTextPrimary;
-    final subtitleColor = isDark
-        ? AppColors.white.withValues(alpha: 0.80)
-        : context.themeTextPrimary.withValues(alpha: 0.70);
-
-    final phone = homeState.userData?['phone'] as String? ?? '';
-    final profileImage = homeState.profileImage;
-    final hasImg =
-        profileImage != null &&
-        (profileImage.startsWith('http://') ||
-            profileImage.startsWith('https://'));
     final l10n = AppLocalizations.of(context)!;
+    final footerBottom =
+        CarpenterShellLayout.chromeHeight(MediaQuery.of(context)) +
+        AppSpacing.sm;
 
-    final drawerBase = theme.colorScheme.surface;
+    void open(void Function() navigate) {
+      Navigator.of(context).pop();
+      navigate();
+    }
 
     return Drawer(
       elevation: 8,
-      child: SafeArea(
-        top: false,
-        child: Container(
-          decoration: BoxDecoration(color: drawerBase),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      backgroundColor: context.themeSurface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _DrawerHeader(homeState: homeState),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+              children: [
+                _SectionLabel(l10n.drawerSectionMainNav),
+                _NavTile(
+                  // This menu only opens from Home.
+                  selected: true,
+                  icon: Icons.home_rounded,
+                  label: l10n.home,
+                  onTap: () => Navigator.of(context).pop(),
+                ),
+                _NavTile(
+                  icon: Icons.account_balance_wallet_rounded,
+                  label: l10n.earn,
+                  onTap: () => open(() => context.go('/wallet')),
+                ),
+                _NavTile(
+                  icon: Icons.notifications_rounded,
+                  label: l10n.notifications,
+                  onTap: () => open(() => context.go('/notifications')),
+                ),
+                _NavTile(
+                  icon: Icons.person_rounded,
+                  label: l10n.profile,
+                  onTap: () => open(() => context.go('/profile')),
+                ),
+                const SizedBox(height: 8),
+                _SectionLabel(l10n.drawerSectionMore),
+                _NavTile(
+                  icon: Icons.info_rounded,
+                  label: l10n.aboutUs,
+                  subtitle: l10n.aboutUsMenuSubtitle,
+                  onTap: () => open(() => context.push('/about-us')),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, footerBottom),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AppButton(
+                  label: l10n.logout,
+                  onPressed: () => onLogout(context),
+                  variant: AppButtonVariant.danger,
+                  icon: Icons.logout_rounded,
+                ),
+                if (appVersion.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    appVersion,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.caption(
+                      color: context.themeTextSecondary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DrawerHeader extends StatelessWidget {
+  const _DrawerHeader({required this.homeState});
+
+  final HomeState homeState;
+
+  @override
+  Widget build(BuildContext context) {
+    final phone = homeState.userData?['phone'] as String? ?? '';
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        20 + MediaQuery.paddingOf(context).top,
+        20,
+        16,
+      ),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, AppColors.primaryLight],
+        ),
+        borderRadius: BorderRadius.only(bottomRight: Radius.circular(28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              // Header
-              Container(
-                padding: EdgeInsets.fromLTRB(20, 20 + topInset, 20, 20),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.primaryOnDark.withValues(alpha: 0.6)
-                      : context.themeSecondary.withValues(alpha: 0.15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.black.withValues(alpha: 0.15),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.white.withValues(alpha: 0.9),
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.black.withValues(alpha: 0.25),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: hasImg
-                            ? Image.network(
-                                profileImage,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => ColoredBox(
-                                  color: AppColors.white,
-                                  child: Icon(
-                                    Icons.person_rounded,
-                                    color: context.themePrimary,
-                                  ),
-                                ),
-                              )
-                            : ColoredBox(
-                                color: AppColors.white,
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  color: context.themePrimary,
-                                ),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.cardPadding),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            homeState.displayName,
-                            style: AppTypography.h5(color: AppColors.white),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          if (phone.isNotEmpty)
-                            Text(
-                              phone,
-                              style: AppTypography.bodySmall(
-                                color: AppColors.white.withValues(alpha: 0.85),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              MemberAvatar(
+                name: homeState.displayName,
+                imageUrl: homeState.profileImage,
+                size: 64,
               ),
-              const SizedBox(height: AppSpacing.xs),
-
-              // Nav items
+              const SizedBox(width: 14),
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  children: [
-                    _DrawerSectionLabel(
-                      label: l10n.drawerSectionMainNav,
-                      color: subtitleColor,
-                    ),
-                    _DrawerNavItem(
-                      icon: Icons.home_rounded,
-                      label: l10n.home,
-                      titleColor: titleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.go('/');
-                      },
-                    ),
-                    _DrawerNavItem(
-                      icon: Icons.account_balance_wallet_outlined,
-                      label: l10n.earn,
-                      titleColor: titleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.go('/wallet');
-                      },
-                    ),
-                    _DrawerNavItem(
-                      icon: Icons.notifications_outlined,
-                      label: l10n.notifications,
-                      titleColor: titleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.go('/notifications');
-                      },
-                    ),
-                    _DrawerNavItem(
-                      icon: Icons.person_outline_rounded,
-                      label: l10n.profile,
-                      titleColor: titleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.go('/profile');
-                      },
-                    ),
-                    Padding(
-                      padding: AppSpacing.screenHorizontal,
-                      child: Divider(
-                        height: 24,
-                        color: subtitleColor.withValues(alpha: 0.22),
-                      ),
-                    ),
-                    _DrawerSectionLabel(
-                      label: l10n.drawerSectionMore,
-                      color: subtitleColor,
-                    ),
-                    _DrawerNavItem(
-                      icon: Icons.info_outline_rounded,
-                      label: l10n.aboutUs,
-                      subtitle: l10n.aboutUsMenuSubtitle,
-                      titleColor: titleColor,
-                      subtitleColor: subtitleColor,
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        context.push('/about-us');
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              // Footer
-              Padding(
-                padding: AppSpacing.screenHorizontal,
-                child: const Divider(),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  AppSpacing.cardPadding,
-                  AppSpacing.sm,
-                  AppSpacing.cardPadding,
-                  drawerFooterBottom,
-                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (appVersion.isNotEmpty) ...[
-                      Center(
-                        child: Text(
-                          appVersion,
-                          style: AppTypography.labelSmall(
-                            color: context.themeTextSecondary.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
+                    Text(
+                      homeState.displayName,
+                      style: AppTypography.h5(color: AppColors.white),
+                    ),
+                    if (phone.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        phone,
+                        style: AppTypography.bodySmall(
+                          color: AppColors.onPrimaryMuted,
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.md),
                     ],
-                    AppButton(
-                      label: l10n.logout,
-                      onPressed: () => onLogout(context),
-                      variant: AppButtonVariant.danger,
-                      icon: Icons.logout_rounded,
-                      verticalPadding: 14,
-                    ),
+                    const SizedBox(height: 6),
+                    RoleTag(label: memberRoleName(context, homeState.userData)),
                   ],
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.white.withValues(alpha: 0.08),
+              borderRadius: AppRadius.md12,
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.stars_rounded,
+                  color: AppColors.gold,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    PointsUtils.formatPoints(homeState.points),
+                    style: AppTypography.labelLarge(
+                      color: AppColors.white,
+                    ).copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  homeState.tier,
+                  style: AppTypography.caption(color: AppColors.goldSoft),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 10, 8, 6),
+      child: Text(
+        label,
+        style: AppTypography.overline(color: context.themeTextSecondary),
+      ),
+    );
+  }
+}
+
+class _NavTile extends StatelessWidget {
+  const _NavTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.subtitle,
+    this.selected = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final String? subtitle;
+  final VoidCallback onTap;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedFill = isDark
+        ? AppColors.darkPendingSoft
+        : AppColors.goldSoft;
+    final iconFill = isDark ? AppColors.darkSoftSurface : AppColors.primarySoft;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Material(
+        color: selected ? selectedFill : AppColors.transparent,
+        borderRadius: AppRadius.md12,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: selected ? AppColors.primary : iconFill,
+                    borderRadius: AppRadius.md12,
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 20,
+                    color: selected
+                        ? AppColors.gold
+                        : context.themeContentColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: AppTypography.labelLarge(
+                          color: context.themeTextPrimary,
+                        ).copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      if (subtitle != null)
+                        Text(
+                          subtitle!,
+                          style: AppTypography.caption(
+                            color: context.themeTextSecondary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-
-class _DrawerSectionLabel extends StatelessWidget {
-  final String label;
-  final Color color;
-
-  const _DrawerSectionLabel({required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, AppSpacing.md, 20, AppSpacing.xs),
-      child: Text(label, style: AppTypography.overline(color: color)),
-    );
-  }
-}
-
-class _DrawerNavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String? subtitle;
-  final Color titleColor;
-  final Color? subtitleColor;
-  final VoidCallback onTap;
-
-  const _DrawerNavItem({
-    required this.icon,
-    required this.label,
-    required this.titleColor,
-    required this.onTap,
-    this.subtitle,
-    this.subtitleColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: context.themeSecondary),
-      title: Text(label, style: AppTypography.bodyMedium(color: titleColor)),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: AppTypography.bodySmall(
-                color: subtitleColor ?? titleColor.withValues(alpha: 0.65),
-              ),
-            )
-          : null,
-      onTap: onTap,
-    );
-  }
-}
-
-// Unused import guard
-// ignore: unused_element
-const _appTextRef = AppText;

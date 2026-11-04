@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -270,7 +271,7 @@ class HomeNotifier extends Notifier<HomeState> {
   }
 
   Future<List<CarpenterRank>> _fetchRanked() async {
-    // Leaderboard is per branch: carpenters compete within their own store.
+    // Leaderboard is per branch: all member roles compete within their store.
     final branchId = await CurrentBranchService().resolveBranchId();
     final qs = branchId == null
         ? await _firestore.collection('users').get()
@@ -283,9 +284,7 @@ class HomeNotifier extends Notifier<HomeState> {
     final carpenters = <CarpenterRank>[];
     for (final doc in qs.docs) {
       final d = doc.data();
-      final role = d['role'] as String?;
-      if (role == 'admin') continue;
-      if (role != null && role.isNotEmpty && role != 'carpenter') continue;
+      if (!AppConstants.isMemberRole(d['role'] as String?)) continue;
 
       final fn = (d['firstName'] as String? ?? '').trim();
       final ln = (d['lastName'] as String? ?? '').trim();
@@ -293,7 +292,7 @@ class HomeNotifier extends Notifier<HomeState> {
 
       carpenters.add(CarpenterRank(
         rank: 0,
-        name: name.isEmpty ? 'Carpenter' : name,
+        name: name.isEmpty ? 'Member' : name,
         points: _asInt(d['totalPoints']),
         imageUrl: d['profileImage'] as String?,
         userId: doc.id,

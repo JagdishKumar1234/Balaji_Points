@@ -8,7 +8,6 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
-import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 
 /// Carpenter-facing About screen — copy is store-agnostic for multi-tenant SaaS.
 class AboutUsPage extends StatelessWidget {
@@ -49,7 +48,6 @@ class AboutUsPage extends StatelessWidget {
             showProfileButton: false,
             showBackButton: true,
           ),
-          const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, scrollBottomPadding),

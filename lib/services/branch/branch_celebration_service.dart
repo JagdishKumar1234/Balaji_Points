@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
@@ -41,7 +42,7 @@ class BranchCelebrationEntry {
 }
 
 /// What the Diwali popup may show. It deliberately holds only the top three and
-/// the logged-in carpenter: never the rest of the branch or any phone number.
+/// the logged-in member: never the rest of the branch or any phone number.
 class BranchCelebrationSummary {
   const BranchCelebrationSummary({
     required this.topThree,
@@ -50,7 +51,7 @@ class BranchCelebrationSummary {
 
   final List<BranchCelebrationEntry> topThree;
 
-  /// Null when the logged-in user is not a carpenter in this branch.
+  /// Null when the logged-in user is not a member in this branch.
   final BranchCelebrationEntry? currentUser;
 }
 
@@ -72,8 +73,8 @@ class BranchCelebrationService {
   Future<String?> getCurrentBranchId() => _resolveCurrentBranchId();
 
   Stream<bool> watchCurrentBranchEnabled() async* {
-    final role = (await _session.getUserRole())?.toLowerCase();
-    if (role != 'carpenter') {
+    final role = await _session.getUserRole();
+    if (role == null || !AppConstants.isMemberRole(role)) {
       yield false;
       return;
     }
@@ -129,8 +130,8 @@ class BranchCelebrationService {
         .get();
     final memberDocs = users.docs.where((doc) {
       final data = doc.data();
-      final role = (data['role'] as String? ?? 'carpenter').toLowerCase();
-      return role == 'carpenter' && data['status'] != 'deleted';
+      return AppConstants.isMemberRole(data['role'] as String?) &&
+          data['status'] != 'deleted';
     }).toList();
 
     final pointsSnapshot = await _firestore
@@ -161,12 +162,17 @@ class BranchCelebrationService {
           : PointsUtils.resolveTotalPoints(pointsData);
       final firstName = (data['firstName'] as String? ?? '').trim();
       final lastName = (data['lastName'] as String? ?? '').trim();
-      final fullName = '$firstName $lastName'.trim();
+      final savedName = '$firstName $lastName'.trim();
+      // Google accounts may only have a display name.
+      final fullName = savedName.isNotEmpty
+          ? savedName
+          : (data['displayName'] as String? ?? data['name'] as String? ?? '')
+                .trim();
       rows.add((
         id: userDoc.id,
         uid: uid,
         phone: phone,
-        name: fullName.isEmpty ? 'Carpenter' : fullName,
+        name: fullName.isEmpty ? 'Member' : fullName,
         points: resolvedPoints,
       ));
     }

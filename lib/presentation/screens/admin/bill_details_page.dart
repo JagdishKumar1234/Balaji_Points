@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -138,7 +139,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom( foregroundColor: AppColors.white,backgroundColor: AppColors.success),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: AppColors.white,
+              backgroundColor: AppColors.success,
+            ),
             child: Text(AppLocalizations.of(context)!.approve),
           ),
         ],
@@ -195,7 +199,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom( foregroundColor: AppColors.white,backgroundColor: AppColors.error),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: AppColors.white,
+              backgroundColor: AppColors.error,
+            ),
             child: Text(AppLocalizations.of(context)!.reject),
           ),
         ],
@@ -237,44 +244,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
   void _viewFullImage() {
     final imageUrl = _billData!['imageUrl'] as String?;
     if (imageUrl == null || imageUrl.isEmpty) return;
-
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: AppColors.black.withValues(alpha: 0.87),
-        child: Stack(
-          children: [
-            Center(
-              child: InteractiveViewer(
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => Center(
-                    child: Icon(
-                      Icons.error_rounded,
-                      color: context.themeError,
-                      size: 60,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 20,
-              right: 20,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.close_rounded,
-                  color: AppColors.white,
-                  size: 30,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    showFullScreenImage(context, imageUrl);
   }
 
   @override

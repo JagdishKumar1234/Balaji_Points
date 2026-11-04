@@ -364,6 +364,9 @@ class _PINSetupPageState extends ConsumerState<PINSetupPage> {
                               AppTextField.pin(
                                 controller: _confirmPinController,
                                 label: l10n.confirmPin,
+                                hint: AppLocalizations.of(
+                                  context,
+                                )!.hintConfirmPin,
                                 validator: (v) {
                                   if (v == null || v.length != 4) {
                                     return l10n.enter4Digits;

@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -203,7 +204,7 @@ class _CarpenterProfileDetailScreenState
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.newPinLabel,
-                  hintText: '0000',
+                  hintText: AppLocalizations.of(context)!.hintPin,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -217,7 +218,7 @@ class _CarpenterProfileDetailScreenState
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.confirmPin,
-                  hintText: '0000',
+                  hintText: AppLocalizations.of(context)!.hintConfirmPin,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -995,6 +996,7 @@ class _CarpenterProfileDetailScreenState
                 controller: firstNameController,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.firstName,
+                  hintText: AppLocalizations.of(context)!.enterFirstName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1005,6 +1007,7 @@ class _CarpenterProfileDetailScreenState
                 controller: lastNameController,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.lastName,
+                  hintText: AppLocalizations.of(context)!.enterLastName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1015,6 +1018,7 @@ class _CarpenterProfileDetailScreenState
                 controller: phoneController,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.phoneNumber,
+                  hintText: AppLocalizations.of(context)!.hintPhone,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1029,6 +1033,7 @@ class _CarpenterProfileDetailScreenState
                 controller: branchIdController,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.branchId,
+                  hintText: AppLocalizations.of(context)!.hintBranchId,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1350,21 +1355,24 @@ class _CarpenterProfileDetailScreenState
             Row(
               children: [
                 if (imageUrl.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      imageUrl,
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                  GestureDetector(
+                    onTap: () => showFullScreenImage(context, imageUrl),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.network(
+                        imageUrl,
                         width: 60,
                         height: 60,
-                        color: context.themeBackground,
-                        child: Icon(
-                          Icons.receipt_rounded,
-                          size: 24,
-                          color: context.themeTextSecondary,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 60,
+                          height: 60,
+                          color: context.themeBackground,
+                          child: Icon(
+                            Icons.receipt_rounded,
+                            size: 24,
+                            color: context.themeTextSecondary,
+                          ),
                         ),
                       ),
                     ),
@@ -1782,21 +1790,24 @@ class _CarpenterProfileDetailScreenState
         child: Row(
           children: [
             if (imageUrl.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Image.network(
-                  imageUrl,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+              GestureDetector(
+                onTap: () => showFullScreenImage(context, imageUrl),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.network(
+                    imageUrl,
                     width: 60,
                     height: 60,
-                    color: context.themeBackground,
-                    child: Icon(
-                      Icons.receipt_rounded,
-                      size: 24,
-                      color: context.themeTextSecondary,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 60,
+                      height: 60,
+                      color: context.themeBackground,
+                      child: Icon(
+                        Icons.receipt_rounded,
+                        size: 24,
+                        color: context.themeTextSecondary,
+                      ),
                     ),
                   ),
                 ),

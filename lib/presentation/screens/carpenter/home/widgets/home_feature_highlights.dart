@@ -6,81 +6,119 @@ import 'package:go_router/go_router.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 
+/// The screen's main action: add a bill to earn points.
+class HomeAddBillCard extends StatelessWidget {
+  const HomeAddBillCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Material(
+        color: AppColors.gold,
+        borderRadius: AppRadius.all16,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => context.push('/add-bill'),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: AppRadius.md12,
+                  ),
+                  child: const Icon(
+                    Icons.receipt_long_rounded,
+                    color: AppColors.gold,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.addBill,
+                        style: AppTypography.h5(color: AppColors.primary),
+                      ),
+                      Text(
+                        l10n.featureEarnBody.replaceAll('\n', ' · '),
+                        style: AppTypography.bodySmall(
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  color: AppColors.primary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _FeatureHighlight {
   final IconData icon;
   final String label;
   final String sublabel;
-  final Color iconColor;
-  final VoidCallback onTap;
 
   const _FeatureHighlight({
     required this.icon,
     required this.label,
     required this.sublabel,
-    required this.iconColor,
-    required this.onTap,
   });
 }
 
 class HomeFeatureHighlights extends StatelessWidget {
-  const HomeFeatureHighlights({super.key, this.showAddBill = true});
-
-  final bool showAddBill;
+  const HomeFeatureHighlights({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = context.themeSurface;
-
+    final l10n = AppLocalizations.of(context)!;
     final features = [
-      if (showAddBill)
-        _FeatureHighlight(
-          icon: Icons.receipt_long_rounded,
-          label: AppLocalizations.of(context)!.featureEarnMore,
-          sublabel: AppLocalizations.of(context)!.featureEarnBody,
-          iconColor: AppColors.warning,
-          onTap: () => context.push('/add-bill'),
-        ),
       _FeatureHighlight(
         icon: Icons.redeem_rounded,
-        label: AppLocalizations.of(context)!.featureRedeemMore,
-        sublabel: AppLocalizations.of(context)!.featureRedeemBody,
-        iconColor: AppColors.tierPlatinum,
-        onTap: () => context.push('/notifications'),
+        label: l10n.featureRedeemMore,
+        sublabel: l10n.featureRedeemBody,
       ),
       _FeatureHighlight(
         icon: Icons.leaderboard_rounded,
-        label: AppLocalizations.of(context)!.featureGrowMore,
-        sublabel: AppLocalizations.of(context)!.featureGrowBody,
-        iconColor: AppColors.warning,
-        onTap: () => context.push('/notifications'),
+        label: l10n.featureGrowMore,
+        sublabel: l10n.featureGrowBody,
       ),
       _FeatureHighlight(
         icon: Icons.workspace_premium_rounded,
-        label: AppLocalizations.of(context)!.featureExclusive,
-        sublabel: AppLocalizations.of(context)!.featureExclusiveBody,
-        iconColor: AppColors.primaryOnDark,
-        onTap: () => context.push('/notifications'),
+        label: l10n.featureExclusive,
+        sublabel: l10n.featureExclusiveBody,
       ),
     ];
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
       decoration: BoxDecoration(
-        color: cardColor,
+        color: context.themeCard,
         borderRadius: AppRadius.all16,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: isDark ? 0.25 : 0.07),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: context.themeBorder),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: features.map((f) => _FeatureHighlightItem(f)).toList(),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final feature in features)
+            Expanded(child: _FeatureHighlightItem(feature)),
+        ],
       ),
     );
   }
@@ -93,39 +131,33 @@ class _FeatureHighlightItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: feature.onTap,
-      child: SizedBox(
-        width: 72,
+    return InkWell(
+      borderRadius: AppRadius.md12,
+      onTap: () => context.push('/notifications'),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
+              width: 46,
+              height: 46,
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: feature.iconColor.withValues(alpha: 0.12),
-                border: Border.all(
-                  color: feature.iconColor.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
+                color: AppColors.primary,
               ),
-              child: Icon(feature.icon, size: 24, color: feature.iconColor),
+              child: Icon(feature.icon, size: 22, color: AppColors.gold),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               feature.label,
-              style: AppTypography.overline(color: feature.iconColor),
+              style: AppTypography.overline(color: context.themeContentColor),
               textAlign: TextAlign.center,
-              maxLines: 1,
             ),
             const SizedBox(height: 2),
             Text(
               feature.sublabel,
               style: AppTypography.caption(color: context.themeTextSecondary),
               textAlign: TextAlign.center,
-              maxLines: 2,
             ),
           ],
         ),

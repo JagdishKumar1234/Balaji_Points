@@ -1,6 +1,10 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/utils/points_utils.dart';
+import 'package:balaji_points/presentation/widgets/carpenter/member_identity.dart';
 import 'package:flutter/material.dart';
 
+/// Podium for the top three: second, first, third.
 class TopCarpentersDisplay extends StatelessWidget {
   final List<CarpenterRank> topCarpenters;
   final CarpenterRank? currentUser;
@@ -11,166 +15,107 @@ class TopCarpentersDisplay extends StatelessWidget {
     this.currentUser,
   });
 
-  /// Get initials from name (e.g., "Ramesh Kumar" -> "RK")
-  String _getInitials(String name) {
-    final parts = name.trim().split(' ');
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) {
-      return parts[0].isNotEmpty ? parts[0][0].toUpperCase() : '?';
-    }
-    final firstInitial = parts[0].isNotEmpty ? parts[0][0] : '';
-    final lastInitial = parts[parts.length - 1].isNotEmpty
-        ? parts[parts.length - 1][0]
-        : '';
-    return (firstInitial + lastInitial).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     if (topCarpenters.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    final top10 = topCarpenters.take(10).toList();
-    final top3 = top10.take(3).toList();
+    final top3 = topCarpenters.take(3).toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // Podium Display - Top 3
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            // Rank 2 - Left
-            if (top3.length > 1) _buildPodiumCard(context, top3[1], 2),
-
-            // Rank 1 - Center (tallest)
-            if (top3.isNotEmpty) _buildPodiumCard(context, top3[0], 1),
-
-            // Rank 3 - Right
-            if (top3.length > 2) _buildPodiumCard(context, top3[2], 3),
-          ],
-        ),
+        if (top3.length > 1) _buildPodiumCard(context, top3[1], 2),
+        if (top3.isNotEmpty) _buildPodiumCard(context, top3[0], 1),
+        if (top3.length > 2) _buildPodiumCard(context, top3[2], 3),
       ],
     );
   }
 
-  // Podium card for top 3
-  Widget _buildPodiumCard(BuildContext context, CarpenterRank carpenter, int rank) {
-    Color trophyColor;
-    double podiumHeight;
-
-    switch (rank) {
-      case 1:
-        trophyColor = AppColors.warning;
-        podiumHeight = 120;
-        break;
-      case 2:
-        trophyColor = context.themeTextMuted;
-        podiumHeight = 100;
-        break;
-      default:
-        trophyColor = context.themeSecondary;
-        podiumHeight = 80;
-    }
+  Widget _buildPodiumCard(
+    BuildContext context,
+    CarpenterRank member,
+    int rank,
+  ) {
+    final (trophyColor, podiumHeight) = switch (rank) {
+      1 => (AppColors.tierGold, 72.0),
+      2 => (AppColors.tierSilver, 54.0),
+      _ => (AppColors.tierBronze, 40.0),
+    };
 
     final isCurrentUser =
-        currentUser != null && carpenter.userId == currentUser!.userId;
+        currentUser != null && member.userId == currentUser!.userId;
 
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Trophy icon and rank
-          Icon(
-            Icons.emoji_events_rounded,
-            size: rank == 1 ? 50 : 40,
-            color: trophyColor,
-          ),
-          const SizedBox(height: 4),
-
-          // Initials only (no profile images)
-          CircleAvatar(
-            radius: rank == 1 ? 35 : 30,
-            backgroundColor: isCurrentUser
-                ? AppColors.white
-                : trophyColor.withValues(alpha: 0.2),
-            child: Text(
-              _getInitials(carpenter.name),
-              style: TextStyle(
-                fontSize: rank == 1 ? 20 : 16,
-                fontWeight: FontWeight.bold,
-                color: trophyColor,
-              ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.emoji_events_rounded,
+              size: rank == 1 ? 34 : 28,
+              color: trophyColor,
             ),
-          ),
-          const SizedBox(height: 8),
-
-          // Name
-          Text(
-            carpenter.name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: rank == 1 ? 14 : 12,
-              fontWeight: FontWeight.bold,
-              color: isCurrentUser ? context.themePrimary : context.themeTextPrimary,
+            const SizedBox(height: 4),
+            // Initials only: this podium shows other people, so no photos.
+            MemberAvatar(name: member.name, size: rank == 1 ? 60 : 50),
+            const SizedBox(height: 6),
+            Text(
+              member.name,
+              textAlign: TextAlign.center,
+              style: AppTypography.labelMedium(
+                color: isCurrentUser
+                    ? context.themeContentColor
+                    : context.themeTextPrimary,
+              ).copyWith(fontWeight: FontWeight.w700),
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-
-          // Points
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.monetization_on_rounded, color: trophyColor, size: 16),
-              const SizedBox(width: 2),
-              Text(
-                _formatPoints(carpenter.points),
-                style: TextStyle(
-                  fontSize: rank == 1 ? 14 : 12,
-                  fontWeight: FontWeight.bold,
-                  color: trophyColor,
+            const SizedBox(height: 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.stars_rounded,
+                  color: AppColors.gold,
+                  size: 14,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          // Podium
-          Container(
-            height: podiumHeight,
-            decoration: BoxDecoration(
-              color: trophyColor.withValues(alpha: 0.7),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(8),
-              ),
-              border: Border.all(color: trophyColor, width: 2),
+                const SizedBox(width: 3),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      PointsUtils.formatPoints(member.points),
+                      maxLines: 1,
+                      style: AppTypography.bodySmall(
+                        color: context.themeTextSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            child: Center(
+            const SizedBox(height: 6),
+            Container(
+              height: podiumHeight,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [AppColors.primaryLight, AppColors.primary],
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+              ),
               child: Text(
                 '#$rank',
-                style: TextStyle(
-                  fontSize: rank == 1 ? 32 : 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.white,
-                ),
+                style: AppTypography.h4(color: AppColors.gold),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
-  }
-
-  // List item for all ranks 1-10
-  String _formatPoints(int points) {
-    if (points >= 1000) {
-      return '${(points / 1000).toStringAsFixed(1)}K';
-    }
-    return points.toString();
   }
 }
 

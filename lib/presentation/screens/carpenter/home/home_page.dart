@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:async';
 import 'dart:math';
@@ -237,7 +238,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final currentPath = GoRouterState.of(context).uri.path;
     if (!homeState.loading &&
         currentPath == '/' &&
-        userRole == 'carpenter' &&
+        AppConstants.isMemberRole(userRole) &&
         celebrationEnabled &&
         !_celebrationShownThisEntry &&
         !ref.read(celebrationPopupShownProvider)) {
@@ -364,7 +365,10 @@ class _HomePageState extends ConsumerState<HomePage>
                       child: showHeroLoading
                           ? const HomeHeroCardShimmer()
                           : HomeHeroCard(homeState: displayHomeState),
-                    ).fadeIn(),
+                    ),
+
+                    // Hidden while the branch's Diwali celebration is on.
+                    if (!celebrationEnabled) const HomeAddBillCard(),
 
                     const SizedBox(height: AppSpacing.md),
 
@@ -379,16 +383,16 @@ class _HomePageState extends ConsumerState<HomePage>
                             color: context.themeTextPrimary,
                           ),
                         ),
-                      ).fadeIn(delay: AppAnimations.stagger(2)),
+                      ),
                       const SizedBox(height: AppSpacing.sm),
                       RepaintBoundary(
                         child: homeState.offersLoading
                             ? const SizedBox(
-                                height: 220,
+                                height: 260,
                                 child: ShimmerOfferCard(),
                               )
                             : OffersCarousel(offers: homeState.offers),
-                      ).fadeIn(delay: AppAnimations.stagger(2)),
+                      ),
                       const SizedBox(height: AppSpacing.md),
                     ],
 
@@ -409,14 +413,12 @@ class _HomePageState extends ConsumerState<HomePage>
                               homeState.greeting!.id,
                             );
                           },
-                        ).fadeIn(delay: AppAnimations.stagger(3)),
+                        ),
                         const SizedBox(height: AppSpacing.md),
                       ],
 
                     // Today's Winner — standalone card
-                    RepaintBoundary(
-                      child: const HomeTodaysWinnerCard(),
-                    ).enterCard(delay: AppAnimations.stagger(4)),
+                    RepaintBoundary(child: const HomeTodaysWinnerCard()),
 
                     if (homeState.topCarpenters.isNotEmpty)
                       const SizedBox(height: AppSpacing.md),
@@ -424,7 +426,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     // Your Position — standalone card
                     RepaintBoundary(
                       child: HomeYourPositionCard(homeState: displayHomeState),
-                    ).enterCard(delay: AppAnimations.stagger(5)),
+                    ),
 
                     if (homeState.userRank != null)
                       const SizedBox(height: AppSpacing.md),
@@ -432,16 +434,12 @@ class _HomePageState extends ConsumerState<HomePage>
                     // Top Carpenters podium + top-10 list
                     RepaintBoundary(
                       child: HomeTopCarpenters(homeState: homeState),
-                    ).enterCard(delay: AppAnimations.stagger(6)),
+                    ),
 
                     const SizedBox(height: AppSpacing.md),
 
                     // Feature highlights
-                    RepaintBoundary(
-                      child: HomeFeatureHighlights(
-                        showAddBill: !celebrationEnabled,
-                      ),
-                    ).enterCard(delay: AppAnimations.stagger(7)),
+                    RepaintBoundary(child: const HomeFeatureHighlights()),
 
                     const SizedBox(height: AppSpacing.sectionGap),
                   ],
@@ -530,10 +528,8 @@ class _HomePageState extends ConsumerState<HomePage>
     await showDialog<void>(
       context: context,
       barrierDismissible: true,
-      builder: (_) => DiwaliCelebrationDialog(
-        branchName: branchName,
-        summary: summary,
-      ),
+      builder: (_) =>
+          DiwaliCelebrationDialog(branchName: branchName, summary: summary),
     );
   }
 }

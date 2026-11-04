@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 import 'dart:math' as math;
 
 import 'package:balaji_points/core/constants/app_constants.dart';
@@ -6,16 +7,12 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
-import 'package:balaji_points/core/utils/back_button_handler.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
-import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
 import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
 import 'package:balaji_points/providers/auth_provider.dart';
-import 'package:balaji_points/providers/locale_provider.dart';
-import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:flutter/material.dart';
@@ -125,11 +122,6 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
     if (!hasPin) _showSnack(l10n.noAccountFound, isError: true);
   }
 
-  bool _hasPinData() =>
-      _pinController.text.isNotEmpty ||
-      _confirmPinController.text.isNotEmpty ||
-      _currentPinController.text.isNotEmpty;
-
   void _showSnack(String msg, {bool isError = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -210,7 +202,6 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -230,412 +221,266 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
         ref.watch(authProvider) is ResetPinLoading || _isForgotSaving;
     final canSubmit = _phoneChecked && _phoneExists;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (!didPop) {
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
-            return;
-          }
-          if (_hasPinData()) {
-            final shouldDiscard = await BackButtonHandler.showDiscardDialog(
-              context,
-            );
-            if (shouldDiscard == true && mounted) {
-              _pinController.clear();
-              _confirmPinController.clear();
-              _currentPinController.clear();
-            }
-          } else {
-            context.pop();
-          }
-        }
-      },
-      child: Scaffold(
-        backgroundColor: AppColors.transparent,
-        body: Stack(
-          fit: StackFit.expand,
+    return AuthScaffold(
+      fallbackRoute: _isLoggedIn ? '/' : '/login',
+      child: Form(
+        key: _formKey,
+        child: Column(
           children: [
-            AuthBackground(isDark: isDark),
-            SafeArea(
-              bottom: false,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(bottom: bottomInset + AppSpacing.xl),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      // ── Top Controls ──
-                      AuthTopControls(
-                        themeToggle: _ThemeToggleButton(
-                          isDark: isDark,
-                        ).fadeIn(delay: AppAnimations.stagger(0)),
-                        languagePicker: _LanguagePicker().fadeIn(
-                          delay: AppAnimations.stagger(0),
+            ProfessionalAuthCard(
+              isDark: isDark,
+              securityMessage: AppLocalizations.of(
+                context,
+              )!.yourDataIs100SecureWith,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Title
+                  Text(
+                    l10n.resetPinTitle,
+                    style: AppTypography.displaySmall(
+                      color: context.themeTextPrimary,
+                    ).copyWith(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ).fadeIn(delay: AppAnimations.stagger(2)),
+                  const SizedBox(height: 8),
+
+                  // Subtitle
+                  Text(
+                    l10n.resetPinSubtitle,
+                    style: AppTypography.bodyMedium(
+                      color: context.themeTextSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ).fadeIn(delay: AppAnimations.stagger(3)),
+
+                  const SizedBox(height: AppSpacing.xl3),
+
+                  // Phone field
+                  AppTextField.phone(
+                    controller: _phoneController,
+                    label: l10n.mobileNumber,
+                    enabled: !_isLoggedIn,
+                  ).fadeIn(delay: AppAnimations.stagger(4)),
+
+                  const SizedBox(height: AppSpacing.xl2),
+
+                  // Check number button (only for non-logged-in)
+                  if (!_isLoggedIn)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: AppButton(
+                        label: _phoneChecked && _phoneExists
+                            ? l10n.verified
+                            : l10n.checkNumber,
+                        onPressed: _isCheckingPhone ? null : _checkPhone,
+                        isLoading: _isCheckingPhone,
+                        variant: _phoneChecked && _phoneExists
+                            ? AppButtonVariant.outline
+                            : AppButtonVariant.primary,
+                        fullWidth: false,
+                        icon: _phoneChecked && _phoneExists
+                            ? Icons.check_circle_rounded
+                            : Icons.search_rounded,
+                        verticalPadding: 10,
+                      ).fadeIn(delay: AppAnimations.stagger(5)),
+                    ),
+
+                  // Verified badge for logged-in user
+                  if (_isLoggedIn && _loggedInPhone != null)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
                         ),
-                      ),
-
-                      const SizedBox(height: AppSpacing.lg),
-
-                      // ── Professional Auth Card with Back Button ──
-                      Stack(
-                        children: [
-                          ProfessionalAuthCard(
-                            isDark: isDark,
-                            securityMessage: AppLocalizations.of(
-                              context,
-                            )!.yourDataIs100SecureWith,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                // Logo
-                                Center(
-                                  child: Container(
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: isDark
-                                          ? context.themePrimary.withValues(
-                                              alpha: 0.3,
-                                            )
-                                          : context.themePrimary,
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: Image.asset(
-                                        'assets/images/balaji_point_logo.png',
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) =>
-                                            const Icon(
-                                              Icons.home_rounded,
-                                              color: Colors.white,
-                                              size: 40,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                ).enterHero(delay: AppAnimations.stagger(1)),
-                                const SizedBox(height: AppSpacing.lg),
-
-                                // Title
-                                Text(
-                                  l10n.resetPinTitle,
-                                  style: AppTypography.displaySmall(
-                                    color: context.themeTextPrimary,
-                                  ).copyWith(fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.center,
-                                ).fadeIn(delay: AppAnimations.stagger(2)),
-                                const SizedBox(height: 8),
-
-                                // Subtitle
-                                Text(
-                                  l10n.resetPinSubtitle,
-                                  style: AppTypography.bodyMedium(
-                                    color: context.themeTextSecondary,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ).fadeIn(delay: AppAnimations.stagger(3)),
-
-                                const SizedBox(height: AppSpacing.xl3),
-
-                                // Phone field
-                                AppTextField.phone(
-                                  controller: _phoneController,
-                                  label: l10n.mobileNumber,
-                                  enabled: !_isLoggedIn,
-                                ).fadeIn(delay: AppAnimations.stagger(4)),
-
-                                const SizedBox(height: AppSpacing.xl2),
-
-                                // Check number button (only for non-logged-in)
-                                if (!_isLoggedIn)
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: AppButton(
-                                      label: _phoneChecked && _phoneExists
-                                          ? l10n.verified
-                                          : l10n.checkNumber,
-                                      onPressed: _isCheckingPhone
-                                          ? null
-                                          : _checkPhone,
-                                      isLoading: _isCheckingPhone,
-                                      variant: _phoneChecked && _phoneExists
-                                          ? AppButtonVariant.outline
-                                          : AppButtonVariant.primary,
-                                      fullWidth: false,
-                                      icon: _phoneChecked && _phoneExists
-                                          ? Icons.check_circle_rounded
-                                          : Icons.search_rounded,
-                                      verticalPadding: 10,
-                                    ).fadeIn(delay: AppAnimations.stagger(5)),
-                                  ),
-
-                                // Verified badge for logged-in user
-                                if (_isLoggedIn && _loggedInPhone != null)
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.success.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        borderRadius: AppRadius.sm8,
-                                        border: Border.all(
-                                          color: AppColors.success,
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.check_circle_rounded,
-                                            size: 16,
-                                            color: AppColors.success,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            l10n.verified,
-                                            style: AppTypography.labelSmall(
-                                              color: AppColors.success,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ).fadeIn(delay: AppAnimations.stagger(5)),
-                                  ),
-
-                                if (!_isLoggedIn ||
-                                    _isLoggedIn && _loggedInPhone != null)
-                                  const SizedBox(height: AppSpacing.xl2),
-
-                                // ── Current PIN (logged-in change flow) ──────
-                                if (_isLoggedIn) ...[
-                                  AppTextField.pin(
-                                    controller: _currentPinController,
-                                    label: l10n.currentPinLabel,
-                                    validator: (v) {
-                                      final val = v?.trim() ?? '';
-                                      if (val.length != 4 ||
-                                          !RegExp(r'^[0-9]+$').hasMatch(val)) {
-                                        return l10n.enter4Digits;
-                                      }
-                                      return null;
-                                    },
-                                  ).fadeIn(delay: AppAnimations.stagger(6)),
-                                  const SizedBox(height: AppSpacing.xl2),
-
-                                  // Forgot PIN info box
-                                  AppCard(
-                                    padding: const EdgeInsets.all(16),
-                                    showShadow: false,
-                                    color: context.themePrimary.withValues(
-                                      alpha: 0.05,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.help_outline_rounded,
-                                              size: 18,
-                                              color: context.themePrimary,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              l10n.forgotCurrentPin,
-                                              style: AppTypography.labelSmall(
-                                                color: context.themePrimary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          l10n.forgotPinHelp,
-                                          style: AppTypography.bodySmall(
-                                            color: context.themeTextSecondary,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-
-                                        // Admin support contacts
-                                        AppCard(
-                                          padding: const EdgeInsets.all(12),
-                                          showShadow: false,
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.support_agent_rounded,
-                                                    size: 18,
-                                                    color:
-                                                        context.themeSecondary,
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    l10n.adminSupportInfo,
-                                                    style:
-                                                        AppTypography.labelSmall(
-                                                          color: context
-                                                              .themeSecondary,
-                                                        ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-                                              _supportPhoneRow(
-                                                phone:
-                                                    AppConstants.supportPhone1,
-                                                label: l10n.supportPhone1,
-                                                color: AppColors.success,
-                                                icon:
-                                                    Icons.phone_android_rounded,
-                                              ),
-                                              const SizedBox(height: 8),
-                                              _supportPhoneRow(
-                                                phone:
-                                                    AppConstants.supportPhone2,
-                                                label: l10n.supportPhone2,
-                                                color: context.themePrimary,
-                                                icon: Icons.phone_rounded,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ).fadeIn(delay: AppAnimations.stagger(7)),
-                                  const SizedBox(height: AppSpacing.xl2),
-                                ],
-
-                                // ── New PIN ──────────────────────────────────
-                                AppTextField.pin(
-                                  controller: _pinController,
-                                  label: l10n.newPinLabel,
-                                  validator: (v) {
-                                    final val = v?.trim() ?? '';
-                                    if (val.length != 4 ||
-                                        !RegExp(r'^[0-9]+$').hasMatch(val)) {
-                                      return l10n.enter4Digits;
-                                    }
-                                    return null;
-                                  },
-                                ).fadeIn(
-                                  delay: AppAnimations.stagger(
-                                    _isLoggedIn ? 8 : 6,
-                                  ),
-                                ),
-
-                                const SizedBox(height: AppSpacing.xl2),
-
-                                // ── Confirm PIN ──────────────────────────────
-                                AppTextField.pin(
-                                  controller: _confirmPinController,
-                                  label: l10n.confirmPin,
-                                  validator: (v) {
-                                    final val = v?.trim() ?? '';
-                                    if (val.length != 4 ||
-                                        !RegExp(r'^[0-9]+$').hasMatch(val)) {
-                                      return l10n.enter4Digits;
-                                    }
-                                    if (val != _pinController.text.trim()) {
-                                      return l10n.pinsDoNotMatch;
-                                    }
-                                    return null;
-                                  },
-                                ).fadeIn(
-                                  delay: AppAnimations.stagger(
-                                    _isLoggedIn ? 9 : 7,
-                                  ),
-                                ),
-
-                                const SizedBox(height: AppSpacing.xl2),
-
-                                // ── Reset PIN button ─────────────────────────
-                                AppButton.secondary(
-                                  label: l10n.resetPin,
-                                  onPressed: (isSaving || !canSubmit)
-                                      ? null
-                                      : _saveNewPin,
-                                  isLoading: isSaving,
-                                ).fadeIn(
-                                  delay: AppAnimations.stagger(
-                                    _isLoggedIn ? 10 : 8,
-                                  ),
-                                ),
-
-                                if (!_isLoggedIn && !canSubmit) ...[
-                                  const SizedBox(height: AppSpacing.md),
-                                  Text(
-                                    l10n.pleaseVerifyMobile,
-                                    textAlign: TextAlign.center,
-                                    style: AppTypography.bodySmall(
-                                      color: context.themeTextSecondary,
-                                    ),
-                                  ).fadeIn(delay: AppAnimations.stagger(9)),
-                                ],
-                              ],
-                            ),
-                          ).enterCard(
-                            delay: AppAnimations.stagger(_isLoggedIn ? 11 : 9),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withValues(alpha: 0.1),
+                          borderRadius: AppRadius.sm8,
+                          border: Border.all(
+                            color: AppColors.success,
+                            width: 1.5,
                           ),
-                          // Back button (top-left, not scrollable - icon only)
-                          Positioned(
-                            top: 12,
-                            left: 12,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  if (Navigator.of(context).canPop()) {
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    context.go('/login');
-                                  }
-                                },
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(99),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Icon(
-                                    Icons.arrow_back_rounded,
-                                    color: context.themePrimary,
-                                    size: 24,
-                                  ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              size: 16,
+                              color: AppColors.success,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              l10n.verified,
+                              style: AppTypography.labelSmall(
+                                color: AppColors.success,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ).fadeIn(delay: AppAnimations.stagger(5)),
+                    ),
+
+                  if (!_isLoggedIn || _isLoggedIn && _loggedInPhone != null)
+                    const SizedBox(height: AppSpacing.xl2),
+
+                  // ── Current PIN (logged-in change flow) ──────
+                  if (_isLoggedIn) ...[
+                    AppTextField.pin(
+                      controller: _currentPinController,
+                      label: l10n.currentPinLabel,
+                      validator: (v) {
+                        final val = v?.trim() ?? '';
+                        if (val.length != 4 ||
+                            !RegExp(r'^[0-9]+$').hasMatch(val)) {
+                          return l10n.enter4Digits;
+                        }
+                        return null;
+                      },
+                    ).fadeIn(delay: AppAnimations.stagger(6)),
+                    const SizedBox(height: AppSpacing.xl2),
+
+                    // Forgot PIN info box
+                    AppCard(
+                      padding: const EdgeInsets.all(16),
+                      showShadow: false,
+                      color: context.themePrimary.withValues(alpha: 0.05),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.help_outline_rounded,
+                                size: 18,
+                                color: context.themePrimary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.forgotCurrentPin,
+                                style: AppTypography.labelSmall(
+                                  color: context.themePrimary,
                                 ),
                               ),
-                            ).fadeIn(delay: AppAnimations.stagger(0)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.forgotPinHelp,
+                            style: AppTypography.bodySmall(
+                              color: context.themeTextSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Admin support contacts
+                          AppCard(
+                            padding: const EdgeInsets.all(12),
+                            showShadow: false,
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.support_agent_rounded,
+                                      size: 18,
+                                      color: context.themeSecondary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.adminSupportInfo,
+                                      style: AppTypography.labelSmall(
+                                        color: context.themeSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                _supportPhoneRow(
+                                  phone: AppConstants.supportPhone1,
+                                  label: l10n.supportPhone1,
+                                  color: AppColors.success,
+                                  icon: Icons.phone_android_rounded,
+                                ),
+                                const SizedBox(height: 8),
+                                _supportPhoneRow(
+                                  phone: AppConstants.supportPhone2,
+                                  label: l10n.supportPhone2,
+                                  color: context.themePrimary,
+                                  icon: Icons.phone_rounded,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
+                    ).fadeIn(delay: AppAnimations.stagger(7)),
+                    const SizedBox(height: AppSpacing.xl2),
+                  ],
 
-                      const SizedBox(height: AppSpacing.xl2),
+                  // ── New PIN ──────────────────────────────────
+                  AppTextField.pin(
+                    controller: _pinController,
+                    label: l10n.newPinLabel,
+                    validator: (v) {
+                      final val = v?.trim() ?? '';
+                      if (val.length != 4 ||
+                          !RegExp(r'^[0-9]+$').hasMatch(val)) {
+                        return l10n.enter4Digits;
+                      }
+                      return null;
+                    },
+                  ).fadeIn(delay: AppAnimations.stagger(_isLoggedIn ? 8 : 6)),
 
-                      // ── Footer ──
-                      AuthFooter(
-                        companyName: l10n.companyName,
-                        isDark: isDark,
-                      ).fadeIn(
-                        delay: AppAnimations.stagger(_isLoggedIn ? 12 : 10),
+                  const SizedBox(height: AppSpacing.xl2),
+
+                  // ── Confirm PIN ──────────────────────────────
+                  AppTextField.pin(
+                    controller: _confirmPinController,
+                    label: l10n.confirmPin,
+                    hint: AppLocalizations.of(context)!.hintConfirmPin,
+                    validator: (v) {
+                      final val = v?.trim() ?? '';
+                      if (val.length != 4 ||
+                          !RegExp(r'^[0-9]+$').hasMatch(val)) {
+                        return l10n.enter4Digits;
+                      }
+                      if (val != _pinController.text.trim()) {
+                        return l10n.pinsDoNotMatch;
+                      }
+                      return null;
+                    },
+                  ).fadeIn(delay: AppAnimations.stagger(_isLoggedIn ? 9 : 7)),
+
+                  const SizedBox(height: AppSpacing.xl2),
+
+                  // ── Reset PIN button ─────────────────────────
+                  AppButton.secondary(
+                    label: l10n.resetPin,
+                    onPressed: (isSaving || !canSubmit) ? null : _saveNewPin,
+                    isLoading: isSaving,
+                  ).fadeIn(delay: AppAnimations.stagger(_isLoggedIn ? 10 : 8)),
+
+                  if (!_isLoggedIn && !canSubmit) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      l10n.pleaseVerifyMobile,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodySmall(
+                        color: context.themeTextSecondary,
                       ),
-
-                      const SizedBox(height: AppSpacing.xl3),
-                    ],
-                  ),
-                ),
+                    ).fadeIn(delay: AppAnimations.stagger(9)),
+                  ],
+                ],
               ),
-            ),
+            ).enterCard(delay: AppAnimations.stagger(_isLoggedIn ? 11 : 9)),
+            const SizedBox(height: AppSpacing.xl2),
+            AuthFooter(
+              companyName: l10n.companyName,
+              isDark: isDark,
+            ).fadeIn(delay: AppAnimations.stagger(_isLoggedIn ? 12 : 10)),
           ],
         ),
       ),
@@ -665,144 +510,6 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
               child: Text(label, style: AppTypography.labelSmall(color: color)),
             ),
             Icon(Icons.call_rounded, size: 16, color: color),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Theme toggle button ───────────────────────────────────────────────────────
-
-class _ThemeToggleButton extends ConsumerWidget {
-  final bool isDark;
-  const _ThemeToggleButton({required this.isDark});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.darkSurface.withValues(alpha: 0.85)
-            : AppColors.white.withValues(alpha: 0.90),
-        borderRadius: AppRadius.sm8,
-        border: Border.all(
-          color: isDark
-              ? AppColors.darkBorder.withValues(alpha: 0.5)
-              : context.themePrimary.withValues(alpha: 0.30),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: (isDark ? AppColors.darkBorder : context.themePrimary)
-                .withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: IconButton(
-        padding: EdgeInsets.zero,
-        splashRadius: 22,
-        tooltip: isDark
-            ? AppLocalizations.of(context)!.switchToLight
-            : AppLocalizations.of(context)!.switchToDark,
-        onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
-        icon: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, anim) =>
-              RotationTransition(turns: anim, child: child),
-          child: Icon(
-            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round_rounded,
-            key: ValueKey(isDark),
-            size: 22,
-            color: isDark ? AppColors.warning : context.themePrimary,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Language picker ──────────────────────────────────────────────────────────
-
-class _LanguagePicker extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      height: 44,
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.darkSurface.withValues(alpha: 0.85)
-            : AppColors.white.withValues(alpha: 0.90),
-        borderRadius: AppRadius.sm8,
-        border: Border.all(
-          color: isDark
-              ? AppColors.darkBorder.withValues(alpha: 0.5)
-              : context.themePrimary.withValues(alpha: 0.30),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: (isDark ? AppColors.darkBorder : context.themePrimary)
-                .withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<Locale>(
-          value: ref.watch(localeProvider),
-          style: AppTypography.bodyMedium(color: context.themeTextPrimary),
-          dropdownColor: context.themeSurface,
-          iconEnabledColor: isDark ? AppColors.white : context.themePrimary,
-          icon: Icon(
-            Icons.language_rounded,
-            size: 22,
-            color: isDark ? AppColors.white : context.themePrimary,
-          ),
-          onChanged: (locale) {
-            if (locale != null) {
-              ref.read(localeProvider.notifier).setLocale(locale);
-            }
-          },
-          items: [
-            DropdownMenuItem(
-              value: const Locale('en'),
-              child: Row(
-                children: [
-                  const Icon(Icons.language_rounded, size: 16),
-                  const SizedBox(width: 8),
-                  Text(l10n.languageEnglish),
-                ],
-              ),
-            ),
-            DropdownMenuItem(
-              value: const Locale('hi'),
-              child: Row(
-                children: [
-                  const Icon(Icons.language_rounded, size: 16),
-                  const SizedBox(width: 8),
-                  Text(l10n.languageHindi),
-                ],
-              ),
-            ),
-            DropdownMenuItem(
-              value: const Locale('ta'),
-              child: Row(
-                children: [
-                  const Icon(Icons.language_rounded, size: 16),
-                  const SizedBox(width: 8),
-                  Text(l10n.languageTamil),
-                ],
-              ),
-            ),
           ],
         ),
       ),

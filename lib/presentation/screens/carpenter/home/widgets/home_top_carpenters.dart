@@ -308,8 +308,6 @@ class HomeTodaysWinnerCard extends StatelessWidget {
                     Text(
                       displayName,
                       style: AppTypography.h5(color: context.themeTextPrimary),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -514,8 +512,6 @@ class HomeYourPositionCard extends StatelessWidget {
                   Text(
                     homeState.displayName,
                     style: AppTypography.h5(color: AppColors.white),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Row(

@@ -215,17 +215,17 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
             const SizedBox(height: AppSpacing.sm),
             _field(
               _firstCtrl,
-              AppLocalizations.of(context)!.firstNameRequired,
+              AppLocalizations.of(context)!.firstNameRequired, hint: AppLocalizations.of(context)!.enterFirstName,
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? AppLocalizations.of(context)!.requiredLabel
                   : null,
             ),
             const SizedBox(height: AppSpacing.sm),
-            _field(_lastCtrl, AppLocalizations.of(context)!.lastName),
+            _field(_lastCtrl, AppLocalizations.of(context)!.lastName, hint: AppLocalizations.of(context)!.enterLastName),
             const SizedBox(height: AppSpacing.sm),
             _field(
               _phoneCtrl,
-              AppLocalizations.of(context)!.mobileNumber10Digits,
+              AppLocalizations.of(context)!.mobileNumber10Digits, hint: AppLocalizations.of(context)!.hintPhone,
               keyboardType: TextInputType.phone,
               validator: (v) {
                 final s = v?.trim() ?? '';
@@ -244,7 +244,7 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
             const SizedBox(height: AppSpacing.sm),
             _field(
               _emailCtrl,
-              AppLocalizations.of(context)!.emailAddress,
+              AppLocalizations.of(context)!.emailAddress, hint: AppLocalizations.of(context)!.hintEmail,
               keyboardType: TextInputType.emailAddress,
               validator: (v) =>
                   RegExp(
@@ -257,7 +257,7 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
             const SizedBox(height: AppSpacing.sm),
             _field(
               _passwordCtrl,
-              AppLocalizations.of(context)!.temporaryPassword8CharactersMinimum,
+              AppLocalizations.of(context)!.temporaryPassword8CharactersMinimum, hint: AppLocalizations.of(context)!.hintPasswordMin,
               obscureText: _obscurePassword,
               suffixIcon: IconButton(
                 tooltip: _obscurePassword
@@ -278,7 +278,7 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
             const SizedBox(height: AppSpacing.sm),
             _field(
               _confirmPasswordCtrl,
-              AppLocalizations.of(context)!.confirmPassword,
+              AppLocalizations.of(context)!.confirmPassword, hint: AppLocalizations.of(context)!.hintConfirmPassword,
               obscureText: _obscurePassword,
               validator: (v) => v != _passwordCtrl.text
                   ? AppLocalizations.of(context)!.passwordsDoNotMatch
@@ -452,6 +452,7 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
   Widget _field(
     TextEditingController ctrl,
     String label, {
+    String? hint,
     String? Function(String?)? validator,
     TextInputType? keyboardType,
     bool obscureText = false,
@@ -465,7 +466,7 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
       autofillHints: keyboardType == TextInputType.emailAddress
           ? const [AutofillHints.email]
           : null,
-      decoration: InputDecoration(labelText: label, suffixIcon: suffixIcon),
+      decoration: InputDecoration(labelText: label, hintText: hint, suffixIcon: suffixIcon),
     );
   }
 }

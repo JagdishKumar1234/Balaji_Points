@@ -17,7 +17,6 @@ import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
-import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 import 'package:balaji_points/services/branch/branch_celebration_service.dart';
 
 class AddBillPage extends StatefulWidget {
@@ -889,7 +888,6 @@ class _AddBillPageState extends State<AddBillPage> {
               showProfileButton: false,
               showBackButton: true,
             ),
-            const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
             Container(height: 1, color: borderColor),
             Expanded(
               child: SingleChildScrollView(
@@ -970,9 +968,7 @@ class _AddBillPageState extends State<AddBillPage> {
                         label:
                             l10n?.enterBillAmount ??
                             AppLocalizations.of(context)!.enterBillAmount,
-                        hint:
-                            l10n?.enterBillAmount ??
-                            AppLocalizations.of(context)!.enterBillAmount,
+                        hint: AppLocalizations.of(context)!.hintAmount,
                         prefixIcon: Icons.currency_rupee_rounded,
                         keyboardType: TextInputType.number,
                         validator: (value) {

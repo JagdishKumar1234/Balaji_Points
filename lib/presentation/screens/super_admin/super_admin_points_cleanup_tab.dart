@@ -110,7 +110,7 @@ class SuperAdminPointsCleanupTabState
                     decoration: InputDecoration(
                       labelText: AppLocalizations.of(
                         context,
-                      )!.typeToConfirm('${preview.branchId}'),
+                      )!.typeToConfirm('${preview.branchId}'), hintText: preview.branchId,
                       border: OutlineInputBorder(
                         borderRadius: AppRadius.forInput,
                       ),

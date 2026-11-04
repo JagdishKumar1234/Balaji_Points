@@ -586,7 +586,7 @@ class _AddRoleDialogState extends State<_AddRoleDialog> {
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   onChanged: (_) => setState(() => _serverError = null),
-                  decoration: InputDecoration(labelText: l10n.roleName),
+                  decoration: InputDecoration(labelText: l10n.roleName, hintText: l10n.hintRoleName),
                   validator: _validateName,
                 ),
                 const SizedBox(height: AppSpacing.sm),

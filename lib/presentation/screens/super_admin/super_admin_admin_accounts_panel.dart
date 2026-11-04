@@ -411,8 +411,6 @@ class _AdminAccountCardState extends State<_AdminAccountCard> {
                       Expanded(
                         child: Text(
                           widget.branchName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: AppTypography.caption(color: secondary),
                         ),
                       ),
@@ -527,6 +525,7 @@ class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
                 obscureText: !_visible,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.newPassword,
+                  hintText: AppLocalizations.of(context)!.hintPassword,
                   suffixIcon: IconButton(
                     onPressed: () => setState(() => _visible = !_visible),
                     icon: Icon(
@@ -546,6 +545,7 @@ class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
                 obscureText: !_visible,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.confirmNewPassword,
+                  hintText: AppLocalizations.of(context)!.hintConfirmPassword,
                 ),
                 validator: (value) => value != _password.text
                     ? AppLocalizations.of(context)!.passwordsDoNotMatch

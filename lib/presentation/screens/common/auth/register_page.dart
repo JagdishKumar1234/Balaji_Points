@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +11,6 @@ import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
-import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/presentation/widgets/shared/professional_auth_card.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
@@ -180,6 +180,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
+  Future<void> _cancelGoogleProfile() async {
+    await ref.read(authProvider.notifier).cancelGoogleProfileCompletion();
+    if (mounted) context.go('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -197,260 +202,184 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       }
     });
 
-    return Scaffold(
-      backgroundColor: AppColors.transparent,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          AuthBackground(isDark: isDark),
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 520),
-                  child: ProfessionalAuthCard(
-                    isDark: isDark,
-                    securityMessage: AppLocalizations.of(
-                      context,
-                    )!.yourInformationIsProtected,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Icon(
-                            Icons.person_add_alt_1_rounded,
-                            size: 46,
-                            color: context.themePrimary,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          Text(
-                            widget.completeGoogleProfile
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.completeYourGoogleRegistration
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.createYourAccount,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.displaySmall(
-                              color: context.themeTextPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            widget.completeGoogleProfile
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.addYourMobileNumberAndChoose
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.chooseYourRoleAndTheBranch,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.bodyMedium(
-                              color: context.themeTextSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.xl2),
-                          AppTextField(
-                            controller: _fullNameController,
-                            label: AppLocalizations.of(context)!.fullName,
-                            prefixIcon: Icons.person_outline_rounded,
-                            validator: (value) =>
-                                value == null || value.trim().isEmpty
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.enterYourFullName
-                                : null,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          AppTextField(
-                            controller: _emailController,
-                            label: AppLocalizations.of(context)!.email,
-                            prefixIcon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            enabled: !widget.completeGoogleProfile,
-                            validator: (value) {
-                              final email = value?.trim() ?? '';
-                              return RegExp(
-                                    AppConstants.emailRegex,
-                                  ).hasMatch(email)
-                                  ? null
-                                  : AppLocalizations.of(
-                                      context,
-                                    )!.enterAValidEmailAddress;
-                            },
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          AppTextField.phone(
-                            controller: _phoneController,
-                            label: AppLocalizations.of(context)!.mobileNumber,
-                            validator: (value) => value?.trim().length == 10
-                                ? null
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.enterAValid10DigitMobile,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          if (!widget.completeGoogleProfile) ...[
-                            AppTextField(
-                              controller: _passwordController,
-                              label: AppLocalizations.of(
-                                context,
-                              )!.passwordLabel,
-                              prefixIcon: Icons.lock_outline_rounded,
-                              obscureText: !_showPassword,
-                              suffix: IconButton(
-                                tooltip: _showPassword
-                                    ? AppLocalizations.of(context)!.hidePassword
-                                    : AppLocalizations.of(
-                                        context,
-                                      )!.showPassword,
-                                onPressed: () => setState(
-                                  () => _showPassword = !_showPassword,
-                                ),
-                                icon: Icon(
-                                  _showPassword
-                                      ? Icons.visibility_off_rounded
-                                      : Icons.visibility_rounded,
-                                ),
-                              ),
-                              validator: (value) => (value?.length ?? 0) >= 6
-                                  ? null
-                                  : AppLocalizations.of(
-                                      context,
-                                    )!.useAtLeast6Characters,
-                            ),
-                            const SizedBox(height: AppSpacing.md),
-                            AppTextField(
-                              controller: _confirmPasswordController,
-                              label: AppLocalizations.of(
-                                context,
-                              )!.confirmPasswordLabel,
-                              prefixIcon: Icons.lock_outline_rounded,
-                              obscureText: !_showConfirmPassword,
-                              suffix: IconButton(
-                                tooltip: _showConfirmPassword
-                                    ? AppLocalizations.of(context)!.hidePassword
-                                    : AppLocalizations.of(
-                                        context,
-                                      )!.showPassword,
-                                onPressed: () => setState(
-                                  () => _showConfirmPassword =
-                                      !_showConfirmPassword,
-                                ),
-                                icon: Icon(
-                                  _showConfirmPassword
-                                      ? Icons.visibility_off_rounded
-                                      : Icons.visibility_rounded,
-                                ),
-                              ),
-                              validator: (value) =>
-                                  value == _passwordController.text
-                                  ? null
-                                  : AppLocalizations.of(
-                                      context,
-                                    )!.passwordsDoNotMatch,
-                            ),
-                          ],
-                          const SizedBox(height: AppSpacing.lg),
-                          _RoleField(
-                            roles: _roles,
-                            selectedRoleId: _selectedRole,
-                            isLoading: _loadingRoles,
-                            enabled:
-                                widget.googleProfile?['existingRole'] == null ||
-                                widget.googleProfile?['existingRole'] ==
-                                    _selectedRole,
-                            onChanged: (value) {
-                              setState(() => _selectedRole = value);
-                            },
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          _BranchField(
-                            branches: _branches,
-                            selectedBranchId: _selectedBranchId,
-                            isLoading: _loadingBranches,
-                            onChanged: (value) =>
-                                setState(() => _selectedBranchId = value),
-                          ),
-                          if (!_loadingRoles && _roles.isEmpty) ...[
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              AppLocalizations.of(context)!.noActiveRoles,
-                              style: AppTypography.caption(
-                                color: context.themeError,
-                              ),
-                            ),
-                          ],
-                          if (!_loadingBranches && _branches.isEmpty) ...[
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              AppLocalizations.of(context)!.noActiveBranches,
-                              style: AppTypography.caption(
-                                color: context.themeError,
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: AppSpacing.sm),
-                          Text(
-                            widget.googleProfile?['existingRole'] ==
-                                    AppConstants.roleAdmin
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.yourAccountAlreadyHasAnAdmin
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.branchAdminAccessIsAssignedBy,
-                            style: AppTypography.caption(
-                              color: context.themeTextSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.xl),
-                          AppButton.primary(
-                            label: widget.completeGoogleProfile
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.completeRegistration
-                                : AppLocalizations.of(context)!.createAccount2,
-                            isLoading: _submitting,
-                            onPressed:
-                                _submitting ||
-                                    _loadingBranches ||
-                                    _loadingRoles ||
-                                    _branches.isEmpty ||
-                                    _roles.isEmpty ||
-                                    widget.googleProfile?['existingRole'] ==
-                                        AppConstants.roleAdmin
-                                ? null
-                                : _register,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          TextButton(
-                            onPressed: () async {
-                              if (widget.completeGoogleProfile) {
-                                await ref
-                                    .read(authProvider.notifier)
-                                    .cancelGoogleProfileCompletion();
-                              }
-                              if (context.mounted) context.go('/login');
-                            },
-                            child: Text(
-                              AppLocalizations.of(
-                                context,
-                              )!.cancelReturnToSignIn,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+    return AuthScaffold(
+      // A half-finished Google sign-up has to be cancelled, not just left.
+      onBack: widget.completeGoogleProfile ? _cancelGoogleProfile : null,
+      child: ProfessionalAuthCard(
+        isDark: isDark,
+        securityMessage: AppLocalizations.of(
+          context,
+        )!.yourInformationIsProtected,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                widget.completeGoogleProfile
+                    ? AppLocalizations.of(
+                        context,
+                      )!.completeYourGoogleRegistration
+                    : AppLocalizations.of(context)!.createYourAccount,
+                textAlign: TextAlign.center,
+                style: AppTypography.displaySmall(
+                  color: context.themeTextPrimary,
                 ),
               ),
-            ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                widget.completeGoogleProfile
+                    ? AppLocalizations.of(context)!.addYourMobileNumberAndChoose
+                    : AppLocalizations.of(context)!.chooseYourRoleAndTheBranch,
+                textAlign: TextAlign.center,
+                style: AppTypography.bodyMedium(
+                  color: context.themeTextSecondary,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl2),
+              AppTextField(
+                controller: _fullNameController,
+                label: AppLocalizations.of(context)!.fullName,
+                hint: AppLocalizations.of(context)!.hintFullName,
+                prefixIcon: Icons.person_outline_rounded,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? AppLocalizations.of(context)!.enterYourFullName
+                    : null,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              AppTextField(
+                controller: _emailController,
+                label: AppLocalizations.of(context)!.email,
+                hint: AppLocalizations.of(context)!.hintEmail,
+                prefixIcon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+                enabled: !widget.completeGoogleProfile,
+                validator: (value) {
+                  final email = value?.trim() ?? '';
+                  return RegExp(AppConstants.emailRegex).hasMatch(email)
+                      ? null
+                      : AppLocalizations.of(context)!.enterAValidEmailAddress;
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
+              AppTextField.phone(
+                controller: _phoneController,
+                label: AppLocalizations.of(context)!.mobileNumber,
+                validator: (value) => value?.trim().length == 10
+                    ? null
+                    : AppLocalizations.of(context)!.enterAValid10DigitMobile,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (!widget.completeGoogleProfile) ...[
+                AppTextField(
+                  controller: _passwordController,
+                  label: AppLocalizations.of(context)!.passwordLabel,
+                  hint: AppLocalizations.of(context)!.hintPassword,
+                  prefixIcon: Icons.lock_outline_rounded,
+                  obscureText: !_showPassword,
+                  suffix: IconButton(
+                    tooltip: _showPassword
+                        ? AppLocalizations.of(context)!.hidePassword
+                        : AppLocalizations.of(context)!.showPassword,
+                    onPressed: () =>
+                        setState(() => _showPassword = !_showPassword),
+                    icon: Icon(
+                      _showPassword
+                          ? Icons.visibility_off_rounded
+                          : Icons.visibility_rounded,
+                    ),
+                  ),
+                  validator: (value) => (value?.length ?? 0) >= 6
+                      ? null
+                      : AppLocalizations.of(context)!.useAtLeast6Characters,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AppTextField(
+                  controller: _confirmPasswordController,
+                  label: AppLocalizations.of(context)!.confirmPasswordLabel,
+                  hint: AppLocalizations.of(context)!.hintConfirmPassword,
+                  prefixIcon: Icons.lock_outline_rounded,
+                  obscureText: !_showConfirmPassword,
+                  suffix: IconButton(
+                    tooltip: _showConfirmPassword
+                        ? AppLocalizations.of(context)!.hidePassword
+                        : AppLocalizations.of(context)!.showPassword,
+                    onPressed: () => setState(
+                      () => _showConfirmPassword = !_showConfirmPassword,
+                    ),
+                    icon: Icon(
+                      _showConfirmPassword
+                          ? Icons.visibility_off_rounded
+                          : Icons.visibility_rounded,
+                    ),
+                  ),
+                  validator: (value) => value == _passwordController.text
+                      ? null
+                      : AppLocalizations.of(context)!.passwordsDoNotMatch,
+                ),
+              ],
+              const SizedBox(height: AppSpacing.lg),
+              _RoleField(
+                roles: _roles,
+                selectedRoleId: _selectedRole,
+                isLoading: _loadingRoles,
+                enabled:
+                    widget.googleProfile?['existingRole'] == null ||
+                    widget.googleProfile?['existingRole'] == _selectedRole,
+                onChanged: (value) {
+                  setState(() => _selectedRole = value);
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
+              _BranchField(
+                branches: _branches,
+                selectedBranchId: _selectedBranchId,
+                isLoading: _loadingBranches,
+                onChanged: (value) => setState(() => _selectedBranchId = value),
+              ),
+              if (!_loadingRoles && _roles.isEmpty) ...[
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  AppLocalizations.of(context)!.noActiveRoles,
+                  style: AppTypography.caption(color: context.themeError),
+                ),
+              ],
+              if (!_loadingBranches && _branches.isEmpty) ...[
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  AppLocalizations.of(context)!.noActiveBranches,
+                  style: AppTypography.caption(color: context.themeError),
+                ),
+              ],
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                widget.googleProfile?['existingRole'] == AppConstants.roleAdmin
+                    ? AppLocalizations.of(context)!.yourAccountAlreadyHasAnAdmin
+                    : AppLocalizations.of(
+                        context,
+                      )!.branchAdminAccessIsAssignedBy,
+                style: AppTypography.caption(color: context.themeTextSecondary),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              AppButton.primary(
+                label: widget.completeGoogleProfile
+                    ? AppLocalizations.of(context)!.completeRegistration
+                    : AppLocalizations.of(context)!.createAccount2,
+                isLoading: _submitting,
+                onPressed:
+                    _submitting ||
+                        _loadingBranches ||
+                        _loadingRoles ||
+                        _branches.isEmpty ||
+                        _roles.isEmpty ||
+                        widget.googleProfile?['existingRole'] ==
+                            AppConstants.roleAdmin
+                    ? null
+                    : _register,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

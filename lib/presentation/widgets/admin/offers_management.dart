@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'dart:typed_data';
@@ -87,45 +88,7 @@ class _OffersManagementState extends State<OffersManagement> {
   }
 
   void _viewBannerImage(String imageUrl) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: AppColors.transparent,
-        child: Stack(
-          children: [
-            Center(
-              child: InteractiveViewer(
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      padding: const EdgeInsets.all(20),
-                      color: context.themeSoftSurface,
-                      child: Text(
-                        AppLocalizations.of(context)!.failedToLoadImage,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Positioned(
-              top: 40,
-              right: 20,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.close_rounded,
-                  color: AppColors.white,
-                  size: 30,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    showFullScreenImage(context, imageUrl);
   }
 
   @override
@@ -631,7 +594,9 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           _isUploadingBanner = true;
         });
 
-        final uploadedUrl = await _offerService.uploadOfferBanner(_bannerBytes!);
+        final uploadedUrl = await _offerService.uploadOfferBanner(
+          _bannerBytes!,
+        );
         if (uploadedUrl != null) {
           bannerUrl = uploadedUrl;
         } else {

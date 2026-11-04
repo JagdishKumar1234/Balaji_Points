@@ -13,7 +13,6 @@ import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text_field.dart';
-import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/platform/storage_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
@@ -336,7 +335,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               showProfileButton: false,
               showBackButton: !widget.isFirstTime,
             ),
-            const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
             Container(height: 1, color: borderColor),
             Expanded(
               child: Container(

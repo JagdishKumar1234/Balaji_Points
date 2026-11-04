@@ -383,7 +383,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get routeErrorDetailsLabel => 'तकनीकी विवरण';
 
   @override
-  String get topCarpenters => 'शीर्ष 3 बढ़ई';
+  String get topCarpenters => 'शीर्ष 3 सदस्य';
 
   @override
   String get todaysWinner => 'आज के विजेता';
@@ -976,7 +976,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get offerTitleLabel => 'ऑफर शीर्षक *';
 
   @override
-  String get offerTitleHint => 'उदा., दिवाली विशेष ऑफर';
+  String get offerTitleHint => 'ऑफर का शीर्षक दर्ज करें';
 
   @override
   String get enterOfferTitle => 'कृपया ऑफर शीर्षक दर्ज करें';
@@ -985,13 +985,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get descriptionLabel => 'विवरण';
 
   @override
-  String get descriptionHint => 'ऑफर का संक्षिप्त विवरण';
+  String get descriptionHint => 'विवरण दर्ज करें';
 
   @override
   String get pointsRequiredLabel => 'आवश्यक पॉइंट्स *';
 
   @override
-  String get pointsHint => 'उदा., 100';
+  String get pointsHint => 'पॉइंट्स दर्ज करें';
 
   @override
   String get enterPointsError => 'कृपया पॉइंट्स दर्ज करें';
@@ -1029,7 +1029,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get failedToPickImage => 'छवि चुनने में विफल';
 
   @override
-  String get searchByNameOrPhone => 'नाम या फोन से खोजें';
+  String get searchByNameOrPhone => 'नाम या फ़ोन खोजें';
 
   @override
   String get add => 'जोड़ें';
@@ -1091,7 +1091,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get phoneNumberLabel => 'फोन नंबर';
 
   @override
-  String get phoneNumberHint => 'उदा. 9876543210 (बिना +91)';
+  String get phoneNumberHint => 'फ़ोन नंबर दर्ज करें';
 
   @override
   String get enterOTP => 'OTP दर्ज करें';
@@ -1387,7 +1387,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get aboutUs => 'हमारे बारे में';
 
   @override
-  String get aboutUsMenuSubtitle => 'बढ़ई के लिए पुरस्कार और लॉयल्टी';
+  String get aboutUsMenuSubtitle => 'सदस्यों के लिए पुरस्कार और लॉयल्टी';
 
   @override
   String get aboutUsSubtitle => 'आपका हार्डवेयर पुरस्कार साथी';
@@ -1513,10 +1513,58 @@ class AppLocalizationsHi extends AppLocalizations {
   String get menu => 'मेनू';
 
   @override
+  String get hintPassword => 'पासवर्ड दर्ज करें';
+
+  @override
+  String get hintPasswordMin => 'पासवर्ड दर्ज करें';
+
+  @override
+  String get hintConfirmPassword => 'पासवर्ड दोबारा दर्ज करें';
+
+  @override
+  String get hintFullName => 'पूरा नाम दर्ज करें';
+
+  @override
+  String get hintAmount => 'राशि दर्ज करें';
+
+  @override
+  String get hintBranchFullName => 'ब्रांच का नाम दर्ज करें';
+
+  @override
+  String get hintShortName => 'छोटा नाम दर्ज करें';
+
+  @override
+  String get hintBranchCode => 'ब्रांच कोड दर्ज करें';
+
+  @override
+  String get hintAddress => 'पता दर्ज करें';
+
+  @override
+  String get hintRoleName => 'भूमिका का नाम दर्ज करें';
+
+  @override
+  String get hintEmail => 'ईमेल दर्ज करें';
+
+  @override
+  String get hintPhone => 'फ़ोन नंबर दर्ज करें';
+
+  @override
+  String get hintPin => 'PIN दर्ज करें';
+
+  @override
+  String get hintConfirmPin => 'PIN दोबारा दर्ज करें';
+
+  @override
+  String get hintBranchId => 'ब्रांच ID दर्ज करें';
+
+  @override
   String get diwaliYourPrize => 'आपका दिवाली पुरस्कार';
 
   @override
   String get diwaliYou => 'आप';
+
+  @override
+  String get diwaliPosition => 'स्थान';
 
   @override
   String get readMore => 'और पढ़ें';
@@ -1543,7 +1591,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get featureGrowMore => 'आगे बढ़ें';
 
   @override
-  String get featureGrowBody => 'लीडरबोर्ड में ऊपर जाएँ\nटॉप कारपेंटर बनें';
+  String get featureGrowBody => 'लीडरबोर्ड में ऊपर जाएँ\nटॉप सदस्य बनें';
 
   @override
   String get featureExclusive => 'खास';
@@ -1563,7 +1611,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get platinumHighestTier => 'प्लैटिनम — सबसे ऊँचा टियर!';
 
   @override
-  String get topCarpentersTitle => 'टॉप कारपेंटर';
+  String get topCarpentersTitle => 'टॉप सदस्य';
 
   @override
   String get noRankingYet => 'अभी रैंकिंग डेटा नहीं है';
@@ -1894,13 +1942,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get siteName => 'साइट का नाम *';
 
   @override
-  String get enterSiteLocationName => 'साइट/जगह का नाम डालें';
+  String get enterSiteLocationName => 'साइट का नाम दर्ज करें';
 
   @override
   String get vendorNameOptional => 'विक्रेता का नाम (वैकल्पिक)';
 
   @override
-  String get enterVendorStoreNameOptional => 'विक्रेता/दुकान का नाम डालें (वैकल्पिक)';
+  String get enterVendorStoreNameOptional => 'विक्रेता का नाम दर्ज करें';
 
   @override
   String get noUserLoggedIn => 'कोई उपयोगकर्ता लॉगिन नहीं है';
@@ -1926,13 +1974,13 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get enterYourFirstName => 'अपना पहला नाम डालें';
+  String get enterYourFirstName => 'पहला नाम दर्ज करें';
 
   @override
   String get pleaseEnterYourFirstName => 'कृपया अपना पहला नाम डालें';
 
   @override
-  String get enterYourLastName => 'अपना उपनाम डालें';
+  String get enterYourLastName => 'अंतिम नाम दर्ज करें';
 
   @override
   String get pleaseEnterYourLastName => 'कृपया अपना उपनाम डालें';
@@ -1965,7 +2013,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get notification => 'सूचना';
 
   @override
-  String get noCarpenterAccountsAreListedFor => 'इस शाखा में अभी कोई कारपेंटर खाता नहीं है।';
+  String get noCarpenterAccountsAreListedFor => 'इस शाखा में अभी कोई सदस्य खाता नहीं है।';
 
   @override
   String get continueToHome => 'होम पर जाएँ';
@@ -2724,22 +2772,22 @@ class AppLocalizationsHi extends AppLocalizations {
   String get failedToCreateCarpenter => 'कारपेंटर नहीं बन सका';
 
   @override
-  String get pin46Digits => 'PIN (4-6 अंक)';
+  String get pin46Digits => '4 अंकों का PIN';
 
   @override
-  String get enterPin => 'PIN डालें';
+  String get enterPin => 'PIN दर्ज करें';
 
   @override
   String get firstNameOptional => 'पहला नाम (वैकल्पिक)';
 
   @override
-  String get enterFirstName => 'पहला नाम डालें';
+  String get enterFirstName => 'पहला नाम दर्ज करें';
 
   @override
   String get lastNameOptional => 'उपनाम (वैकल्पिक)';
 
   @override
-  String get enterLastName => 'उपनाम डालें';
+  String get enterLastName => 'अंतिम नाम दर्ज करें';
 
   @override
   String get create => 'बनाएँ';
@@ -2893,7 +2941,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get composeMessage => 'संदेश लिखें';
 
   @override
-  String get enterGreetingMessageForAllCarpenters => 'सभी कारपेंटर के लिए शुभकामना संदेश लिखें';
+  String get enterGreetingMessageForAllCarpenters => 'संदेश दर्ज करें';
 
   @override
   String get imageOptional => 'फ़ोटो (वैकल्पिक)';
@@ -2905,7 +2953,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get orEnterImageUrl => 'या फ़ोटो का URL डालें:';
 
   @override
-  String get enterImageUrlJpgPng => 'फ़ोटो URL डालें (JPG/PNG)';
+  String get enterImageUrlJpgPng => 'इमेज URL दर्ज करें';
 
   @override
   String get invalidImageUrl => 'गलत फ़ोटो URL';
@@ -3067,7 +3115,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get reviewEachAdminAndTheBranch => 'हर एडमिन और उनकी शाखा देखें। पासवर्ड बदलें या खाता हटाएँ।';
 
   @override
-  String get searchByNameEmailOrBranch => 'नाम, ईमेल या शाखा से खोजें';
+  String get searchByNameEmailOrBranch => 'एडमिन खोजें';
 
   @override
   String get clearSearch => 'खोज साफ़ करें';
@@ -3438,7 +3486,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get shortFormOptional => 'छोटा रूप (वैकल्पिक)';
 
   @override
-  String get exampleAr => 'उदाहरण: Ar.';
+  String get exampleAr => 'छोटा रूप दर्ज करें';
 
   @override
   String get use10CharactersOrLess => '10 या कम अक्षर रखें';

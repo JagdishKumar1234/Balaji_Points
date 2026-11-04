@@ -1,3 +1,4 @@
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -52,75 +53,87 @@ class AppTextField extends StatelessWidget {
     this.suffix,
     this.validator,
     this.onChanged,
-  })  : _variant = _Variant.phone,
-        prefixIcon = null,
-        obscureText = false,
-        keyboardType = TextInputType.phone,
-        textAlign = TextAlign.start,
-        maxLength = 10,
-        letterSpacing = null,
-        inputFormatters = null;
+  }) : _variant = _Variant.phone,
+       prefixIcon = null,
+       obscureText = false,
+       keyboardType = TextInputType.phone,
+       textAlign = TextAlign.start,
+       maxLength = 10,
+       letterSpacing = null,
+       inputFormatters = null;
 
   const AppTextField.pin({
     super.key,
     required this.controller,
     required this.label,
+    this.hint,
     this.enabled = true,
     this.validator,
     this.onChanged,
-  })  : _variant = _Variant.pin,
-        hint = null,
-        prefixIcon = null,
-        suffix = null,
-        obscureText = true,
-        keyboardType = TextInputType.number,
-        textAlign = TextAlign.center,
-        maxLength = 4,
-        letterSpacing = 12,
-        inputFormatters = null;
+  }) : _variant = _Variant.pin,
+       prefixIcon = null,
+       suffix = null,
+       obscureText = true,
+       keyboardType = TextInputType.number,
+       textAlign = TextAlign.center,
+       maxLength = 4,
+       letterSpacing = 12,
+       inputFormatters = null;
+
+  String? _defaultHint(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return switch (_variant) {
+      _Variant.phone => l10n?.hintPhone,
+      _Variant.pin => l10n?.hintPin,
+      _ => null,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isPin   = _variant == _Variant.pin;
+    final isPin = _variant == _Variant.pin;
     final isPhone = _variant == _Variant.phone;
-    final isDark  = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final fillColor = enabled
         ? (isDark ? AppColors.darkSurface : AppColors.surface)
         : (isDark
-            ? AppColors.darkSurface.withValues(alpha: 0.5)
-            : AppColors.softSurface);
+              ? AppColors.darkSurface.withValues(alpha: 0.5)
+              : AppColors.softSurface);
 
-    final borderColor  = isDark ? AppColors.darkBorder : AppColors.border;
-    final focusedColor = isDark ? AppColors.gold        : AppColors.primary;
-    final labelColor   = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.border;
+    final focusedColor = isDark ? AppColors.gold : AppColors.primary;
+    final labelColor = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.textSecondary;
 
     return TextFormField(
-      controller:   controller,
-      enabled:      enabled,
-      obscureText:  obscureText,
+      controller: controller,
+      enabled: enabled,
+      obscureText: obscureText,
       keyboardType: keyboardType,
-      textAlign:    textAlign,
-      maxLength:    maxLength,
-      cursorColor:  focusedColor,
-      inputFormatters: inputFormatters ??
+      textAlign: textAlign,
+      maxLength: maxLength,
+      cursorColor: focusedColor,
+      inputFormatters:
+          inputFormatters ??
           (isPin || isPhone ? [FilteringTextInputFormatter.digitsOnly] : null),
       onChanged: onChanged,
       style: isPin
-          ? AppTypography.title(color: context.themeTextPrimary).copyWith(
-              letterSpacing: letterSpacing ?? 12,
-            )
+          ? AppTypography.title(
+              color: context.themeTextPrimary,
+            ).copyWith(letterSpacing: letterSpacing ?? 12)
           : AppTypography.body(color: context.themeTextPrimary),
       decoration: InputDecoration(
-        labelText:          label,
-        labelStyle:         AppTypography.body(color: labelColor),
+        labelText: label,
+        labelStyle: AppTypography.body(color: labelColor),
         floatingLabelStyle: AppTypography.caption(color: focusedColor),
-        hintText:           hint,
-        hintStyle:          AppTypography.body(color: context.themeTextMuted),
+        hintText: hint ?? _defaultHint(context),
+        hintStyle: AppTypography.body(color: context.themeTextMuted),
         counterText: '',
-        filled:      true,
-        fillColor:   fillColor,
-        errorStyle:  AppTypography.caption(color: AppColors.error),
+        filled: true,
+        fillColor: fillColor,
+        errorStyle: AppTypography.caption(color: AppColors.error),
 
         prefixIcon: isPhone
             ? Padding(
@@ -131,8 +144,8 @@ class AppTextField extends StatelessWidget {
                 ),
               )
             : (prefixIcon != null
-                ? Icon(prefixIcon, color: focusedColor, size: 20)
-                : null),
+                  ? Icon(prefixIcon, color: focusedColor, size: 20)
+                  : null),
         prefixIconConstraints: isPhone
             ? const BoxConstraints(minWidth: 0, minHeight: 0)
             : null,

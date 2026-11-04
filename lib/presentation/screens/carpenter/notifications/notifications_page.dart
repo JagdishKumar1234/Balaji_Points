@@ -5,7 +5,6 @@ import 'package:balaji_points/core/design/app_typography.dart';
 // Notifications screen for carpenters to view and manage their notifications
 
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
-import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -611,7 +610,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
               showLogo: false,
               showProfileButton: false,
             ),
-            const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
             Expanded(
               child: Center(
                 child: Text(
@@ -662,7 +660,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             ],
           ),
-          const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
           Expanded(
             child: Container(
               color: theme.colorScheme.surface,

@@ -158,10 +158,7 @@ class _DiwaliCelebrationDialogState extends State<DiwaliCelebrationDialog>
 }
 
 class _CelebrationHeader extends StatelessWidget {
-  const _CelebrationHeader({
-    required this.branchName,
-    required this.animation,
-  });
+  const _CelebrationHeader({required this.branchName, required this.animation});
 
   final String branchName;
   final Animation<double> animation;
@@ -228,8 +225,6 @@ class _CelebrationHeader extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   branchName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodyMedium(
                     color: Colors.white.withValues(alpha: .9),
                   ),
@@ -351,11 +346,20 @@ class _YourPrizeCard extends StatelessWidget {
                 color: colors.onTertiaryContainer,
               ),
             ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              entry.name,
+              style: AppTypography.h4(color: colors.onTertiaryContainer),
+            ),
             const SizedBox(height: AppSpacing.sm),
             Wrap(
               spacing: AppSpacing.xl,
               runSpacing: AppSpacing.sm,
               children: [
+                _PrizeValue(
+                  label: l10n.diwaliPosition,
+                  value: '#${entry.rank}',
+                ),
                 _PrizeValue(
                   label: l10n.myPoints,
                   value: _formatPoints(entry.points),
@@ -445,8 +449,6 @@ class _TopThreeList extends StatelessWidget {
                           entry.isCurrentUser
                               ? '${entry.name} (${l10n.diwaliYou})'
                               : entry.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           style: AppTypography.labelLarge(
                             color: colors.onSurface,
                           ),

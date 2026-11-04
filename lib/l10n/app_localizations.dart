@@ -832,7 +832,7 @@ abstract class AppLocalizations {
   /// No description provided for @topCarpenters.
   ///
   /// In en, this message translates to:
-  /// **'Top 3 Carpenters'**
+  /// **'Top 3 Members'**
   String get topCarpenters;
 
   /// No description provided for @todaysWinner.
@@ -1978,7 +1978,7 @@ abstract class AppLocalizations {
   /// No description provided for @offerTitleHint.
   ///
   /// In en, this message translates to:
-  /// **'e.g., Diwali Special Offer'**
+  /// **'Enter offer title'**
   String get offerTitleHint;
 
   /// No description provided for @enterOfferTitle.
@@ -1996,7 +1996,7 @@ abstract class AppLocalizations {
   /// No description provided for @descriptionHint.
   ///
   /// In en, this message translates to:
-  /// **'Brief description of the offer'**
+  /// **'Enter description'**
   String get descriptionHint;
 
   /// No description provided for @pointsRequiredLabel.
@@ -2008,7 +2008,7 @@ abstract class AppLocalizations {
   /// No description provided for @pointsHint.
   ///
   /// In en, this message translates to:
-  /// **'e.g., 100'**
+  /// **'Enter points'**
   String get pointsHint;
 
   /// No description provided for @enterPointsError.
@@ -2080,7 +2080,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchByNameOrPhone.
   ///
   /// In en, this message translates to:
-  /// **'Search by name or phone'**
+  /// **'Search name or phone'**
   String get searchByNameOrPhone;
 
   /// No description provided for @add.
@@ -2200,7 +2200,7 @@ abstract class AppLocalizations {
   /// No description provided for @phoneNumberHint.
   ///
   /// In en, this message translates to:
-  /// **'e.g. 9876543210 (no +91)'**
+  /// **'Enter phone number'**
   String get phoneNumberHint;
 
   /// No description provided for @enterOTP.
@@ -2752,7 +2752,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutUsMenuSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Rewards & loyalty for carpenters'**
+  /// **'Rewards & loyalty for members'**
   String get aboutUsMenuSubtitle;
 
   /// No description provided for @aboutUsSubtitle.
@@ -2989,6 +2989,96 @@ abstract class AppLocalizations {
   /// **'Menu'**
   String get menu;
 
+  /// No description provided for @hintPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password'**
+  String get hintPassword;
+
+  /// No description provided for @hintPasswordMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password'**
+  String get hintPasswordMin;
+
+  /// No description provided for @hintConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter password'**
+  String get hintConfirmPassword;
+
+  /// No description provided for @hintFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter full name'**
+  String get hintFullName;
+
+  /// No description provided for @hintAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get hintAmount;
+
+  /// No description provided for @hintBranchFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter branch name'**
+  String get hintBranchFullName;
+
+  /// No description provided for @hintShortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter short name'**
+  String get hintShortName;
+
+  /// No description provided for @hintBranchCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter branch code'**
+  String get hintBranchCode;
+
+  /// No description provided for @hintAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter address'**
+  String get hintAddress;
+
+  /// No description provided for @hintRoleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter role name'**
+  String get hintRoleName;
+
+  /// No description provided for @hintEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter email'**
+  String get hintEmail;
+
+  /// No description provided for @hintPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter phone number'**
+  String get hintPhone;
+
+  /// No description provided for @hintPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get hintPin;
+
+  /// No description provided for @hintConfirmPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter PIN'**
+  String get hintConfirmPin;
+
+  /// No description provided for @hintBranchId.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter branch ID'**
+  String get hintBranchId;
+
   /// No description provided for @diwaliYourPrize.
   ///
   /// In en, this message translates to:
@@ -3000,6 +3090,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You'**
   String get diwaliYou;
+
+  /// No description provided for @diwaliPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get diwaliPosition;
 
   /// No description provided for @readMore.
   ///
@@ -3052,7 +3148,7 @@ abstract class AppLocalizations {
   /// No description provided for @featureGrowBody.
   ///
   /// In en, this message translates to:
-  /// **'Climb Leaderboard\nBe a Top Carpenter'**
+  /// **'Climb Leaderboard\nBe a Top Member'**
   String get featureGrowBody;
 
   /// No description provided for @featureExclusive.
@@ -3088,7 +3184,7 @@ abstract class AppLocalizations {
   /// No description provided for @topCarpentersTitle.
   ///
   /// In en, this message translates to:
-  /// **'Top carpenters'**
+  /// **'Top members'**
   String get topCarpentersTitle;
 
   /// No description provided for @noRankingYet.
@@ -3706,7 +3802,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterSiteLocationName.
   ///
   /// In en, this message translates to:
-  /// **'Enter site/location name'**
+  /// **'Enter site name'**
   String get enterSiteLocationName;
 
   /// No description provided for @vendorNameOptional.
@@ -3718,7 +3814,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterVendorStoreNameOptional.
   ///
   /// In en, this message translates to:
-  /// **'Enter vendor/store name (optional)'**
+  /// **'Enter vendor name'**
   String get enterVendorStoreNameOptional;
 
   /// No description provided for @noUserLoggedIn.
@@ -3766,7 +3862,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterYourFirstName.
   ///
   /// In en, this message translates to:
-  /// **'Enter your first name'**
+  /// **'Enter first name'**
   String get enterYourFirstName;
 
   /// No description provided for @pleaseEnterYourFirstName.
@@ -3778,7 +3874,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterYourLastName.
   ///
   /// In en, this message translates to:
-  /// **'Enter your last name'**
+  /// **'Enter last name'**
   String get enterYourLastName;
 
   /// No description provided for @pleaseEnterYourLastName.
@@ -3832,7 +3928,7 @@ abstract class AppLocalizations {
   /// No description provided for @noCarpenterAccountsAreListedFor.
   ///
   /// In en, this message translates to:
-  /// **'No carpenter accounts are listed for this branch yet.'**
+  /// **'No member accounts are listed for this branch yet.'**
   String get noCarpenterAccountsAreListedFor;
 
   /// No description provided for @continueToHome.
@@ -5194,7 +5290,7 @@ abstract class AppLocalizations {
   /// No description provided for @pin46Digits.
   ///
   /// In en, this message translates to:
-  /// **'PIN (4-6 digits)'**
+  /// **'4-digit PIN'**
   String get pin46Digits;
 
   /// No description provided for @enterPin.
@@ -5488,7 +5584,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterGreetingMessageForAllCarpenters.
   ///
   /// In en, this message translates to:
-  /// **'Enter greeting message for all carpenters'**
+  /// **'Enter greeting'**
   String get enterGreetingMessageForAllCarpenters;
 
   /// No description provided for @imageOptional.
@@ -5512,7 +5608,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterImageUrlJpgPng.
   ///
   /// In en, this message translates to:
-  /// **'Enter image URL (JPG/PNG)'**
+  /// **'Enter image URL'**
   String get enterImageUrlJpgPng;
 
   /// No description provided for @invalidImageUrl.
@@ -5800,7 +5896,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchByNameEmailOrBranch.
   ///
   /// In en, this message translates to:
-  /// **'Search by name, email or branch'**
+  /// **'Search admins'**
   String get searchByNameEmailOrBranch;
 
   /// No description provided for @clearSearch.
@@ -6478,7 +6574,7 @@ abstract class AppLocalizations {
   /// No description provided for @exampleAr.
   ///
   /// In en, this message translates to:
-  /// **'Example: Ar.'**
+  /// **'Enter short form'**
   String get exampleAr;
 
   /// No description provided for @use10CharactersOrLess.

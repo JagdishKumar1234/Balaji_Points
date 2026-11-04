@@ -154,6 +154,13 @@ class AppConstants {
     roleInteriorDesigner,
   ];
 
+  /// True for the four roles that add bills and earn points. Older accounts
+  /// with no role saved count as carpenters.
+  static bool isMemberRole(String? role) {
+    final id = role?.trim().toLowerCase() ?? '';
+    return id.isEmpty || branchRegistrationRoles.contains(id);
+  }
+
   // Platform Super Admin Configuration
   static const String superAdminEmail = 'aaijitechstudio@gmail.com';
   static const String superAdminPhone = '8947038661';

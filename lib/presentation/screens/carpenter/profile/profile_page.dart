@@ -14,7 +14,9 @@ import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/providers/loading_provider.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
-import 'package:balaji_points/presentation/widgets/shared/branch_banner.dart';
+import 'package:balaji_points/presentation/widgets/carpenter/member_identity.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/screens/carpenter/profile/widgets/profile_widgets.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/providers/home_provider.dart';
@@ -445,132 +447,35 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     );
   }
 
-  Widget _sectionHeader(String title, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, top: 4),
-      child: Text(
-        title.toUpperCase(),
-        style: AppTypography.overline(
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-        ),
-      ),
-    );
-  }
-
-  Widget _menuButton({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: AppRadius.md12,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: AppColors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: AppRadius.md12,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-            child: Row(
-              children: [
-                Icon(icon, color: context.themePrimary, size: 24),
-                const SizedBox(width: 16),
-                Text(
-                  title,
-                  style: AppTypography.labelLarge().copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const Spacer(),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: context.themeTextMuted,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _languageSelector() {
     final locale = ref.watch(localeProvider);
     final isHindi = locale.languageCode == 'hi';
-    final theme = Theme.of(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: AppRadius.md12,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return ProfileMenuTile(
+      icon: Icons.language_rounded,
+      title: isHindi ? 'भाषा' : AppLocalizations.of(context)!.language,
+      trailing: DropdownButtonHideUnderline(
+        child: DropdownButton<Locale>(
+          value: locale,
+          isDense: true,
+          icon: Icon(
+            Icons.arrow_drop_down_rounded,
+            color: context.themeContentColor,
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-        child: Row(
-          children: [
-            Icon(Icons.language_rounded, color: context.themePrimary, size: 24),
-            const SizedBox(width: 16),
-            Text(
-              isHindi ? 'भाषा' : AppLocalizations.of(context)!.language,
-              style: AppTypography.labelLarge().copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+          style: AppTypography.labelMedium(color: context.themeContentColor),
+          dropdownColor: context.themeCard,
+          borderRadius: AppRadius.md12,
+          onChanged: (newLocale) {
+            if (newLocale != null) {
+              ref.read(localeProvider.notifier).setLocale(newLocale);
+            }
+          },
+          items: [
+            DropdownMenuItem(
+              value: const Locale('en'),
+              child: Text(AppLocalizations.of(context)!.languageEnglish),
             ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: context.themePrimary.withValues(alpha: 0.1),
-                borderRadius: AppRadius.sm8,
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<Locale>(
-                  value: locale,
-                  isDense: true,
-                  icon: Icon(
-                    Icons.arrow_drop_down_rounded,
-                    color: context.themePrimary,
-                    size: 20,
-                  ),
-                  style: AppTypography.labelMedium(color: context.themePrimary),
-                  dropdownColor: theme.colorScheme.surface,
-                  borderRadius: AppRadius.md12,
-                  onChanged: (Locale? newLocale) {
-                    if (newLocale != null) {
-                      ref.read(localeProvider.notifier).setLocale(newLocale);
-                    }
-                  },
-                  items: [
-                    DropdownMenuItem(
-                      value: Locale('en'),
-                      child: Text(
-                        AppLocalizations.of(context)!.languageEnglish,
-                      ),
-                    ),
-                    DropdownMenuItem(value: Locale('hi'), child: Text('हिंदी')),
-                    DropdownMenuItem(value: Locale('ta'), child: Text('தமிழ்')),
-                  ],
-                ),
-              ),
-            ),
+            const DropdownMenuItem(value: Locale('hi'), child: Text('हिंदी')),
+            const DropdownMenuItem(value: Locale('ta'), child: Text('தமிழ்')),
           ],
         ),
       ),
@@ -579,69 +484,39 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
 
   Widget _themeToggle() {
     final themeMode = ref.watch(themeModeProvider);
-    final theme = Theme.of(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: AppRadius.md12,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    final l10n = AppLocalizations.of(context)!;
+    return ProfileMenuTile(
+      icon: themeMode == ThemeMode.dark
+          ? Icons.dark_mode_rounded
+          : Icons.light_mode_rounded,
+      title: l10n.themeLabel,
+      trailing: SegmentedButton<ThemeMode>(
+        showSelectedIcon: false,
+        style: SegmentedButton.styleFrom(
+          selectedBackgroundColor: AppColors.gold,
+          selectedForegroundColor: AppColors.primary,
+          foregroundColor: context.themeContentColor,
+          side: BorderSide(color: context.themeBorderStrong),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          minimumSize: const Size(44, 36),
+          visualDensity: VisualDensity.compact,
+        ),
+        segments: [
+          ButtonSegment(
+            value: ThemeMode.light,
+            tooltip: l10n.themeLight,
+            icon: const Icon(Icons.light_mode_rounded, size: 18),
+          ),
+          ButtonSegment(
+            value: ThemeMode.dark,
+            tooltip: l10n.themeDark,
+            icon: const Icon(Icons.dark_mode_rounded, size: 18),
           ),
         ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-        child: Row(
-          children: [
-            Icon(
-              themeMode == ThemeMode.dark
-                  ? Icons.dark_mode_rounded
-                  : Icons.light_mode_rounded,
-              color: context.themePrimary,
-              size: 24,
-            ),
-            const SizedBox(width: 16),
-            Text(
-              AppLocalizations.of(context)!.themeLabel,
-              style: AppTypography.labelLarge(
-                color: theme.colorScheme.onSurface,
-              ).copyWith(fontWeight: FontWeight.w600),
-            ),
-            const Spacer(),
-            SegmentedButton<ThemeMode>(
-              style: SegmentedButton.styleFrom(
-                selectedBackgroundColor: context.themePrimary,
-                selectedForegroundColor: AppColors.white,
-                side: BorderSide(color: theme.colorScheme.outline),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                minimumSize: const Size(40, 36),
-                textStyle: AppTypography.labelSmall(),
-              ),
-              segments: [
-                ButtonSegment(
-                  value: ThemeMode.light,
-                  label: Text(AppLocalizations.of(context)!.themeLight),
-                  icon: Icon(Icons.light_mode_rounded, size: 16),
-                ),
-                ButtonSegment(
-                  value: ThemeMode.dark,
-                  label: Text(AppLocalizations.of(context)!.themeDark),
-                  icon: Icon(Icons.dark_mode_rounded, size: 16),
-                ),
-              ],
-              selected: {
-                themeMode == ThemeMode.system ? ThemeMode.light : themeMode,
-              },
-              onSelectionChanged: (modes) {
-                ref.read(themeModeProvider.notifier).setThemeMode(modes.first);
-              },
-            ),
-          ],
-        ),
+        selected: {themeMode == ThemeMode.system ? ThemeMode.light : themeMode},
+        onSelectionChanged: (modes) {
+          ref.read(themeModeProvider.notifier).setThemeMode(modes.first);
+        },
       ),
     );
   }
@@ -661,7 +536,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             showLogo: false,
             showProfileButton: false,
           ),
-          const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
           Expanded(
             child: Container(
               color: theme.colorScheme.surface,
@@ -684,339 +558,98 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               ),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const SizedBox(height: 24),
-
-                            // Profile card
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surface,
-                                borderRadius: AppRadius.all16,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.black.withValues(
-                                      alpha: 0.1,
-                                    ),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  // Avatar
-                                  Container(
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: context.themePrimary,
-                                        width: 3,
-                                      ),
-                                    ),
-                                    child: ClipOval(
-                                      child:
-                                          _userData?['profileImage'] != null &&
-                                              (_userData!['profileImage']
-                                                      as String)
-                                                  .isNotEmpty
-                                          ? Image.network(
-                                              _userData!['profileImage']
-                                                  as String,
-                                              key: ValueKey<String>(
-                                                _userData!['profileImage']
-                                                    as String,
-                                              ),
-                                              fit: BoxFit.cover,
-                                              loadingBuilder: (context, child, progress) {
-                                                if (progress == null) {
-                                                  return child;
-                                                }
-                                                return Container(
-                                                  color: context.themeSecondary
-                                                      .withValues(alpha: 0.3),
-                                                  child: Center(
-                                                    child: CircularProgressIndicator(
-                                                      value:
-                                                          progress.expectedTotalBytes !=
-                                                              null
-                                                          ? progress.cumulativeBytesLoaded /
-                                                                progress
-                                                                    .expectedTotalBytes!
-                                                          : null,
-                                                      strokeWidth: 3,
-                                                      valueColor:
-                                                          const AlwaysStoppedAnimation<
-                                                            Color
-                                                          >(AppColors.primary),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                              errorBuilder:
-                                                  (
-                                                    context,
-                                                    error,
-                                                    _,
-                                                  ) => Container(
-                                                    color:
-                                                        context.themeSecondary,
-                                                    child: const Icon(
-                                                      Icons.person_rounded,
-                                                      color: AppColors.white,
-                                                      size: 40,
-                                                    ),
-                                                  ),
-                                            )
-                                          : Container(
-                                              color: context.themeSecondary,
-                                              child: const Icon(
-                                                Icons.person_rounded,
-                                                color: AppColors.white,
-                                                size: 40,
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-
-                                  Text(
-                                    _displayName(),
-                                    style: AppTypography.h4(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 4),
-
-                                  if (_userData?['userDisplayId'] != null)
-                                    Text(
-                                      '#BP${_userData!['userDisplayId']}',
-                                      style: AppTypography.labelMedium(
-                                        color: context.themePrimary.withValues(
-                                          alpha: 0.7,
-                                        ),
-                                      ).copyWith(letterSpacing: 0.5),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  const SizedBox(height: 8),
-
-                                  if (_userData?['phone'] != null)
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.phone_rounded,
-                                          size: 16,
-                                          color: context.themeTextSecondary,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          _userData!['phone'] as String,
-                                          style: AppTypography.bodySmall(
-                                            color: context.themeTextSecondary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  const SizedBox(height: 8),
-
-                                  // Points + tier
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.monetization_on_rounded,
-                                        color: AppColors.warning,
-                                        size: 18,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        carpenterPoints.formattedPoints,
-                                        style: AppTypography.labelLarge(
-                                          color: context.themePrimary,
-                                        ).copyWith(fontWeight: FontWeight.w600),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: context.themeSecondary
-                                              .withValues(alpha: 0.2),
-                                          borderRadius: AppRadius.md12,
-                                        ),
-                                        child: Text(
-                                          carpenterPoints.tier,
-                                          style:
-                                              AppTypography.labelSmall(
-                                                color: context.themeSecondary,
-                                              ).copyWith(
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                            ProfileHeader(
+                              name: _displayName(),
+                              roleName: memberRoleName(context, _userData),
+                              imageUrl: _userData?['profileImage'] as String?,
+                              displayId: _userData?['userDisplayId']
+                                  ?.toString(),
+                              phone: _userData?['phone'] as String?,
+                              points: carpenterPoints.formattedPoints,
+                              tier: carpenterPoints.tier,
                             ),
-
-                            const SizedBox(height: 24),
-
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
+                              padding: const EdgeInsets.fromLTRB(
+                                20,
+                                24,
+                                20,
+                                20,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  _sectionHeader(
-                                    l10n.profileSectionAccount,
-                                    theme,
-                                  ),
-                                  const SizedBox(height: 8),
-
-                                  _menuButton(
-                                    icon: Icons.edit_rounded,
-                                    title: l10n.editProfile,
-                                    onTap: () async {
-                                      await context.push('/edit-profile');
-                                      await _loadUserData(forceRefresh: true);
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-
-                                  _menuButton(
-                                    icon: Icons.lock_reset_rounded,
-                                    title: l10n.changePin,
-                                    onTap: () async {
-                                      final phone = await _sessionService
-                                          .getPhoneNumber();
-                                      if (phone != null && context.mounted) {
-                                        context.push('/pin-reset?phone=$phone');
-                                      }
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-
-                                  _menuButton(
-                                    icon: Icons.receipt_long_rounded,
-                                    title: l10n.myOrders,
-                                    onTap: () => context.push('/orders'),
+                                  ProfileMenuGroup(
+                                    title: l10n.profileSectionAccount,
+                                    children: [
+                                      ProfileMenuTile(
+                                        icon: Icons.edit_rounded,
+                                        title: l10n.editProfile,
+                                        onTap: () async {
+                                          await context.push('/edit-profile');
+                                          await _loadUserData(
+                                            forceRefresh: true,
+                                          );
+                                        },
+                                      ),
+                                      ProfileMenuTile(
+                                        icon: Icons.lock_reset_rounded,
+                                        title: l10n.changePin,
+                                        onTap: () async {
+                                          final phone = await _sessionService
+                                              .getPhoneNumber();
+                                          if (phone != null &&
+                                              context.mounted) {
+                                            context.push(
+                                              '/pin-reset?phone=$phone',
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 20),
-
-                                  _sectionHeader(
-                                    l10n.profileSectionSupport,
-                                    theme,
-                                  ),
-                                  const SizedBox(height: 8),
-
-                                  _menuButton(
-                                    icon: Icons.phone_rounded,
-                                    title: l10n.helpSupport,
-                                    onTap: () => _showSupportDialog(context),
+                                  ProfileMenuGroup(
+                                    title: l10n.profileSectionSupport,
+                                    children: [
+                                      ProfileMenuTile(
+                                        icon: Icons.support_agent_rounded,
+                                        title: l10n.helpSupport,
+                                        onTap: () =>
+                                            _showSupportDialog(context),
+                                      ),
+                                      ProfileMenuTile(
+                                        icon: Icons.info_rounded,
+                                        title: l10n.profileAboutLink,
+                                        onTap: () => context.push('/about-us'),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 20),
-
-                                  _sectionHeader(
-                                    l10n.profileSectionPreferences,
-                                    theme,
+                                  ProfileMenuGroup(
+                                    title: l10n.profileSectionPreferences,
+                                    children: [
+                                      _languageSelector(),
+                                      _themeToggle(),
+                                    ],
                                   ),
-                                  const SizedBox(height: 8),
-
-                                  _languageSelector(),
-                                  const SizedBox(height: 12),
-                                  _themeToggle(),
-
                                   const SizedBox(height: 24),
-
-                                  // Logout button
-                                  Container(
-                                    width: double.infinity,
-                                    margin: const EdgeInsets.only(top: 8),
-                                    decoration: BoxDecoration(
-                                      borderRadius: AppRadius.all16,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: context.themeError.withValues(
-                                            alpha: 0.2,
-                                          ),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ElevatedButton(
-                                      onPressed: () => _handleLogout(context),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: context.themeError,
-                                        foregroundColor: AppColors.white,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 18,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: AppRadius.all16,
-                                        ),
-                                        elevation: 0,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            Icons.logout_rounded,
-                                            size: 22,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Text(
-                                            l10n.logout,
-                                            style: AppTypography.buttonLarge(
-                                              color: AppColors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                  AppButton.danger(
+                                    label: l10n.logout,
+                                    icon: Icons.logout_rounded,
+                                    onPressed: () => _handleLogout(context),
                                   ),
-
-                                  const SizedBox(height: 12),
-
-                                  TextButton.icon(
-                                    onPressed: () => context.push('/about-us'),
-                                    icon: Icon(
-                                      Icons.info_outline_rounded,
-                                      size: 20,
-                                      color: context.themeSecondary,
-                                    ),
-                                    label: Text(
-                                      l10n.profileAboutLink,
-                                      style: AppTypography.labelLarge(
-                                        color: context.themeSecondary,
-                                      ).copyWith(fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 8),
-
-                                  if (_appVersion.isNotEmpty)
-                                    Center(
-                                      child: Text(
-                                        _appVersion,
-                                        style: AppTypography.caption(
-                                          color: context.themeTextSecondary,
-                                        ),
+                                  if (_appVersion.isNotEmpty) ...[
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      _appVersion,
+                                      textAlign: TextAlign.center,
+                                      style: AppTypography.caption(
+                                        color: context.themeTextSecondary,
                                       ),
                                     ),
-
-                                  const SizedBox(height: 20),
+                                  ],
                                 ],
                               ),
                             ),

@@ -393,7 +393,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           color: context.themeBackground,
           child: Column(
             children: [
-              const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
+              if (_showDashboard)
+                const BranchBanner(margin: EdgeInsets.fromLTRB(16, 10, 16, 0)),
               Expanded(
                 child: _branchGate(
                   (branch) => ResponsiveRoleNavigation(

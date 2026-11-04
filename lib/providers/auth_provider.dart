@@ -785,7 +785,7 @@ class AuthNotifier extends Notifier<AuthState> {
         createdAt: DateTime.now(),
       );
 
-      if (role == 'carpenter') {
+      if (AppConstants.isMemberRole(role)) {
         ref.invalidate(homeProvider);
         ref.invalidate(walletProvider);
         await ref.read(carpenterPointsProvider.notifier).prepareForSession();

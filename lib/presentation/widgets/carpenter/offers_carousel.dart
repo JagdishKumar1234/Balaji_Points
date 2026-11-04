@@ -1,3 +1,4 @@
+import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
@@ -157,6 +158,13 @@ class _OffersCarouselState extends State<OffersCarousel> {
               offer.imageUrl!,
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
+              cacheWidth:
+                  (MediaQuery.sizeOf(context).width *
+                          MediaQuery.devicePixelRatioOf(context))
+                      .round(),
+              loadingBuilder: (context, child, progress) => progress == null
+                  ? child
+                  : ColoredBox(color: context.themeSoftSurface),
               errorBuilder: (context, error, stackTrace) {
                 return ColoredBox(color: AppColors.primaryLight);
               },
@@ -249,34 +257,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
   }
 
   void _showFullImage(BuildContext context, String imageUrl) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.forCard),
-          child: ClipRRect(
-            borderRadius: AppRadius.forCard,
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: context.themeBorder,
-                  height: 220.0,
-                  child: Center(
-                    child: Icon(
-                      Icons.broken_image_rounded,
-                      size: 40.0,
-                      color: context.themeTextSecondary,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
+    showFullScreenImage(context, imageUrl);
   }
 
   Widget _buildDot(bool isActive) {

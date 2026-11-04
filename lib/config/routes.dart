@@ -19,7 +19,6 @@ import 'package:balaji_points/presentation/screens/carpenter/spin/daily_spin_pag
 import 'package:balaji_points/presentation/screens/carpenter/wallet/wallet_page.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_home_page.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_add_bill_page.dart';
-import 'package:balaji_points/presentation/screens/admin/diagnostic_page.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_notifications_page.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_page.dart';
 import 'package:balaji_points/presentation/screens/carpenter/bills/add_bill_page.dart';
@@ -264,10 +263,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/add-bill',
         builder: (context, _) => const AdminAddBillPage(),
-      ),
-      GoRoute(
-        path: '/admin/diagnostic',
-        builder: (context, _) => const DiagnosticPage(),
       ),
       GoRoute(
         path: '/admin/notifications',

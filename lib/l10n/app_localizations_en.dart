@@ -383,7 +383,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get routeErrorDetailsLabel => 'Technical details';
 
   @override
-  String get topCarpenters => 'Top 3 Carpenters';
+  String get topCarpenters => 'Top 3 Members';
 
   @override
   String get todaysWinner => 'Today\'s Winner';
@@ -976,7 +976,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offerTitleLabel => 'Offer Title *';
 
   @override
-  String get offerTitleHint => 'e.g., Diwali Special Offer';
+  String get offerTitleHint => 'Enter offer title';
 
   @override
   String get enterOfferTitle => 'Please enter offer title';
@@ -985,13 +985,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get descriptionLabel => 'Description';
 
   @override
-  String get descriptionHint => 'Brief description of the offer';
+  String get descriptionHint => 'Enter description';
 
   @override
   String get pointsRequiredLabel => 'Points Required *';
 
   @override
-  String get pointsHint => 'e.g., 100';
+  String get pointsHint => 'Enter points';
 
   @override
   String get enterPointsError => 'Please enter points';
@@ -1029,7 +1029,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToPickImage => 'Failed to pick image';
 
   @override
-  String get searchByNameOrPhone => 'Search by name or phone';
+  String get searchByNameOrPhone => 'Search name or phone';
 
   @override
   String get add => 'Add';
@@ -1091,7 +1091,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumberLabel => 'Phone number';
 
   @override
-  String get phoneNumberHint => 'e.g. 9876543210 (no +91)';
+  String get phoneNumberHint => 'Enter phone number';
 
   @override
   String get enterOTP => 'Enter OTP';
@@ -1387,7 +1387,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutUs => 'About Us';
 
   @override
-  String get aboutUsMenuSubtitle => 'Rewards & loyalty for carpenters';
+  String get aboutUsMenuSubtitle => 'Rewards & loyalty for members';
 
   @override
   String get aboutUsSubtitle => 'Your hardware rewards partner';
@@ -1513,10 +1513,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
+  String get hintPassword => 'Enter password';
+
+  @override
+  String get hintPasswordMin => 'Enter password';
+
+  @override
+  String get hintConfirmPassword => 'Re-enter password';
+
+  @override
+  String get hintFullName => 'Enter full name';
+
+  @override
+  String get hintAmount => 'Enter amount';
+
+  @override
+  String get hintBranchFullName => 'Enter branch name';
+
+  @override
+  String get hintShortName => 'Enter short name';
+
+  @override
+  String get hintBranchCode => 'Enter branch code';
+
+  @override
+  String get hintAddress => 'Enter address';
+
+  @override
+  String get hintRoleName => 'Enter role name';
+
+  @override
+  String get hintEmail => 'Enter email';
+
+  @override
+  String get hintPhone => 'Enter phone number';
+
+  @override
+  String get hintPin => 'Enter PIN';
+
+  @override
+  String get hintConfirmPin => 'Re-enter PIN';
+
+  @override
+  String get hintBranchId => 'Enter branch ID';
+
+  @override
   String get diwaliYourPrize => 'Your Diwali prize';
 
   @override
   String get diwaliYou => 'You';
+
+  @override
+  String get diwaliPosition => 'Position';
 
   @override
   String get readMore => 'Read more';
@@ -1543,7 +1591,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featureGrowMore => 'GROW MORE';
 
   @override
-  String get featureGrowBody => 'Climb Leaderboard\nBe a Top Carpenter';
+  String get featureGrowBody => 'Climb Leaderboard\nBe a Top Member';
 
   @override
   String get featureExclusive => 'EXCLUSIVE';
@@ -1563,7 +1611,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get platinumHighestTier => 'Platinum — highest tier!';
 
   @override
-  String get topCarpentersTitle => 'Top carpenters';
+  String get topCarpentersTitle => 'Top members';
 
   @override
   String get noRankingYet => 'No ranking data yet';
@@ -1894,13 +1942,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get siteName => 'Site Name *';
 
   @override
-  String get enterSiteLocationName => 'Enter site/location name';
+  String get enterSiteLocationName => 'Enter site name';
 
   @override
   String get vendorNameOptional => 'Vendor Name (Optional)';
 
   @override
-  String get enterVendorStoreNameOptional => 'Enter vendor/store name (optional)';
+  String get enterVendorStoreNameOptional => 'Enter vendor name';
 
   @override
   String get noUserLoggedIn => 'No user logged in';
@@ -1926,13 +1974,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get enterYourFirstName => 'Enter your first name';
+  String get enterYourFirstName => 'Enter first name';
 
   @override
   String get pleaseEnterYourFirstName => 'Please enter your first name';
 
   @override
-  String get enterYourLastName => 'Enter your last name';
+  String get enterYourLastName => 'Enter last name';
 
   @override
   String get pleaseEnterYourLastName => 'Please enter your last name';
@@ -1965,7 +2013,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notification => 'Notification';
 
   @override
-  String get noCarpenterAccountsAreListedFor => 'No carpenter accounts are listed for this branch yet.';
+  String get noCarpenterAccountsAreListedFor => 'No member accounts are listed for this branch yet.';
 
   @override
   String get continueToHome => 'Continue to Home';
@@ -2724,7 +2772,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToCreateCarpenter => 'Failed to create carpenter';
 
   @override
-  String get pin46Digits => 'PIN (4-6 digits)';
+  String get pin46Digits => '4-digit PIN';
 
   @override
   String get enterPin => 'Enter PIN';
@@ -2893,7 +2941,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get composeMessage => 'Compose Message';
 
   @override
-  String get enterGreetingMessageForAllCarpenters => 'Enter greeting message for all carpenters';
+  String get enterGreetingMessageForAllCarpenters => 'Enter greeting';
 
   @override
   String get imageOptional => 'Image (Optional)';
@@ -2905,7 +2953,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orEnterImageUrl => 'Or enter image URL:';
 
   @override
-  String get enterImageUrlJpgPng => 'Enter image URL (JPG/PNG)';
+  String get enterImageUrlJpgPng => 'Enter image URL';
 
   @override
   String get invalidImageUrl => 'Invalid image URL';
@@ -3067,7 +3115,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewEachAdminAndTheBranch => 'Review each admin and the branch they manage. Reset passwords or remove an account.';
 
   @override
-  String get searchByNameEmailOrBranch => 'Search by name, email or branch';
+  String get searchByNameEmailOrBranch => 'Search admins';
 
   @override
   String get clearSearch => 'Clear search';
@@ -3438,7 +3486,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shortFormOptional => 'Short form (optional)';
 
   @override
-  String get exampleAr => 'Example: Ar.';
+  String get exampleAr => 'Enter short form';
 
   @override
   String get use10CharactersOrLess => 'Use 10 characters or less';

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -230,41 +231,10 @@ class _LogoWithLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = ResponsiveTypography.getLogoSize(context) * 1.4;
-    final radius = size * 0.22;
     // Wide enough for the ring to clear the logo's corners.
     final ringSize = size * 1.42;
 
-    final logo = Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.22),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Image.asset(
-        'assets/images/splash_logo.png',
-        width: size,
-        height: size,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius),
-            color: AppColors.primary,
-          ),
-          child: Icon(
-            Icons.card_giftcard_rounded,
-            color: AppColors.white,
-            size: size * 0.5,
-          ),
-        ),
-      ),
-    );
+    final logo = BrandLogo(size: size);
 
     final loader = SizedBox(
       width: ringSize,

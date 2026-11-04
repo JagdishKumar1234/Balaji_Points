@@ -383,7 +383,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get routeErrorDetailsLabel => 'தொழில்நுட்ப விவரங்கள்';
 
   @override
-  String get topCarpenters => 'சிறந்த 3 தச்சர்கள்';
+  String get topCarpenters => 'சிறந்த 3 உறுப்பினர்கள்';
 
   @override
   String get todaysWinner => 'இன்றைய வெற்றியாளர்';
@@ -976,7 +976,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get offerTitleLabel => 'ஆஃபர் தலைப்பு *';
 
   @override
-  String get offerTitleHint => 'எ.கா., தீபாவளி சிறப்பு ஆஃபர்';
+  String get offerTitleHint => 'சலுகை தலைப்பு உள்ளிடவும்';
 
   @override
   String get enterOfferTitle => 'ஆஃபர் தலைப்பை உள்ளிடவும்';
@@ -985,13 +985,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get descriptionLabel => 'விளக்கம்';
 
   @override
-  String get descriptionHint => 'ஆஃபரின் சுருக்கமான விவரம்';
+  String get descriptionHint => 'விளக்கம் உள்ளிடவும்';
 
   @override
   String get pointsRequiredLabel => 'தேவையான பாயிண்ட்ஸ் *';
 
   @override
-  String get pointsHint => 'எ.கா., 100';
+  String get pointsHint => 'புள்ளிகளை உள்ளிடவும்';
 
   @override
   String get enterPointsError => 'பாயிண்ட்ஸை உள்ளிடவும்';
@@ -1029,7 +1029,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get failedToPickImage => 'படத்தைத் தேர்வு செய்ய இயலவில்லை';
 
   @override
-  String get searchByNameOrPhone => 'பெயர் அல்லது கைபேசி எண்ணால் தேடவும்...';
+  String get searchByNameOrPhone => 'பெயர் அல்லது போன் தேடு';
 
   @override
   String get add => 'சேர்க்கவும்';
@@ -1091,7 +1091,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get phoneNumberLabel => 'கைபேசி எண்';
 
   @override
-  String get phoneNumberHint => 'எ.கா. 9876543210 (+91 இல்லாமல்)';
+  String get phoneNumberHint => 'போன் எண்ணை உள்ளிடவும்';
 
   @override
   String get enterOTP => 'OTP உள்ளிடவும்';
@@ -1387,7 +1387,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get aboutUs => 'எங்களைப் பற்றி';
 
   @override
-  String get aboutUsMenuSubtitle => 'தச்சர்களுக்கான வெகுமதி & நம்பிக்கை திட்டம்';
+  String get aboutUsMenuSubtitle => 'உறுப்பினர்களுக்கான வெகுமதி & நம்பிக்கை திட்டம்';
 
   @override
   String get aboutUsSubtitle => 'உங்கள் ஹார்டுவேர் வெகுமதி துணை';
@@ -1513,10 +1513,58 @@ class AppLocalizationsTa extends AppLocalizations {
   String get menu => 'மெனு';
 
   @override
+  String get hintPassword => 'கடவுச்சொல் உள்ளிடவும்';
+
+  @override
+  String get hintPasswordMin => 'கடவுச்சொல் உள்ளிடவும்';
+
+  @override
+  String get hintConfirmPassword => 'மீண்டும் உள்ளிடவும்';
+
+  @override
+  String get hintFullName => 'முழுப் பெயர் உள்ளிடவும்';
+
+  @override
+  String get hintAmount => 'தொகையை உள்ளிடவும்';
+
+  @override
+  String get hintBranchFullName => 'கிளை பெயர் உள்ளிடவும்';
+
+  @override
+  String get hintShortName => 'குறுகிய பெயர் உள்ளிடவும்';
+
+  @override
+  String get hintBranchCode => 'கிளை குறியீடு உள்ளிடவும்';
+
+  @override
+  String get hintAddress => 'முகவரி உள்ளிடவும்';
+
+  @override
+  String get hintRoleName => 'பங்கு பெயர் உள்ளிடவும்';
+
+  @override
+  String get hintEmail => 'மின்னஞ்சலை உள்ளிடவும்';
+
+  @override
+  String get hintPhone => 'போன் எண்ணை உள்ளிடவும்';
+
+  @override
+  String get hintPin => 'PIN உள்ளிடவும்';
+
+  @override
+  String get hintConfirmPin => 'PIN மீண்டும் உள்ளிடவும்';
+
+  @override
+  String get hintBranchId => 'கிளை ID உள்ளிடவும்';
+
+  @override
   String get diwaliYourPrize => 'உங்கள் தீபாவளி பரிசு';
 
   @override
   String get diwaliYou => 'நீங்கள்';
+
+  @override
+  String get diwaliPosition => 'இடம்';
 
   @override
   String get readMore => 'மேலும் படிக்க';
@@ -1543,7 +1591,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get featureGrowMore => 'முன்னேறு';
 
   @override
-  String get featureGrowBody => 'தரவரிசையில் உயரு\nசிறந்த தச்சராகு';
+  String get featureGrowBody => 'தரவரிசையில் உயரு\nசிறந்த உறுப்பினராகு';
 
   @override
   String get featureExclusive => 'சிறப்பு';
@@ -1563,7 +1611,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get platinumHighestTier => 'பிளாட்டினம் — உச்ச நிலை!';
 
   @override
-  String get topCarpentersTitle => 'சிறந்த தச்சர்கள்';
+  String get topCarpentersTitle => 'சிறந்த உறுப்பினர்கள்';
 
   @override
   String get noRankingYet => 'இன்னும் தரவரிசை தரவு இல்லை';
@@ -1894,13 +1942,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get siteName => 'தளத்தின் பெயர் *';
 
   @override
-  String get enterSiteLocationName => 'தளம்/இடத்தின் பெயரை உள்ளிடவும்';
+  String get enterSiteLocationName => 'தள பெயர் உள்ளிடவும்';
 
   @override
   String get vendorNameOptional => 'விற்பனையாளர் பெயர் (விருப்பம்)';
 
   @override
-  String get enterVendorStoreNameOptional => 'விற்பனையாளர்/கடையின் பெயர் (விருப்பம்)';
+  String get enterVendorStoreNameOptional => 'விற்பனையாளர் பெயர் உள்ளிடவும்';
 
   @override
   String get noUserLoggedIn => 'பயனர் உள்நுழையவில்லை';
@@ -1926,13 +1974,13 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
-  String get enterYourFirstName => 'உங்கள் முதல் பெயரை உள்ளிடவும்';
+  String get enterYourFirstName => 'முதல் பெயர் உள்ளிடவும்';
 
   @override
   String get pleaseEnterYourFirstName => 'தயவுசெய்து உங்கள் முதல் பெயரை உள்ளிடவும்';
 
   @override
-  String get enterYourLastName => 'உங்கள் குடும்பப் பெயரை உள்ளிடவும்';
+  String get enterYourLastName => 'கடைசி பெயர் உள்ளிடவும்';
 
   @override
   String get pleaseEnterYourLastName => 'தயவுசெய்து உங்கள் குடும்பப் பெயரை உள்ளிடவும்';
@@ -1965,7 +2013,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get notification => 'அறிவிப்பு';
 
   @override
-  String get noCarpenterAccountsAreListedFor => 'இந்தக் கிளையில் இன்னும் தச்சர் கணக்குகள் இல்லை.';
+  String get noCarpenterAccountsAreListedFor => 'இந்தக் கிளையில் இன்னும் உறுப்பினர் கணக்குகள் இல்லை.';
 
   @override
   String get continueToHome => 'முகப்புக்குச் செல்';
@@ -2724,22 +2772,22 @@ class AppLocalizationsTa extends AppLocalizations {
   String get failedToCreateCarpenter => 'தச்சரை உருவாக்க முடியவில்லை';
 
   @override
-  String get pin46Digits => 'PIN (4-6 இலக்கங்கள்)';
+  String get pin46Digits => '4 இலக்க PIN';
 
   @override
-  String get enterPin => 'PIN-ஐ உள்ளிடவும்';
+  String get enterPin => 'PIN உள்ளிடவும்';
 
   @override
   String get firstNameOptional => 'முதல் பெயர் (விருப்பம்)';
 
   @override
-  String get enterFirstName => 'முதல் பெயரை உள்ளிடவும்';
+  String get enterFirstName => 'முதல் பெயர் உள்ளிடவும்';
 
   @override
   String get lastNameOptional => 'குடும்பப் பெயர் (விருப்பம்)';
 
   @override
-  String get enterLastName => 'குடும்பப் பெயரை உள்ளிடவும்';
+  String get enterLastName => 'கடைசி பெயர் உள்ளிடவும்';
 
   @override
   String get create => 'உருவாக்கு';
@@ -2893,7 +2941,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get composeMessage => 'செய்தியை எழுது';
 
   @override
-  String get enterGreetingMessageForAllCarpenters => 'எல்லா தச்சர்களுக்குமான வாழ்த்துச் செய்தியை உள்ளிடவும்';
+  String get enterGreetingMessageForAllCarpenters => 'செய்தி உள்ளிடவும்';
 
   @override
   String get imageOptional => 'படம் (விருப்பம்)';
@@ -2905,7 +2953,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get orEnterImageUrl => 'அல்லது பட URL-ஐ உள்ளிடவும்:';
 
   @override
-  String get enterImageUrlJpgPng => 'பட URL-ஐ உள்ளிடவும் (JPG/PNG)';
+  String get enterImageUrlJpgPng => 'பட URL உள்ளிடவும்';
 
   @override
   String get invalidImageUrl => 'தவறான பட URL';
@@ -3067,7 +3115,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get reviewEachAdminAndTheBranch => 'ஒவ்வொரு நிர்வாகியையும் அவரது கிளையையும் பாருங்கள். கடவுச்சொல்லை மாற்றலாம் அல்லது கணக்கை நீக்கலாம்.';
 
   @override
-  String get searchByNameEmailOrBranch => 'பெயர், மின்னஞ்சல் அல்லது கிளை மூலம் தேடு';
+  String get searchByNameEmailOrBranch => 'நிர்வாகிகளைத் தேடு';
 
   @override
   String get clearSearch => 'தேடலை அழி';
@@ -3438,7 +3486,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get shortFormOptional => 'சுருக்க வடிவம் (விருப்பம்)';
 
   @override
-  String get exampleAr => 'எ.கா: Ar.';
+  String get exampleAr => 'குறுக்கம் உள்ளிடவும்';
 
   @override
   String get use10CharactersOrLess => '10 அல்லது குறைவான எழுத்துகள்';
