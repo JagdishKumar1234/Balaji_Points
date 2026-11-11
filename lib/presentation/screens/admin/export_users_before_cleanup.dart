@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -34,7 +35,8 @@ class _ExportUsersBeforeCleanupScreenState
 
     try {
       final query = await FirebaseFirestore.instance
-          .collection('users').forAdminBranch()
+          .collection('users')
+          .forAdminBranch()
           .orderBy('totalPoints', descending: true)
           .get();
 
@@ -45,7 +47,7 @@ class _ExportUsersBeforeCleanupScreenState
         final data = doc.data();
         final role = data['role'] as String?;
         if (role == 'admin') return false;
-        return role == null || role.isEmpty || role == 'carpenter';
+        return AppConstants.isMemberRole(role);
       }).toList();
 
       if (users.isEmpty) {

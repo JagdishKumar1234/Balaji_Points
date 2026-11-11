@@ -41,17 +41,12 @@ class BalajiPointsApp extends ConsumerWidget {
         Locale('ta'), // Tamil
       ],
       locale: locale, // User-selected locale
-
       // Routing
       routerConfig: router,
 
       // Loading Overlay
-      builder: (context, child) => Stack(
-        children: [
-          if (child != null) child,
-          const LoadingOverlay(),
-        ],
-      ),
+      builder: (context, child) =>
+          Stack(children: [if (child != null) child, const LoadingOverlay()]),
     );
   }
 }

@@ -38,14 +38,23 @@ void main() {
     'dark error chip': (AppColors.darkErrorText, AppColors.darkErrorSoft),
     // Dark ColorScheme.error / onError (destructive text + danger fills).
     'dark error text on card': (AppColors.darkErrorText, AppColors.darkSurface),
-    'dark error text on bg': (AppColors.darkErrorText, AppColors.darkBackground),
+    'dark error text on bg': (
+      AppColors.darkErrorText,
+      AppColors.darkBackground,
+    ),
     'error text on white': (AppColors.error, AppColors.surface),
   };
 
   // Icon / large-text pairs must reach 3:1.
   const iconPairs = <String, (Color, Color)>{
-    'dark primary on dark bg': (AppColors.primaryOnDark, AppColors.darkBackground),
-    'dark primary on dark card': (AppColors.primaryOnDark, AppColors.darkSurface),
+    'dark primary on dark bg': (
+      AppColors.primaryOnDark,
+      AppColors.darkBackground,
+    ),
+    'dark primary on dark card': (
+      AppColors.primaryOnDark,
+      AppColors.darkSurface,
+    ),
     'warning on white': (AppColors.warning, AppColors.surface),
     'warning on dark card': (AppColors.warning, AppColors.darkSurface),
     'success on dark card': (AppColors.success, AppColors.darkSurface),

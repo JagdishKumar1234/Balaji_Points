@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/services/platform/offer_visibility.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
@@ -137,7 +139,15 @@ class _OffersManagementState extends State<OffersManagement> {
             );
           }
 
-          final offers = snapshot.data?.docs ?? [];
+          // Only this admin's branch's offers.
+          final offers = (snapshot.data?.docs ?? [])
+              .where(
+                (doc) => OfferVisibility.adminCanSee(
+                  doc.data() as Map<String, dynamic>?,
+                  CurrentBranchService.adminBranchId,
+                ),
+              )
+              .toList();
 
           if (offers.isEmpty) {
             return Center(

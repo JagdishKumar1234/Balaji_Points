@@ -10,9 +10,9 @@ class UserMigrationService {
     FirebaseFirestore? firestore,
     PhoneAuthService? phoneAuthService,
     PinAuthService? pinAuthService,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _phoneAuthService = phoneAuthService ?? PhoneAuthService(),
-        _pinAuthService = pinAuthService ?? PinAuthService();
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _phoneAuthService = phoneAuthService ?? PhoneAuthService(),
+       _pinAuthService = pinAuthService ?? PinAuthService();
 
   final FirebaseFirestore _firestore;
   final PhoneAuthService _phoneAuthService;
@@ -54,9 +54,7 @@ class UserMigrationService {
       return phoneDoc.reference;
     }
 
-    final query = await _users
-        .where('phone', isEqualTo: normalized)
-        .get();
+    final query = await _users.where('phone', isEqualTo: normalized).get();
     for (final doc in query.docs) {
       if (doc.id == normalized) continue;
       final migratedTo = doc.data()['migratedToUid'] as String?;
@@ -153,10 +151,7 @@ class UserMigrationService {
       'migratedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
 
-    await _migrateUserPointsIfNeeded(
-      fromDocId: source.id,
-      toUid: uid,
-    );
+    await _migrateUserPointsIfNeeded(fromDocId: source.id, toUid: uid);
   }
 
   Future<void> _markLegacyPhoneDocInactive({

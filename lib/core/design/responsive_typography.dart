@@ -6,9 +6,9 @@ class ResponsiveTypography {
   /// Get responsive logo size based on device type
   static double getLogoSize(BuildContext context) {
     return switch (context.deviceType) {
-      DeviceType.mobile => 80.0,        // Phone: 80px
-      DeviceType.tablet => 100.0,       // Tablet: 100px
-      DeviceType.desktop => 120.0,      // Desktop: 120px
+      DeviceType.mobile => 80.0, // Phone: 80px
+      DeviceType.tablet => 100.0, // Tablet: 100px
+      DeviceType.desktop => 120.0, // Desktop: 120px
       DeviceType.largeDesktop => 140.0, // Large desktop: 140px
     };
   }
@@ -36,50 +36,50 @@ class ResponsiveTypography {
   /// Get responsive title font size
   static double getTitleFontSize(BuildContext context) {
     return switch (context.deviceType) {
-      DeviceType.mobile => 28.0,        // Mobile: 28px
-      DeviceType.tablet => 32.0,        // Tablet: 32px
-      DeviceType.desktop => 36.0,       // Desktop: 36px
-      DeviceType.largeDesktop => 40.0,  // Large desktop: 40px
+      DeviceType.mobile => 28.0, // Mobile: 28px
+      DeviceType.tablet => 32.0, // Tablet: 32px
+      DeviceType.desktop => 36.0, // Desktop: 36px
+      DeviceType.largeDesktop => 40.0, // Large desktop: 40px
     };
   }
 
   /// Get responsive subtitle font size
   static double getSubtitleFontSize(BuildContext context) {
     return switch (context.deviceType) {
-      DeviceType.mobile => 14.0,        // Mobile: 14px
-      DeviceType.tablet => 15.0,        // Tablet: 15px
-      DeviceType.desktop => 16.0,       // Desktop: 16px
-      DeviceType.largeDesktop => 17.0,  // Large desktop: 17px
+      DeviceType.mobile => 14.0, // Mobile: 14px
+      DeviceType.tablet => 15.0, // Tablet: 15px
+      DeviceType.desktop => 16.0, // Desktop: 16px
+      DeviceType.largeDesktop => 17.0, // Large desktop: 17px
     };
   }
 
   /// Get responsive body font size
   static double getBodyFontSize(BuildContext context) {
     return switch (context.deviceType) {
-      DeviceType.mobile => 14.0,        // Mobile: 14px
-      DeviceType.tablet => 15.0,        // Tablet: 15px
-      DeviceType.desktop => 16.0,       // Desktop: 16px
-      DeviceType.largeDesktop => 17.0,  // Large desktop: 17px
+      DeviceType.mobile => 14.0, // Mobile: 14px
+      DeviceType.tablet => 15.0, // Tablet: 15px
+      DeviceType.desktop => 16.0, // Desktop: 16px
+      DeviceType.largeDesktop => 17.0, // Large desktop: 17px
     };
   }
 
   /// Get responsive label font size
   static double getLabelFontSize(BuildContext context) {
     return switch (context.deviceType) {
-      DeviceType.mobile => 12.0,        // Mobile: 12px
-      DeviceType.tablet => 13.0,        // Tablet: 13px
-      DeviceType.desktop => 14.0,       // Desktop: 14px
-      DeviceType.largeDesktop => 15.0,  // Large desktop: 15px
+      DeviceType.mobile => 12.0, // Mobile: 12px
+      DeviceType.tablet => 13.0, // Tablet: 13px
+      DeviceType.desktop => 14.0, // Desktop: 14px
+      DeviceType.largeDesktop => 15.0, // Large desktop: 15px
     };
   }
 
   /// Get responsive button font size
   static double getButtonFontSize(BuildContext context) {
     return switch (context.deviceType) {
-      DeviceType.mobile => 15.0,        // Mobile: 15px
-      DeviceType.tablet => 16.0,        // Tablet: 16px
-      DeviceType.desktop => 16.0,       // Desktop: 16px
-      DeviceType.largeDesktop => 17.0,  // Large desktop: 17px
+      DeviceType.mobile => 15.0, // Mobile: 15px
+      DeviceType.tablet => 16.0, // Tablet: 16px
+      DeviceType.desktop => 16.0, // Desktop: 16px
+      DeviceType.largeDesktop => 17.0, // Large desktop: 17px
     };
   }
 
@@ -124,24 +124,20 @@ extension ResponsiveTypographyContext on BuildContext {
       ResponsiveTypography.getLogoBorderRadius(this);
 
   /// Get responsive title font size
-  double get responsiveTitleSize =>
-      ResponsiveTypography.getTitleFontSize(this);
+  double get responsiveTitleSize => ResponsiveTypography.getTitleFontSize(this);
 
   /// Get responsive subtitle font size
   double get responsiveSubtitleSize =>
       ResponsiveTypography.getSubtitleFontSize(this);
 
   /// Get responsive body font size
-  double get responsiveBodySize =>
-      ResponsiveTypography.getBodyFontSize(this);
+  double get responsiveBodySize => ResponsiveTypography.getBodyFontSize(this);
 
   /// Get responsive label font size
-  double get responsiveLabelSize =>
-      ResponsiveTypography.getLabelFontSize(this);
+  double get responsiveLabelSize => ResponsiveTypography.getLabelFontSize(this);
 
   /// Get responsive line height
-  double get responsiveLineHeight =>
-      ResponsiveTypography.getLineHeight(this);
+  double get responsiveLineHeight => ResponsiveTypography.getLineHeight(this);
 
   /// Get responsive letter spacing
   double get responsiveLetterSpacing =>

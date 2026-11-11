@@ -812,7 +812,8 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                               controller: _amountController,
                               label:
                                   l10n?.enterBillAmount ??
-                                  AppLocalizations.of(context)!.enterBillAmount, hint: AppLocalizations.of(context)!.hintAmount,
+                                  AppLocalizations.of(context)!.enterBillAmount,
+                              hint: AppLocalizations.of(context)!.hintAmount,
                               keyboardType: TextInputType.number,
                               onChanged: (_) => setState(() {}),
                               prefixIcon: Icons.currency_rupee_rounded,

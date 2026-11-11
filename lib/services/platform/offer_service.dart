@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
@@ -89,6 +91,17 @@ class OfferService {
       // Get admin info from session (phone+pin auth)
       final adminPhone = await _sessionService.getPhoneNumber() ?? 'admin';
       final adminUserId = await _sessionService.getUserId() ?? 'admin';
+      // A branch admin's offer belongs to their branch; the super admin's
+      // offers are for every branch.
+      final role = (await _sessionService.getUserRole())?.trim().toLowerCase();
+      final isSuperAdmin = role == AppConstants.roleSuperAdmin;
+      final branchId = isSuperAdmin
+          ? null
+          : await CurrentBranchService().resolveBranchId();
+      if (!isSuperAdmin && (branchId == null || branchId.isEmpty)) {
+        AppLogger.error('Offer not created: admin branch unknown', title);
+        return false;
+      }
 
       await offerRef.set({
         'offerId': offerId, // Add offerId field for consistency
@@ -102,6 +115,7 @@ class OfferService {
             : null,
         'createdBy': adminUserId,
         'createdByPhone': adminPhone,
+        if (branchId != null) 'branchId': branchId,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -115,6 +129,7 @@ class OfferService {
           await notificationService.sendBroadcastNewOfferNotification(
             offerTitle: title,
             points: points,
+            branchId: branchId,
           );
         } catch (e) {
           // Don't fail offer creation if notification fails

@@ -134,9 +134,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         final s = slides[index];
 
                         // Get responsive sizes based on device type
-                        final iconContainerSize = context.responsiveLogoSize * 1.2; // Slightly larger than logo
+                        final iconContainerSize =
+                            context.responsiveLogoSize *
+                            1.2; // Slightly larger than logo
                         final iconSize = iconContainerSize * 0.5;
-                        final titleFontSize = context.responsiveTitleSize * 0.85;
+                        final titleFontSize =
+                            context.responsiveTitleSize * 0.85;
                         final bodyFontSize = context.responsiveBodySize;
                         final lineHeight = context.responsiveLineHeight;
 
@@ -149,17 +152,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               Container(
                                 width: iconContainerSize,
                                 height: iconContainerSize,
-                                padding: EdgeInsets.all(iconContainerSize * 0.2),
+                                padding: EdgeInsets.all(
+                                  iconContainerSize * 0.2,
+                                ),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: isDark
-                                      ? AppColors.darkSurface.withValues(alpha: 0.85)
+                                      ? AppColors.darkSurface.withValues(
+                                          alpha: 0.85,
+                                        )
                                       : AppColors.white.withValues(alpha: 0.92),
                                   boxShadow: [
                                     BoxShadow(
                                       color: isDark
-                                          ? AppColors.black.withValues(alpha: 0.3)
-                                          : AppColors.black.withValues(alpha: 0.08),
+                                          ? AppColors.black.withValues(
+                                              alpha: 0.3,
+                                            )
+                                          : AppColors.black.withValues(
+                                              alpha: 0.08,
+                                            ),
                                       blurRadius: 24,
                                       offset: const Offset(0, 8),
                                     ),
@@ -171,7 +182,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                   color: context.themePrimary,
                                 ),
                               ),
-                              SizedBox(height: context.responsiveHeaderSpacing * 0.8),
+                              SizedBox(
+                                height: context.responsiveHeaderSpacing * 0.8,
+                              ),
 
                               // Title - responsive font size
                               Text(
@@ -182,7 +195,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                   height: lineHeight,
                                   fontWeight: FontWeight.bold,
                                   color: context.themeTextPrimary,
-                                  letterSpacing: context.responsiveLetterSpacing,
+                                  letterSpacing:
+                                      context.responsiveLetterSpacing,
                                 ),
                               ),
                               const SizedBox(height: 16),

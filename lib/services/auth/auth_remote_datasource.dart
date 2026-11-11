@@ -36,10 +36,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required SessionService sessionService,
     required FCMService fcmService,
     required UserMigrationService userMigrationService,
-  })  : _pinAuthService = pinAuthService,
-        _sessionService = sessionService,
-        _fcmService = fcmService,
-        _userMigrationService = userMigrationService;
+  }) : _pinAuthService = pinAuthService,
+       _sessionService = sessionService,
+       _fcmService = fcmService,
+       _userMigrationService = userMigrationService;
 
   @override
   Future<bool> checkUserExists(String phoneNumber) async {
@@ -48,7 +48,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel> verifyPin(String phoneNumber, String pin) async {
-    final result = await _pinAuthService.verifyPin(phone: phoneNumber, pin: pin);
+    final result = await _pinAuthService.verifyPin(
+      phone: phoneNumber,
+      pin: pin,
+    );
     if (result == null) throw Exception('Invalid PIN');
 
     final legacyDocId =
@@ -97,7 +100,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String newPin,
   }) async {
     await verifyPin(phoneNumber, oldPin);
-    return await _pinAuthService.setPinForPhone(phone: phoneNumber, pin: newPin);
+    return await _pinAuthService.setPinForPhone(
+      phone: phoneNumber,
+      pin: newPin,
+    );
   }
 
   @override
@@ -117,7 +123,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // (prevents stale "admin" role from redirecting splash incorrectly).
       await _sessionService.clearSession();
     }
-    
+
     // FCM token is saved in verifyPin after migration (refreshTokenAfterLogin).
     try {
       await _fcmService.initialize();
@@ -135,12 +141,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel?> getCurrentSession() async {
     final session = await _sessionService.getSessionData();
     if (session.isEmpty) return null;
-    
+
     return UserModel(
       id: session['userId'] ?? '',
       email: '',
       phoneNumber: session['phoneNumber'] ?? '',
-      displayName: '${session['firstName'] ?? ''} ${session['lastName'] ?? ''}'.trim(),
+      displayName: '${session['firstName'] ?? ''} ${session['lastName'] ?? ''}'
+          .trim(),
       role: session['role'] ?? 'carpenter',
       isEmailVerified: true,
       createdAt: DateTime.now(),

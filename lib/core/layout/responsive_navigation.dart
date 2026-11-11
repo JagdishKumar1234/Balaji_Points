@@ -87,7 +87,8 @@ class ResponsiveNavigationShell extends StatelessWidget {
     final navigationLayout = getNavigationLayout(context);
     final sidePanelWidth = getSidePanelWidth(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final bgColor =
+        backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
 
     // Mobile: Drawer only
     if (navigationLayout == NavigationLayout.mobileDrawer) {
@@ -95,10 +96,7 @@ class ResponsiveNavigationShell extends StatelessWidget {
         backgroundColor: bgColor,
         appBar: appBar != null ? _wrapAppBar(appBar!) : null,
         drawer: drawer,
-        body: Padding(
-          padding: bodyPadding ?? EdgeInsets.zero,
-          child: body,
-        ),
+        body: Padding(padding: bodyPadding ?? EdgeInsets.zero, child: body),
       );
     }
 
@@ -109,10 +107,7 @@ class ResponsiveNavigationShell extends StatelessWidget {
         children: [
           // Side panel
           if (sidePanel != null)
-            SizedBox(
-              width: sidePanelWidth,
-              child: sidePanel!,
-            ),
+            SizedBox(width: sidePanelWidth, child: sidePanel!),
 
           // Divider
           if (sidePanel != null)
@@ -180,10 +175,7 @@ class ResponsiveSidePanel extends StatelessWidget {
       children: [
         // Header (logo, app name)
         if (header != null)
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: header!,
-          ),
+          Padding(padding: const EdgeInsets.all(16), child: header!),
 
         // Navigation items
         Expanded(
@@ -205,10 +197,7 @@ class ResponsiveSidePanel extends StatelessWidget {
 
         // Footer (logout, settings)
         if (footer != null)
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: footer!,
-          ),
+          Padding(padding: const EdgeInsets.all(16), child: footer!),
       ],
     );
   }
@@ -249,7 +238,9 @@ class ResponsiveSidePanel extends StatelessWidget {
               children: [
                 Icon(
                   item.icon,
-                  color: isSelected ? primaryColor : textColor.withValues(alpha: 0.6),
+                  color: isSelected
+                      ? primaryColor
+                      : textColor.withValues(alpha: 0.6),
                   size: 24,
                 ),
                 const SizedBox(width: 12),
@@ -263,7 +254,9 @@ class ResponsiveSidePanel extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                           color: isSelected ? primaryColor : textColor,
                         ),
                       ),
@@ -282,7 +275,10 @@ class ResponsiveSidePanel extends StatelessWidget {
                 ),
                 if (item.badge != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: primaryColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),

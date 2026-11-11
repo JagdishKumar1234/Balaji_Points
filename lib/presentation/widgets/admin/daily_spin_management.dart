@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -59,16 +60,25 @@ class _DailySpinManagementState extends State<DailySpinManagement>
     super.dispose();
   }
 
-  Future<bool> _canSpinToday() async {
-    final recentSpins = await FirebaseFirestore.instance
+  /// This branch's most recent winner, or null. Other branches' draws are
+  /// ignored, so one branch's spin never blocks another's.
+  static Future<Map<String, dynamic>?> _lastBranchWinner() async {
+    final recent = await FirebaseFirestore.instance
         .collection('daily_prize_winners')
         .orderBy('timestamp', descending: true)
-        .limit(1)
+        .limit(50)
         .get();
+    final branch = CurrentBranchService.adminBranchId;
+    for (final doc in recent.docs) {
+      if (DailyWinnerScope.belongsTo(doc.data(), branch)) return doc.data();
+    }
+    return null;
+  }
 
-    if (recentSpins.docs.isEmpty) return true;
+  Future<bool> _canSpinToday() async {
+    final lastSpinData = await _lastBranchWinner();
+    if (lastSpinData == null) return true;
 
-    final lastSpinData = recentSpins.docs.first.data();
     final lastSpinTimestamp = lastSpinData['timestamp'] as Timestamp?;
     if (lastSpinTimestamp == null) return true;
 
@@ -120,7 +130,8 @@ class _DailySpinManagementState extends State<DailySpinManagement>
 
       // Query bills that were approved today
       final billsQuery = await FirebaseFirestore.instance
-          .collection('bills').forAdminBranch()
+          .collection('bills')
+          .forAdminBranch()
           .where('status', isEqualTo: 'approved')
           .where('approvedDate', isEqualTo: todayStr)
           .get();
@@ -216,7 +227,9 @@ class _DailySpinManagementState extends State<DailySpinManagement>
       await Future.delayed(const Duration(seconds: 3));
 
       // Save winner to database
+      final branchId = CurrentBranchService.adminBranchId ?? '';
       await FirebaseFirestore.instance.collection('daily_prize_winners').add({
+        'branchId': branchId,
         'carpenterId': selectedCarpenterId,
         'carpenterName': carpenterName,
         'carpenterPhoto': carpenterPhoto,
@@ -227,8 +240,10 @@ class _DailySpinManagementState extends State<DailySpinManagement>
       // Also update a daily winner document for easy access on carpenter home screen
       await FirebaseFirestore.instance
           .collection('daily_winners')
-          .doc(todayStr)
+          // One winner per branch per day.
+          .doc(DailyWinnerScope.docId(branchId, todayStr))
           .set({
+            'branchId': branchId,
             'carpenterId': selectedCarpenterId,
             'carpenterName': carpenterName,
             'carpenterPhoto': carpenterPhoto,
@@ -568,21 +583,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 const SizedBox(height: 24),
 
               // Status Badge
-              FutureBuilder<QuerySnapshot>(
-                future: FirebaseFirestore.instance
-                    .collection('daily_prize_winners')
-                    .orderBy('timestamp', descending: true)
-                    .limit(1)
-                    .get(),
+              FutureBuilder<Map<String, dynamic>?>(
+                future: _lastBranchWinner(),
                 builder: (context, lastSpinSnapshot) {
                   String statusText = AppLocalizations.of(
                     context,
                   )!.noPreviousSpins;
-                  if (lastSpinSnapshot.hasData &&
-                      lastSpinSnapshot.data!.docs.isNotEmpty) {
-                    final lastSpinData =
-                        lastSpinSnapshot.data!.docs.first.data()
-                            as Map<String, dynamic>;
+                  if (lastSpinSnapshot.data != null) {
+                    final lastSpinData = lastSpinSnapshot.data!;
                     final lastSpinTimestamp =
                         lastSpinData['timestamp'] as Timestamp?;
                     if (lastSpinTimestamp != null) {
@@ -798,6 +806,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 .where('date', isEqualTo: todayStr)
                 .snapshots(),
             builder: (context, snapshot) {
+              // This branch's winners only.
+              final branchDocs = (snapshot.data?.docs ?? [])
+                  .where(
+                    (doc) => DailyWinnerScope.belongsTo(
+                      doc.data() as Map<String, dynamic>?,
+                      CurrentBranchService.adminBranchId,
+                    ),
+                  )
+                  .toList();
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: Padding(
@@ -807,7 +824,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 );
               }
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              if (branchDocs.isEmpty) {
                 return Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -824,7 +841,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
               }
 
               return Column(
-                children: snapshot.data!.docs.map((doc) {
+                children: branchDocs.map((doc) {
                   final data = doc.data() as Map<String, dynamic>;
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
@@ -963,6 +980,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 .orderBy('date', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
+              // This branch's winners only.
+              final branchDocs = (snapshot.data?.docs ?? [])
+                  .where(
+                    (doc) => DailyWinnerScope.belongsTo(
+                      doc.data() as Map<String, dynamic>?,
+                      CurrentBranchService.adminBranchId,
+                    ),
+                  )
+                  .toList();
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: Padding(
@@ -972,7 +998,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 );
               }
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              if (branchDocs.isEmpty) {
                 return Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -989,7 +1015,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
               }
 
               final Map<String, List<Map<String, dynamic>>> groupedWinners = {};
-              for (var doc in snapshot.data!.docs) {
+              for (var doc in branchDocs) {
                 final data = doc.data() as Map<String, dynamic>;
                 final date = data['date'] as String? ?? '';
                 if (date.isNotEmpty) {

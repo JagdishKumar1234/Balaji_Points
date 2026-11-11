@@ -43,11 +43,15 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       final phone = widget.phoneNumber;
       final normalizedPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
 
-      AppLogger.debug('🔍 [DIAGNOSTIC] Starting verification for phone: $phone');
+      AppLogger.debug(
+        '🔍 [DIAGNOSTIC] Starting verification for phone: $phone',
+      );
       AppLogger.debug('🔍 [DIAGNOSTIC] Normalized phone: $normalizedPhone');
 
       // 1. Check user document by document ID
-      AppLogger.debug('🔍 [DIAGNOSTIC] Step 1: Checking user document by ID...');
+      AppLogger.debug(
+        '🔍 [DIAGNOSTIC] Step 1: Checking user document by ID...',
+      );
       final userDocById = await _firestore
           .collection('users')
           .doc(normalizedPhone)
@@ -58,12 +62,16 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       Map<String, dynamic>? userDataById;
       if (userDocById.exists) {
         userDataById = userDocById.data();
-        AppLogger.debug('   User data keys: ${userDataById?.keys.toList() ?? []}');
+        AppLogger.debug(
+          '   User data keys: ${userDataById?.keys.toList() ?? []}',
+        );
         AppLogger.debug('   User phone field: ${userDataById?['phone']}');
       }
 
       // 2. Check user document by phone field query
-      AppLogger.debug('🔍 [DIAGNOSTIC] Step 2: Checking user document by phone field...');
+      AppLogger.debug(
+        '🔍 [DIAGNOSTIC] Step 2: Checking user document by phone field...',
+      );
       final userQueryByPhone = await _firestore
           .collection('users')
           .where('phone', isEqualTo: normalizedPhone)
@@ -82,7 +90,9 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       }
 
       // 3. Check bills with carpenterPhone
-      AppLogger.debug('🔍 [DIAGNOSTIC] Step 3: Checking bills with carpenterPhone...');
+      AppLogger.debug(
+        '🔍 [DIAGNOSTIC] Step 3: Checking bills with carpenterPhone...',
+      );
       final billsByPhone = await _firestore
           .collection('bills')
           .where('carpenterPhone', isEqualTo: phone)
@@ -104,12 +114,16 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
       );
 
       // 5. Check bills with carpenterId
-      AppLogger.debug('🔍 [DIAGNOSTIC] Step 5: Checking bills with carpenterId...');
+      AppLogger.debug(
+        '🔍 [DIAGNOSTIC] Step 5: Checking bills with carpenterId...',
+      );
       final billsById = await _firestore
           .collection('bills')
           .where('carpenterId', isEqualTo: phone)
           .get();
-      AppLogger.debug('   Bills found (carpenterId=$phone): ${billsById.docs.length}');
+      AppLogger.debug(
+        '   Bills found (carpenterId=$phone): ${billsById.docs.length}',
+      );
 
       // 6. Check bills with normalized carpenterId
       AppLogger.debug(
@@ -170,7 +184,9 @@ class _DiagnosticPageState extends State<DiagnosticPage> {
         }
       }
 
-      AppLogger.debug('   Matching pending bills: ${matchingPendingBills.length}');
+      AppLogger.debug(
+        '   Matching pending bills: ${matchingPendingBills.length}',
+      );
 
       // Compile diagnostic data
       _diagnosticData = {

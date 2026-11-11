@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -110,7 +111,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   final carpentersCount = usersDocs.where((doc) {
                     final role = doc.data()['role'] as String?;
                     if (role == 'admin') return false;
-                    return role == null || role.isEmpty || role == 'carpenter';
+                    return AppConstants.isMemberRole(role);
                   }).length;
                   final totalUsersCount = carpentersCount;
 

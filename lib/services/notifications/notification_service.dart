@@ -62,7 +62,9 @@ class NotificationService {
         AppLogger.debug('✅ Found user with direct userId: $userId');
         AppLogger.info('Found user with direct userId: $userId');
       } else {
-        AppLogger.debug('⚠️ User not found with direct userId, trying phone lookup...');
+        AppLogger.debug(
+          '⚠️ User not found with direct userId, trying phone lookup...',
+        );
         // Second try: search by phone number if userId is phone number format
         if (userId.length >= 10 && RegExp(r'^\d+$').hasMatch(userId)) {
           // userId might be phone number, try searching by phone field
@@ -113,7 +115,9 @@ class NotificationService {
 
       if (fcmToken == null || fcmToken.isEmpty) {
         AppLogger.debug('❌ NO FCM TOKEN for user: $userId');
-        AppLogger.debug('   Has fcmToken field: ${userData?.containsKey('fcmToken')}');
+        AppLogger.debug(
+          '   Has fcmToken field: ${userData?.containsKey('fcmToken')}',
+        );
         AppLogger.debug('   All user data keys: ${userData?.keys.toList()}');
         AppLogger.error(
           'No FCM token found for user: $userId (document ID: ${actualUserId ?? userDoc.id})',
@@ -287,8 +291,7 @@ class NotificationService {
       userId: userId,
       type: NotificationType.billApproved,
       title: '🎉 Bill Approved!',
-      body:
-          'You earned ${points.toStringAsFixed(2)} points!',
+      body: 'You earned ${points.toStringAsFixed(2)} points!',
       data: {
         'billId': billId,
         'amount': amount.toString(),
@@ -515,6 +518,7 @@ class NotificationService {
   Future<int> sendBroadcastNewOfferNotification({
     required String offerTitle,
     required int points,
+    String? branchId, // null = every branch (super admin offers)
   }) async {
     try {
       AppLogger.info('📢 Broadcasting new offer notification: $offerTitle');
@@ -523,7 +527,13 @@ class NotificationService {
       // Note: Firestore doesn't support isNotEqualTo directly
       // We'll fetch all users and filter in code, or use a different approach
       // For better performance with many users, consider using Cloud Functions
-      final usersQuery = await _firestore.collection('users').get();
+      // Only the offer's branch; every branch for the super admin's offers.
+      final usersQuery = branchId == null
+          ? await _firestore.collection('users').get()
+          : await _firestore
+                .collection('users')
+                .where('branchId', isEqualTo: branchId)
+                .get();
 
       // Filter to exclude admins and users without FCM tokens
       final validUsers = usersQuery.docs.where((doc) {
@@ -600,6 +610,7 @@ class NotificationService {
         sentCount: successCount,
         skippedCount: skippedCount,
         isBroadcast: true,
+        branchId: branchId,
       );
 
       return successCount;
@@ -636,9 +647,11 @@ class NotificationService {
     int sentCount = 1,
     int skippedCount = 0,
     bool isBroadcast = false,
+    String? branchId,
   }) async {
     try {
       await _firestore.collection('notification_logs').add({
+        if (branchId != null && branchId.isNotEmpty) 'branchId': branchId,
         'type': type,
         'title': title,
         'body': body,
@@ -707,9 +720,13 @@ class NotificationService {
         }
       }
       await _firestore.collection('notification_logs').add(logData);
-      AppLogger.info('Admin broadcast logged to notification_logs: ${type.name}');
+      AppLogger.info(
+        'Admin broadcast logged to notification_logs: ${type.name}',
+      );
     } catch (e) {
-      AppLogger.warning('Failed to log admin broadcast to notification_logs: $e');
+      AppLogger.warning(
+        'Failed to log admin broadcast to notification_logs: $e',
+      );
     }
   }
 

@@ -326,9 +326,7 @@ class _VersionRow extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
             child: Icon(
               Icons.arrow_forward_rounded,
               size: 20,
@@ -383,14 +381,18 @@ class _VersionChip extends StatelessWidget {
                 : context.themeSoftSurface,
             borderRadius: BorderRadius.circular(12.0),
             border: emphasized
-                ? Border.all(color: context.themePrimary.withValues(alpha: 0.25))
+                ? Border.all(
+                    color: context.themePrimary.withValues(alpha: 0.25),
+                  )
                 : null,
           ),
           child: Text(
             'v$version',
             style: AppTypography.buttonMedium().copyWith(
               fontSize: 14,
-              color: emphasized ? context.themePrimary : context.themeTextPrimary,
+              color: emphasized
+                  ? context.themePrimary
+                  : context.themeTextPrimary,
             ),
           ),
         ),

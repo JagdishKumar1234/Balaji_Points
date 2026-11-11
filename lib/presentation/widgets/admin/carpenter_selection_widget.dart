@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
@@ -131,7 +132,8 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                 Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
-                        .collection('users').forAdminBranch()
+                        .collection('users')
+                        .forAdminBranch()
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
@@ -155,14 +157,12 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
 
                       var carpenters = snapshot.data?.docs ?? [];
 
-                      // Filter to show only carpenters (exclude admins)
+                      // Members only (admins and super admins are excluded)
                       carpenters = carpenters.where((doc) {
                         final user = doc.data() as Map<String, dynamic>;
                         final role = user['role'] as String?;
-                        return role != 'admin' &&
-                            (role == null ||
-                                role.isEmpty ||
-                                role == 'carpenter');
+                        // All four member roles can have bills added.
+                        return AppConstants.isMemberRole(role);
                       }).toList();
 
                       // Apply search filter

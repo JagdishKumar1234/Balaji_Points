@@ -215,17 +215,23 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
             const SizedBox(height: AppSpacing.sm),
             _field(
               _firstCtrl,
-              AppLocalizations.of(context)!.firstNameRequired, hint: AppLocalizations.of(context)!.enterFirstName,
+              AppLocalizations.of(context)!.firstNameRequired,
+              hint: AppLocalizations.of(context)!.enterFirstName,
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? AppLocalizations.of(context)!.requiredLabel
                   : null,
             ),
             const SizedBox(height: AppSpacing.sm),
-            _field(_lastCtrl, AppLocalizations.of(context)!.lastName, hint: AppLocalizations.of(context)!.enterLastName),
+            _field(
+              _lastCtrl,
+              AppLocalizations.of(context)!.lastName,
+              hint: AppLocalizations.of(context)!.enterLastName,
+            ),
             const SizedBox(height: AppSpacing.sm),
             _field(
               _phoneCtrl,
-              AppLocalizations.of(context)!.mobileNumber10Digits, hint: AppLocalizations.of(context)!.hintPhone,
+              AppLocalizations.of(context)!.mobileNumber10Digits,
+              hint: AppLocalizations.of(context)!.hintPhone,
               keyboardType: TextInputType.phone,
               validator: (v) {
                 final s = v?.trim() ?? '';
@@ -244,7 +250,8 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
             const SizedBox(height: AppSpacing.sm),
             _field(
               _emailCtrl,
-              AppLocalizations.of(context)!.emailAddress, hint: AppLocalizations.of(context)!.hintEmail,
+              AppLocalizations.of(context)!.emailAddress,
+              hint: AppLocalizations.of(context)!.hintEmail,
               keyboardType: TextInputType.emailAddress,
               validator: (v) =>
                   RegExp(
@@ -254,36 +261,40 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
                   : AppLocalizations.of(context)!.enterAValidEmailAddress,
             ),
             if (!_editing) ...[
-            const SizedBox(height: AppSpacing.sm),
-            _field(
-              _passwordCtrl,
-              AppLocalizations.of(context)!.temporaryPassword8CharactersMinimum, hint: AppLocalizations.of(context)!.hintPasswordMin,
-              obscureText: _obscurePassword,
-              suffixIcon: IconButton(
-                tooltip: _obscurePassword
-                    ? AppLocalizations.of(context)!.showPassword
-                    : AppLocalizations.of(context)!.hidePassword,
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
+              const SizedBox(height: AppSpacing.sm),
+              _field(
+                _passwordCtrl,
+                AppLocalizations.of(
+                  context,
+                )!.temporaryPassword8CharactersMinimum,
+                hint: AppLocalizations.of(context)!.hintPasswordMin,
+                obscureText: _obscurePassword,
+                suffixIcon: IconButton(
+                  tooltip: _obscurePassword
+                      ? AppLocalizations.of(context)!.showPassword
+                      : AppLocalizations.of(context)!.hidePassword,
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
                 ),
+                validator: (v) => v == null || v.length < 8
+                    ? AppLocalizations.of(context)!.useAtLeast8Characters
+                    : null,
               ),
-              validator: (v) => v == null || v.length < 8
-                  ? AppLocalizations.of(context)!.useAtLeast8Characters
-                  : null,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _field(
-              _confirmPasswordCtrl,
-              AppLocalizations.of(context)!.confirmPassword, hint: AppLocalizations.of(context)!.hintConfirmPassword,
-              obscureText: _obscurePassword,
-              validator: (v) => v != _passwordCtrl.text
-                  ? AppLocalizations.of(context)!.passwordsDoNotMatch
-                  : null,
-            ),
+              const SizedBox(height: AppSpacing.sm),
+              _field(
+                _confirmPasswordCtrl,
+                AppLocalizations.of(context)!.confirmPassword,
+                hint: AppLocalizations.of(context)!.hintConfirmPassword,
+                obscureText: _obscurePassword,
+                validator: (v) => v != _passwordCtrl.text
+                    ? AppLocalizations.of(context)!.passwordsDoNotMatch
+                    : null,
+              ),
             ],
             const SizedBox(height: AppSpacing.md),
             _sectionLabel(AppLocalizations.of(context)!.assignBranch),
@@ -348,7 +359,9 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
                         strokeWidth: 2,
                       ),
                     )
-                  : Icon(_editing ? Icons.check_rounded : Icons.person_add_rounded),
+                  : Icon(
+                      _editing ? Icons.check_rounded : Icons.person_add_rounded,
+                    ),
               label: Text(
                 _saving
                     ? (_editing
@@ -361,34 +374,34 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
               ),
             ),
             if (!_editing) ...[
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: context.themePendingSoft,
-                borderRadius: AppRadius.md12,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    color: context.themePendingText,
-                    size: 20,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.shareTheTemporaryPasswordSecurelyThe,
-                      style: AppTypography.caption(
-                        color: context.themePendingText,
+              const SizedBox(height: AppSpacing.md),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: context.themePendingSoft,
+                  borderRadius: AppRadius.md12,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: context.themePendingText,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.shareTheTemporaryPasswordSecurelyThe,
+                        style: AppTypography.caption(
+                          color: context.themePendingText,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             ],
           ],
         ),
@@ -466,7 +479,11 @@ class _CreateBranchAdminDialogState extends State<CreateBranchAdminDialog> {
       autofillHints: keyboardType == TextInputType.emailAddress
           ? const [AutofillHints.email]
           : null,
-      decoration: InputDecoration(labelText: label, hintText: hint, suffixIcon: suffixIcon),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        suffixIcon: suffixIcon,
+      ),
     );
   }
 }

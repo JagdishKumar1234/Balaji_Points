@@ -6,8 +6,12 @@ List<QueryDocumentSnapshot> sortBillsByCreatedAtDesc(
 ) {
   final sorted = docs.toList();
   sorted.sort((a, b) {
-    final aMs = _createdAtMillis((a.data() as Map<String, dynamic>)['createdAt']);
-    final bMs = _createdAtMillis((b.data() as Map<String, dynamic>)['createdAt']);
+    final aMs = _createdAtMillis(
+      (a.data() as Map<String, dynamic>)['createdAt'],
+    );
+    final bMs = _createdAtMillis(
+      (b.data() as Map<String, dynamic>)['createdAt'],
+    );
     return bMs.compareTo(aMs);
   });
   return sorted;

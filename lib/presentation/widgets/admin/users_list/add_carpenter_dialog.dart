@@ -9,10 +9,7 @@ import 'package:balaji_points/services/auth/pin_auth_service.dart';
 class AddCarpenterDialog extends StatefulWidget {
   final VoidCallback? onCarpenterAdded;
 
-  const AddCarpenterDialog({
-    this.onCarpenterAdded,
-    super.key,
-  });
+  const AddCarpenterDialog({this.onCarpenterAdded, super.key});
 
   @override
   State<AddCarpenterDialog> createState() => _AddCarpenterDialogState();
@@ -59,10 +56,7 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
     }
 
     if (pin.length != 4) {
-      _showSnack(
-        AppLocalizations.of(context)!.enter4Digits,
-        isError: true,
-      );
+      _showSnack(AppLocalizations.of(context)!.enter4Digits, isError: true);
       return;
     }
 

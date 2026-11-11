@@ -8,9 +8,13 @@ class PointsSyncRepairService {
 
   /// Generate comprehensive report of data issues
   Future<Map<String, dynamic>> generateRepairReport() async {
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
     AppLogger.info('📊 GENERATING POINTS REPAIR REPORT');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     try {
       final usersSnapshot = await _firestore.collection('user_points').get();
@@ -71,8 +75,7 @@ class PointsSyncRepairService {
             'pointsDifference': pointsDiff,
             'historyLength': history.length,
             'uniqueBills': billIds.length,
-            'duplicateBillIds': billIds
-                .entries
+            'duplicateBillIds': billIds.entries
                 .where((e) => e.value > 1)
                 .map((e) => '${e.key} (${e.value}x)')
                 .toList(),
@@ -81,14 +84,18 @@ class PointsSyncRepairService {
       }
 
       AppLogger.info('📊 REPORT SUMMARY');
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
       AppLogger.info('Total users scanned: ${docs.length}');
       AppLogger.info('Users with issues: $totalIssues');
       AppLogger.info('Users with duplicates: $usersWithDuplicates');
       AppLogger.info('Total duplicate entries: $totalDuplicatesFound');
       AppLogger.info('Users with points mismatch: $pointsMismatches');
       AppLogger.info('Total points difference: $totalPointsDifference');
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
 
       return {
         'success': true,
@@ -109,9 +116,13 @@ class PointsSyncRepairService {
   /// Repair a specific user's points data
   /// Returns detailed repair result with before/after comparison
   Future<Map<String, dynamic>?> repairUserPoints(String userId) async {
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
     AppLogger.info('🔧 REPAIRING POINTS FOR USER: $userId');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     try {
       final userPointsRef = _firestore.collection('user_points').doc(userId);
@@ -172,7 +183,9 @@ class PointsSyncRepairService {
 
       cleanedHistory.addAll(bestByBillId.values);
 
-      AppLogger.info('  Removed ${history.length - cleanedHistory.length} duplicates');
+      AppLogger.info(
+        '  Removed ${history.length - cleanedHistory.length} duplicates',
+      );
       AppLogger.info('  Kept ${cleanedHistory.length} unique entries');
 
       // Step 2: Calculate correct total from cleaned history
@@ -195,40 +208,38 @@ class PointsSyncRepairService {
       final batch = _firestore.batch();
 
       // Update user_points (source of truth)
-      batch.set(
-        userPointsRef,
-        {
-          'userId': userId,
-          'totalPoints': newTotal,
-          'tier': newTier,
-          'lastUpdated': FieldValue.serverTimestamp(),
-          'pointsHistory': cleanedHistory,
-          'repaired': true,
-          'repairedAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: false),
-      );
+      batch.set(userPointsRef, {
+        'userId': userId,
+        'totalPoints': newTotal,
+        'tier': newTier,
+        'lastUpdated': FieldValue.serverTimestamp(),
+        'pointsHistory': cleanedHistory,
+        'repaired': true,
+        'repairedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: false));
 
       // Update users collection (mirror)
       final userRef = _firestore.collection('users').doc(userId);
-      batch.set(
-        userRef,
-        {
-          'totalPoints': newTotal,
-          'tier': newTier,
-          'lastUpdated': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
+      batch.set(userRef, {
+        'totalPoints': newTotal,
+        'tier': newTier,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
 
       await batch.commit();
       AppLogger.info('✅ Firestore updated successfully');
 
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
       AppLogger.info('✅ REPAIR COMPLETE FOR USER: $userId');
-      AppLogger.info('  History entries: ${history.length} → ${cleanedHistory.length}');
+      AppLogger.info(
+        '  History entries: ${history.length} → ${cleanedHistory.length}',
+      );
       AppLogger.info('  Total points: $beforeTotalPoints → $newTotal');
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
 
       return {
         'success': true,
@@ -244,16 +255,22 @@ class PointsSyncRepairService {
       };
     } catch (e, st) {
       AppLogger.error('Error repairing user points', e, st);
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
       return null;
     }
   }
 
   /// Repair multiple users
   Future<Map<String, dynamic>> repairMultipleUsers(List<String> userIds) async {
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
     AppLogger.info('🔧 REPAIRING ${userIds.length} USERS');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     final results = <String, Map<String, dynamic>?>{};
 
@@ -262,9 +279,13 @@ class PointsSyncRepairService {
       results[userId] = result;
     }
 
-    final successCount = results.values.where((v) => v != null && v['success'] == true).length;
+    final successCount = results.values
+        .where((v) => v != null && v['success'] == true)
+        .length;
     AppLogger.info('✅ Repaired $successCount/${userIds.length} users');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     return {
       'success': true,
@@ -276,9 +297,13 @@ class PointsSyncRepairService {
 
   /// Repair all users with issues
   Future<Map<String, dynamic>> repairAllUsers() async {
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
     AppLogger.info('🔧 REPAIRING ALL USERS WITH ISSUES');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     try {
       final report = await generateRepairReport();
@@ -301,20 +326,28 @@ class PointsSyncRepairService {
         final repairResult = await repairUserPoints(userId);
         results[userId] = repairResult;
         if (repairResult != null && repairResult['success'] == true) {
-          totalPointsDifference += (repairResult['pointsDifference'] as num?)?.toDouble() ?? 0;
-          totalDuplicatesRemoved += (repairResult['duplicatesRemoved'] as int?) ?? 0;
+          totalPointsDifference +=
+              (repairResult['pointsDifference'] as num?)?.toDouble() ?? 0;
+          totalDuplicatesRemoved +=
+              (repairResult['duplicatesRemoved'] as int?) ?? 0;
         }
       }
 
-      final successCount = results.values.where((v) => v != null && v['success'] == true).length;
+      final successCount = results.values
+          .where((v) => v != null && v['success'] == true)
+          .length;
 
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
       AppLogger.info('✅ REPAIR SUMMARY');
       AppLogger.info('Total users with issues: ${issues.length}');
       AppLogger.info('Successfully repaired: $successCount');
       AppLogger.info('Total duplicates removed: $totalDuplicatesRemoved');
       AppLogger.info('Total points adjusted: $totalPointsDifference');
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
 
       return {
         'success': true,
@@ -332,13 +365,19 @@ class PointsSyncRepairService {
 
   /// Verify that data is now correct
   Future<bool> verifyUserPoints(String userId) async {
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
     AppLogger.info('✅ VERIFYING POINTS FOR USER: $userId');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     try {
-      final userPointsDoc =
-          await _firestore.collection('user_points').doc(userId).get();
+      final userPointsDoc = await _firestore
+          .collection('user_points')
+          .doc(userId)
+          .get();
       final userDoc = await _firestore.collection('users').doc(userId).get();
 
       if (!userPointsDoc.exists) {
@@ -352,8 +391,7 @@ class PointsSyncRepairService {
       final userPointsTotal =
           (userPointsData['totalPoints'] as num?)?.toInt() ?? 0;
       final userTotal = (userData['totalPoints'] as num?)?.toInt() ?? 0;
-      final history =
-          (userPointsData['pointsHistory'] as List<dynamic>? ?? []);
+      final history = (userPointsData['pointsHistory'] as List<dynamic>? ?? []);
 
       // Calculate history sum
       double historySum = 0;
@@ -366,7 +404,8 @@ class PointsSyncRepairService {
         if (billId.isNotEmpty) billIds.add(billId);
       }
 
-      final isConsistent = (userPointsTotal == userTotal) &&
+      final isConsistent =
+          (userPointsTotal == userTotal) &&
           ((historySum - userPointsTotal).abs() < 0.1);
       final hasDuplicates = history.length != billIds.length;
 
@@ -377,7 +416,9 @@ class PointsSyncRepairService {
       AppLogger.info('Unique bills: ${billIds.length}');
       AppLogger.info('Has duplicates: $hasDuplicates');
       AppLogger.info('Consistent: $isConsistent');
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
 
       if (isConsistent && !hasDuplicates) {
         AppLogger.info('✅ VERIFICATION PASSED');
@@ -406,16 +447,21 @@ class PointsSyncRepairService {
     String userId,
     Map<String, dynamic> repairResult,
   ) async {
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
     AppLogger.info('✅ VERIFYING NO POINTS LOST FOR: $userId');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     try {
       final beforeTotal = (repairResult['beforeTotal'] as num?)?.toInt() ?? 0;
       final afterTotal = (repairResult['afterTotal'] as num?)?.toInt() ?? 0;
       final historyBefore = (repairResult['historyBefore'] as int?) ?? 0;
       final historyAfter = (repairResult['historyAfter'] as int?) ?? 0;
-      final duplicatesRemoved = (repairResult['duplicatesRemoved'] as int?) ?? 0;
+      final duplicatesRemoved =
+          (repairResult['duplicatesRemoved'] as int?) ?? 0;
 
       // Verify the math
       final expectedAfterHistory = historyBefore - duplicatesRemoved;
@@ -427,8 +473,10 @@ class PointsSyncRepairService {
       AppLogger.info('Actual history after: $historyAfter');
 
       // Get actual Firestore data
-      final userPointsDoc =
-          await _firestore.collection('user_points').doc(userId).get();
+      final userPointsDoc = await _firestore
+          .collection('user_points')
+          .doc(userId)
+          .get();
 
       if (!userPointsDoc.exists) {
         AppLogger.warning('User $userId not found in Firestore');
@@ -460,9 +508,13 @@ class PointsSyncRepairService {
       AppLogger.info('  Total points correct: $totalPointsCorrect');
       AppLogger.info('    Expected: $afterTotal, Actual: $actualTotalPoints');
       AppLogger.info('  History sum matches: $historySumMatches');
-      AppLogger.info('    Expected sum: $afterTotal, Actual sum: ${actualHistorySum.toInt()}');
+      AppLogger.info(
+        '    Expected sum: $afterTotal, Actual sum: ${actualHistorySum.toInt()}',
+      );
       AppLogger.info('  History count correct: $historyCountMatches');
-      AppLogger.info('    Expected count: $historyAfter, Actual: ${actualHistory.length}');
+      AppLogger.info(
+        '    Expected count: $historyAfter, Actual: ${actualHistory.length}',
+      );
 
       final allVerified =
           totalPointsCorrect && historySumMatches && historyCountMatches;
@@ -473,7 +525,9 @@ class PointsSyncRepairService {
         AppLogger.warning('⚠️ VERIFICATION ISSUES DETECTED');
       }
 
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
 
       return {
         'success': true,
@@ -493,11 +547,7 @@ class PointsSyncRepairService {
       };
     } catch (e, st) {
       AppLogger.error('Error verifying points', e, st);
-      return {
-        'success': false,
-        'verified': false,
-        'error': e.toString(),
-      };
+      return {'success': false, 'verified': false, 'error': e.toString()};
     }
   }
 
@@ -505,9 +555,13 @@ class PointsSyncRepairService {
   Future<Map<String, dynamic>> verifyAllUsersAfterRepair(
     Map<String, dynamic> repairResults,
   ) async {
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
     AppLogger.info('✅ VERIFYING ALL USERS - COMPREHENSIVE CHECK');
-    AppLogger.info('═══════════════════════════════════════════════════════════');
+    AppLogger.info(
+      '═══════════════════════════════════════════════════════════',
+    );
 
     try {
       final results = (repairResults['results'] as Map<String, dynamic>?) ?? {};
@@ -535,24 +589,32 @@ class PointsSyncRepairService {
           totalFailed++;
         }
 
-        totalPointsBeforeAllRepairs +=
-            (repairData['beforeTotal'] as int?) ?? 0;
+        totalPointsBeforeAllRepairs += (repairData['beforeTotal'] as int?) ?? 0;
         totalPointsAfterAllRepairs += (repairData['afterTotal'] as int?) ?? 0;
       }
 
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
       AppLogger.info('COMPREHENSIVE VERIFICATION SUMMARY:');
       AppLogger.info('  Total users verified: $totalVerified');
       AppLogger.info('  Verification failures: $totalFailed');
-      AppLogger.info('  Total points before repairs: $totalPointsBeforeAllRepairs');
-      AppLogger.info('  Total points after repairs: $totalPointsAfterAllRepairs');
+      AppLogger.info(
+        '  Total points before repairs: $totalPointsBeforeAllRepairs',
+      );
+      AppLogger.info(
+        '  Total points after repairs: $totalPointsAfterAllRepairs',
+      );
       AppLogger.info(
         '  Points loss: ${totalPointsBeforeAllRepairs - totalPointsAfterAllRepairs}',
       );
-      AppLogger.info('═══════════════════════════════════════════════════════════');
+      AppLogger.info(
+        '═══════════════════════════════════════════════════════════',
+      );
 
       final allVerified = totalFailed == 0;
-      final noPointsLost = totalPointsAfterAllRepairs <= totalPointsBeforeAllRepairs;
+      final noPointsLost =
+          totalPointsAfterAllRepairs <= totalPointsBeforeAllRepairs;
 
       if (allVerified && noPointsLost) {
         AppLogger.info('✅ ALL VERIFICATIONS PASSED - NO POINTS LOST ANYWHERE!');
@@ -574,11 +636,7 @@ class PointsSyncRepairService {
       };
     } catch (e, st) {
       AppLogger.error('Error in comprehensive verification', e, st);
-      return {
-        'success': false,
-        'allVerified': false,
-        'error': e.toString(),
-      };
+      return {'success': false, 'allVerified': false, 'error': e.toString()};
     }
   }
 }

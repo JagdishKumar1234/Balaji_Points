@@ -1,3 +1,6 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -139,7 +142,7 @@ class HomeTopCarpenters extends StatelessWidget {
 // TODAY'S WINNER  — reads from daily_winners/{YYYY-MM-DD} set by admin spin
 // ---------------------------------------------------------------------------
 
-class HomeTodaysWinnerCard extends StatelessWidget {
+class HomeTodaysWinnerCard extends ConsumerWidget {
   const HomeTodaysWinnerCard({super.key});
 
   static String get _todayKey {
@@ -148,13 +151,21 @@ class HomeTodaysWinnerCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Each branch draws its own winner; members only see theirs.
+    final branchId = ref.watch(currentBranchProvider).asData?.value?.id;
+    if (branchId == null || branchId.isEmpty) {
+      return _WinnerCardShell(
+        isDark: isDark,
+        child: _WinnerShimmer(isDark: isDark),
+      );
+    }
 
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('daily_winners')
-          .doc(_todayKey)
+          .doc(DailyWinnerScope.docId(branchId, _todayKey))
           .snapshots(),
       builder: (context, snap) {
         // Loading

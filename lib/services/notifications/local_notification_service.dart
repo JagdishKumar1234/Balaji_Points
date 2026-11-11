@@ -24,7 +24,9 @@ class LocalNotificationService {
   /// On web, this is a no-op (web uses FCM browser notifications instead)
   Future<void> initialize() async {
     if (kIsWeb) {
-      AppLogger.info('Local notifications not available on web (using FCM browser notifications)');
+      AppLogger.info(
+        'Local notifications not available on web (using FCM browser notifications)',
+      );
       _initialized = true;
       return;
     }

@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -72,7 +73,7 @@ class _SearchHeaderState extends State<SearchHeader> {
         final data = doc.data();
         final role = data['role'] as String?;
         if (role == 'admin') return false;
-        return role == null || role.isEmpty || role == 'carpenter';
+        return AppConstants.isMemberRole(role);
       }).toList();
 
       users = users.where((doc) {

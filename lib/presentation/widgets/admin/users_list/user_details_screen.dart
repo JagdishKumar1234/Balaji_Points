@@ -10,11 +10,7 @@ class UserDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> user;
   final VoidCallback? onDelete;
 
-  const UserDetailsScreen({
-    required this.user,
-    this.onDelete,
-    super.key,
-  });
+  const UserDetailsScreen({required this.user, this.onDelete, super.key});
 
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
@@ -165,9 +161,7 @@ class UserDetailsScreen extends StatelessWidget {
                                   color: context.themeContentColor,
                                 ),
                                 const SizedBox(width: 12),
-                                AppText.label(
-                                  currentPoints.toStringAsFixed(2),
-                                ),
+                                AppText.label(currentPoints.toStringAsFixed(2)),
                               ],
                             ),
                             const SizedBox(height: 8),

@@ -512,7 +512,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           final data = doc.data() as Map<String, dynamic>;
           final role = data['role'] as String?;
           if (role == 'admin') return false;
-          return role == null || role.isEmpty || role == 'carpenter';
+          return AppConstants.isMemberRole(role);
         }).length;
 
         if (snapshot.connectionState == ConnectionState.waiting) {

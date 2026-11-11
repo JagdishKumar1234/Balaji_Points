@@ -128,6 +128,25 @@ void main() {
     });
   });
 
+  test('admin screens count all four member roles, not just carpenters', () {
+    for (final path in [
+      'lib/presentation/screens/admin/admin_home_page.dart',
+      'lib/presentation/widgets/admin/admin_dashboard.dart',
+      'lib/presentation/widgets/admin/users_list/users_list_view.dart',
+      'lib/presentation/widgets/admin/users_list/search_header.dart',
+      'lib/presentation/widgets/admin/carpenter_selection_widget.dart',
+      'lib/presentation/screens/admin/export_users_before_cleanup.dart',
+    ]) {
+      final source = File(path).readAsStringSync();
+      expect(source, contains('AppConstants.isMemberRole(role)'), reason: path);
+      expect(
+        source,
+        isNot(contains("role.isEmpty || role == 'carpenter'")),
+        reason: path,
+      );
+    }
+  });
+
   group('wired into every screen', () {
     String read(String path) => File(path).readAsStringSync();
 

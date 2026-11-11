@@ -45,7 +45,7 @@ class BiometricService {
         localizedReason: localizedReason,
         options: const AuthenticationOptions(
           biometricOnly: false, // allow device PIN as fallback
-          stickyAuth: true,     // keep prompt alive if user switches apps briefly
+          stickyAuth: true, // keep prompt alive if user switches apps briefly
           useErrorDialogs: true,
         ),
       );

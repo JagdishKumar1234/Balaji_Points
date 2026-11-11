@@ -75,8 +75,9 @@ class AppSpacing {
   static const EdgeInsets paddingAll24 = EdgeInsets.all(xl2);
   static const EdgeInsets paddingAll32 = EdgeInsets.all(xl3);
 
-  static const EdgeInsets screenHorizontal =
-      EdgeInsets.symmetric(horizontal: screenPaddingH);
+  static const EdgeInsets screenHorizontal = EdgeInsets.symmetric(
+    horizontal: screenPaddingH,
+  );
 
   static const EdgeInsets screenSymmetric = EdgeInsets.symmetric(
     horizontal: screenPaddingH,

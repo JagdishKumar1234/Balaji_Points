@@ -54,7 +54,8 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
 
     try {
       final snapshot = await _firestore
-          .collection('users').forAdminBranch()
+          .collection('users')
+          .forAdminBranch()
           .where('role', isNotEqualTo: 'admin')
           .get();
 
@@ -180,7 +181,8 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
     try {
       // Fetch all carpenters with FCM tokens
       final snapshot = await _firestore
-          .collection('users').forAdminBranch()
+          .collection('users')
+          .forAdminBranch()
           .where('role', isNotEqualTo: 'admin')
           .get();
 

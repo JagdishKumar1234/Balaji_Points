@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/platform/offer_visibility.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -246,7 +247,9 @@ class HomeNotifier extends Notifier<HomeState> {
     final query = _firestore
         .collection('offers')
         .where('isActive', isEqualTo: true)
-        .limit(10);
+        .limit(50); // filtered to this branch below
+    // Offers are per branch, so the branch must be known before showing any.
+    _myBranchId ??= await CurrentBranchService().resolveBranchId();
     if (state.offers.isEmpty) {
       try {
         final cached = await query.get(const GetOptions(source: Source.cache));
@@ -263,6 +266,8 @@ class HomeNotifier extends Notifier<HomeState> {
     }
   }
 
+  String? _myBranchId;
+
   void _applyOffers(QuerySnapshot<Map<String, dynamic>> snap) {
     // Sort newest-first in memory (avoids requiring a Firestore composite index)
     final sorted = snap.docs.toList()
@@ -275,17 +280,21 @@ class HomeNotifier extends Notifier<HomeState> {
         return (bt as dynamic).compareTo(at as dynamic);
       });
 
-    final offers = sorted.map((doc) {
-      final d = doc.data();
-      return OfferItem(
-        title: d['title'] as String? ?? '',
-        description: d['description'] as String? ?? '',
-        actionText: (d['bannerUrl'] != null && d['bannerUrl'] != '')
-            ? 'View Offer'
-            : 'Learn More',
-        imageUrl: d['bannerUrl'] as String?,
-      );
-    }).toList();
+    // This member's branch's offers, plus the super admin's all-branch ones.
+    final offers = sorted
+        .where((doc) => OfferVisibility.memberCanSee(doc.data(), _myBranchId))
+        .map((doc) {
+          final d = doc.data();
+          return OfferItem(
+            title: d['title'] as String? ?? '',
+            description: d['description'] as String? ?? '',
+            actionText: (d['bannerUrl'] != null && d['bannerUrl'] != '')
+                ? 'View Offer'
+                : 'Learn More',
+            imageUrl: d['bannerUrl'] as String?,
+          );
+        })
+        .toList();
 
     state = state.copyWith(offers: offers, offersLoading: false);
   }

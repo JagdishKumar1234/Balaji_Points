@@ -271,8 +271,12 @@ class _CreateBranchDialog extends StatefulWidget {
 class _CreateBranchDialogState extends State<_CreateBranchDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _nameCtrl = TextEditingController(text: widget.existing?.name);
-  late final _shortCtrl = TextEditingController(text: widget.existing?.shortName);
-  late final _codeCtrl = TextEditingController(text: widget.existing?.branchCode);
+  late final _shortCtrl = TextEditingController(
+    text: widget.existing?.shortName,
+  );
+  late final _codeCtrl = TextEditingController(
+    text: widget.existing?.branchCode,
+  );
   late final _addrCtrl = TextEditingController(text: widget.existing?.address);
   late final _phoneCtrl = TextEditingController(text: widget.existing?.phone);
   bool _saving = false;
@@ -354,7 +358,8 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
             children: [
               _field(
                 _nameCtrl,
-                AppLocalizations.of(context)!.branchFullName, hint: AppLocalizations.of(context)!.hintBranchFullName,
+                AppLocalizations.of(context)!.branchFullName,
+                hint: AppLocalizations.of(context)!.hintBranchFullName,
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? AppLocalizations.of(context)!.requiredLabel
                     : null,
@@ -362,7 +367,8 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
               const SizedBox(height: AppSpacing.sm),
               _field(
                 _shortCtrl,
-                AppLocalizations.of(context)!.shortName, hint: AppLocalizations.of(context)!.hintShortName,
+                AppLocalizations.of(context)!.shortName,
+                hint: AppLocalizations.of(context)!.hintShortName,
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? AppLocalizations.of(context)!.enterAShortBranchName
                     : null,
@@ -370,7 +376,8 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
               const SizedBox(height: AppSpacing.sm),
               _field(
                 _codeCtrl,
-                AppLocalizations.of(context)!.branchCode, hint: AppLocalizations.of(context)!.hintBranchCode,
+                AppLocalizations.of(context)!.branchCode,
+                hint: AppLocalizations.of(context)!.hintBranchCode,
                 enabled: !_editing,
                 helperText: _editing
                     ? AppLocalizations.of(context)!.branchCodeLocked
@@ -383,11 +390,16 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
                     : AppLocalizations.of(context)!.use216LettersNumbersOr,
               ),
               const SizedBox(height: AppSpacing.sm),
-              _field(_addrCtrl, AppLocalizations.of(context)!.address, hint: AppLocalizations.of(context)!.hintAddress),
+              _field(
+                _addrCtrl,
+                AppLocalizations.of(context)!.address,
+                hint: AppLocalizations.of(context)!.hintAddress,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _field(
                 _phoneCtrl,
-                AppLocalizations.of(context)!.phone, hint: AppLocalizations.of(context)!.hintPhone,
+                AppLocalizations.of(context)!.phone,
+                hint: AppLocalizations.of(context)!.hintPhone,
                 keyboardType: TextInputType.phone,
               ),
             ],
@@ -435,7 +447,8 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
       validator: validator,
       enabled: enabled,
       decoration: InputDecoration(
-        labelText: label, hintText: hint,
+        labelText: label,
+        hintText: hint,
         helperText: helperText,
         helperMaxLines: 2,
       ),

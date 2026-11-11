@@ -34,7 +34,7 @@ class AppAnimations {
   // --------------------------------------------------------------------------
   // Slide offsets (used with Animate.slideY / slideX)
   // --------------------------------------------------------------------------
-  static const double slideUpOffset = 0.18;   // subtle — cards, widgets
+  static const double slideUpOffset = 0.18; // subtle — cards, widgets
   static const double slideUpFarOffset = 0.35; // hero — full-screen elements
   static const double slideDownOffset = -0.18;
 
@@ -45,51 +45,51 @@ class AppAnimations {
 
   /// Standard card fade-in + slide-up.
   static List<Effect> get cardEntrance => [
-        FadeEffect(duration: normal, curve: easeOut),
-        SlideEffect(
-          begin: const Offset(0, slideUpOffset),
-          end: Offset.zero,
-          duration: normal,
-          curve: easeOut,
-        ),
-      ];
+    FadeEffect(duration: normal, curve: easeOut),
+    SlideEffect(
+      begin: const Offset(0, slideUpOffset),
+      end: Offset.zero,
+      duration: normal,
+      curve: easeOut,
+    ),
+  ];
 
   /// Hero element entrance (logo, full-screen titles).
   static List<Effect> get heroEntrance => [
-        FadeEffect(duration: medium, curve: easeOut),
-        SlideEffect(
-          begin: const Offset(0, slideUpFarOffset),
-          end: Offset.zero,
-          duration: medium,
-          curve: decelerate,
-        ),
-      ];
+    FadeEffect(duration: medium, curve: easeOut),
+    SlideEffect(
+      begin: const Offset(0, slideUpFarOffset),
+      end: Offset.zero,
+      duration: medium,
+      curve: decelerate,
+    ),
+  ];
 
   /// Subtle fade only — for supporting text, labels.
   static List<Effect> get fadeIn => [
-        FadeEffect(duration: normal, curve: easeOut),
-      ];
+    FadeEffect(duration: normal, curve: easeOut),
+  ];
 
   /// Scale + fade — for buttons, chips, badges.
   static List<Effect> get popIn => [
-        FadeEffect(duration: fast, curve: easeOut),
-        ScaleEffect(
-          begin: const Offset(0.92, 0.92),
-          end: const Offset(1, 1),
-          duration: fast,
-          curve: easeOut,
-        ),
-      ];
+    FadeEffect(duration: fast, curve: easeOut),
+    ScaleEffect(
+      begin: const Offset(0.92, 0.92),
+      end: const Offset(1, 1),
+      duration: fast,
+      curve: easeOut,
+    ),
+  ];
 
   /// Soft press down feedback — for tappable cards.
   static List<Effect> get pressDown => [
-        ScaleEffect(
-          begin: const Offset(1, 1),
-          end: const Offset(0.97, 0.97),
-          duration: instant,
-          curve: easeIn,
-        ),
-      ];
+    ScaleEffect(
+      begin: const Offset(1, 1),
+      end: const Offset(0.97, 0.97),
+      duration: instant,
+      curve: easeIn,
+    ),
+  ];
 
   // --------------------------------------------------------------------------
   // Delay helpers — stagger n-th item in a list
@@ -124,8 +124,10 @@ extension AppAnimateExtension on Widget {
 
   /// Subtle fade-in only.
   Widget fadeIn({Duration delay = Duration.zero, Duration? duration}) =>
-      animate(delay: delay)
-          .fade(duration: duration ?? AppAnimations.normal, curve: AppAnimations.easeOut);
+      animate(delay: delay).fade(
+        duration: duration ?? AppAnimations.normal,
+        curve: AppAnimations.easeOut,
+      );
 
   /// Pop in: scale + fade.
   Widget popIn({Duration delay = Duration.zero}) => animate(delay: delay)

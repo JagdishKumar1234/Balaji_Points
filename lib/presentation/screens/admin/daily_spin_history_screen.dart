@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -145,6 +147,13 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
         if (snapshot.hasData) {
           for (var doc in snapshot.data!.docs) {
             final data = doc.data() as Map<String, dynamic>;
+            // This branch's winners only.
+            if (!DailyWinnerScope.belongsTo(
+              data,
+              CurrentBranchService.adminBranchId,
+            )) {
+              continue;
+            }
             final dateStr = data['date'] as String?;
             if (dateStr != null) {
               try {

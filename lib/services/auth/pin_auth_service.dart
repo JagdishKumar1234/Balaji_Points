@@ -108,7 +108,9 @@ class PinAuthService {
         }
 
         await doc.reference.set(data, SetOptions(merge: true));
-        AppLogger.info('PIN updated for existing user: $normalized (role: $assignedRole)');
+        AppLogger.info(
+          'PIN updated for existing user: $normalized (role: $assignedRole)',
+        );
         return true;
       } else {
         // SAFETY CHECK: Ensure no duplicate exists before creating new user
@@ -143,7 +145,9 @@ class PinAuthService {
           }
 
           await existingRef.set(updateData, SetOptions(merge: true));
-          AppLogger.info('PIN updated for existing user (duplicate check): $normalized');
+          AppLogger.info(
+            'PIN updated for existing user (duplicate check): $normalized',
+          );
           return true;
         }
 
@@ -196,14 +200,18 @@ class PinAuthService {
   ) async {
     final usersRef = _firestore.collection('users');
 
-    AppLogger.debug('🔍 [_resolveDocForAuth] Looking up user with phone: $normalized');
+    AppLogger.debug(
+      '🔍 [_resolveDocForAuth] Looking up user with phone: $normalized',
+    );
 
     // Step 1: Query by phone field - most reliable lookup
     final phoneQuery = await usersRef
         .where('phone', isEqualTo: normalized)
         .get();
 
-    AppLogger.debug('🔍 [_resolveDocForAuth] Found ${phoneQuery.docs.length} docs with phone field');
+    AppLogger.debug(
+      '🔍 [_resolveDocForAuth] Found ${phoneQuery.docs.length} docs with phone field',
+    );
 
     if (phoneQuery.docs.isNotEmpty) {
       // Find the best candidate:
@@ -246,9 +254,7 @@ class PinAuthService {
     // Step 2: Check by document ID (phone as docId)
     final phoneDoc = await usersRef.doc(normalized).get();
     if (phoneDoc.exists) {
-      AppLogger.info(
-        '✅ [_resolveDocForAuth] Found user by docId: $normalized',
-      );
+      AppLogger.info('✅ [_resolveDocForAuth] Found user by docId: $normalized');
       return phoneDoc;
     }
 
@@ -271,13 +277,17 @@ class PinAuthService {
       final doc = await _resolveDocForAuth(normalized);
 
       if (doc == null || !doc.exists) {
-        AppLogger.warning('🔐 [verifyPin] No user found for phone: $normalized');
+        AppLogger.warning(
+          '🔐 [verifyPin] No user found for phone: $normalized',
+        );
         return null;
       }
 
       final data = doc.data();
       if (data == null) {
-        AppLogger.warning('🔐 [verifyPin] User doc exists but has no data: ${doc.id}');
+        AppLogger.warning(
+          '🔐 [verifyPin] User doc exists but has no data: ${doc.id}',
+        );
         return null;
       }
 
@@ -298,7 +308,9 @@ class PinAuthService {
         return {...data, 'docId': doc.id, 'id': doc.id};
       }
 
-      AppLogger.warning('🔐 [verifyPin] PIN verification failed for: $normalized');
+      AppLogger.warning(
+        '🔐 [verifyPin] PIN verification failed for: $normalized',
+      );
       return null;
     } catch (e, st) {
       AppLogger.error('Error verifying PIN for phone $phone', e, st);
@@ -311,7 +323,9 @@ class PinAuthService {
   Future<bool> userExists(String phone) async {
     try {
       final normalized = normalizePhone(phone);
-      AppLogger.debug('🔍 [DEBUG] Checking if user exists for phone: "$normalized"');
+      AppLogger.debug(
+        '🔍 [DEBUG] Checking if user exists for phone: "$normalized"',
+      );
 
       // Check by phone field first
       final queryByPhone = await _firestore
@@ -571,9 +585,13 @@ class PinAuthService {
       }
 
       if (userDoc.exists && userDocRef != null) {
-        AppLogger.debug('🔍 [DEBUG] User document exists, checking PIN status...');
+        AppLogger.debug(
+          '🔍 [DEBUG] User document exists, checking PIN status...',
+        );
         final userData = userDoc.data() as Map<String, dynamic>?;
-        AppLogger.debug('🔍 [DEBUG] User data keys: ${userData?.keys.toList()}');
+        AppLogger.debug(
+          '🔍 [DEBUG] User data keys: ${userData?.keys.toList()}',
+        );
 
         // Check if PIN exists - must have both hash and salt, and they must not be empty
         final pinHash = userData?['pinHash'] as String?;
@@ -619,7 +637,9 @@ class PinAuthService {
 
         if (hasPin) {
           // User already exists with PIN - they should use Reset PIN instead
-          AppLogger.debug('🔍 [DEBUG] ❌ User already has PIN set - returning false');
+          AppLogger.debug(
+            '🔍 [DEBUG] ❌ User already has PIN set - returning false',
+          );
           AppLogger.warning(
             'Account already exists with PIN for phone $normalized. Use Reset PIN instead.',
           );
@@ -637,8 +657,12 @@ class PinAuthService {
           // Generate salt and hash for PIN
           final salt = _generateSalt();
           final pinHash = _hashPin(pin, salt);
-          AppLogger.debug('🔍 [DEBUG] Generated PIN hash (length: ${pinHash.length})');
-          AppLogger.debug('🔍 [DEBUG] Generated PIN salt (length: ${salt.length})');
+          AppLogger.debug(
+            '🔍 [DEBUG] Generated PIN hash (length: ${pinHash.length})',
+          );
+          AppLogger.debug(
+            '🔍 [DEBUG] Generated PIN salt (length: ${salt.length})',
+          );
 
           // Update existing document with PIN and other missing fields
           final updateData = <String, dynamic>{
@@ -681,7 +705,9 @@ class PinAuthService {
           AppLogger.debug(
             '🔍 [DEBUG] Updating user document with PIN and other fields...',
           );
-          AppLogger.debug('🔍 [DEBUG] Update data keys: ${updateData.keys.toList()}');
+          AppLogger.debug(
+            '🔍 [DEBUG] Update data keys: ${updateData.keys.toList()}',
+          );
           await userDocRef.set(updateData, SetOptions(merge: true));
           AppLogger.debug('🔍 [DEBUG] ✅ User document updated successfully');
 
@@ -722,10 +748,14 @@ class PinAuthService {
       AppLogger.debug('🔍 [DEBUG] Generated user display ID: $userDisplayId');
 
       // Generate salt and hash for PIN
-      AppLogger.debug('🔍 [DEBUG] Generating PIN hash and salt for new account...');
+      AppLogger.debug(
+        '🔍 [DEBUG] Generating PIN hash and salt for new account...',
+      );
       final salt = _generateSalt();
       final pinHash = _hashPin(pin, salt);
-      AppLogger.debug('🔍 [DEBUG] Generated PIN hash (length: ${pinHash.length})');
+      AppLogger.debug(
+        '🔍 [DEBUG] Generated PIN hash (length: ${pinHash.length})',
+      );
       AppLogger.debug('🔍 [DEBUG] Generated PIN salt (length: ${salt.length})');
 
       // Use batch write for atomic operation - both succeed or both fail
@@ -741,7 +771,10 @@ class PinAuthService {
         'firstName': firstName,
         'lastName': lastName ?? '',
         'profileImage': profileImageUrl ?? '',
-        'role': (normalized == AppConstants.superAdminPhone || normalized == '8947038661' || normalized == '918947038661')
+        'role':
+            (normalized == AppConstants.superAdminPhone ||
+                normalized == '8947038661' ||
+                normalized == '918947038661')
             ? AppConstants.roleSuperAdmin
             : 'carpenter',
         'status': 'verified',
@@ -770,7 +803,9 @@ class PinAuthService {
       await batch.commit();
       AppLogger.debug('🔍 [DEBUG] ✅ Batch write committed successfully');
 
-      AppLogger.debug('🔍 [DEBUG] ✅ New account created successfully: $normalized');
+      AppLogger.debug(
+        '🔍 [DEBUG] ✅ New account created successfully: $normalized',
+      );
       AppLogger.info('New account created successfully: $normalized');
       return true;
     } on FirebaseException catch (e, st) {

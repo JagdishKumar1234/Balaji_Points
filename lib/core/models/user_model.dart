@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/models/user.dart';
 
 /// Data model for User
-/// 
+///
 /// Extends the domain entity and adds JSON serialization.
 /// Handles conversion between Firestore and domain entities.
 class UserModel extends User {
@@ -20,13 +20,13 @@ class UserModel extends User {
     super.createdAt,
     super.lastLoginAt,
   });
-  
+
   /// Convert from Firestore document
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return UserModel.fromJson(data, doc.id);
   }
-  
+
   /// Convert from JSON
   factory UserModel.fromJson(Map<String, dynamic> json, [String? id]) {
     return UserModel(
@@ -42,17 +42,17 @@ class UserModel extends User {
       isEmailVerified: json['isEmailVerified'] as bool? ?? false,
       createdAt: json['createdAt'] != null
           ? (json['createdAt'] is Timestamp
-              ? (json['createdAt'] as Timestamp).toDate()
-              : DateTime.tryParse(json['createdAt'].toString()))
+                ? (json['createdAt'] as Timestamp).toDate()
+                : DateTime.tryParse(json['createdAt'].toString()))
           : null,
       lastLoginAt: json['lastLoginAt'] != null
           ? (json['lastLoginAt'] is Timestamp
-              ? (json['lastLoginAt'] as Timestamp).toDate()
-              : DateTime.tryParse(json['lastLoginAt'].toString()))
+                ? (json['lastLoginAt'] as Timestamp).toDate()
+                : DateTime.tryParse(json['lastLoginAt'].toString()))
           : null,
     );
   }
-  
+
   /// Convert to JSON
   Map<String, dynamic> toJson() {
     return {
@@ -67,10 +67,12 @@ class UserModel extends User {
       'status': status,
       'isEmailVerified': isEmailVerified,
       'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
-      'lastLoginAt': lastLoginAt != null ? Timestamp.fromDate(lastLoginAt!) : null,
+      'lastLoginAt': lastLoginAt != null
+          ? Timestamp.fromDate(lastLoginAt!)
+          : null,
     };
   }
-  
+
   /// Convert from domain entity
   factory UserModel.fromEntity(User user) {
     return UserModel(
@@ -88,7 +90,7 @@ class UserModel extends User {
       lastLoginAt: user.lastLoginAt,
     );
   }
-  
+
   /// Convert to domain entity
   User toEntity() {
     return User(

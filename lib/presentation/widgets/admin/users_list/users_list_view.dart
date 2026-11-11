@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
@@ -23,7 +24,10 @@ class UsersListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').forAdminBranch().snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .forAdminBranch()
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -62,7 +66,7 @@ class UsersListView extends StatelessWidget {
           final data = doc.data() as Map<String, dynamic>;
           final role = data['role'] as String?;
           if (role == 'admin') return false;
-          return role == null || role.isEmpty || role == 'carpenter';
+          return AppConstants.isMemberRole(role);
         }).toList();
 
         // Apply search filter

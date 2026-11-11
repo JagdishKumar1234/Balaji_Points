@@ -1857,7 +1857,7 @@
   "superAdmin2": "Super admin",
   "createAdmin2": "Create admin",
   "pointsReset": "Points reset",
-  "onlyPointsTiersAndPointsHistory": "Only points, tiers and points history for carpenters, architects and interior designers are cleared. User accounts, login access, branch admins and bills stay unchanged.",
+  "onlyPointsTiersAndPointsHistory": "Only points, tiers and points history for carpenters, architects, engineers and interior designers are cleared. User accounts, login access, branch admins and bills stay unchanged.",
   "afterPrizeDistributionStartAFresh": "After prize distribution, start a fresh points season for one branch.",
   "resetUsersAndDeletedHistoryRecords": "{branchName}: reset {usersReset} users and deleted {historyDocumentsDeleted} history records. Accounts and bills were kept.",
   "@resetUsersAndDeletedHistoryRecords": {
@@ -1873,7 +1873,7 @@
       }
     }
   },
-  "thisPermanentlyClearsPointsAndPoints": "This permanently clears points and points history for carpenters, architects and interior designers in this branch. User accounts, branch admins and bills are kept.",
+  "thisPermanentlyClearsPointsAndPoints": "This permanently clears points and points history for carpenters, architects, engineers and interior designers in this branch. User accounts, branch admins and bills are kept.",
   "hasEligibleUsersPointsAndHistory": "{branchName} has {eligibleUsers} eligible users, {currentPoints} points and {historyDocuments} history items.",
   "@hasEligibleUsersPointsAndHistory": {
     "placeholders": {

@@ -21,7 +21,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
 
       // Query bills that were approved today
       final billsQuery = await FirebaseFirestore.instance
-          .collection('bills').forAdminBranch()
+          .collection('bills')
+          .forAdminBranch()
           .where('status', isEqualTo: 'approved')
           .where('approvedDate', isEqualTo: todayStr)
           .get();

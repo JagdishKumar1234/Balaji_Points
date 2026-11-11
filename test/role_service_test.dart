@@ -31,7 +31,10 @@ void main() {
     });
 
     test('createRole writes the exact shape firestore.rules expects', () async {
-      final role = await service.createRole(name: '  Tile   Fitter ', abbreviation: 'TF ');
+      final role = await service.createRole(
+        name: '  Tile   Fitter ',
+        abbreviation: 'TF ',
+      );
       expect(role.id, 'tile_fitter');
       final doc = await db.collection('roles').doc('tile_fitter').get();
       final data = doc.data()!;
@@ -51,44 +54,54 @@ void main() {
       expect(data['isBuiltIn'], false);
     });
 
-    test('createRole rejects duplicates, reserved, built-in and non-Latin names', () async {
-      await service.createRole(name: 'Mason', abbreviation: '');
-      Future<RoleErrorCode?> codeOf(String name) async {
-        try {
-          await service.createRole(name: name, abbreviation: '');
-          return null;
-        } on RoleException catch (e) {
-          return e.code;
+    test(
+      'createRole rejects duplicates, reserved, built-in and non-Latin names',
+      () async {
+        await service.createRole(name: 'Mason', abbreviation: '');
+        Future<RoleErrorCode?> codeOf(String name) async {
+          try {
+            await service.createRole(name: name, abbreviation: '');
+            return null;
+          } on RoleException catch (e) {
+            return e.code;
+          }
         }
-      }
 
-      expect(await codeOf('mason'), RoleErrorCode.duplicate);
-      expect(await codeOf('Admin'), RoleErrorCode.reserved);
-      expect(await codeOf('Super Admin'), RoleErrorCode.reserved);
-      expect(await codeOf('Architect'), RoleErrorCode.builtInId);
-      expect(await codeOf('बढ़ई'), RoleErrorCode.invalidName);
-      expect(await codeOf('x' * 41), RoleErrorCode.invalidName);
-    });
+        expect(await codeOf('mason'), RoleErrorCode.duplicate);
+        expect(await codeOf('Admin'), RoleErrorCode.reserved);
+        expect(await codeOf('Super Admin'), RoleErrorCode.reserved);
+        expect(await codeOf('Architect'), RoleErrorCode.builtInId);
+        expect(await codeOf('बढ़ई'), RoleErrorCode.invalidName);
+        expect(await codeOf('x' * 41), RoleErrorCode.invalidName);
+      },
+    );
 
-    test('soft delete keeps the document and hides the role from signup', () async {
-      final mason = await service.createRole(name: 'Mason', abbreviation: '');
-      await service.setRoleActive(mason, false);
+    test(
+      'soft delete keeps the document and hides the role from signup',
+      () async {
+        final mason = await service.createRole(name: 'Mason', abbreviation: '');
+        await service.setRoleActive(mason, false);
 
-      final doc = await db.collection('roles').doc('mason').get();
-      expect(doc.exists, isTrue);
-      expect(doc.data()!['isActive'], false);
-      expect(doc.data()!['isBuiltIn'], false);
-      expect(await service.isActiveSignupRole('mason'), isFalse);
-      expect((await service.listSignupRoles()).map((r) => r.id), isNot(contains('mason')));
+        final doc = await db.collection('roles').doc('mason').get();
+        expect(doc.exists, isTrue);
+        expect(doc.data()!['isActive'], false);
+        expect(doc.data()!['isBuiltIn'], false);
+        expect(await service.isActiveSignupRole('mason'), isFalse);
+        expect(
+          (await service.listSignupRoles()).map((r) => r.id),
+          isNot(contains('mason')),
+        );
 
-      await service.setRoleActive(mason.copyInactive(), true);
-      expect(await service.isActiveSignupRole('mason'), isTrue);
-    });
+        await service.setRoleActive(mason.copyInactive(), true);
+        expect(await service.isActiveSignupRole('mason'), isTrue);
+      },
+    );
 
     test('deleting a built-in role creates its override document', () async {
       final architect = AppRole.builtInDefault('architect')!;
       await service.setRoleActive(architect, false);
-      final data = (await db.collection('roles').doc('architect').get()).data()!;
+      final data = (await db.collection('roles').doc('architect').get())
+          .data()!;
       expect(data['isBuiltIn'], true);
       expect(data['isActive'], false);
       expect(await service.isActiveSignupRole('architect'), isFalse);
@@ -98,7 +111,13 @@ void main() {
       final carpenter = AppRole.builtInDefault('carpenter')!;
       expect(
         () => service.setRoleActive(carpenter, false),
-        throwsA(isA<RoleException>().having((e) => e.code, 'code', RoleErrorCode.protected)),
+        throwsA(
+          isA<RoleException>().having(
+            (e) => e.code,
+            'code',
+            RoleErrorCode.protected,
+          ),
+        ),
       );
       expect(await service.isActiveSignupRole('carpenter'), isTrue);
     });
@@ -118,7 +137,10 @@ void main() {
   });
 
   group('Roles tab', () {
-    Future<void> pumpTab(WidgetTester tester, {Locale locale = const Locale('en')}) async {
+    Future<void> pumpTab(
+      WidgetTester tester, {
+      Locale locale = const Locale('en'),
+    }) async {
       tester.view.physicalSize = const Size(390, 900);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -135,7 +157,9 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('shows built-ins, locks carpenter and adds a role live', (tester) async {
+    testWidgets('shows built-ins, locks carpenter and adds a role live', (
+      tester,
+    ) async {
       await pumpTab(tester);
       expect(find.text('Carpenter'), findsOneWidget);
       expect(find.byIcon(Icons.lock_outline_rounded), findsOneWidget);
@@ -164,38 +188,48 @@ void main() {
     });
 
     for (final dark in [false, true]) {
-      testWidgets('320px · 1.3x · Tamil · ${dark ? 'dark' : 'light'} has no overflow', (tester) async {
-        await service.createRole(name: 'Very Long Custom Role Name For Testing', abbreviation: 'ABCDEFGHIJ');
-        final architect = AppRole.builtInDefault('architect')!;
-        await service.setRoleActive(architect, false);
-        tester.view.physicalSize = const Size(320, 800);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppThemeData.light(),
-            darkTheme: AppThemeData.dark(),
-            themeMode: dark ? ThemeMode.dark : ThemeMode.light,
-            locale: const Locale('ta'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            builder: (context, child) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.3)),
-              child: child!,
+      testWidgets(
+        '320px · 1.3x · Tamil · ${dark ? 'dark' : 'light'} has no overflow',
+        (tester) async {
+          await service.createRole(
+            name: 'Very Long Custom Role Name For Testing',
+            abbreviation: 'ABCDEFGHIJ',
+          );
+          final architect = AppRole.builtInDefault('architect')!;
+          await service.setRoleActive(architect, false);
+          tester.view.physicalSize = const Size(320, 800);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: AppThemeData.light(),
+              darkTheme: AppThemeData.dark(),
+              themeMode: dark ? ThemeMode.dark : ThemeMode.light,
+              locale: const Locale('ta'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: const TextScaler.linear(1.3)),
+                child: child!,
+              ),
+              home: Scaffold(body: SuperAdminRolesTab(service: service)),
             ),
-            home: Scaffold(body: SuperAdminRolesTab(service: service)),
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
-        await tester.tap(find.byIcon(Icons.add_rounded));
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull, reason: 'Add role dialog');
-      });
+          );
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+          await tester.tap(find.byIcon(Icons.add_rounded));
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull, reason: 'Add role dialog');
+        },
+      );
     }
 
-    testWidgets('built-in names are translated (Tamil) with no overflow', (tester) async {
+    testWidgets('built-in names are translated (Tamil) with no overflow', (
+      tester,
+    ) async {
       await pumpTab(tester, locale: const Locale('ta'));
       expect(find.text('பொறியாளர் · Er.'), findsOneWidget);
       expect(tester.takeException(), isNull);
