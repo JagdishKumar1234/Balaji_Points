@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -288,6 +289,7 @@ class DailySpinNotifier extends Notifier<DailySpinState> {
       );
 
       // Always return the points that were saved
+      Telemetry.dailySpin(points: finalPointsWon);
       return finalPointsWon;
     } catch (e, stackTrace) {
       debugPrint('Error performing spin: $e');

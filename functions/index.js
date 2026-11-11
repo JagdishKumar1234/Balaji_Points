@@ -23,11 +23,7 @@ admin.initializeApp();
 
 const db = admin.firestore();
 const SUPER_ADMIN_EMAIL = "aaijitechstudio@gmail.com";
-const POINTS_RESET_ROLES = new Set([
-  "carpenter",
-  "architect",
-  "interior_designer",
-]);
+const {isPointsResetMember} = require("./points_reset_members");
 
 /**
  * Verifies the authenticated caller against the configured super-admin profile.
@@ -67,10 +63,8 @@ async function getBranchAndMembers(branchId) {
   }
   const users = await db.collection("users")
       .where("branchId", "==", branchRef.id).get();
-  const members = users.docs.filter((doc) => {
-    const data = doc.data();
-    return POINTS_RESET_ROLES.has(data.role || data.roleId);
-  });
+  // All member roles, including engineers and older accounts with no role.
+  const members = users.docs.filter((doc) => isPointsResetMember(doc.data()));
   return {branchRef, branch: branch.data(), members};
 }
 
@@ -657,6 +651,8 @@ exports.processNotificationQueue = onDocumentCreated(
           data: rawData || {},
           sentAt: sentAt,
           isBroadcast: doc.userId ? false : true, // Mark as broadcast if no specific userId
+          // Keeps each branch's inbox to its own notifications.
+          branchId: doc.branchId || null,
           queueId: queueId,
         });
 

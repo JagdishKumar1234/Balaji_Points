@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'dart:io';
@@ -149,6 +150,7 @@ class AppUpdateService {
                   '($currentVersion → $latestVersion).',
       );
 
+      Telemetry.updatePromptShown(forced: needsForceUpdate, to: targetVersion);
       await _showUpdateDialog(
         context: context,
         currentVersion: currentVersion,

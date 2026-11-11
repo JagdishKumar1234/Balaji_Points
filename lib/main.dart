@@ -1,5 +1,8 @@
 // filepath: lib/main.dart
 
+import 'package:balaji_points/services/telemetry/telemetry.dart';
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +11,7 @@ import 'package:flutter/foundation.dart'
     show LicenseEntryWithLineBreaks, LicenseRegistry;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -87,6 +91,7 @@ class _Bootstrap extends StatelessWidget {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+      await _startTelemetry();
 
       final packageInfo = await PackageInfo.fromPlatform();
       AppLogger.appLaunchBanner(
@@ -107,6 +112,42 @@ class _Bootstrap extends StatelessWidget {
     } catch (e) {
       AppLogger.error('Bootstrap failed', e);
       rethrow;
+    }
+  }
+
+  /// Analytics and crash reporting. Never blocks or breaks startup.
+  static Future<void> _startTelemetry() async {
+    try {
+      final sink = FirebaseTelemetrySink();
+      await sink.start();
+      Telemetry.use(sink);
+      AppLogger.errorReporter = (message, error, stack) =>
+          Telemetry.recordError(
+            error ?? message,
+            stack ?? StackTrace.current,
+            reason: message,
+          );
+      AppLogger.breadcrumbs = Telemetry.breadcrumb;
+
+      if (!kIsWeb && FirebaseTelemetrySink.enabled) {
+        // Errors while drawing the screen.
+        FlutterError.onError = (details) {
+          FlutterError.presentError(details);
+          Telemetry.recordError(
+            details.exception,
+            details.stack,
+            reason: details.context?.toString(),
+            fatal: true,
+          );
+        };
+        // Errors in async code that nothing caught.
+        PlatformDispatcher.instance.onError = (error, stack) {
+          Telemetry.recordError(error, stack, fatal: true);
+          return true;
+        };
+      }
+    } catch (e) {
+      AppLogger.warning('Telemetry not started: $e');
     }
   }
 

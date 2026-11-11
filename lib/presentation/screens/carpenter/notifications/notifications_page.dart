@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -38,6 +39,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   final SessionService _sessionService = SessionService();
   String? _userId;
   String? _userRole;
+  String? _myPhone;
+  String? _myBranchId;
   bool _isLoading = true;
 
   /// The list last shown, so returning to this screen needs no loader. Keyed by
@@ -71,10 +74,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _loadUserData() async {
     final userId = await _sessionService.getUserId();
     final userRole = await _sessionService.getUserRole();
+    final myPhone = await _sessionService.getPhoneNumber();
+    final myBranchId = await _sessionService.getBranchId();
     if (!mounted) return;
     setState(() {
       _userId = userId;
       _userRole = userRole;
+      _myPhone = myPhone;
+      _myBranchId = myBranchId;
       _isLoading = false;
     });
 
@@ -224,18 +231,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
     void updateCombined() {
       List<QueryDocumentSnapshot> result = combined.values.toList();
 
-      // Filter out admin-only notifications
+      // Only this member's own notifications, plus announcements for their
+      // branch or for every branch. Never another branch's, never admin alerts.
+      final myIds = {userId, if (_myPhone != null) _myPhone!};
       result = result.where((doc) {
-        final data = doc.data() as Map<String, dynamic>?;
-        final type = data?['type'] as String?;
-
-        // Carpenter should NOT see these admin-only types
-        const adminOnlyTypes = [
-          'dailySpinReminder', // Admin analytics
-          'newPendingBill', // Admin notification
-          'newUserRegistered', // Admin notification
-        ];
-        return !adminOnlyTypes.contains(type);
+        return NotificationVisibility.memberCanSee(
+          doc.data() as Map<String, dynamic>?,
+          myIds: myIds,
+          myBranchId: _myBranchId,
+        );
       }).toList();
 
       // DEDUPLICATION: Remove duplicate notifications based on unique key
@@ -314,7 +318,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         .collection('notification_logs')
         .where('isBroadcast', isEqualTo: true)
         .orderBy('sentAt', descending: true)
-        .limit(20); // Limit broadcasts to 20
+        .limit(60); // Other branches' are filtered out below
 
     debugPrint('   Stream 2: Broadcast notifications WHERE isBroadcast = true');
 

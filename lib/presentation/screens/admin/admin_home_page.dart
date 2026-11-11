@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
@@ -218,7 +219,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           .where('type', whereIn: _adminNotificationTypes)
           .get();
 
-      final docs = snapshot.docs.inAdminBranch();
+      final docs = snapshot.docs.visibleToAdmin();
       if (docs.isEmpty) {
         if (!context.mounted) return;
         Navigator.of(context).pop(); // progress

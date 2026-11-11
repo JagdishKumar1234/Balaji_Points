@@ -22,7 +22,9 @@ plugins {
 
     id("com.android.application") version "8.6.0" apply false
     id("org.jetbrains.kotlin.android") version "2.3.21" apply false
-    id("com.google.gms.google-services") version "4.4.0" apply false
+    id("com.google.gms.google-services") version "4.4.2" apply false
+    // Uploads the R8 mapping so release crash reports show real class names.
+    id("com.google.firebase.crashlytics") version "3.0.2" apply false
 }
 
 // ✅ IMPORTANT: Fix module path — Flutter was looking in wrong place

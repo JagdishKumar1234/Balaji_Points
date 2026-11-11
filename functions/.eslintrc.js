@@ -1,4 +1,7 @@
 module.exports = {
+  // Hand-run admin tools and tests are not deployed, so the deploy check
+  // covers only the Cloud Functions code.
+  ignorePatterns: ["scripts/**", "test/**"],
   env: {
     es6: true,
     node: true,

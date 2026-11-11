@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,8 @@ class LocaleNotifier extends Notifier<Locale> {
 
   /// Set specific locale
   Future<void> setLocale(Locale locale) async {
+    Telemetry.settingChanged('language', locale.languageCode);
+    Telemetry.language(locale.languageCode);
     state = locale;
     await _saveLocale();
   }

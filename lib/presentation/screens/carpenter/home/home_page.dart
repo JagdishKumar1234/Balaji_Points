@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:async';
@@ -525,6 +526,7 @@ class _HomePageState extends ConsumerState<HomePage>
       return;
     }
     if (!mounted || GoRouterState.of(context).uri.path != '/') return;
+    Telemetry.celebrationPopupShown();
     await showDialog<void>(
       context: context,
       barrierDismissible: true,

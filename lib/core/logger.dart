@@ -12,28 +12,45 @@ class AppLogger {
   /// Set true to show [info] / [debug] from services (FCM, notifications, etc.).
   static bool verbose = false;
 
+  /// Receives every [error], in release too (set to Crashlytics at startup).
+  static void Function(String message, Object? error, StackTrace? stack)?
+  errorReporter;
+
+  /// Receives navigation, update and warning lines, as crash breadcrumbs.
+  static void Function(String message)? breadcrumbs;
+
   static void startup(String message) => _emit('STARTUP', message);
 
   static void auth(String message) => _emit('AUTH', message);
 
-  static void nav(String message) => _emit('NAV', message);
+  static void nav(String message) {
+    breadcrumbs?.call('NAV $message');
+    _emit('NAV', message);
+  }
 
   static void data(String message) => _emit('DATA', message);
 
-  static void update(String message) => _emit('UPDATE', message);
+  static void update(String message) {
+    breadcrumbs?.call('UPDATE $message');
+    _emit('UPDATE', message);
+  }
 
   /// No output unless [verbose] is true (keeps terminal clean).
   static void info(String message) {
     if (verbose) _emit('INFO', message);
   }
 
-  static void warning(String message) => _emit('WARN', message);
+  static void warning(String message) {
+    breadcrumbs?.call('WARN $message');
+    _emit('WARN', message);
+  }
 
   static void debug(String message) {
     if (verbose) _emit('DEBUG', message);
   }
 
   static void error(String message, [Object? error, StackTrace? stackTrace]) {
+    errorReporter?.call(message, error, stackTrace);
     _emit('ERROR', message);
     if (!_enabled) return;
     if (error != null) debugPrint('       ↳ $error');

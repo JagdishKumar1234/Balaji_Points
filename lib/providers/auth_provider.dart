@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -153,6 +154,11 @@ class AuthNotifier extends Notifier<AuthState> {
           isEmailVerified: true,
           createdAt: DateTime.now(),
         );
+        Telemetry.identify(
+          userId: user.id,
+          role: user.role,
+          branchId: user.branchId,
+        );
         state = AuthAuthenticated(user, role: user.role);
       } else {
         state = const AuthUnauthenticated();
@@ -184,7 +190,11 @@ class AuthNotifier extends Notifier<AuthState> {
         return;
       }
 
-      await _finishFirebaseSignIn(fbUser, rememberMe: rememberMe);
+      await _finishFirebaseSignIn(
+        fbUser,
+        rememberMe: rememberMe,
+        loginMethod: 'email',
+      );
     } on firebase_auth.FirebaseAuthException catch (e) {
       AppLogger.error('Email login failed', e);
       state = AuthError(_messageFromFirebaseError(e));
@@ -209,7 +219,11 @@ class AuthNotifier extends Notifier<AuthState> {
           return;
         }
 
-        await _finishFirebaseSignIn(firebaseUser, rememberMe: rememberMe);
+        await _finishFirebaseSignIn(
+          firebaseUser,
+          rememberMe: rememberMe,
+          loginMethod: 'google',
+        );
         return;
       }
 
@@ -233,7 +247,11 @@ class AuthNotifier extends Notifier<AuthState> {
         return;
       }
 
-      await _finishFirebaseSignIn(firebaseUser, rememberMe: rememberMe);
+      await _finishFirebaseSignIn(
+        firebaseUser,
+        rememberMe: rememberMe,
+        loginMethod: 'google',
+      );
     } on firebase_auth.FirebaseAuthException catch (e) {
       AppLogger.error('Google login failed', e);
       state = AuthError(_messageFromFirebaseError(e));
@@ -385,6 +403,12 @@ class AuthNotifier extends Notifier<AuthState> {
         isEmailVerified: true,
         createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
       );
+      Telemetry.signUp(method: 'google');
+      Telemetry.identify(
+        userId: user.id,
+        role: user.role,
+        branchId: user.branchId,
+      );
       state = AuthAuthenticated(user, role: role);
     } on firebase_auth.FirebaseAuthException catch (e) {
       AppLogger.error('Google profile completion failed', e);
@@ -404,6 +428,7 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> _finishFirebaseSignIn(
     firebase_auth.User firebaseUser, {
     required bool rememberMe,
+    String? loginMethod, // null when the app reopens with a saved session
   }) async {
     await _ensureConfiguredSuperAdminProfile(firebaseUser);
     final profile = await _findUserProfile(firebaseUser);
@@ -480,6 +505,12 @@ class AuthNotifier extends Notifier<AuthState> {
         branchId: branchId,
       );
     }
+    if (loginMethod != null) Telemetry.login(method: loginMethod);
+    Telemetry.identify(
+      userId: user.id,
+      role: user.role,
+      branchId: user.branchId,
+    );
     state = AuthAuthenticated(user, role: role);
   }
 
@@ -653,6 +684,12 @@ class AuthNotifier extends Notifier<AuthState> {
         isEmailVerified: registeredUser.emailVerified,
         createdAt: registeredUser.metadata.creationTime ?? DateTime.now(),
       );
+      Telemetry.signUp(method: 'email');
+      Telemetry.identify(
+        userId: user.id,
+        role: user.role,
+        branchId: user.branchId,
+      );
       state = AuthAuthenticated(user, role: role);
     } on firebase_auth.FirebaseAuthException catch (e) {
       AppLogger.error('Email registration failed', e);
@@ -792,6 +829,12 @@ class AuthNotifier extends Notifier<AuthState> {
       }
 
       AppLogger.auth('Login: ${user.displayName} · $role');
+      Telemetry.login(method: 'pin');
+      Telemetry.identify(
+        userId: user.id,
+        role: user.role,
+        branchId: user.branchId,
+      );
       state = AuthAuthenticated(user, role: role);
     } catch (e) {
       AppLogger.error('Login failed', e);

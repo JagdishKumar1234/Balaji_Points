@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
@@ -94,7 +95,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
           .where('type', whereIn: _adminNotificationTypes)
           .get();
 
-      final docs = snapshot.docs.inAdminBranch();
+      final docs = snapshot.docs.visibleToAdmin();
       if (docs.isEmpty) {
         if (context.mounted) Navigator.of(context).pop();
         return;
@@ -200,7 +201,7 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
             builder: (context, snapshot) {
               final notificationCount = snapshot.hasError
                   ? 0
-                  : snapshot.data?.docs.inAdminBranch().length ?? 0;
+                  : snapshot.data?.docs.visibleToAdmin().length ?? 0;
 
               if (widget.embedded) {
                 // Parent `AdminHomePage` already provides the top AppBar.
@@ -254,8 +255,10 @@ class _AdminNotificationsPageState extends State<AdminNotificationsPage> {
 
                 final notifications =
                     (snapshot.data?.docs ??
-                            const <QueryDocumentSnapshot<Map<String, dynamic>>>[])
-                        .inAdminBranch();
+                            const <
+                              QueryDocumentSnapshot<Map<String, dynamic>>
+                            >[])
+                        .visibleToAdmin();
 
                 if (notifications.isEmpty) {
                   return ListView(

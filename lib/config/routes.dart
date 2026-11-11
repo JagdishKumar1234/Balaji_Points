@@ -1,4 +1,5 @@
 // filepath: lib/config/routes.dart
+import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,6 +44,16 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 String? _lastLoggedRoutePath;
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final router = _buildRouter();
+  // The route pattern, never the real path, so ids never reach Analytics.
+  void trackScreen() =>
+      Telemetry.screen(router.routerDelegate.currentConfiguration.fullPath);
+  router.routerDelegate.addListener(trackScreen);
+  ref.onDispose(() => router.routerDelegate.removeListener(trackScreen));
+  return router;
+});
+
+GoRouter _buildRouter() {
   return GoRouter(
     navigatorKey: navigatorKey,
     initialLocation: '/splash',
@@ -310,4 +321,4 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Note: trailing slash is normalized by the redirect.
     ],
   );
-});
+}

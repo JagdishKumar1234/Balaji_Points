@@ -68,6 +68,8 @@ dependencies:
   printing: ^5.14.2
   file_picker: ^10.3.10
   local_auth: ^2.3.0
+  firebase_analytics: ^12.6.1
+  firebase_crashlytics: ^5.4.1
 
 dev_dependencies:
   flutter_test:

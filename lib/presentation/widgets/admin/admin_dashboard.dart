@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +128,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     builder: (context, notifSnap) {
                       final notificationCount = notifSnap.hasError
                           ? 0
-                          : notifSnap.data?.docs.inAdminBranch().length ?? 0;
+                          : notifSnap.data?.docs.visibleToAdmin().length ?? 0;
 
                       final tiles = _sections.map((s) {
                         int? count;

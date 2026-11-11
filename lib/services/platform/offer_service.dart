@@ -265,9 +265,7 @@ class OfferService {
   /// Get all offers (for admin)
   Future<List<Map<String, dynamic>>> getAllOffers() async {
     try {
-      final query = await _firestore
-          .collection('offers')
-          .get();
+      final query = await _firestore.collection('offers').get();
 
       final docs = query.docs.toList()
         ..sort((a, b) {
