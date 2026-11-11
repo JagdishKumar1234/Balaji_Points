@@ -358,7 +358,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       ),
                       pw.SizedBox(height: 2),
                       pw.Text(
-                        AppConstants.shopAddressShort,
+                        '${AppConstants.supportEmail}  ·  '
+                        '${AppConstants.supportPhoneDisplay}',
                         style: const pw.TextStyle(
                           fontSize: 12,
                           color: PdfColors.grey700,

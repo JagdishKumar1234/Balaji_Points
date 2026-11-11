@@ -1,3 +1,4 @@
+import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,7 +27,7 @@ class BranchBanner extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: context.themeCard,
-          borderRadius: AppRadius.md12,
+          borderRadius: AppRadius.forCard,
           border: Border.all(color: context.themeBorder),
         ),
         child: Row(
@@ -47,11 +48,25 @@ class BranchBanner extends ConsumerWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                branch.name,
-                style: AppTypography.label(
-                  color: context.themeTextPrimary,
-                ).copyWith(fontSize: 14, height: 1.35),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    branch.name,
+                    style: AppTypography.label(
+                      color: context.themeTextPrimary,
+                    ).copyWith(fontSize: 14, height: 1.35),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${AppLocalizations.of(context)!.branchId}: ${branch.id}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.caption(
+                      color: context.themeTextSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

@@ -3,6 +3,8 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/common/auth/forgot_password_page.dart';
 import 'package:balaji_points/presentation/screens/common/auth/phone_pin_entry_page.dart';
 import 'package:balaji_points/presentation/screens/common/info/about_us_page.dart';
+import 'package:balaji_points/presentation/screens/common/info/legal_document_page.dart';
+import 'package:balaji_points/presentation/widgets/shared/legal_consent_checkbox.dart';
 import 'package:balaji_points/presentation/screens/common/onboarding/onboarding_page.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/carpenter_bottom_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
@@ -74,6 +76,18 @@ void main() {
   final cases = <String, Widget Function()>{
     'onboarding': () => const OnboardingPage(),
     'about us': () => const AboutUsPage(),
+    'terms': () => const LegalDocumentPage(document: LegalDocument.terms),
+    'privacy': () => const LegalDocumentPage(document: LegalDocument.privacy),
+    'legal consent': () => Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: LegalConsentCheckbox(
+          value: false,
+          showError: true,
+          onChanged: (_) {},
+        ),
+      ),
+    ),
     'phone PIN entry': () => const PhonePinEntryPage(),
     'forgot password': () => const ForgotPasswordPage(),
     'components': () => const _ComponentGallery(),

@@ -12,14 +12,24 @@ class CurrentBranch {
     required this.name,
     required this.shortName,
     required this.code,
+    this.address = '',
+    this.phone = '',
+    this.adminUid,
   });
 
   final String id;
 
-  /// Full branch name, e.g. "Sri Balaji Plywood and Hardware - Erode".
+  /// Full branch name, e.g. "<store name> - Erode".
   final String name;
   final String shortName;
   final String code;
+
+  /// Store address and phone, as entered by the super admin (may be empty).
+  final String address;
+  final String phone;
+
+  /// The branch admin's account, when linked.
+  final String? adminUid;
 }
 
 /// Resolves and watches the signed-in user's branch.
@@ -92,6 +102,9 @@ class CurrentBranchService {
             ? ((name == null || name.isEmpty) ? branchId : name)
             : shortName,
         code: (data['branchCode'] as String?) ?? branchId,
+        address: (data['address'] as String?)?.trim() ?? '',
+        phone: (data['phone'] as String?)?.trim() ?? '',
+        adminUid: (data['adminUid'] as String?)?.trim(),
       );
     });
   }

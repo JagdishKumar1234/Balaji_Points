@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:balaji_points/services/notifications/notification_service.dart';
 import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,6 +22,25 @@ void main() {
     test('their own notifications, by account id or phone', () {
       expect(member({'type': 'billApproved', 'userId': 'me-uid'}), isTrue);
       expect(member({'type': 'billApproved', 'userId': '9000000001'}), isTrue);
+    });
+
+    test('an approval saved without a push (no push token), only them', () {
+      final record = NotificationService.personalInAppRecord(
+        userId: '9000000001',
+        type: 'billApproved',
+        title: 'Bill Approved!',
+        body: '12.5 points added',
+      );
+      expect(member(record), isTrue);
+      expect(
+        NotificationVisibility.memberCanSee(
+          record,
+          myIds: {'someone-else'},
+          myBranchId: _karur,
+        ),
+        isFalse,
+      );
+      expect(admin(record), isFalse);
     });
 
     test('nobody else\'s personal notifications', () {
@@ -173,9 +193,10 @@ void main() {
 
     test('the server now saves the branch on every notification', () {
       expect(
-        read('functions/index.js'),
+        read('functions/in_app_record.js'),
         contains('branchId: doc.branchId || null,'),
       );
+      expect(read('functions/index.js'), contains('inAppRecordFor('));
     });
   });
 }

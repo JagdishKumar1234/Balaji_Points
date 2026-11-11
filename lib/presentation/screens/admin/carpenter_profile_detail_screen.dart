@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -544,7 +545,9 @@ class _CarpenterProfileDetailScreenState
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AppText.section(totalPoints.toStringAsFixed(0)),
+                                AppText.section(
+                                  PointsUtils.formatPoints(totalPoints),
+                                ),
                                 const SizedBox(height: 1),
                                 AppText.caption(
                                   AppLocalizations.of(
@@ -746,7 +749,7 @@ class _CarpenterProfileDetailScreenState
                                     ),
                                     const SizedBox(height: 1),
                                     AppText.caption(
-                                      totalPoints.toStringAsFixed(0),
+                                      PointsUtils.formatPoints(totalPoints),
                                     ),
                                   ],
                                 ),

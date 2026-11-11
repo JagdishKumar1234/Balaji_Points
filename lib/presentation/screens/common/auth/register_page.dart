@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/legal/legal_documents.dart';
+import 'package:balaji_points/presentation/widgets/shared/legal_consent_checkbox.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -46,6 +48,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   bool _loadingBranches = true;
   bool _loadingRoles = true;
   bool _submitting = false;
+  bool _acceptedTerms = false;
+  bool _showTermsError = false;
   bool _showPassword = false;
   bool _showConfirmPassword = false;
 
@@ -119,7 +123,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) return;
+    final formOk = _formKey.currentState!.validate();
+    // Registration needs the Terms and Privacy Policy accepted.
+    if (!_acceptedTerms) setState(() => _showTermsError = true);
+    if (!formOk || !_acceptedTerms) return;
     if (_selectedBranchId == null) {
       _showMessage(AppLocalizations.of(context)!.selectABranchToContinue);
       return;
@@ -152,6 +159,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           roleName: role.name,
           roleAbbreviation: role.abbreviation,
           branchId: _selectedBranchId!,
+          termsVersion: LegalDocuments.version,
         );
       } else {
         await notifier.registerWithEmailAndPassword(
@@ -164,6 +172,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           roleName: role.name,
           roleAbbreviation: role.abbreviation,
           branchId: _selectedBranchId!,
+          termsVersion: LegalDocuments.version,
         );
       }
     } finally {
@@ -360,7 +369,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       )!.branchAdminAccessIsAssignedBy,
                 style: AppTypography.caption(color: context.themeTextSecondary),
               ),
-              const SizedBox(height: AppSpacing.xl),
+              const SizedBox(height: AppSpacing.lg),
+              LegalConsentCheckbox(
+                value: _acceptedTerms,
+                showError: _showTermsError,
+                onChanged: (v) => setState(() => _acceptedTerms = v),
+              ),
+              const SizedBox(height: AppSpacing.lg),
               AppButton.primary(
                 label: widget.completeGoogleProfile
                     ? AppLocalizations.of(context)!.completeRegistration

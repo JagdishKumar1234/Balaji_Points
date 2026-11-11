@@ -26,6 +26,8 @@ import 'package:balaji_points/presentation/screens/carpenter/bills/add_bill_page
 import 'package:balaji_points/presentation/screens/carpenter/notifications/notifications_page.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/presentation/screens/common/info/about_us_page.dart';
+import 'package:balaji_points/presentation/screens/carpenter/profile/my_branch_page.dart';
+import 'package:balaji_points/presentation/screens/common/info/legal_document_page.dart';
 import 'package:balaji_points/presentation/screens/common/onboarding/onboarding_page.dart';
 import 'package:balaji_points/presentation/screens/admin/carpenter_profile_detail_screen.dart';
 import 'package:balaji_points/presentation/screens/admin/daily_spin_history_screen.dart';
@@ -76,6 +78,8 @@ GoRouter _buildRouter() {
         '/pin-login',
         '/pin-reset',
         '/onboarding',
+        '/terms',
+        '/privacy',
       ];
       if (publicPaths.any((p) => path.startsWith(p))) return null;
 
@@ -194,6 +198,17 @@ GoRouter _buildRouter() {
 
       GoRoute(path: '/login', builder: (context, _) => const LoginPage()),
       GoRoute(path: '/register', builder: (context, _) => const RegisterPage()),
+      // Legal pages: open before login (registration) and from Profile.
+      GoRoute(
+        path: '/terms',
+        builder: (context, _) =>
+            const LegalDocumentPage(document: LegalDocument.terms),
+      ),
+      GoRoute(
+        path: '/privacy',
+        builder: (context, _) =>
+            const LegalDocumentPage(document: LegalDocument.privacy),
+      ),
       GoRoute(
         path: '/complete-registration',
         builder: (context, state) => RegisterPage(
@@ -255,6 +270,11 @@ GoRouter _buildRouter() {
             path: '/about-us',
             name: 'about-us',
             builder: (context, state) => const AboutUsPage(),
+          ),
+          GoRoute(
+            path: '/my-branch',
+            name: 'my-branch',
+            builder: (context, state) => const MyBranchPage(),
           ),
           GoRoute(
             path: '/edit-profile',

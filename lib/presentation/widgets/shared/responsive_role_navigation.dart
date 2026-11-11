@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 
@@ -95,7 +96,7 @@ class ResponsiveRoleNavigation extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Balaji Hardware',
+                                  AppConstants.companyName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTypography.section(

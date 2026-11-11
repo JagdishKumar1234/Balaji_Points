@@ -126,7 +126,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get poweredBy => 'द्वारा संचालित';
 
   @override
-  String get companyName => 'श्री बालाजी प्लाईवुड एंड हार्डवेयर';
+  String get companyName => 'बालाजी पॉइंट्स';
 
   @override
   String get enterPinPageTitle => 'अपना 4 अंकों का PIN दर्ज करें';
@@ -497,12 +497,6 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get contactSupport =>
       'किसी भी प्रश्न या समस्या के लिए हमारी सहायता टीम से संपर्क करें।';
-
-  @override
-  String get supportPhone1 => '96006 - 09121';
-
-  @override
-  String get supportPhone2 => '0424 - 3557187';
 
   @override
   String get callNow => 'अभी कॉल करें';
@@ -4333,4 +4327,137 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get loadingBranch => 'आपकी शाखा लोड हो रही है…';
+
+  @override
+  String get offerPointsTarget => 'पॉइंट्स लक्ष्य';
+
+  @override
+  String get offerDetails => 'ऑफ़र विवरण';
+
+  @override
+  String get offerInfo => 'ऑफ़र विवरण';
+
+  @override
+  String offerProgress(String have, String target) {
+    return 'आपके पास $target में से $have पॉइंट्स हैं';
+  }
+
+  @override
+  String offerPointsToGo(String points) {
+    return 'इस ऑफ़र के लिए $points पॉइंट्स और चाहिए';
+  }
+
+  @override
+  String get offerTargetReached => 'लक्ष्य पूरा!';
+
+  @override
+  String get offerTermsApply => '*नियम और शर्तें लागू।';
+
+  @override
+  String get offerViewBanner => 'पूरा बैनर देखें';
+
+  @override
+  String get homeAnnouncements => 'घोषणाएँ';
+
+  @override
+  String get legalTermsTitle => 'नियम और शर्तें';
+
+  @override
+  String get legalPrivacyTitle => 'गोपनीयता नीति';
+
+  @override
+  String legalLastUpdated(String date) {
+    return 'अंतिम अपडेट: $date';
+  }
+
+  @override
+  String get legalAgreePrefix => 'मैंने ';
+
+  @override
+  String get legalAgreeAnd => ' और ';
+
+  @override
+  String get legalAgreeSuffix => ' पढ़ ली हैं और मैं सहमत हूँ।';
+
+  @override
+  String get legalAcceptToContinue =>
+      'आगे बढ़ने के लिए कृपया नियम और शर्तें तथा गोपनीयता नीति स्वीकार करें।';
+
+  @override
+  String get legalEnglishOnly => 'यह दस्तावेज़ अंग्रेज़ी में उपलब्ध है।';
+
+  @override
+  String get profileSectionLegal => 'कानूनी';
+
+  @override
+  String get myBranch => 'मेरी शाखा';
+
+  @override
+  String get myBranchSubtitle => 'आपकी स्टोर शाखा और संपर्क';
+
+  @override
+  String get branchDetails => 'शाखा विवरण';
+
+  @override
+  String get branchPhone => 'शाखा फ़ोन';
+
+  @override
+  String get yourBranchSupport => 'आपकी शाखा';
+
+  @override
+  String get appSupport => 'ऐप सहायता';
+
+  @override
+  String get openInMaps => 'मैप में खोलें';
+
+  @override
+  String get notAvailable => 'उपलब्ध नहीं';
+
+  @override
+  String get supportHint =>
+      'बिल, पॉइंट्स और ऑफ़र के लिए अपनी शाखा से संपर्क करें। ऐप की समस्या के लिए ऐप सहायता से संपर्क करें।';
+
+  @override
+  String get directions => 'रास्ता दिखाएँ';
+
+  @override
+  String get openInGoogleMaps => 'Google मैप में खोलें';
+
+  @override
+  String get profileStatus => 'प्रोफ़ाइल स्थिति';
+
+  @override
+  String get profileReadyForBills =>
+      'आपकी प्रोफ़ाइल पूरी है। आप बिल जमा कर सकते हैं।';
+
+  @override
+  String get profileMissingForBills =>
+      'बिल जमा करने के लिए बाकी जानकारी जोड़ें।';
+
+  @override
+  String get requiredForBills => 'बिल के लिए ज़रूरी';
+
+  @override
+  String get added => 'जोड़ा गया';
+
+  @override
+  String get missing => 'बाकी है';
+
+  @override
+  String get notAdded => 'नहीं जोड़ा';
+
+  @override
+  String get emailOptional => 'ईमेल (वैकल्पिक)';
+
+  @override
+  String get profilePhoto => 'प्रोफ़ाइल फ़ोटो';
+
+  @override
+  String get addPhotoRequired =>
+      'प्रोफ़ाइल फ़ोटो जोड़ें। बिल जमा करने के लिए यह ज़रूरी है।';
+
+  @override
+  String itemsMissing(String items) {
+    return 'बाकी: $items';
+  }
 }

@@ -399,17 +399,26 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                 ),
                                 const SizedBox(height: 8),
                                 _supportPhoneRow(
-                                  phone: AppConstants.supportPhone1,
-                                  label: l10n.supportPhone1,
+                                  label: AppConstants.supportPhoneDisplay,
                                   color: AppColors.success,
                                   icon: Icons.phone_android_rounded,
+                                  actionIcon: Icons.call_rounded,
+                                  onTap: () => _makePhoneCall(
+                                    AppConstants.supportPhoneE164,
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 _supportPhoneRow(
-                                  phone: AppConstants.supportPhone2,
-                                  label: l10n.supportPhone2,
+                                  label: AppConstants.supportEmail,
                                   color: context.themePrimary,
-                                  icon: Icons.phone_rounded,
+                                  icon: Icons.email_outlined,
+                                  actionIcon: Icons.send_rounded,
+                                  onTap: () => launchUrl(
+                                    Uri(
+                                      scheme: 'mailto',
+                                      path: AppConstants.supportEmail,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -488,13 +497,14 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
   }
 
   Widget _supportPhoneRow({
-    required String phone,
     required String label,
     required Color color,
     required IconData icon,
+    required IconData actionIcon,
+    required VoidCallback onTap,
   }) {
     return InkWell(
-      onTap: () => _makePhoneCall(phone.replaceAll('-', '')),
+      onTap: onTap,
       borderRadius: AppRadius.sm8,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -509,7 +519,7 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
             Expanded(
               child: Text(label, style: AppTypography.labelSmall(color: color)),
             ),
-            Icon(Icons.call_rounded, size: 16, color: color),
+            Icon(actionIcon, size: 16, color: color),
           ],
         ),
       ),

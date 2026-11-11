@@ -1,3 +1,4 @@
+import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -26,7 +27,9 @@ import 'package:balaji_points/providers/branch_celebration_provider.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/diwali_celebration_dialog.dart';
 import 'package:balaji_points/services/branch/branch_celebration_service.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
+import 'package:balaji_points/presentation/screens/carpenter/home/rank_celebration.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_drawer.dart';
+import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_section_title.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_feature_highlights.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_hero_card.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/home_greeting_banner.dart';
@@ -251,16 +254,23 @@ class _HomePageState extends ConsumerState<HomePage>
       });
     }
 
-    // Confetti on rank #1
-    final topKey = homeState.topCarpenters.isNotEmpty
-        ? homeState.topCarpenters.first.userId
+    // Confetti for a real rank #1, once a day (see RankCelebration).
+    final top = homeState.topCarpenters.isNotEmpty
+        ? homeState.topCarpenters.first
         : null;
+    final topKey = top?.userId;
     if (topKey != null &&
-        topKey == homeState.userDocId &&
-        topKey != _confettiPlayedKey) {
+        topKey != _confettiPlayedKey &&
+        RankCelebration.isRealLeader(
+          topUserId: topKey,
+          myUserId: homeState.userDocId,
+          topPoints: top!.points,
+        )) {
       _confettiPlayedKey = topKey;
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _confettiController.play(),
+      unawaited(
+        RankCelebration.claimToday(topKey).then((play) {
+          if (play && mounted) _confettiController.play();
+        }),
       );
     }
 
@@ -325,8 +335,10 @@ class _HomePageState extends ConsumerState<HomePage>
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.h5(color: fg),
                   ),
+                  // The member's branch name; the tagline only until it loads.
                   Text(
-                    l10n.companyName,
+                    ref.watch(currentBranchProvider).asData?.value?.name ??
+                        l10n.rewardsLoyaltyProgram,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.caption(
@@ -376,23 +388,22 @@ class _HomePageState extends ConsumerState<HomePage>
                     // Offers
                     if (homeState.offersLoading ||
                         homeState.offers.isNotEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          l10n.latestOffers,
-                          style: AppTypography.h5(
-                            color: context.themeTextPrimary,
-                          ),
-                        ),
+                      HomeSectionTitle(
+                        icon: Icons.local_offer_rounded,
+                        title: l10n.latestOffers,
                       ),
-                      const SizedBox(height: AppSpacing.sm),
                       RepaintBoundary(
                         child: homeState.offersLoading
-                            ? const SizedBox(
-                                height: 260,
-                                child: ShimmerOfferCard(),
+                            ? SizedBox(
+                                height: OffersCarousel.cardHeightFor(
+                                  MediaQuery.sizeOf(context).width,
+                                ),
+                                child: const ShimmerOfferCard(),
                               )
-                            : OffersCarousel(offers: homeState.offers),
+                            : OffersCarousel(
+                                offers: homeState.offers,
+                                myPoints: homeState.points,
+                              ),
                       ),
                       const SizedBox(height: AppSpacing.md),
                     ],
@@ -401,6 +412,10 @@ class _HomePageState extends ConsumerState<HomePage>
                     if (!homeState.greetingLoading &&
                         homeState.greeting != null)
                       if (_dismissedGreetingId != homeState.greeting!.id) ...[
+                        HomeSectionTitle(
+                          icon: Icons.campaign_rounded,
+                          title: l10n.homeAnnouncements,
+                        ),
                         HomeGreetingBanner(
                           greeting: homeState.greeting!,
                           onDismiss: () async {

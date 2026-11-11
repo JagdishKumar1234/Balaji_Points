@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
@@ -1489,7 +1490,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                           AppLocalizations.of(
                                                             context,
                                                           )!.totalPts(
-                                                            '${totalPoints.toStringAsFixed(0)}',
+                                                            PointsUtils.formatPoints(
+                                                              totalPoints,
+                                                            ),
                                                           ),
                                                           color: context
                                                               .themePrimary,

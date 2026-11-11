@@ -12,10 +12,13 @@ class AppConstants {
   static const int pointsPerThousandRupees = 1;
   static const String pointsConversionText = '1000 ₹ = 1 Point';
 
-  // Contact Information
-  static const String supportPhone1 = '96006-09121';
-  static const String supportPhone2 = '0424-3557187';
-  static const String supportEmail = 'support@balajipoints.com';
+  // Company and support contact: the same everywhere in the app.
+  // (Store names like "Sri Balaji Plywood and Hardware" are branches.)
+  static const String companyName = 'Balaji Points';
+  static const String supportEmail = 'aaijitechstudio@gmail.com';
+  static const String supportPhone = '8947038661';
+  static const String supportPhoneDisplay = '89470 38661';
+  static const String supportPhoneE164 = '+918947038661';
 
   // Validation Limits
   static const int minNameLength = 2;
@@ -113,8 +116,7 @@ class AppConstants {
   static const String sessionExpired = 'Session expired. Please login again.';
 
   // Shop / App bar display
-  static const String shopNameShort = 'Sri Balaji Plywood & Hardware';
-  static const String shopAddressShort = '150 VCTV Main Road, Erode';
+  static const String shopNameShort = companyName;
 
   // Assets Paths
   static const String logoPath = 'assets/images/balaji_point_logo.png';

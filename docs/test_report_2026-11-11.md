@@ -99,6 +99,8 @@ Earlier the same day (already live): notifications saved with their branch, the 
 
 ## Not tested yet (needs a private test database)
 
+**Update:** these flows were tested on a private local copy the same day. See [test_report_2026-11-11_write_flows.md](test_report_2026-11-11_write_flows.md).
+
 Running these on live data would create real offers, bills, points and notifications. They need the Firebase Local Emulator Suite, or a separate test project:
 
 - Admin uploads an offer → only that branch's members see it and get the push.

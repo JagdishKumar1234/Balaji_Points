@@ -269,6 +269,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required String roleName,
     required String roleAbbreviation,
     required String branchId,
+    String? termsVersion,
   }) async {
     state = const AuthLoading();
     try {
@@ -347,6 +348,10 @@ class AuthNotifier extends Notifier<AuthState> {
         'branchShortName': branchShortName,
         'status': 'verified',
         'profileCompletedAt': FieldValue.serverTimestamp(),
+        // Terms & Conditions and Privacy Policy accepted at registration.
+        if (termsVersion != null) 'termsVersion': termsVersion,
+        if (termsVersion != null)
+          'termsAcceptedAt': FieldValue.serverTimestamp(),
       };
       if (existing.exists) {
         await userRef.update(completionFields);
@@ -567,6 +572,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required String roleName,
     required String roleAbbreviation,
     required String branchId,
+    String? termsVersion,
   }) async {
     state = const AuthLoading();
     firebase_auth.User? createdUser;
@@ -643,6 +649,10 @@ class AuthNotifier extends Notifier<AuthState> {
         'createdAt': FieldValue.serverTimestamp(),
         'verifiedAt': FieldValue.serverTimestamp(),
         'verifiedBy': 'email-registration',
+        // Terms & Conditions and Privacy Policy accepted at registration.
+        if (termsVersion != null) 'termsVersion': termsVersion,
+        if (termsVersion != null)
+          'termsAcceptedAt': FieldValue.serverTimestamp(),
       });
       batch.set(pointsRef, {
         'userId': registeredUser.uid,
@@ -1027,51 +1037,6 @@ class AuthNotifier extends Notifier<AuthState> {
       default:
         return e.message ?? 'Authentication failed. Please try again.';
     }
-  }
-
-  Future<String> _resolveRoleForUser(firebase_auth.User firebaseUser) async {
-    try {
-      final uidSnapshot = await _firestore
-          .collection('users')
-          .doc(firebaseUser.uid)
-          .get();
-      if (uidSnapshot.exists) {
-        final data = uidSnapshot.data();
-        final role = data?['role'] as String? ?? data?['userRole'] as String?;
-        if (role != null && role.trim().isNotEmpty) return role.trim();
-      }
-
-      final email = firebaseUser.email?.trim();
-      if (email != null && email.isNotEmpty) {
-        final emailQuery = await _firestore
-            .collection('users')
-            .where('email', isEqualTo: email)
-            .limit(1)
-            .get();
-        if (emailQuery.docs.isNotEmpty) {
-          final data = emailQuery.docs.first.data();
-          final role = data['role'] as String? ?? data['userRole'] as String?;
-          if (role != null && role.trim().isNotEmpty) return role.trim();
-        }
-      }
-
-      final phoneQuery = await _firestore
-          .collection('users')
-          .where('uid', isEqualTo: firebaseUser.uid)
-          .limit(1)
-          .get();
-      if (phoneQuery.docs.isNotEmpty) {
-        final data = phoneQuery.docs.first.data();
-        final role = data['role'] as String? ?? data['userRole'] as String?;
-        if (role != null && role.trim().isNotEmpty) return role.trim();
-      }
-    } catch (_) {
-      AppLogger.warning(
-        'Unable to resolve user role from Firestore; defaulting to carpenter.',
-      );
-    }
-
-    return 'carpenter';
   }
 
   Future<void> _ensureConfiguredSuperAdminProfile(

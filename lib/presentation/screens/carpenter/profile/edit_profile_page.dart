@@ -1,3 +1,6 @@
+import 'package:balaji_points/presentation/screens/carpenter/profile/widgets/profile_widgets.dart';
+import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/core/profile/profile_completeness.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +34,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  String _phone = '';
+  // Login emails (email / Google accounts) cannot be changed here.
+  bool _emailLocked = false;
   final UserService _userService = UserService();
   final StorageService _storageService = StorageService();
   final SessionService _sessionService = SessionService();
@@ -52,6 +59,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -64,6 +72,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         setState(() {
           _firstNameController.text = userData['firstName'] as String? ?? '';
           _lastNameController.text = userData['lastName'] as String? ?? '';
+          _emailController.text = (userData['email'] as String? ?? '').trim();
+          _emailLocked = _emailController.text.isNotEmpty;
+          _phone = (userData['phone'] as String? ?? '').trim();
           _existingImageUrl = userData['profileImage'] as String?;
           _isLoading = false;
         });
@@ -112,8 +123,25 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   String _sanitizeInput(String input) =>
       input.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '').trim();
 
+  ProfileCompleteness get _completeness => ProfileCompleteness.from({
+    'firstName': _firstNameController.text,
+    'lastName': _lastNameController.text,
+    'email': _emailController.text,
+    'phone': _phone,
+    'profileImage': _imageBytes != null ? 'new' : (_existingImageUrl ?? ''),
+  });
+
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
+    if (widget.isFirstTime && !_completeness.hasPhoto) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.addPhotoRequired),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
     setState(() => _isSaving = true);
 
     try {
@@ -194,6 +222,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
         updateData['profileImage'] = profileImageUrl;
       }
+      final email = _emailController.text.trim().toLowerCase();
+      if (!_emailLocked && email.isNotEmpty) updateData['email'] = email;
 
       final canonicalRef = await _userMigrationService.resolveCanonicalUserRef(
         phone: phoneNumber,
@@ -347,6 +377,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                           key: _formKey,
                           child: Column(
                             children: [
+                              ProfileChecklist(completeness: _completeness),
                               const SizedBox(height: 24),
 
                               // Avatar picker
@@ -455,8 +486,17 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
                               const SizedBox(height: 12),
                               AppText.bodySmall(
-                                AppLocalizations.of(context)!.tapToChangePhoto,
-                                color: context.themeTextSecondary,
+                                _completeness.hasPhoto
+                                    ? AppLocalizations.of(
+                                        context,
+                                      )!.tapToChangePhoto
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.addPhotoRequired,
+                                color: _completeness.hasPhoto
+                                    ? context.themeTextSecondary
+                                    : AppColors.warning,
+                                textAlign: TextAlign.center,
                               ),
 
                               const SizedBox(height: 40),
@@ -510,6 +550,33 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                     )!.lastNameMustBeAtLeast;
                                   }
                                   return null;
+                                },
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // Email: optional, locked for email/Google logins
+                              AppTextField(
+                                controller: _emailController,
+                                label: _emailLocked
+                                    ? AppLocalizations.of(context)!.email
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.emailOptional,
+                                hint: AppLocalizations.of(context)!.hintEmail,
+                                prefixIcon: Icons.email_outlined,
+                                keyboardType: TextInputType.emailAddress,
+                                enabled: !_emailLocked,
+                                validator: (v) {
+                                  final email = v?.trim() ?? '';
+                                  if (email.isEmpty) return null;
+                                  return RegExp(
+                                        AppConstants.emailRegex,
+                                      ).hasMatch(email)
+                                      ? null
+                                      : AppLocalizations.of(
+                                          context,
+                                        )!.enterAValidEmailAddress;
                                 },
                               ),
 

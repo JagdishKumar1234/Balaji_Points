@@ -127,7 +127,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get poweredBy => 'இனால் இயக்கப்படுகிறது';
 
   @override
-  String get companyName => 'ஸ்ரீ பலாஜி பிளைவுட் & ஹார்ட்வேர்';
+  String get companyName => 'பலாஜி பாயிண்ட்ஸ்';
 
   @override
   String get enterPinPageTitle => '4 இலக்க PIN ஐ உள்ளிடவும்';
@@ -501,12 +501,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get contactSupport => 'எங்கள் ஆதரவு குழுவை தொடர்பு கொள்ளவும்.';
-
-  @override
-  String get supportPhone1 => '96006 - 09121';
-
-  @override
-  String get supportPhone2 => '0424 - 3557187';
 
   @override
   String get callNow => 'இப்போது அழைக்கவும்';
@@ -4372,4 +4366,137 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get loadingBranch => 'உங்கள் கிளை ஏற்றப்படுகிறது…';
+
+  @override
+  String get offerPointsTarget => 'புள்ளி இலக்கு';
+
+  @override
+  String get offerDetails => 'சலுகை விவரங்கள்';
+
+  @override
+  String get offerInfo => 'சலுகை விவரங்கள்';
+
+  @override
+  String offerProgress(String have, String target) {
+    return 'உங்களிடம் $target இல் $have புள்ளிகள் உள்ளன';
+  }
+
+  @override
+  String offerPointsToGo(String points) {
+    return 'இந்த சலுகைக்கு இன்னும் $points புள்ளிகள் தேவை';
+  }
+
+  @override
+  String get offerTargetReached => 'இலக்கை அடைந்தீர்கள்!';
+
+  @override
+  String get offerTermsApply => '*விதிமுறைகள் மற்றும் நிபந்தனைகள் பொருந்தும்.';
+
+  @override
+  String get offerViewBanner => 'முழு பேனரைப் பார்';
+
+  @override
+  String get homeAnnouncements => 'அறிவிப்புகள்';
+
+  @override
+  String get legalTermsTitle => 'விதிமுறைகள் மற்றும் நிபந்தனைகள்';
+
+  @override
+  String get legalPrivacyTitle => 'தனியுரிமைக் கொள்கை';
+
+  @override
+  String legalLastUpdated(String date) {
+    return 'கடைசியாகப் புதுப்பிக்கப்பட்டது: $date';
+  }
+
+  @override
+  String get legalAgreePrefix => 'நான் ';
+
+  @override
+  String get legalAgreeAnd => ' மற்றும் ';
+
+  @override
+  String get legalAgreeSuffix => ' ஆகியவற்றைப் படித்து ஒப்புக்கொள்கிறேன்.';
+
+  @override
+  String get legalAcceptToContinue =>
+      'தொடர, விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கையை ஏற்கவும்.';
+
+  @override
+  String get legalEnglishOnly => 'இந்த ஆவணம் ஆங்கிலத்தில் வழங்கப்படுகிறது.';
+
+  @override
+  String get profileSectionLegal => 'சட்டம்';
+
+  @override
+  String get myBranch => 'எனது கிளை';
+
+  @override
+  String get myBranchSubtitle => 'உங்கள் கடைக் கிளை மற்றும் தொடர்பு';
+
+  @override
+  String get branchDetails => 'கிளை விவரங்கள்';
+
+  @override
+  String get branchPhone => 'கிளை தொலைபேசி';
+
+  @override
+  String get yourBranchSupport => 'உங்கள் கிளை';
+
+  @override
+  String get appSupport => 'ஆப் உதவி';
+
+  @override
+  String get openInMaps => 'மேப்பில் திற';
+
+  @override
+  String get notAvailable => 'கிடைக்கவில்லை';
+
+  @override
+  String get supportHint =>
+      'பில், புள்ளிகள், சலுகைகளுக்கு உங்கள் கிளையைத் தொடர்பு கொள்ளவும். ஆப் பிரச்சனைகளுக்கு ஆப் உதவியைத் தொடர்பு கொள்ளவும்.';
+
+  @override
+  String get directions => 'வழிகாட்டல்';
+
+  @override
+  String get openInGoogleMaps => 'Google மேப்பில் திற';
+
+  @override
+  String get profileStatus => 'சுயவிவர நிலை';
+
+  @override
+  String get profileReadyForBills =>
+      'உங்கள் சுயவிவரம் முழுமையானது. பில் சமர்ப்பிக்கலாம்.';
+
+  @override
+  String get profileMissingForBills =>
+      'பில் சமர்ப்பிக்க விடுபட்டவற்றைச் சேர்க்கவும்.';
+
+  @override
+  String get requiredForBills => 'பில்லுக்கு அவசியம்';
+
+  @override
+  String get added => 'சேர்க்கப்பட்டது';
+
+  @override
+  String get missing => 'விடுபட்டது';
+
+  @override
+  String get notAdded => 'சேர்க்கப்படவில்லை';
+
+  @override
+  String get emailOptional => 'மின்னஞ்சல் (விருப்பம்)';
+
+  @override
+  String get profilePhoto => 'சுயவிவரப் படம்';
+
+  @override
+  String get addPhotoRequired =>
+      'சுயவிவரப் படத்தைச் சேர்க்கவும். பில் சமர்ப்பிக்க இது அவசியம்.';
+
+  @override
+  String itemsMissing(String items) {
+    return 'விடுபட்டவை: $items';
+  }
 }

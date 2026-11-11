@@ -61,7 +61,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     final celebrationEnabled = celebrationAsync.asData?.value ?? false;
     final showAddBill = !celebrationEnabled;
     final isAdmin = role == 'admin';
-    final showNav = roleAsync.hasValue && !isAdmin && !context.isWideScreen;
+    // While the keyboard is open the tab bar is hidden, so forms such as
+    // Add Bill keep the whole screen above the keyboard.
+    final keyboardOpen = mq.viewInsets.bottom > 0;
+    final showNav =
+        roleAsync.hasValue &&
+        !isAdmin &&
+        !context.isWideScreen &&
+        !keyboardOpen;
 
     // The app theme already matches the UI spec (grey canvas, white cards),
     // so the shell no longer overrides surface colours.

@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'dart:async';
 import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 
@@ -37,9 +38,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _runSplashSequence() async {
-    // Let entrance animations complete (600 ms hero + small buffer)
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    if (!mounted) return;
+    // No fixed wait: the app moves on as soon as the update check is done.
 
     // Check for blocking updates only (must complete before navigation)
     AppLogger.startup('Splash: checking installed version and update policy.');
@@ -77,6 +76,7 @@ class _SplashPageState extends State<SplashPage> {
 
       if (isLoggedIn) {
         final bioEnabled = await _sessionService.isBiometricEnabled();
+        if (!mounted) return;
         if (bioEnabled) {
           final authenticated = await BiometricService().authenticate(
             localizedReason: AppLocalizations.of(
@@ -92,8 +92,6 @@ class _SplashPageState extends State<SplashPage> {
         }
 
         FCMService().processPendingNavigation();
-        await Future<void>.delayed(const Duration(milliseconds: 120));
-        if (!mounted) return;
 
         final role = await _sessionService.getUserRole();
         if (!mounted) return;
@@ -208,7 +206,7 @@ class SplashView extends StatelessWidget {
                                 entrance(
                                   Text(
                                     '${l10n?.poweredBy ?? 'Powered by'}\n'
-                                    '${l10n?.companyName ?? 'Shri Balaji Plywood & Hardware'}',
+                                    '${l10n?.companyName ?? AppConstants.companyName}',
                                     textAlign: TextAlign.center,
                                     // Sits on the navy curve of AuthBackground.
                                     style: AppTypography.labelMedium(

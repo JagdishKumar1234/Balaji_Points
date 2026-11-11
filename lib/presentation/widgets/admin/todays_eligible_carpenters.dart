@@ -35,9 +35,12 @@ class TodaysEligibleCarpenters extends StatelessWidget {
 
       for (final doc in billsQuery.docs) {
         final data = doc.data();
-        final carpenterId = data['userId'] as String?;
+        // Bills store the member as `carpenterId`; `userId` is only on
+        // very old records.
+        final carpenterId =
+            (data['carpenterId'] as String?) ?? (data['userId'] as String?);
 
-        if (carpenterId != null) {
+        if (carpenterId != null && carpenterId.isNotEmpty) {
           carpenterIds.add(carpenterId);
 
           // Store bill info for this carpenter
@@ -46,8 +49,8 @@ class TodaysEligibleCarpenters extends StatelessWidget {
           }
           carpenterBills[carpenterId]!.add({
             'billNumber': data['billNumber'],
-            'totalAmount': data['totalAmount'] ?? 0,
-            'points': data['points'] ?? 0,
+            'totalAmount': data['amount'] ?? data['totalAmount'] ?? 0,
+            'points': data['pointsEarned'] ?? data['points'] ?? 0,
           });
         }
       }
@@ -76,9 +79,10 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                   : '$firstName $lastName'.trim();
 
               final bills = carpenterBills[carpenterId] ?? [];
-              final totalPoints = bills.fold<int>(
+              // Points can have decimals (₹12,500 → 12.5).
+              final totalPoints = bills.fold<num>(
                 0,
-                (acc, bill) => acc + (bill['points'] as int? ?? 0),
+                (acc, bill) => acc + (bill['points'] as num? ?? 0),
               );
 
               eligibleCarpenters.add({
@@ -420,12 +424,21 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                       color: context.themeTextSecondary,
                     ),
                     const SizedBox(width: 4),
-                    AppText.body(phone, color: context.themeTextSecondary),
+                    Flexible(
+                      child: AppText.body(
+                        phone,
+                        color: context.themeTextSecondary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
+
+          const SizedBox(width: 8),
 
           // Stats
           Column(
@@ -447,7 +460,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     Icon(
                       Icons.receipt_rounded,
                       size: 14,
-                      color: AppColors.success,
+                      color: AppColors.white,
                     ),
                     const SizedBox(width: 4),
                     AppText.labelSmall('$billsCount', color: AppColors.white),

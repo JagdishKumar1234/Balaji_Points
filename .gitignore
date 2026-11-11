@@ -123,3 +123,6 @@ app.*.map.json
 
 # Coverage
 coverage/
+
+# Written by build_release.sh on every build
+BUILD_REPORT.txt

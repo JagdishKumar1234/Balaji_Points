@@ -101,7 +101,6 @@ void main() {
               OfferItem(
                 title: 'Diwali Scheme',
                 description: 'Last date',
-                actionText: 'View Offer',
                 imageUrl: 'https://example.com/banner.png',
               ),
             ],
@@ -111,7 +110,9 @@ void main() {
       await tester.pump();
 
       final image = tester.getRect(find.byType(Image));
-      final title = tester.getRect(find.text('Diwali Scheme'));
+      // The bar under the banner (tests can't load the image, so the navy
+      // fallback above also shows the title).
+      final title = tester.getRect(find.text('Diwali Scheme').last);
       expect(title.top, greaterThanOrEqualTo(image.bottom));
       expect(tester.takeException(), isNull);
     });
@@ -122,19 +123,13 @@ void main() {
       await tester.pumpWidget(
         _app(
           OffersCarousel(
-            offers: [
-              OfferItem(
-                title: 'Plain offer',
-                description: '',
-                actionText: 'Learn More',
-              ),
-            ],
+            offers: [OfferItem(title: 'Plain offer', description: '')],
           ),
         ),
       );
       await tester.pump();
-      expect(find.text('Plain offer'), findsOneWidget);
-      expect(find.text('Learn More'), findsOneWidget);
+      // On the navy card and in the bar below it.
+      expect(find.text('Plain offer'), findsNWidgets(2));
       expect(tester.takeException(), isNull);
     });
   });

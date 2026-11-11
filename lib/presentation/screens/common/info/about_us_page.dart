@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
@@ -147,16 +148,16 @@ class AboutUsPage extends StatelessWidget {
   }
 }
 
-/// Aaiji Tech Studio — contact links (mailto / tel).
+/// Balaji Points support — contact links (mailto / tel).
 class _AboutDeveloperCredits extends StatelessWidget {
   const _AboutDeveloperCredits({required this.theme, required this.l10n});
 
   final ThemeData theme;
   final AppLocalizations l10n;
 
-  static const String _email = 'aaijitechstudio@gmail.com';
-  static const String _phoneDisplay = '8947038661';
-  static const String _phoneTel = '+918947038661';
+  static const String _email = AppConstants.supportEmail;
+  static const String _phoneDisplay = AppConstants.supportPhoneDisplay;
+  static const String _phoneTel = AppConstants.supportPhoneE164;
 
   Future<void> _tryLaunch(BuildContext context, Uri uri) async {
     try {

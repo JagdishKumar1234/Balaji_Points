@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/profile/profile_completeness.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -271,6 +272,180 @@ class ProfileMenuTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Profile status: phone, email, name and photo, each marked added or
+/// missing, with which ones bills need. Shown on Profile and Edit Profile.
+class ProfileChecklist extends StatelessWidget {
+  const ProfileChecklist({
+    super.key,
+    required this.completeness,
+    this.onComplete,
+  });
+
+  final ProfileCompleteness completeness;
+
+  /// Opens Edit Profile; hidden when null (already on that screen).
+  final VoidCallback? onComplete;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final c = completeness;
+    final ready = c.isReadyForBills;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        color: context.themeCard,
+        borderRadius: AppRadius.forCard,
+        border: Border.all(
+          color: ready ? context.themeBorder : AppColors.warning,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                ready ? Icons.verified_rounded : Icons.error_outline_rounded,
+                color: ready ? AppColors.success : AppColors.warning,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.profileStatus,
+                  style: AppTypography.labelLarge(
+                    color: context.themeTextPrimary,
+                  ),
+                ),
+              ),
+              Text(
+                '${c.completedCount}/4',
+                style: AppTypography.labelMedium(
+                  color: context.themeTextSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            ready ? l10n.profileReadyForBills : l10n.profileMissingForBills,
+            style: AppTypography.bodySmall(color: context.themeTextSecondary),
+          ),
+          const SizedBox(height: 10),
+          _ChecklistRow(
+            icon: Icons.phone_android_rounded,
+            label: l10n.mobileNumber,
+            ok: c.hasPhone,
+            okLabel: l10n.verified,
+            missingLabel: l10n.missing,
+            required: true,
+          ),
+          _ChecklistRow(
+            icon: Icons.email_outlined,
+            label: l10n.email,
+            ok: c.hasEmail,
+            okLabel: l10n.verified,
+            missingLabel: l10n.notAdded,
+            required: false,
+          ),
+          _ChecklistRow(
+            icon: Icons.badge_outlined,
+            label: l10n.fullName,
+            ok: c.hasFullName,
+            okLabel: l10n.added,
+            missingLabel: l10n.missing,
+            required: true,
+          ),
+          _ChecklistRow(
+            icon: Icons.account_circle_outlined,
+            label: l10n.profilePhoto,
+            ok: c.hasPhoto,
+            okLabel: l10n.added,
+            missingLabel: l10n.missing,
+            required: true,
+          ),
+          if (!ready && onComplete != null) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: onComplete,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+                ),
+                icon: const Icon(Icons.edit_rounded, size: 18),
+                label: Text(l10n.completeProfile),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ChecklistRow extends StatelessWidget {
+  const _ChecklistRow({
+    required this.icon,
+    required this.label,
+    required this.ok,
+    required this.okLabel,
+    required this.missingLabel,
+    required this.required,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool ok;
+  final String okLabel;
+  final String missingLabel;
+  final bool required;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final color = ok ? AppColors.success : AppColors.warning;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: context.themeTextSecondary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              required ? '$label *' : label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.bodyMedium(color: context.themeTextPrimary),
+            ),
+          ),
+          if (required && !ok)
+            Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: Text(
+                l10n.requiredForBills,
+                style: AppTypography.caption(color: AppColors.warning),
+              ),
+            ),
+          Icon(
+            ok ? Icons.check_circle_rounded : Icons.cancel_rounded,
+            size: 18,
+            color: color,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            ok ? okLabel : missingLabel,
+            style: AppTypography.labelSmall(color: color),
+          ),
+        ],
       ),
     );
   }

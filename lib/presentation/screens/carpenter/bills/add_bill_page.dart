@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/profile/profile_completeness.dart';
 import 'package:balaji_points/providers/branch_celebration_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,13 +89,13 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
   Future<void> _checkProfileCompletion() async {
     try {
       final userData = await _userService.getCurrentUserData();
-      final firstName = (userData?['firstName'] as String? ?? '').trim();
-      final lastName = (userData?['lastName'] as String? ?? '').trim();
-      final profileImage = (userData?['profileImage'] as String? ?? '').trim();
-      if (firstName.isEmpty || lastName.isEmpty || profileImage.isEmpty) {
+      // Every member role needs a photo, first and last name and a mobile
+      // number before submitting bills.
+      final completeness = ProfileCompleteness.from(userData);
+      if (!completeness.isReadyForBills) {
         if (mounted) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _showProfileIncompleteDialog();
+            _showProfileIncompleteDialog(completeness.missingForBills);
           });
         }
       }
@@ -103,8 +104,19 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
     }
   }
 
-  void _showProfileIncompleteDialog() {
+  void _showProfileIncompleteDialog(List<ProfileItem> missing) {
     final l10n = AppLocalizations.of(context);
+    final strings = AppLocalizations.of(context)!;
+    final missingNames = missing
+        .map(
+          (m) => switch (m) {
+            ProfileItem.photo => strings.profilePhoto,
+            ProfileItem.name => strings.fullName,
+            ProfileItem.phone => strings.mobileNumber,
+            ProfileItem.email => strings.email,
+          },
+        )
+        .join(', ');
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -134,8 +146,8 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
           ],
         ),
         content: AppText.body(
-          l10n?.completeProfileMessage ??
-              AppLocalizations.of(context)!.pleaseCompleteYourProfileFirstName,
+          '${l10n?.completeProfileMessage ?? strings.pleaseCompleteYourProfileFirstName}'
+          '${missingNames.isEmpty ? '' : '\n\n${strings.itemsMissing(missingNames)}'}',
           color: context.themeTextSecondary,
         ),
         actions: [

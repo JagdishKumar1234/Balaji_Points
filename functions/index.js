@@ -18,12 +18,17 @@ const {onDocumentCreated, onDocumentWritten, onDocumentDeleted} =
   require("firebase-functions/v2/firestore");
 const {onCall, HttpsError} = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+// Modular import: `admin.firestore.FieldValue` is undefined in the local
+// Functions emulator, which made every write with a timestamp crash there.
+const {FieldValue, Timestamp} = require("firebase-admin/firestore");
 
 admin.initializeApp();
 
 const db = admin.firestore();
 const SUPER_ADMIN_EMAIL = "aaijitechstudio@gmail.com";
 const {isPointsResetMember} = require("./points_reset_members");
+const {inAppRecordFor} = require("./in_app_record");
+const {isFutureBillDate, indiaDayBounds} = require("./bill_date");
 
 /**
  * Verifies the authenticated caller against the configured super-admin profile.
@@ -161,13 +166,13 @@ exports.createBranchAdmin = onCall(async (request) => {
         status: "active",
         totalPoints: 0,
         tier: "Bronze",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
         createdBy: creatorId,
         authProvider: "password",
       });
       transaction.set(branchRef, {
         adminUid: authUser.uid,
-        adminAssignedAt: admin.firestore.FieldValue.serverTimestamp(),
+        adminAssignedAt: FieldValue.serverTimestamp(),
       }, {merge: true});
     });
   } catch (error) {
@@ -202,7 +207,7 @@ exports.updateBranchAdminPassword = onCall(async (request) => {
   try {
     await admin.auth().updateUser(uid, {password});
     await profile.ref.update({
-      passwordUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      passwordUpdatedAt: FieldValue.serverTimestamp(),
       passwordUpdatedBy: request.auth.uid,
     });
   } catch (error) {
@@ -269,7 +274,7 @@ exports.updateBranchAdmin = onCall(async (request) => {
         lastName,
         phone,
         email,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
         updatedBy: editorId,
       };
       const branch = newBranch.data();
@@ -296,13 +301,13 @@ exports.updateBranchAdmin = onCall(async (request) => {
         });
         if (oldBranch && oldBranch.exists && oldBranch.data().adminUid === uid) {
           transaction.update(oldBranchRef, {
-            adminUid: admin.firestore.FieldValue.delete(),
-            adminAssignedAt: admin.firestore.FieldValue.delete(),
+            adminUid: FieldValue.delete(),
+            adminAssignedAt: FieldValue.delete(),
           });
         }
         transaction.set(newBranchRef, {
           adminUid: uid,
-          adminAssignedAt: admin.firestore.FieldValue.serverTimestamp(),
+          adminAssignedAt: FieldValue.serverTimestamp(),
         }, {merge: true});
       }
       transaction.update(userRef, update);
@@ -402,8 +407,8 @@ exports.deleteBranchAdmin = onCall(async (request) => {
       transaction.delete(userRef);
       if (branch && branch.exists && branch.data().adminUid === uid) {
         transaction.update(branchRef, {
-          adminUid: admin.firestore.FieldValue.delete(),
-          adminAssignedAt: admin.firestore.FieldValue.delete(),
+          adminUid: FieldValue.delete(),
+          adminAssignedAt: FieldValue.delete(),
         });
       }
     });
@@ -477,7 +482,7 @@ exports.clearBranchPoints = onCall({
 
   const keys = pointsUserKeys(members);
   const historyDocs = await getHistoryDocs(keys);
-  const now = admin.firestore.FieldValue.serverTimestamp();
+  const now = FieldValue.serverTimestamp();
   const writer = db.bulkWriter();
   writer.onWriteError((error) => error.failedAttempts < 3);
 
@@ -520,7 +525,7 @@ exports.clearBranchPoints = onCall({
     usersReset: members.length,
     pointsDocumentsReset,
     historyDocumentsDeleted: historyDocs.length,
-    completedAt: admin.firestore.FieldValue.serverTimestamp(),
+    completedAt: FieldValue.serverTimestamp(),
     createdBy: creatorId,
     usersDeleted: 0,
     billsDeleted: 0,
@@ -579,6 +584,23 @@ async function resolveUserDoc(carpenterId) {
   return null;
 }
 
+/**
+ * Saves a queued notification to `notification_logs`, the list the app shows
+ * on the Notifications screen, whether or not the push was delivered.
+ * @param {string} queueId - The notification_queue document ID.
+ * @param {object} doc - The queued notification.
+ * @param {string} pushStatus - "sent", "failed" or "no_token".
+ * @return {Promise<void>}
+ */
+async function saveInAppRecord(queueId, doc, pushStatus) {
+  try {
+    await db.collection("notification_logs").add(
+        inAppRecordFor(queueId, doc, pushStatus, FieldValue.serverTimestamp()));
+  } catch (err) {
+    console.error(`[notifQueue/${queueId}] in-app log failed:`, err.message);
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. processNotificationQueue
 // ─────────────────────────────────────────────────────────────────────────────
@@ -601,6 +623,7 @@ exports.processNotificationQueue = onDocumentCreated(
       if (!fcmToken || typeof fcmToken !== "string" || fcmToken.length === 0) {
         console.error(`[notifQueue/${queueId}] no fcmToken – marking failed`);
         await snap.ref.update({status: "failed", error: "Missing fcmToken"});
+        await saveInAppRecord(queueId, doc, "no_token");
         return null;
       }
 
@@ -636,26 +659,11 @@ exports.processNotificationQueue = onDocumentCreated(
           },
         });
 
-        const sentAt = admin.firestore.FieldValue.serverTimestamp();
         await snap.ref.update({
           status: "sent",
-          sentAt: sentAt,
+          sentAt: FieldValue.serverTimestamp(),
         });
-
-        // Log notification to notification_logs for the app to display in notification screen
-        await db.collection("notification_logs").add({
-          userId: doc.userId,
-          type: type || "notification",
-          title: title || "Balaji Points",
-          body: body || "",
-          data: rawData || {},
-          sentAt: sentAt,
-          isBroadcast: doc.userId ? false : true, // Mark as broadcast if no specific userId
-          // Keeps each branch's inbox to its own notifications.
-          branchId: doc.branchId || null,
-          queueId: queueId,
-        });
-
+        await saveInAppRecord(queueId, doc, "sent");
         console.log(`[notifQueue/${queueId}] FCM sent + logged`);
         return null;
       } catch (err) {
@@ -663,8 +671,11 @@ exports.processNotificationQueue = onDocumentCreated(
         await snap.ref.update({
           status: "failed",
           error: err.message || String(err),
-          failedAt: admin.firestore.FieldValue.serverTimestamp(),
+          failedAt: FieldValue.serverTimestamp(),
         });
+        // The push failed (e.g. an old or missing token), but the member
+        // still sees the notification in the app.
+        await saveInAppRecord(queueId, doc, "failed");
         return null;
       }
     },
@@ -689,7 +700,7 @@ exports.onBillCreated = onDocumentCreated(
           console.error(`[bill/${billId}] validation failed: siteName is required`);
           await event.data.ref.update({
             validationError: "Site name is required",
-            validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            validatedAt: FieldValue.serverTimestamp(),
           });
           return null;
         }
@@ -698,7 +709,7 @@ exports.onBillCreated = onDocumentCreated(
           console.error(`[bill/${billId}] validation failed: invalid amount`);
           await event.data.ref.update({
             validationError: "Bill amount must be greater than 0",
-            validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            validatedAt: FieldValue.serverTimestamp(),
           });
           return null;
         }
@@ -706,27 +717,23 @@ exports.onBillCreated = onDocumentCreated(
         // 2. Validate bill date not in future
         if (bill.billDate) {
           const billDate = bill.billDate.toDate ? bill.billDate.toDate() : new Date(bill.billDate);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
 
-          if (billDate > today) {
+          // Compares calendar days in India time, so a bill dated today
+          // is accepted whatever its time of day.
+          if (isFutureBillDate(billDate, new Date())) {
             console.error(`[bill/${billId}] validation failed: bill date is in future`);
             await event.data.ref.update({
               validationError: "Bill date cannot be in the future",
-              validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+              validatedAt: FieldValue.serverTimestamp(),
             });
             return null;
           }
         }
 
         // 3. Check for duplicate bill
-        const billDateOnly = bill.billDate ?
-          new Date(bill.billDate.toDate ? bill.billDate.toDate() : bill.billDate) :
-          new Date();
-        billDateOnly.setHours(0, 0, 0, 0);
-
-        const billDateEndOfDay = new Date(billDateOnly);
-        billDateEndOfDay.setDate(billDateEndOfDay.getDate() + 1);
+        const {start, end} = indiaDayBounds(bill.billDate ?
+          (bill.billDate.toDate ? bill.billDate.toDate() : new Date(bill.billDate)) :
+          new Date());
 
         const carpenterId = bill.carpenterId || bill.carpenterPhone;
         const siteName = bill.siteName.trim();
@@ -736,14 +743,17 @@ exports.onBillCreated = onDocumentCreated(
             .where("carpenterId", "==", carpenterId)
             .where("siteName", "==", siteName)
             .where("amount", "==", amount)
-            .where("billDate", ">=", admin.firestore.Timestamp.fromDate(billDateOnly))
-            .where("billDate", "<", admin.firestore.Timestamp.fromDate(billDateEndOfDay))
-            .where("status", "!=", "withdrawn")
+            .where("billDate", ">=", Timestamp.fromDate(start))
+            .where("billDate", "<", Timestamp.fromDate(end))
             .get();
 
-        if (!duplicateQuery.empty) {
+        // The new bill matches its own search, so it is left out.
+        const duplicates = duplicateQuery.docs.filter((d) =>
+          d.id !== billId && d.data().status !== "withdrawn");
+
+        if (duplicates.length > 0) {
           // Found a duplicate
-          const duplicateBill = duplicateQuery.docs[0];
+          const duplicateBill = duplicates[0];
           console.warn(
               `[bill/${billId}] duplicate detected: matches bill ${duplicateBill.id} ` +
               `(site: ${siteName}, amount: ${amount})`,
@@ -753,7 +763,7 @@ exports.onBillCreated = onDocumentCreated(
           await event.data.ref.update({
             isDuplicate: true,
             duplicateOf: duplicateBill.id,
-            duplicateDetectedAt: admin.firestore.FieldValue.serverTimestamp(),
+            duplicateDetectedAt: FieldValue.serverTimestamp(),
           });
           return null;
         }
@@ -761,7 +771,7 @@ exports.onBillCreated = onDocumentCreated(
         // 4. All validations passed
         console.log(`[bill/${billId}] validation passed ✓`);
         await event.data.ref.update({
-          validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          validatedAt: FieldValue.serverTimestamp(),
         });
 
         return null;
@@ -769,7 +779,7 @@ exports.onBillCreated = onDocumentCreated(
         console.error(`[bill/${billId}] validation error:`, err.message);
         await event.data.ref.update({
           validationError: err.message || "Validation failed",
-          validatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          validatedAt: FieldValue.serverTimestamp(),
         }).catch(() => {});
         return null;
       }
@@ -862,14 +872,14 @@ exports.onBillStatusChanged = onDocumentWritten(
         batch.set(user.ref, {
           totalPoints: newTotalPoints,
           tier: newTier,
-          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: FieldValue.serverTimestamp(),
         }, {merge: true});
 
         // 2. Update user_points doc
         const historyEntry = {
           points: pointsEarned,
           reason: "Bill approval",
-          date: admin.firestore.Timestamp.now(),
+          date: Timestamp.now(),
           billId,
           amount,
           branchId: billBranchId || userBranchId || null,
@@ -879,8 +889,8 @@ exports.onBillStatusChanged = onDocumentWritten(
           batch.update(pointsRef, {
             totalPoints: newTotalPoints,
             tier: newTier,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
-            pointsHistory: admin.firestore.FieldValue.arrayUnion(historyEntry),
+            lastUpdated: FieldValue.serverTimestamp(),
+            pointsHistory: FieldValue.arrayUnion(historyEntry),
           });
         } else {
           batch.set(pointsRef, {
@@ -888,7 +898,7 @@ exports.onBillStatusChanged = onDocumentWritten(
             branchId: userBranchId || billBranchId || null,
             totalPoints: newTotalPoints,
             tier: newTier,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdated: FieldValue.serverTimestamp(),
             pointsHistory: [historyEntry],
           });
         }
@@ -903,7 +913,7 @@ exports.onBillStatusChanged = onDocumentWritten(
           reason: "Bill approval",
           billId,
           amount,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp(),
         });
 
         await batch.commit();
@@ -923,7 +933,7 @@ exports.onBillStatusChanged = onDocumentWritten(
               status: "pending",
               priority: "high",
               branchId: userBranchId || billBranchId || null,
-              createdAt: admin.firestore.FieldValue.serverTimestamp(),
+              createdAt: FieldValue.serverTimestamp(),
             });
           }
         }
@@ -941,7 +951,7 @@ exports.onBillStatusChanged = onDocumentWritten(
             status: "pending",
             priority: "high",
             branchId: userBranchId || billBranchId || null,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: FieldValue.serverTimestamp(),
           });
         }
 
@@ -955,6 +965,15 @@ exports.onBillStatusChanged = onDocumentWritten(
         const amount = after.amount;
 
         if (!carpenterId) return null;
+
+        // Like approvals: the app already notified the member when it
+        // rejected the bill, so a second push would be a duplicate.
+        if (after.rejectedBy) {
+          console.log(
+              `[bill/${billId}] rejected – client handled notification, skipping`,
+          );
+          return null;
+        }
 
         const user = await resolveUserDoc(carpenterId);
         if (!user) return null;
@@ -980,7 +999,7 @@ exports.onBillStatusChanged = onDocumentWritten(
             status: "pending",
             priority: "normal",
             branchId: userBranchId || billBranchId || null,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: FieldValue.serverTimestamp(),
           });
         }
 
@@ -1033,7 +1052,7 @@ exports.onPointsChanged = onDocumentWritten(
 
       await event.data.after.ref.update({tier: correctTier});
       await db.collection("users").doc(userId).set(
-          {tier: correctTier, lastUpdated: admin.firestore.FieldValue.serverTimestamp()},
+          {tier: correctTier, lastUpdated: FieldValue.serverTimestamp()},
           {merge: true},
       );
 
@@ -1060,8 +1079,8 @@ exports.onUserDeleted = onDocumentDeleted(
           const branch = await transaction.get(branchRef);
           if (branch.exists && branch.data().adminUid === userId) {
             transaction.update(branchRef, {
-              adminUid: admin.firestore.FieldValue.delete(),
-              adminAssignedAt: admin.firestore.FieldValue.delete(),
+              adminUid: FieldValue.delete(),
+              adminAssignedAt: FieldValue.delete(),
             });
           }
         });

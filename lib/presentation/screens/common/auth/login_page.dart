@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +83,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     final appName = l10n?.appName ?? AppLocalizations.of(context)!.appName;
     final errorLabel = l10n?.error ?? AppLocalizations.of(context)!.error;
-    final companyName = l10n?.companyName ?? 'Aajii Tech Studio';
+    final companyName = l10n?.companyName ?? AppConstants.companyName;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 

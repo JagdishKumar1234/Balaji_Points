@@ -5,6 +5,7 @@
 // The login system now uses PIN + Firestore only.
 
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../core/firebase/test_emulators.dart';
 import '../../core/logger.dart';
 
 class PhoneAuthService {
@@ -17,6 +18,11 @@ class PhoneAuthService {
       if (current != null) {
         AppLogger.info('User already signed in anonymously: ${current.uid}');
         return current;
+      }
+
+      if (TestEmulators.blocksAnonymousSignIn) {
+        AppLogger.warning('Anonymous sign-in is off (matches live).');
+        return null;
       }
 
       final userCred = await _auth.signInAnonymously();

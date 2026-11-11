@@ -1,4 +1,5 @@
 // filepath: lib/app.dart
+import 'package:balaji_points/core/firebase/test_emulators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -45,8 +46,9 @@ class BalajiPointsApp extends ConsumerWidget {
       routerConfig: router,
 
       // Loading Overlay
-      builder: (context, child) =>
-          Stack(children: [if (child != null) child, const LoadingOverlay()]),
+      builder: (context, child) => TestEmulators.banner(
+        Stack(children: [if (child != null) child, const LoadingOverlay()]),
+      ),
     );
   }
 }

@@ -34,14 +34,8 @@ class HomeTopCarpenters extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: AppRadius.all16,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: isDark ? 0.25 : 0.07),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: AppRadius.forCard,
+        border: Border.all(color: context.themeBorder),
       ),
       child: Column(
         children: [
@@ -371,13 +365,6 @@ class _WinnerCardShell extends StatelessWidget {
           color: AppColors.warning.withValues(alpha: isDark ? 0.45 : 0.35),
           width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.warning.withValues(alpha: isDark ? 0.15 : 0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: child,
     );
@@ -472,13 +459,6 @@ class HomeYourPositionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.primary,
         borderRadius: AppRadius.all16,
-        boxShadow: [
-          BoxShadow(
-            color: context.themePrimary.withValues(alpha: isDark ? 0.25 : 0.30),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),

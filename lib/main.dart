@@ -1,6 +1,7 @@
 // filepath: lib/main.dart
 
 import 'package:balaji_points/services/telemetry/telemetry.dart';
+import 'dart:async';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'core/constants/app_constants.dart';
+import 'core/firebase/test_emulators.dart';
 import 'app.dart';
 import 'firebase_options.dart';
 import 'core/logger.dart';
@@ -91,27 +94,40 @@ class _Bootstrap extends StatelessWidget {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      await _startTelemetry();
-
-      final packageInfo = await PackageInfo.fromPlatform();
-      AppLogger.appLaunchBanner(
-        version: packageInfo.version,
-        build: int.tryParse(packageInfo.buildNumber) ?? 0,
+      // Test builds only: switch to the local Firebase copy. Stops the app
+      // on failure rather than continuing on live data.
+      await TestEmulators.connectIfRequested();
+      // Only Firebase itself is awaited: everything else starts in the
+      // background, so the first screen appears as soon as possible.
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
       );
-
-      try {
-        FirebaseMessaging.onBackgroundMessage(
-          _firebaseMessagingBackgroundHandler,
-        );
-        await FCMService().initialize();
-      } catch (fcmError) {
-        AppLogger.warning('FCM init failed');
-      }
+      unawaited(_startInBackground());
 
       AppLogger.startup('Bootstrap OK');
     } catch (e) {
       AppLogger.error('Bootstrap failed', e);
       rethrow;
+    }
+  }
+
+  /// Work that must not delay the first screen: analytics, the launch log,
+  /// and push setup (which asks for notification permission on first run;
+  /// a notification tap is still handled once it finishes).
+  static Future<void> _startInBackground() async {
+    // Test mode never reports to live Analytics or Crashlytics.
+    if (!TestEmulators.enabled) await _startTelemetry();
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      AppLogger.appLaunchBanner(
+        version: packageInfo.version,
+        build: int.tryParse(packageInfo.buildNumber) ?? 0,
+      );
+    } catch (_) {}
+    try {
+      await FCMService().initialize();
+    } catch (fcmError) {
+      AppLogger.warning('FCM init failed');
     }
   }
 
@@ -166,6 +182,26 @@ class _Bootstrap extends StatelessWidget {
           );
         }
 
+        // A test build that could not reach the local Firebase copy must
+        // stop here, never carry on against live data.
+        if (TestEmulators.enabled && snapshot.hasError) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    'TEST MODE could not reach the local Firebase emulators. '
+                    'Nothing was loaded.\n\n${snapshot.error}',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
         // Firebase ready → Load full app
         return const BalajiPointsApp();
       },
@@ -181,13 +217,21 @@ class _SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppColors.white,
+    // Matches the native launch screen (same logo, size and background), so
+    // the hand-over from Android to Flutter is invisible.
+    final dark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    return Scaffold(
+      backgroundColor: dark ? AppColors.darkBackground : AppColors.white,
       body: Center(
-        child: SizedBox(
-          width: 48,
-          height: 48,
-          child: CircularProgressIndicator(strokeWidth: 2.6),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(150 * 0.22),
+          child: Image.asset(
+            AppConstants.logoPath,
+            width: 150,
+            height: 150,
+            cacheWidth: 450,
+            gaplessPlayback: true,
+          ),
         ),
       ),
     );

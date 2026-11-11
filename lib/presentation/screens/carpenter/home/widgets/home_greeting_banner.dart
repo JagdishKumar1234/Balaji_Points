@@ -76,25 +76,19 @@ class _HomeGreetingBannerState extends State<HomeGreetingBanner>
       child: FadeTransition(
         opacity: _slideAnimation,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          // Same 16 px sides as every other Home card.
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: AppRadius.all24,
+              borderRadius: AppRadius.forCard,
               color: AppColors.primary.withValues(alpha: 0.12),
               border: Border.all(
                 color: context.themePrimary.withValues(alpha: 0.2),
                 width: 1.5,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: context.themePrimary.withValues(alpha: 0.12),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
             ),
             child: ClipRRect(
-              borderRadius: AppRadius.all24,
+              borderRadius: AppRadius.forCard,
               child: hasImage
                   ? _buildWithImage(context, isDark)
                   : _buildTextOnly(context),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import '../../core/logger.dart';
 
 /// Notification types for different events
@@ -126,7 +127,14 @@ class NotificationService {
         AppLogger.info(
           'User has fcmToken field: ${userData?.containsKey('fcmToken')}',
         );
-        return false;
+        // No push is possible, but the member still sees it in the app.
+        return _saveInAppOnly(
+          userId: actualUserId ?? userDoc.id,
+          type: type,
+          title: title,
+          body: body,
+          data: data,
+        );
       }
 
       AppLogger.debug('✅ FCM token found: ${fcmToken.substring(0, 20)}...');
@@ -637,6 +645,58 @@ class NotificationService {
         'screen': '/notifications', // Navigate to notifications screen
       },
     );
+  }
+
+  /// Saves a personal notification to the member's in-app list when it cannot
+  /// be pushed (the member's phone has no push token). Queued notifications
+  /// are saved to the list by the `processNotificationQueue` function instead.
+  Future<bool> _saveInAppOnly({
+    required String userId,
+    required NotificationType type,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      await _firestore
+          .collection('notification_logs')
+          .add(
+            personalInAppRecord(
+              userId: userId,
+              type: type.name,
+              title: title,
+              body: body,
+              data: data,
+            ),
+          );
+      AppLogger.info('Saved in-app only (no push token): ${type.name}');
+      return true;
+    } catch (e) {
+      AppLogger.warning('Failed to save in-app notification: $e');
+      return false;
+    }
+  }
+
+  /// The in-app record for one member's personal notification. Members find
+  /// their personal notifications by `userId`.
+  @visibleForTesting
+  static Map<String, dynamic> personalInAppRecord({
+    required String userId,
+    required String type,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
+  }) {
+    return {
+      'userId': userId,
+      'type': type,
+      'title': title,
+      'body': body,
+      'data': {...?data},
+      'isBroadcast': false,
+      'pushStatus': 'no_token',
+      'sentAt': FieldValue.serverTimestamp(),
+    };
   }
 
   /// Log notification analytics

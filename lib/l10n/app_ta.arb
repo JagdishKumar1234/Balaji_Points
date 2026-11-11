@@ -45,7 +45,7 @@
   "continueWithPin": "PIN உடன் தொடரவும்",
   "loginInfo": "உங்கள் பதிவு செய்யப்பட்ட கைபேசி எண்ணை பயன்படுத்தி உள்நுழைக. OTP அனுப்பப்படும்.",
   "poweredBy": "இனால் இயக்கப்படுகிறது",
-  "companyName": "ஸ்ரீ பலாஜி பிளைவுட் & ஹார்ட்வேர்",
+  "companyName": "பலாஜி பாயிண்ட்ஸ்",
   "enterPinPageTitle": "4 இலக்க PIN ஐ உள்ளிடவும்",
   "enter4DigitPin": "4 இலக்க PIN ஐ உள்ளிடவும்",
   "pinLabel": "பின்",
@@ -202,8 +202,6 @@
   "notVerified": "சரிபார்க்கப்படவில்லை",
   "needHelp": "உதவி வேண்டுமா?",
   "contactSupport": "எங்கள் ஆதரவு குழுவை தொடர்பு கொள்ளவும்.",
-  "supportPhone1": "96006 - 09121",
-  "supportPhone2": "0424 - 3557187",
   "callNow": "இப்போது அழைக்கவும்",
   "getInTouch": "எங்களை தொடர்பு கொள்ளவும்",
   "mobile": "மொபைல்",
@@ -1426,5 +1424,76 @@
   "adminBranchChangeNote": "நிர்வாகியை வேறு கிளைக்கு மாற்றினால் தற்போதைய கிளையின் அணுகல் நீங்கும். ஒரு கிளைக்கு ஒரு நிர்வாகி மட்டுமே.",
   "editsSyncNote": "பெயர் மாற்றங்கள் ஒவ்வொரு உறுப்பினரின் சுயவிவரத்திலும் தானாக நகலெடுக்கப்படும்.",
   "noBranchAssigned": "உங்கள் கணக்கு இன்னும் எந்தக் கிளையுடனும் இணைக்கப்படவில்லை. சூப்பர் நிர்வாகியிடம் கிளையை ஒதுக்கச் சொல்லுங்கள்.",
-  "loadingBranch": "உங்கள் கிளை ஏற்றப்படுகிறது…"
+  "loadingBranch": "உங்கள் கிளை ஏற்றப்படுகிறது…",
+  "offerPointsTarget": "புள்ளி இலக்கு",
+  "offerDetails": "சலுகை விவரங்கள்",
+  "offerInfo": "சலுகை விவரங்கள்",
+  "offerProgress": "உங்களிடம் {target} இல் {have} புள்ளிகள் உள்ளன",
+  "@offerProgress": {
+    "placeholders": {
+      "have": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "offerPointsToGo": "இந்த சலுகைக்கு இன்னும் {points} புள்ளிகள் தேவை",
+  "@offerPointsToGo": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "offerTargetReached": "இலக்கை அடைந்தீர்கள்!",
+  "offerTermsApply": "*விதிமுறைகள் மற்றும் நிபந்தனைகள் பொருந்தும்.",
+  "offerViewBanner": "முழு பேனரைப் பார்",
+  "homeAnnouncements": "அறிவிப்புகள்",
+  "legalTermsTitle": "விதிமுறைகள் மற்றும் நிபந்தனைகள்",
+  "legalPrivacyTitle": "தனியுரிமைக் கொள்கை",
+  "legalLastUpdated": "கடைசியாகப் புதுப்பிக்கப்பட்டது: {date}",
+  "@legalLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "legalAgreePrefix": "நான் ",
+  "legalAgreeAnd": " மற்றும் ",
+  "legalAgreeSuffix": " ஆகியவற்றைப் படித்து ஒப்புக்கொள்கிறேன்.",
+  "legalAcceptToContinue": "தொடர, விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கையை ஏற்கவும்.",
+  "legalEnglishOnly": "இந்த ஆவணம் ஆங்கிலத்தில் வழங்கப்படுகிறது.",
+  "profileSectionLegal": "சட்டம்",
+  "myBranch": "எனது கிளை",
+  "myBranchSubtitle": "உங்கள் கடைக் கிளை மற்றும் தொடர்பு",
+  "branchDetails": "கிளை விவரங்கள்",
+  "branchPhone": "கிளை தொலைபேசி",
+  "yourBranchSupport": "உங்கள் கிளை",
+  "appSupport": "ஆப் உதவி",
+  "openInMaps": "மேப்பில் திற",
+  "notAvailable": "கிடைக்கவில்லை",
+  "supportHint": "பில், புள்ளிகள், சலுகைகளுக்கு உங்கள் கிளையைத் தொடர்பு கொள்ளவும். ஆப் பிரச்சனைகளுக்கு ஆப் உதவியைத் தொடர்பு கொள்ளவும்.",
+  "directions": "வழிகாட்டல்",
+  "openInGoogleMaps": "Google மேப்பில் திற",
+  "profileStatus": "சுயவிவர நிலை",
+  "profileReadyForBills": "உங்கள் சுயவிவரம் முழுமையானது. பில் சமர்ப்பிக்கலாம்.",
+  "profileMissingForBills": "பில் சமர்ப்பிக்க விடுபட்டவற்றைச் சேர்க்கவும்.",
+  "requiredForBills": "பில்லுக்கு அவசியம்",
+  "added": "சேர்க்கப்பட்டது",
+  "missing": "விடுபட்டது",
+  "notAdded": "சேர்க்கப்படவில்லை",
+  "emailOptional": "மின்னஞ்சல் (விருப்பம்)",
+  "profilePhoto": "சுயவிவரப் படம்",
+  "addPhotoRequired": "சுயவிவரப் படத்தைச் சேர்க்கவும். பில் சமர்ப்பிக்க இது அவசியம்.",
+  "itemsMissing": "விடுபட்டவை: {items}",
+  "@itemsMissing": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  }
 }

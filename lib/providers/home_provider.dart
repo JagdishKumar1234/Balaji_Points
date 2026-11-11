@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/profile/profile_completeness.dart';
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/services/platform/offer_visibility.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -53,13 +55,9 @@ class HomeState {
     this.greetingLoading = true,
   });
 
-  bool get isProfileComplete {
-    if (userData == null) return false;
-    final fn = (userData!['firstName'] as String? ?? '').trim();
-    final ln = (userData!['lastName'] as String? ?? '').trim();
-    final img = (userData!['profileImage'] as String? ?? '').trim();
-    return fn.isNotEmpty && ln.isNotEmpty && img.isNotEmpty;
-  }
+  /// Photo, first and last name, and mobile number (see ProfileCompleteness).
+  bool get isProfileComplete =>
+      userData != null && ProfileCompleteness.from(userData).isReadyForBills;
 
   String get displayName {
     final fn = userData?['firstName'] ?? '';
@@ -269,9 +267,19 @@ class HomeNotifier extends Notifier<HomeState> {
   String? _myBranchId;
 
   void _applyOffers(QuerySnapshot<Map<String, dynamic>> snap) {
-    // Sort newest-first in memory (avoids requiring a Firestore composite index)
+    // Offers with a `sortOrder` come first, lowest first (e.g. by points
+    // target); the rest follow newest first. Sorted in memory, so no
+    // Firestore index is needed.
+    num? orderOf(Map<String, dynamic> d) => d['sortOrder'] as num?;
     final sorted = snap.docs.toList()
       ..sort((a, b) {
+        final ao = orderOf(a.data());
+        final bo = orderOf(b.data());
+        if (ao != null || bo != null) {
+          if (ao == null) return 1;
+          if (bo == null) return -1;
+          if (ao != bo) return ao.compareTo(bo);
+        }
         final at = a.data()['createdAt'];
         final bt = b.data()['createdAt'];
         if (at == null && bt == null) return 0;
@@ -283,15 +291,27 @@ class HomeNotifier extends Notifier<HomeState> {
     // This member's branch's offers, plus the super admin's all-branch ones.
     final offers = sorted
         .where((doc) => OfferVisibility.memberCanSee(doc.data(), _myBranchId))
+        // Offers past their "valid until" day are no longer shown.
+        .where((doc) {
+          final until = doc.data()['validUntil'];
+          if (until is! Timestamp) return true;
+          final end = until.toDate();
+          return !DateTime(
+            end.year,
+            end.month,
+            end.day + 1,
+          ).isBefore(DateTime.now());
+        })
         .map((doc) {
           final d = doc.data();
+          final validUntil = d['validUntil'];
           return OfferItem(
+            id: doc.id,
             title: d['title'] as String? ?? '',
             description: d['description'] as String? ?? '',
-            actionText: (d['bannerUrl'] != null && d['bannerUrl'] != '')
-                ? 'View Offer'
-                : 'Learn More',
             imageUrl: d['bannerUrl'] as String?,
+            pointsTarget: PointsUtils.asDouble(d['points']),
+            validUntil: validUntil is Timestamp ? validUntil.toDate() : null,
           );
         })
         .toList();
@@ -377,7 +397,7 @@ class HomeNotifier extends Notifier<HomeState> {
         CarpenterRank(
           rank: 0,
           name: name.isEmpty ? 'Member' : name,
-          points: _asInt(d['totalPoints']),
+          points: PointsUtils.asDouble(d['totalPoints']),
           imageUrl: d['profileImage'] as String?,
           userId: doc.id,
           isCurrentUser: doc.id == docId,
@@ -418,11 +438,6 @@ class HomeNotifier extends Notifier<HomeState> {
       if (q.docs.isNotEmpty) return q.docs.first.id;
     }
     return userId;
-  }
-
-  static int _asInt(dynamic v) {
-    if (v is num) return v.toInt();
-    return int.tryParse(v?.toString() ?? '') ?? 0;
   }
 }
 

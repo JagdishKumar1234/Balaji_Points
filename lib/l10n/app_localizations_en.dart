@@ -126,7 +126,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get poweredBy => 'Powered by';
 
   @override
-  String get companyName => 'Sri Balaji Plywood & Hardware';
+  String get companyName => 'Balaji Points';
 
   @override
   String get enterPinPageTitle => 'Enter your 4-digit PIN';
@@ -496,12 +496,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get contactSupport =>
       'Contact our support team for any queries or issues.';
-
-  @override
-  String get supportPhone1 => '96006 - 09121';
-
-  @override
-  String get supportPhone2 => '0424 - 3557187';
 
   @override
   String get callNow => 'Call Now';
@@ -4352,4 +4346,136 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadingBranch => 'Loading your branch…';
+
+  @override
+  String get offerPointsTarget => 'Points target';
+
+  @override
+  String get offerDetails => 'Offer details';
+
+  @override
+  String get offerInfo => 'Offer details';
+
+  @override
+  String offerProgress(String have, String target) {
+    return 'You have $have of $target points';
+  }
+
+  @override
+  String offerPointsToGo(String points) {
+    return '$points more points to reach this offer';
+  }
+
+  @override
+  String get offerTargetReached => 'Target reached!';
+
+  @override
+  String get offerTermsApply => '*Terms and conditions apply.';
+
+  @override
+  String get offerViewBanner => 'View full banner';
+
+  @override
+  String get homeAnnouncements => 'Announcements';
+
+  @override
+  String get legalTermsTitle => 'Terms & Conditions';
+
+  @override
+  String get legalPrivacyTitle => 'Privacy Policy';
+
+  @override
+  String legalLastUpdated(String date) {
+    return 'Last updated: $date';
+  }
+
+  @override
+  String get legalAgreePrefix => 'I have read and agree to the ';
+
+  @override
+  String get legalAgreeAnd => ' and the ';
+
+  @override
+  String get legalAgreeSuffix => '.';
+
+  @override
+  String get legalAcceptToContinue =>
+      'Please accept the Terms & Conditions and Privacy Policy to continue.';
+
+  @override
+  String get legalEnglishOnly => 'This document is provided in English.';
+
+  @override
+  String get profileSectionLegal => 'Legal';
+
+  @override
+  String get myBranch => 'My Branch';
+
+  @override
+  String get myBranchSubtitle => 'Your store branch and who to contact';
+
+  @override
+  String get branchDetails => 'Branch details';
+
+  @override
+  String get branchPhone => 'Branch phone';
+
+  @override
+  String get yourBranchSupport => 'Your branch';
+
+  @override
+  String get appSupport => 'App support';
+
+  @override
+  String get openInMaps => 'Open in Maps';
+
+  @override
+  String get notAvailable => 'Not available';
+
+  @override
+  String get supportHint =>
+      'For bills, points and offers, contact your branch. For app problems, contact app support.';
+
+  @override
+  String get directions => 'Directions';
+
+  @override
+  String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get profileStatus => 'Profile status';
+
+  @override
+  String get profileReadyForBills =>
+      'Your profile is complete. You can submit bills.';
+
+  @override
+  String get profileMissingForBills => 'Add the missing items to submit bills.';
+
+  @override
+  String get requiredForBills => 'Required for bills';
+
+  @override
+  String get added => 'Added';
+
+  @override
+  String get missing => 'Missing';
+
+  @override
+  String get notAdded => 'Not added';
+
+  @override
+  String get emailOptional => 'Email (optional)';
+
+  @override
+  String get profilePhoto => 'Profile photo';
+
+  @override
+  String get addPhotoRequired =>
+      'Add a profile photo. It is required to submit bills.';
+
+  @override
+  String itemsMissing(String items) {
+    return 'Missing: $items';
+  }
 }

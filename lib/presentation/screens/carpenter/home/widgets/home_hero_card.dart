@@ -93,7 +93,7 @@ class HomeHeroCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [AppColors.primary, AppColors.primaryLight],
         ),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: AppRadius.forCard,
         border: Border.all(color: AppColors.gold.withValues(alpha: 0.45)),
         boxShadow: [
           BoxShadow(
@@ -410,7 +410,7 @@ class HomeHeroCardShimmer extends StatelessWidget {
       height: 252,
       decoration: BoxDecoration(
         color: context.themeSoftSurface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: AppRadius.forCard,
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
   }

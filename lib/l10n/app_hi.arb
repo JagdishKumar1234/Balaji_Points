@@ -45,7 +45,7 @@
   "continueWithPin": "PIN के साथ जारी रखें",
   "loginInfo": "अपने पंजीकृत फोन नंबर का उपयोग करके लॉगिन करें। सत्यापन के लिए आपको एक OTP प्राप्त होगा।",
   "poweredBy": "द्वारा संचालित",
-  "companyName": "श्री बालाजी प्लाईवुड एंड हार्डवेयर",
+  "companyName": "बालाजी पॉइंट्स",
   "enterPinPageTitle": "अपना 4 अंकों का PIN दर्ज करें",
   "enter4DigitPin": "अपना 4 अंकों का PIN दर्ज करें",
   "pinLabel": "पिन",
@@ -202,8 +202,6 @@
   "notVerified": "असत्यापित",
   "needHelp": "मदद चाहिए?",
   "contactSupport": "किसी भी प्रश्न या समस्या के लिए हमारी सहायता टीम से संपर्क करें।",
-  "supportPhone1": "96006 - 09121",
-  "supportPhone2": "0424 - 3557187",
   "callNow": "अभी कॉल करें",
   "getInTouch": "हमसे संपर्क करें",
   "mobile": "मोबाइल",
@@ -1426,5 +1424,76 @@
   "adminBranchChangeNote": "एडमिन को दूसरी शाखा में ले जाने से मौजूदा शाखा की पहुँच हट जाएगी। एक शाखा में एक ही एडमिन हो सकता है।",
   "editsSyncNote": "नाम बदलाव हर सदस्य की प्रोफ़ाइल में अपने-आप कॉपी हो जाते हैं।",
   "noBranchAssigned": "आपका खाता अभी किसी शाखा से नहीं जुड़ा है। सुपर एडमिन से अपनी शाखा तय करवाएँ।",
-  "loadingBranch": "आपकी शाखा लोड हो रही है…"
+  "loadingBranch": "आपकी शाखा लोड हो रही है…",
+  "offerPointsTarget": "पॉइंट्स लक्ष्य",
+  "offerDetails": "ऑफ़र विवरण",
+  "offerInfo": "ऑफ़र विवरण",
+  "offerProgress": "आपके पास {target} में से {have} पॉइंट्स हैं",
+  "@offerProgress": {
+    "placeholders": {
+      "have": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "offerPointsToGo": "इस ऑफ़र के लिए {points} पॉइंट्स और चाहिए",
+  "@offerPointsToGo": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "offerTargetReached": "लक्ष्य पूरा!",
+  "offerTermsApply": "*नियम और शर्तें लागू।",
+  "offerViewBanner": "पूरा बैनर देखें",
+  "homeAnnouncements": "घोषणाएँ",
+  "legalTermsTitle": "नियम और शर्तें",
+  "legalPrivacyTitle": "गोपनीयता नीति",
+  "legalLastUpdated": "अंतिम अपडेट: {date}",
+  "@legalLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "legalAgreePrefix": "मैंने ",
+  "legalAgreeAnd": " और ",
+  "legalAgreeSuffix": " पढ़ ली हैं और मैं सहमत हूँ।",
+  "legalAcceptToContinue": "आगे बढ़ने के लिए कृपया नियम और शर्तें तथा गोपनीयता नीति स्वीकार करें।",
+  "legalEnglishOnly": "यह दस्तावेज़ अंग्रेज़ी में उपलब्ध है।",
+  "profileSectionLegal": "कानूनी",
+  "myBranch": "मेरी शाखा",
+  "myBranchSubtitle": "आपकी स्टोर शाखा और संपर्क",
+  "branchDetails": "शाखा विवरण",
+  "branchPhone": "शाखा फ़ोन",
+  "yourBranchSupport": "आपकी शाखा",
+  "appSupport": "ऐप सहायता",
+  "openInMaps": "मैप में खोलें",
+  "notAvailable": "उपलब्ध नहीं",
+  "supportHint": "बिल, पॉइंट्स और ऑफ़र के लिए अपनी शाखा से संपर्क करें। ऐप की समस्या के लिए ऐप सहायता से संपर्क करें।",
+  "directions": "रास्ता दिखाएँ",
+  "openInGoogleMaps": "Google मैप में खोलें",
+  "profileStatus": "प्रोफ़ाइल स्थिति",
+  "profileReadyForBills": "आपकी प्रोफ़ाइल पूरी है। आप बिल जमा कर सकते हैं।",
+  "profileMissingForBills": "बिल जमा करने के लिए बाकी जानकारी जोड़ें।",
+  "requiredForBills": "बिल के लिए ज़रूरी",
+  "added": "जोड़ा गया",
+  "missing": "बाकी है",
+  "notAdded": "नहीं जोड़ा",
+  "emailOptional": "ईमेल (वैकल्पिक)",
+  "profilePhoto": "प्रोफ़ाइल फ़ोटो",
+  "addPhotoRequired": "प्रोफ़ाइल फ़ोटो जोड़ें। बिल जमा करने के लिए यह ज़रूरी है।",
+  "itemsMissing": "बाकी: {items}",
+  "@itemsMissing": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  }
 }

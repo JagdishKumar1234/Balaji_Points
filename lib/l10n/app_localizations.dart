@@ -331,7 +331,7 @@ abstract class AppLocalizations {
   /// No description provided for @companyName.
   ///
   /// In en, this message translates to:
-  /// **'Sri Balaji Plywood & Hardware'**
+  /// **'Balaji Points'**
   String get companyName;
 
   /// No description provided for @enterPinPageTitle.
@@ -1017,18 +1017,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contact our support team for any queries or issues.'**
   String get contactSupport;
-
-  /// No description provided for @supportPhone1.
-  ///
-  /// In en, this message translates to:
-  /// **'96006 - 09121'**
-  String get supportPhone1;
-
-  /// No description provided for @supportPhone2.
-  ///
-  /// In en, this message translates to:
-  /// **'0424 - 3557187'**
-  String get supportPhone2;
 
   /// No description provided for @callNow.
   ///
@@ -7805,6 +7793,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading your branch…'**
   String get loadingBranch;
+
+  /// No description provided for @offerPointsTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Points target'**
+  String get offerPointsTarget;
+
+  /// No description provided for @offerDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer details'**
+  String get offerDetails;
+
+  /// No description provided for @offerInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer details'**
+  String get offerInfo;
+
+  /// No description provided for @offerProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {have} of {target} points'**
+  String offerProgress(String have, String target);
+
+  /// No description provided for @offerPointsToGo.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} more points to reach this offer'**
+  String offerPointsToGo(String points);
+
+  /// No description provided for @offerTargetReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Target reached!'**
+  String get offerTargetReached;
+
+  /// No description provided for @offerTermsApply.
+  ///
+  /// In en, this message translates to:
+  /// **'*Terms and conditions apply.'**
+  String get offerTermsApply;
+
+  /// No description provided for @offerViewBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'View full banner'**
+  String get offerViewBanner;
+
+  /// No description provided for @homeAnnouncements.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get homeAnnouncements;
+
+  /// No description provided for @legalTermsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get legalTermsTitle;
+
+  /// No description provided for @legalPrivacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get legalPrivacyTitle;
+
+  /// No description provided for @legalLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: {date}'**
+  String legalLastUpdated(String date);
+
+  /// No description provided for @legalAgreePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'I have read and agree to the '**
+  String get legalAgreePrefix;
+
+  /// No description provided for @legalAgreeAnd.
+  ///
+  /// In en, this message translates to:
+  /// **' and the '**
+  String get legalAgreeAnd;
+
+  /// No description provided for @legalAgreeSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'.'**
+  String get legalAgreeSuffix;
+
+  /// No description provided for @legalAcceptToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the Terms & Conditions and Privacy Policy to continue.'**
+  String get legalAcceptToContinue;
+
+  /// No description provided for @legalEnglishOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'This document is provided in English.'**
+  String get legalEnglishOnly;
+
+  /// No description provided for @profileSectionLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get profileSectionLegal;
+
+  /// No description provided for @myBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'My Branch'**
+  String get myBranch;
+
+  /// No description provided for @myBranchSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your store branch and who to contact'**
+  String get myBranchSubtitle;
+
+  /// No description provided for @branchDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch details'**
+  String get branchDetails;
+
+  /// No description provided for @branchPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch phone'**
+  String get branchPhone;
+
+  /// No description provided for @yourBranchSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Your branch'**
+  String get yourBranchSupport;
+
+  /// No description provided for @appSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'App support'**
+  String get appSupport;
+
+  /// No description provided for @openInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Maps'**
+  String get openInMaps;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get notAvailable;
+
+  /// No description provided for @supportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For bills, points and offers, contact your branch. For app problems, contact app support.'**
+  String get supportHint;
+
+  /// No description provided for @directions.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get directions;
+
+  /// No description provided for @openInGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Maps'**
+  String get openInGoogleMaps;
+
+  /// No description provided for @profileStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile status'**
+  String get profileStatus;
+
+  /// No description provided for @profileReadyForBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile is complete. You can submit bills.'**
+  String get profileReadyForBills;
+
+  /// No description provided for @profileMissingForBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the missing items to submit bills.'**
+  String get profileMissingForBills;
+
+  /// No description provided for @requiredForBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Required for bills'**
+  String get requiredForBills;
+
+  /// No description provided for @added.
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get added;
+
+  /// No description provided for @missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get missing;
+
+  /// No description provided for @notAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Not added'**
+  String get notAdded;
+
+  /// No description provided for @emailOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Email (optional)'**
+  String get emailOptional;
+
+  /// No description provided for @profilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get profilePhoto;
+
+  /// No description provided for @addPhotoRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a profile photo. It is required to submit bills.'**
+  String get addPhotoRequired;
+
+  /// No description provided for @itemsMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing: {items}'**
+  String itemsMissing(String items);
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,6 @@
+import 'package:balaji_points/core/profile/profile_completeness.dart';
+import 'package:balaji_points/services/branch/branch_support_service.dart';
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/providers/branch_celebration_provider.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
@@ -298,27 +301,39 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                   ),
                 ),
                 Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                  child: _buildBranchSupport(context),
+                ),
+                Padding(
                   padding: const EdgeInsets.all(24),
                   child: _buildContactSection(
                     context: context,
-                    title: l10n.contactUs,
-                    icon: Icons.phone_rounded,
+                    title: l10n.appSupport,
+                    icon: Icons.support_agent_rounded,
                     iconColor: AppColors.success,
                     children: [
                       _buildContactItem(
                         context: context,
                         icon: Icons.phone_android_rounded,
                         label: l10n.mobile,
-                        value: l10n.supportPhone1,
-                        onTap: () => _makePhoneCall(context, '9600609121'),
+                        value: AppConstants.supportPhoneDisplay,
+                        onTap: () => _makePhoneCall(
+                          context,
+                          AppConstants.supportPhoneE164,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       _buildContactItem(
                         context: context,
-                        icon: Icons.phone_rounded,
-                        label: l10n.landline,
-                        value: l10n.supportPhone2,
-                        onTap: () => _makePhoneCall(context, '04243557187'),
+                        icon: Icons.email_outlined,
+                        label: l10n.email,
+                        value: AppConstants.supportEmail,
+                        onTap: () => launchUrl(
+                          Uri(
+                            scheme: 'mailto',
+                            path: AppConstants.supportEmail,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -328,6 +343,72 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
           ),
         ),
       ),
+    );
+  }
+
+  /// The member's own branch: store phone and the branch admin's phone and
+  /// email, read live so admin changes show up without an app update.
+  Widget _buildBranchSupport(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer(
+      builder: (context, ref, _) {
+        final support = ref.watch(branchSupportProvider).asData?.value;
+        if (support == null || !support.hasAnyContact) {
+          return const SizedBox.shrink();
+        }
+        return _buildContactSection(
+          context: context,
+          title: l10n.yourBranchSupport,
+          icon: Icons.store_rounded,
+          iconColor: context.themePrimary,
+          children: [
+            Text(
+              support.branch.name,
+              style: AppTypography.labelMedium(
+                color: context.themeTextSecondary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (support.branch.phone.isNotEmpty) ...[
+              _buildContactItem(
+                context: context,
+                icon: Icons.phone_rounded,
+                label: l10n.branchPhone,
+                value: support.branch.phone,
+                onTap: () => _makePhoneCall(
+                  context,
+                  BranchSupport.dialable(support.branch.phone),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (support.adminPhone.isNotEmpty) ...[
+              _buildContactItem(
+                context: context,
+                icon: Icons.phone_android_rounded,
+                label: support.adminName.isEmpty
+                    ? l10n.branchAdmin
+                    : '${l10n.branchAdmin} · ${support.adminName}',
+                value: support.adminPhone,
+                onTap: () => _makePhoneCall(
+                  context,
+                  BranchSupport.dialable(support.adminPhone),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (support.adminEmail.isNotEmpty)
+              _buildContactItem(
+                context: context,
+                icon: Icons.email_outlined,
+                label: l10n.email,
+                value: support.adminEmail,
+                onTap: () =>
+                    launchUrl(Uri(scheme: 'mailto', path: support.adminEmail)),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -543,6 +624,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
             title: l10n.profile,
             showLogo: false,
             showProfileButton: false,
+            // Quick logout, same confirmation as the button at the bottom.
+            actions: [
+              IconButton(
+                tooltip: l10n.logout,
+                onPressed: () => _handleLogout(context),
+                icon: Icon(Icons.logout_rounded, color: context.themeError),
+              ),
+            ],
           ),
           Expanded(
             child: Container(
@@ -584,6 +673,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
+                                  ProfileChecklist(
+                                    completeness: ProfileCompleteness.from(
+                                      _userData,
+                                    ),
+                                    onComplete: () async {
+                                      await context.push('/edit-profile');
+                                      await _loadUserData(forceRefresh: true);
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
                                   ProfileMenuGroup(
                                     title: l10n.profileSectionAccount,
                                     children: [
@@ -596,6 +695,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                             forceRefresh: true,
                                           );
                                         },
+                                      ),
+                                      ProfileMenuTile(
+                                        icon: Icons.store_rounded,
+                                        title: l10n.myBranch,
+                                        onTap: () => context.push('/my-branch'),
                                       ),
                                       ProfileMenuTile(
                                         icon: Icons.lock_reset_rounded,
@@ -627,6 +731,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                         icon: Icons.info_rounded,
                                         title: l10n.profileAboutLink,
                                         onTap: () => context.push('/about-us'),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
+                                  ProfileMenuGroup(
+                                    title: l10n.profileSectionLegal,
+                                    children: [
+                                      ProfileMenuTile(
+                                        icon: Icons.gavel_rounded,
+                                        title: l10n.legalTermsTitle,
+                                        onTap: () => context.push('/terms'),
+                                      ),
+                                      ProfileMenuTile(
+                                        icon: Icons.privacy_tip_rounded,
+                                        title: l10n.legalPrivacyTitle,
+                                        onTap: () => context.push('/privacy'),
                                       ),
                                     ],
                                   ),

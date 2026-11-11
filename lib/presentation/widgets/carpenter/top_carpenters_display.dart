@@ -122,7 +122,9 @@ class TopCarpentersDisplay extends StatelessWidget {
 class CarpenterRank {
   final int rank;
   final String name;
-  final int points;
+
+  /// Points can have decimals (₹12,500 → 12.5).
+  final double points;
   final String? imageUrl;
   final String? userId;
   final bool isCurrentUser;

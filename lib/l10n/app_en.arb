@@ -45,7 +45,7 @@
   "continueWithPin": "Continue with PIN",
   "loginInfo": "Login using your registered phone number. You will receive an OTP to verify.",
   "poweredBy": "Powered by",
-  "companyName": "Sri Balaji Plywood & Hardware",
+  "companyName": "Balaji Points",
   "enterPinPageTitle": "Enter your 4-digit PIN",
   "enter4DigitPin": "Enter your 4-digit PIN",
   "pinLabel": "PIN",
@@ -202,8 +202,6 @@
   "notVerified": "Not Verified",
   "needHelp": "Need Help?",
   "contactSupport": "Contact our support team for any queries or issues.",
-  "supportPhone1": "96006 - 09121",
-  "supportPhone2": "0424 - 3557187",
   "callNow": "Call Now",
   "getInTouch": "Get in touch with us",
   "mobile": "Mobile",
@@ -2455,5 +2453,76 @@
   "adminBranchChangeNote": "Moving an admin to another branch removes their access to the current one. A branch can have only one admin.",
   "editsSyncNote": "Name changes are copied to every member’s profile automatically.",
   "noBranchAssigned": "Your account is not linked to a branch yet. Ask the super admin to assign your branch.",
-  "loadingBranch": "Loading your branch…"
+  "loadingBranch": "Loading your branch…",
+  "offerPointsTarget": "Points target",
+  "offerDetails": "Offer details",
+  "offerInfo": "Offer details",
+  "offerProgress": "You have {have} of {target} points",
+  "@offerProgress": {
+    "placeholders": {
+      "have": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "offerPointsToGo": "{points} more points to reach this offer",
+  "@offerPointsToGo": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "offerTargetReached": "Target reached!",
+  "offerTermsApply": "*Terms and conditions apply.",
+  "offerViewBanner": "View full banner",
+  "homeAnnouncements": "Announcements",
+  "legalTermsTitle": "Terms & Conditions",
+  "legalPrivacyTitle": "Privacy Policy",
+  "legalLastUpdated": "Last updated: {date}",
+  "@legalLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "legalAgreePrefix": "I have read and agree to the ",
+  "legalAgreeAnd": " and the ",
+  "legalAgreeSuffix": ".",
+  "legalAcceptToContinue": "Please accept the Terms & Conditions and Privacy Policy to continue.",
+  "legalEnglishOnly": "This document is provided in English.",
+  "profileSectionLegal": "Legal",
+  "myBranch": "My Branch",
+  "myBranchSubtitle": "Your store branch and who to contact",
+  "branchDetails": "Branch details",
+  "branchPhone": "Branch phone",
+  "yourBranchSupport": "Your branch",
+  "appSupport": "App support",
+  "openInMaps": "Open in Maps",
+  "notAvailable": "Not available",
+  "supportHint": "For bills, points and offers, contact your branch. For app problems, contact app support.",
+  "directions": "Directions",
+  "openInGoogleMaps": "Open in Google Maps",
+  "profileStatus": "Profile status",
+  "profileReadyForBills": "Your profile is complete. You can submit bills.",
+  "profileMissingForBills": "Add the missing items to submit bills.",
+  "requiredForBills": "Required for bills",
+  "added": "Added",
+  "missing": "Missing",
+  "notAdded": "Not added",
+  "emailOptional": "Email (optional)",
+  "profilePhoto": "Profile photo",
+  "addPhotoRequired": "Add a profile photo. It is required to submit bills.",
+  "itemsMissing": "Missing: {items}",
+  "@itemsMissing": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  }
 }

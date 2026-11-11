@@ -180,10 +180,21 @@ class AppUpdateService {
 
   Future<AppUpdateInfo?> _fetchRemoteUpdateInfo() async {
     try {
-      final doc = await _firestore
+      final ref = _firestore
           .collection(AppConstants.appConfigCollection)
-          .doc(AppConstants.appConfigDocument)
-          .get(const GetOptions(source: Source.server));
+          .doc(AppConstants.appConfigDocument);
+      // Launch never waits more than 2 s on the network for this. On a slow
+      // or missing connection the last copy saved on the phone is used, so
+      // a force update already seen once still blocks offline.
+      DocumentSnapshot<Map<String, dynamic>> doc;
+      try {
+        doc = await ref
+            .get(const GetOptions(source: Source.server))
+            .timeout(const Duration(seconds: 2));
+      } catch (e) {
+        AppLogger.update('Update config: server slow or offline, using cache.');
+        doc = await ref.get(const GetOptions(source: Source.cache));
+      }
 
       if (!doc.exists || doc.data() == null) {
         AppLogger.warning(

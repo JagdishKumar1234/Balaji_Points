@@ -102,16 +102,6 @@ flutter:
     - assets/google_fonts/
     - assets/images/balaji_point_logo.png
     - assets/images/splash_logo.png
-    # Furniture / plywood showcase images used on home screen
-    - assets/images/background_image.png
-    - assets/images/furniture/brown_kitchen_cabinet.jpeg
-    - assets/images/furniture/sage_green_kitchen.jpeg
-    - assets/images/furniture/furniture_6.jpeg
-    - assets/images/furniture/luxurious_lifestyle.jpeg
-    - assets/images/furniture/furniture_10.jpeg
-    - assets/images/furniture/home_office.jpeg
-    - assets/images/furniture/banner_light_color.png
-    - assets/images/furniture/banner_dark_color.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

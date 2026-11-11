@@ -126,7 +126,6 @@ void main() {
 
   group('auth screens in the source', () {
     const dir = 'lib/presentation/screens/common/auth';
-    // pin_setup_page.dart has no route, so nothing can open it.
     const pages = [
       'login_page.dart',
       'phone_pin_entry_page.dart',

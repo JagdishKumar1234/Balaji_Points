@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
@@ -653,7 +654,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                         Text(
                           AppLocalizations.of(
                             context,
-                          )!.pts3('${totalPoints.toStringAsFixed(0)}'),
+                          )!.pts3(PointsUtils.formatPoints(totalPoints)),
                           style: AppTypography.bodySmall().copyWith(
                             fontSize: 12,
                           ),
@@ -1074,23 +1075,79 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             true,
             true,
           ),
-          _buildTimelineItem(
-            context,
-            AppLocalizations.of(context)!.waitingForApproval,
-            AppLocalizations.of(context)!.pendingActionFromAdmin,
-            status == 'pending',
-            status == 'pending',
-          ),
-          _buildTimelineItem(
-            context,
-            AppLocalizations.of(context)!.approvedLabel,
-            '--',
-            status == 'approved',
-            false,
-          ),
+          // While pending, the bill waits on the admin; once decided, the
+          // last step shows the decision and when it was made.
+          if (status == 'pending')
+            _buildTimelineItem(
+              context,
+              AppLocalizations.of(context)!.waitingForApproval,
+              AppLocalizations.of(context)!.pendingActionFromAdmin,
+              true,
+              false,
+              isLast: true,
+            )
+          else
+            _buildTimelineItem(
+              context,
+              status == 'rejected'
+                  ? AppLocalizations.of(context)!.rejectedLabel
+                  : AppLocalizations.of(context)!.approvedLabel,
+              _formatDecisionTime(
+                status == 'rejected'
+                    ? _billData!['rejectedAt']
+                    : _billData!['approvedAt'],
+              ),
+              true,
+              status != 'rejected',
+              isLast: true,
+              failed: status == 'rejected',
+            ),
         ],
       ),
     );
+  }
+
+  /// The last timeline step with its own [marker] (used for a rejection).
+  Widget _timelineRow(
+    BuildContext context,
+    String title,
+    String subtitle, {
+    required Widget marker,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        marker,
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTypography.labelMedium().copyWith(fontSize: 12),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppTypography.bodySmall().copyWith(
+                    fontSize: 12,
+                    color: context.themeTextSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatDecisionTime(Object? value) {
+    if (value is! Timestamp) return '-';
+    return DateFormat('dd MMM yyyy, hh:mm a').format(value.toDate());
   }
 
   Widget _buildTimelineItem(
@@ -1098,8 +1155,30 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     String title,
     String subtitle,
     bool isActive,
-    bool isCompleted,
-  ) {
+    bool isCompleted, {
+    bool isLast = false,
+    bool failed = false,
+  }) {
+    if (failed) {
+      return _timelineRow(
+        context,
+        title,
+        subtitle,
+        marker: Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: context.themeError,
+          ),
+          child: const Icon(
+            Icons.close_rounded,
+            size: 12,
+            color: AppColors.white,
+          ),
+        ),
+      );
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1134,7 +1213,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                           )
                         : null),
             ),
-            if (title != 'Approved')
+            if (!isLast)
               Container(
                 width: 2,
                 height: 40,
