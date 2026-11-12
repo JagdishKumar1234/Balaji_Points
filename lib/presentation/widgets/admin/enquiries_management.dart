@@ -109,7 +109,12 @@ class _EnquiryCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final e = enquiry;
     final who = e.isGuest
-        ? [l10n.enquiryGuest, if (e.city.isNotEmpty) e.city].join(' · ')
+        ? [
+            l10n.enquiryGuest,
+            if (e.city.isNotEmpty) e.city,
+            // The super admin sees every guest: show the branch picked.
+            if (e.branchName.isNotEmpty) e.branchName,
+          ].join(' · ')
         : [
             enquiryRoleLabel(context, e.role),
           ].where((s) => s.isNotEmpty).join(' · ');
@@ -164,6 +169,14 @@ class _EnquiryCard extends ConsumerWidget {
               who,
               style: AppTypography.caption(color: context.themeTextSecondary),
             ),
+          // Career applications: position and experience.
+          if (e.position.isNotEmpty || e.experience.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              [e.position, e.experience].where((s) => s.isNotEmpty).join(' · '),
+              style: AppTypography.labelMedium(color: context.themePrimary),
+            ),
+          ],
           const SizedBox(height: 8),
           Text(
             e.message,

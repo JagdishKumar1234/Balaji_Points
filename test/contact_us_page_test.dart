@@ -3,7 +3,9 @@ import 'package:balaji_points/presentation/screens/common/contact/contact_us_pag
 import 'package:balaji_points/services/branch/branch_support_service.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/services/platform/enquiry_service.dart';
+import 'package:balaji_points/services/branch/public_branches.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -40,6 +42,16 @@ void main() {
         overrides: [
           enquirySenderProvider.overrideWith((ref) async => sender),
           branchSupportProvider.overrideWith((ref) => Stream.value(branch)),
+          publicBranchesProvider.overrideWith(
+            (ref) => Stream.value(const [
+              PublicBranch(
+                id: 'erode_main',
+                name: 'E Road',
+                shortName: 'E Road',
+              ),
+              PublicBranch(id: 'karur', name: 'Karur', shortName: 'Karur'),
+            ]),
+          ),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -88,10 +100,39 @@ void main() {
   ) async {
     await pump(tester, const EnquirySender.guest());
     expect(find.text('aaijitechstudio@gmail.com'), findsOneWidget);
+    // Both support numbers and the email, each in full (nothing cut off).
+    for (final t in [
+      '96807 77735',
+      '89470 38661',
+      'aaijitechstudio@gmail.com',
+      'App support · Balaji Points',
+    ]) {
+      final para = tester.renderObject<RenderParagraph>(find.text(t));
+      expect(para.didExceedMaxLines, isFalse, reason: t);
+      expect(para.size.width, greaterThan(0), reason: t);
+    }
+    // First number comes first.
+    expect(
+      tester.getTopLeft(find.text('96807 77735')).dx,
+      lessThan(tester.getTopLeft(find.text('89470 38661')).dx),
+    );
     expect(find.text('Become a member'), findsOneWidget);
     expect(find.text('Your name'), findsOneWidget);
     expect(find.text('Mobile number'), findsOneWidget);
+    // A guest may pick a branch (optional; otherwise the super admin).
+    expect(find.text('Branch (optional)'), findsOneWidget);
     expectNoScroll(tester);
+  });
+
+  testWidgets('guest can send without a branch (goes to super admin)', (
+    tester,
+  ) async {
+    await pump(tester, const EnquirySender.guest());
+    await tester.tap(find.text('Send enquiry'));
+    await tester.pump();
+    // Other fields are still checked, but the branch is not required.
+    expect(find.text('Select a branch'), findsNothing);
+    expect(find.text('Enter a valid 10-digit mobile number'), findsOneWidget);
   });
 
   testWidgets('member can change the call-back number', (tester) async {

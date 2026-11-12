@@ -97,6 +97,7 @@ class BranchService {
     required String address,
     required String phone,
     required String createdBy,
+    String mapsUrl = '',
   }) async {
     try {
       final duplicate = await _branches
@@ -127,6 +128,7 @@ class BranchService {
         'diwaliCelebrationEnabled': false,
         'address': address,
         'phone': phone,
+        if (mapsUrl.trim().isNotEmpty) 'mapsUrl': mapsUrl.trim(),
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
         'createdBy': createdBy,
@@ -145,6 +147,7 @@ class BranchService {
     String? shortName,
     String? address,
     String? phone,
+    String? mapsUrl,
     bool? isActive,
     bool? diwaliCelebrationEnabled,
   }) async {
@@ -154,6 +157,7 @@ class BranchService {
       if (shortName != null) data['shortName'] = shortName;
       if (address != null) data['address'] = address;
       if (phone != null) data['phone'] = phone;
+      if (mapsUrl != null) data['mapsUrl'] = mapsUrl.trim();
       if (isActive != null) data['isActive'] = isActive;
       if (diwaliCelebrationEnabled != null) {
         data['diwaliCelebrationEnabled'] = diwaliCelebrationEnabled;

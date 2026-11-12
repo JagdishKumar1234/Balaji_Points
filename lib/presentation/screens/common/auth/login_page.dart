@@ -125,6 +125,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // There is no web "exit", and the browser has its own back button.
       showBackButton: !kIsWeb,
       onBack: _handleBack,
+      // Guest entry visible at once, even when the big button below is
+      // under the fold on a phone.
+      topAction: FilledButton.icon(
+        onPressed: () => context.push('/guest'),
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.gold,
+          foregroundColor: AppColors.primary,
+          visualDensity: VisualDensity.compact,
+          elevation: 2,
+        ),
+        icon: const Icon(Icons.storefront_rounded, size: 18),
+        label: Text(AppLocalizations.of(context)!.guestTabGuest),
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -264,16 +277,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ],
                     ),
                   ),
-                  // Not a member yet: ask a question without logging in.
-                  Center(
-                    child: TextButton.icon(
-                      onPressed: () => context.push('/contact-us'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: context.themeTextSecondary,
-                        minimumSize: const Size(48, 40),
+                  // Not a member yet: catalogs, branches, careers and
+                  // enquiries without logging in. Highlighted (gold) so
+                  // shop visitors notice it.
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton.icon(
+                      onPressed: () => context.push('/guest'),
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: context.themeGoldSoft,
+                        foregroundColor: context.themeTextPrimary,
+                        side: const BorderSide(
+                          color: AppColors.gold,
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.md12,
+                        ),
                       ),
-                      icon: const Icon(Icons.support_agent_rounded, size: 18),
-                      label: Text(AppLocalizations.of(context)!.contactUs),
+                      icon: const Icon(
+                        Icons.storefront_rounded,
+                        color: AppColors.gold,
+                      ),
+                      label: Text(
+                        AppLocalizations.of(context)!.guestContinue,
+                        style: AppTypography.labelLarge(
+                          color: context.themeTextPrimary,
+                        ),
+                      ),
                     ),
                   ),
                 ],

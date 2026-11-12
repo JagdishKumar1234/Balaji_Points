@@ -23,9 +23,11 @@ class StatusChip extends StatelessWidget {
     switch (_normalized) {
       case 'approved':
       case 'completed':
+      case 'active':
         return (context.themeSuccessSoft, context.themeSuccessText);
       case 'cancelled':
       case 'rejected':
+      case 'inactive':
         return (context.themeErrorSoft, context.themeErrorText);
       case 'processing':
         return (context.themeSoftSurface, context.themeTextPrimary);
@@ -38,7 +40,10 @@ class StatusChip extends StatelessWidget {
     switch (_normalized) {
       case 'approved':
       case 'completed':
+      case 'active':
         return Icons.check_circle_rounded;
+      case 'inactive':
+        return Icons.block_rounded;
       case 'processing':
         return Icons.autorenew_rounded;
       case 'cancelled':
@@ -60,6 +65,10 @@ class StatusChip extends StatelessWidget {
       case 'cancelled':
       case 'rejected':
         return AppLocalizations.of(context)!.rejectedLabel;
+      case 'active':
+        return AppLocalizations.of(context)!.active;
+      case 'inactive':
+        return AppLocalizations.of(context)!.inactive;
       default:
         return AppLocalizations.of(context)!.pendingStatus;
     }

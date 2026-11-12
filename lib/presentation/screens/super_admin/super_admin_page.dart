@@ -31,7 +31,55 @@ class SuperAdminPage extends ConsumerStatefulWidget {
 
 class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
     with DoubleTapExitMixin {
-  int _tab = 0; // branches, create admin, points reset, roles
+  int _tab = 0; // branches, admins, points, roles, catalogs, guest enquiries
+
+  /// Tabs shown directly in the phone's bottom bar; the rest are in More.
+  static const int _kPhoneTabs = 4;
+
+  /// Open guest enquiries (null until loaded or if they cannot be read).
+  int? _openGuestEnquiries() {
+    final async = ref.watch(enquiriesProvider(null));
+    if (async.hasError) return null;
+    return async.asData?.value.where((e) => e.isOpen).length;
+  }
+
+  /// Catalogs and Guest enquiries, in a sheet (phones only).
+  Future<void> _openMore() async {
+    final l10n = AppLocalizations.of(context)!;
+    final picked = await showModalBottomSheet<int>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheet) {
+        final open = _openGuestEnquiries() ?? 0;
+        Widget item(int index, IconData icon, String label, {int count = 0}) =>
+            ListTile(
+              leading: Icon(icon),
+              title: Text(label),
+              selected: _tab == index,
+              trailing: count > 0
+                  ? Badge(label: Text('$count'))
+                  : const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.pop(sheet, index),
+            );
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              item(4, Icons.menu_book_rounded, l10n.catalogs),
+              item(
+                5,
+                Icons.mark_email_unread_rounded,
+                l10n.guestEnquiries,
+                count: open,
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+    if (picked != null && mounted) setState(() => _tab = picked);
+  }
 
   @override
   void initState() {
@@ -144,8 +192,14 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
         bottomNavigationBar: context.isWideScreen
             ? null
             : NavigationBar(
-                selectedIndex: _tab,
-                onDestinationSelected: (index) => setState(() => _tab = index),
+                // Phones show 4 tabs + More (6 labels do not fit and
+                // overlapped). Catalogs and Guest enquiries live under More;
+                // More stays highlighted while one of them is open.
+                selectedIndex: _tab < _kPhoneTabs ? _tab : _kPhoneTabs,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                onDestinationSelected: (index) => index < _kPhoneTabs
+                    ? setState(() => _tab = index)
+                    : _openMore(),
                 destinations: [
                   NavigationDestination(
                     icon: const Icon(Icons.store_outlined),
@@ -168,14 +222,12 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
                     label: AppLocalizations.of(context)!.roles,
                   ),
                   NavigationDestination(
-                    icon: const Icon(Icons.menu_book_outlined),
-                    selectedIcon: const Icon(Icons.menu_book_rounded),
-                    label: AppLocalizations.of(context)!.catalogs,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.mark_email_unread_outlined),
-                    selectedIcon: const Icon(Icons.mark_email_unread_rounded),
-                    label: AppLocalizations.of(context)!.guestEnquiries,
+                    icon: Badge(
+                      isLabelVisible: (_openGuestEnquiries() ?? 0) > 0,
+                      label: Text('${_openGuestEnquiries() ?? 0}'),
+                      child: const Icon(Icons.more_horiz_rounded),
+                    ),
+                    label: AppLocalizations.of(context)!.navMore,
                   ),
                 ],
               ),

@@ -8634,6 +8634,486 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guest enquiries'**
   String get guestEnquiries;
+
+  /// No description provided for @navMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get navMore;
+
+  /// No description provided for @billRejectedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected: '**
+  String get billRejectedAt;
+
+  /// No description provided for @memberDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Member details'**
+  String get memberDetailsTitle;
+
+  /// No description provided for @memberApprovedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved purchases'**
+  String get memberApprovedAmount;
+
+  /// No description provided for @memberDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range'**
+  String get memberDateRange;
+
+  /// No description provided for @memberHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get memberHistory;
+
+  /// No description provided for @memberCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get memberCall;
+
+  /// No description provided for @billPointsCredited.
+  ///
+  /// In en, this message translates to:
+  /// **'Points credited'**
+  String get billPointsCredited;
+
+  /// No description provided for @billMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get billMember;
+
+  /// No description provided for @billDetailsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get billDetailsSection;
+
+  /// No description provided for @guestContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as guest'**
+  String get guestContinue;
+
+  /// No description provided for @guestHomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Balaji Points'**
+  String get guestHomeTitle;
+
+  /// No description provided for @guestHomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse catalogs, find a branch or talk to us.'**
+  String get guestHomeSubtitle;
+
+  /// No description provided for @guestJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Balaji Points'**
+  String get guestJoinTitle;
+
+  /// No description provided for @guestJoinBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenters, architects, engineers and interior designers earn points on every purchase and win rewards.'**
+  String get guestJoinBody;
+
+  /// No description provided for @guestRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Register now'**
+  String get guestRegister;
+
+  /// No description provided for @guestLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in'**
+  String get guestLogin;
+
+  /// No description provided for @guestCatalogsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Laminates, plywood, doors and more'**
+  String get guestCatalogsSub;
+
+  /// No description provided for @guestBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Our branches'**
+  String get guestBranches;
+
+  /// No description provided for @guestBranchesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Address, phone and directions'**
+  String get guestBranchesSub;
+
+  /// No description provided for @guestService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service request'**
+  String get guestService;
+
+  /// No description provided for @guestServiceSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a branch for help'**
+  String get guestServiceSub;
+
+  /// No description provided for @guestCareers.
+  ///
+  /// In en, this message translates to:
+  /// **'Careers'**
+  String get guestCareers;
+
+  /// No description provided for @guestCareersSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to work with us'**
+  String get guestCareersSub;
+
+  /// No description provided for @guestContactSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions about products or prices'**
+  String get guestContactSub;
+
+  /// No description provided for @branchDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get branchDirections;
+
+  /// No description provided for @branchesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No branches yet'**
+  String get branchesEmpty;
+
+  /// No description provided for @enquiryBranchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get enquiryBranchLabel;
+
+  /// No description provided for @enquiryBranchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select branch'**
+  String get enquiryBranchHint;
+
+  /// No description provided for @enquiryBranchRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a branch'**
+  String get enquiryBranchRequired;
+
+  /// No description provided for @enquiryTypeService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service request'**
+  String get enquiryTypeService;
+
+  /// No description provided for @enquiryTypeCareer.
+  ///
+  /// In en, this message translates to:
+  /// **'Career'**
+  String get enquiryTypeCareer;
+
+  /// No description provided for @careerIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Send your details. The branch will call you.'**
+  String get careerIntro;
+
+  /// No description provided for @careerPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get careerPosition;
+
+  /// No description provided for @careerPositionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter position'**
+  String get careerPositionHint;
+
+  /// No description provided for @careerExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get careerExperience;
+
+  /// No description provided for @careerExperienceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter experience'**
+  String get careerExperienceHint;
+
+  /// No description provided for @careerAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get careerAbout;
+
+  /// No description provided for @careerAboutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a few lines about your work'**
+  String get careerAboutHint;
+
+  /// No description provided for @careerSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send application'**
+  String get careerSubmit;
+
+  /// No description provided for @careerSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Application sent'**
+  String get careerSentTitle;
+
+  /// No description provided for @careerPositionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the position'**
+  String get careerPositionRequired;
+
+  /// No description provided for @branchMapsLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Maps link'**
+  String get branchMapsLink;
+
+  /// No description provided for @branchMapsLinkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Google Maps link'**
+  String get branchMapsLinkHint;
+
+  /// No description provided for @branchMapsLinkHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the store in Google Maps, tap Share, copy the link and paste it here.'**
+  String get branchMapsLinkHelp;
+
+  /// No description provided for @branchMapsLinkInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a link that starts with https://'**
+  String get branchMapsLinkInvalid;
+
+  /// No description provided for @guestLoginMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Member? Log in'**
+  String get guestLoginMember;
+
+  /// No description provided for @guestTabHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get guestTabHome;
+
+  /// No description provided for @guestTabCatalogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalogs'**
+  String get guestTabCatalogs;
+
+  /// No description provided for @guestTabBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches'**
+  String get guestTabBranches;
+
+  /// No description provided for @guestTabContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get guestTabContact;
+
+  /// No description provided for @guestTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your one-stop shop for interiors'**
+  String get guestTagline;
+
+  /// No description provided for @guestHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plywood, hardware & fittings — all under one roof'**
+  String get guestHeroTitle;
+
+  /// No description provided for @guestHeroBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the latest catalogs, find your nearest branch and get expert help.'**
+  String get guestHeroBody;
+
+  /// No description provided for @guestExploreCatalogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore catalogs'**
+  String get guestExploreCatalogs;
+
+  /// No description provided for @guestWeOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything we offer'**
+  String get guestWeOffer;
+
+  /// No description provided for @guestOfferPlywood.
+  ///
+  /// In en, this message translates to:
+  /// **'Plywood'**
+  String get guestOfferPlywood;
+
+  /// No description provided for @guestOfferLaminates.
+  ///
+  /// In en, this message translates to:
+  /// **'Laminates'**
+  String get guestOfferLaminates;
+
+  /// No description provided for @guestOfferDoors.
+  ///
+  /// In en, this message translates to:
+  /// **'Doors'**
+  String get guestOfferDoors;
+
+  /// No description provided for @guestOfferHardware.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware'**
+  String get guestOfferHardware;
+
+  /// No description provided for @guestOfferFittings.
+  ///
+  /// In en, this message translates to:
+  /// **'Fittings'**
+  String get guestOfferFittings;
+
+  /// No description provided for @guestOfferService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service & support'**
+  String get guestOfferService;
+
+  /// No description provided for @guestStatBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches'**
+  String get guestStatBranches;
+
+  /// No description provided for @guestStatCatalogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalogs'**
+  String get guestStatCatalogs;
+
+  /// No description provided for @guestStatRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Member roles'**
+  String get guestStatRoles;
+
+  /// No description provided for @guestQuickLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick links'**
+  String get guestQuickLinks;
+
+  /// No description provided for @guestJoinPoint1.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn points on every purchase'**
+  String get guestJoinPoint1;
+
+  /// No description provided for @guestJoinPoint2.
+  ///
+  /// In en, this message translates to:
+  /// **'Win trips, gadgets and more'**
+  String get guestJoinPoint2;
+
+  /// No description provided for @guestJoinPoint3.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily spin and branch offers'**
+  String get guestJoinPoint3;
+
+  /// No description provided for @guestGrowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grow your business with Balaji Points'**
+  String get guestGrowTitle;
+
+  /// No description provided for @guestGrowBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Own a store? Register your store or branch on Balaji Points and reward your customers.'**
+  String get guestGrowBody;
+
+  /// No description provided for @guestGrowPoint1.
+  ///
+  /// In en, this message translates to:
+  /// **'Customized roles for your members'**
+  String get guestGrowPoint1;
+
+  /// No description provided for @guestGrowPoint2.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own points and rewards system'**
+  String get guestGrowPoint2;
+
+  /// No description provided for @guestGrowPoint3.
+  ///
+  /// In en, this message translates to:
+  /// **'Full admin panel for your team'**
+  String get guestGrowPoint3;
+
+  /// No description provided for @guestGrowCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner with us'**
+  String get guestGrowCta;
+
+  /// No description provided for @enquiryTypePartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Register my store'**
+  String get enquiryTypePartner;
+
+  /// No description provided for @guestStatCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get guestStatCategories;
+
+  /// No description provided for @enquiryBranchOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch (optional)'**
+  String get enquiryBranchOptional;
+
+  /// No description provided for @enquiryBranchAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any branch — Balaji Points team'**
+  String get enquiryBranchAny;
+
+  /// No description provided for @guestTabGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get guestTabGuest;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

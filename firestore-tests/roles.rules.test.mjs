@@ -275,9 +275,11 @@ test('enquiries with bad or extra fields are refused', async () => {
   await assertFails(setDoc(doc(db, 'enquiries/x6'), memberEnquiry({ branchId: 'nope' })));
   await assertFails(setDoc(doc(db, 'enquiries/x7'), memberEnquiry({ role: 'admin' })));
   await assertFails(setDoc(doc(db, 'enquiries/x8'), memberEnquiry({ createdAt: new Date(0) })));
-  // A guest cannot claim a branch or role.
-  await assertFails(setDoc(doc(db, 'enquiries/x9'), guestEnquiry({ branchId: 'b1' })));
+  // A guest cannot claim a role or user, nor pick an unknown branch.
+  await assertFails(setDoc(doc(db, 'enquiries/x9'), guestEnquiry({ branchId: 'nope' })));
   await assertFails(setDoc(doc(db, 'enquiries/x10'), guestEnquiry({ role: 'carpenter' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x11'), guestEnquiry({ userId: 'u1' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x12'), guestEnquiry({ type: 'career', position: 'x'.repeat(61) })));
 });
 
 test('a branch admin reads only their own branch; guests go to super admin', async () => {
@@ -302,4 +304,34 @@ test('admins can only mark an enquiry resolved or open again', async () => {
   await assertSucceeds(updateDoc(doc(superAdmin(), 'enquiries/g1'), { status: 'resolved' }));
   await assertFails(deleteDoc(doc(branchAdmin(), 'enquiries/m1')));
   await assertSucceeds(deleteDoc(doc(superAdmin(), 'enquiries/g1')));
+});
+
+test('a guest can pick a branch; that branch admin reads it, others cannot', async () => {
+  await seedEnquiryUsers();
+  await assertSucceeds(setDoc(doc(guest(), 'enquiries/gb'),
+    guestEnquiry({ branchId: 'b1', branchName: 'Branch 1' })));
+  await assertSucceeds(setDoc(doc(guest(), 'enquiries/gc'),
+    guestEnquiry({ type: 'career', branchId: 'b2', position: 'Sales executive',
+      experience: '3 years', message: 'I have worked in a hardware store' })));
+  await assertSucceeds(setDoc(doc(guest(), 'enquiries/gs'),
+    guestEnquiry({ type: 'service', branchId: 'b1' })));
+  // A store owner asking to partner: no branch, super admin reads it.
+  await assertSucceeds(setDoc(doc(guest(), 'enquiries/gp'),
+    guestEnquiry({ type: 'partner' })));
+  await assertSucceeds(getDoc(doc(superAdmin(), 'enquiries/gp')));
+  await assertFails(getDoc(doc(branchAdmin(), 'enquiries/gp')));
+  await assertSucceeds(getDoc(doc(branchAdmin(), 'enquiries/gb')));
+  await assertFails(getDoc(doc(branchAdmin(), 'enquiries/gc')));
+  await assertSucceeds(getDoc(doc(branchAdmin2(), 'enquiries/gc')));
+  await assertSucceeds(getDocs(query(collection(superAdmin(), 'enquiries'), where('source', '==', 'guest'))));
+});
+
+test('every member role can send to its own branch; that admin reads it', async () => {
+  await seedEnquiryUsers();
+  for (const role of ['carpenter', 'architect', 'engineer', 'interior_designer', 'mason']) {
+    await assertSucceeds(setDoc(doc(guest(), `enquiries/r_${role}`),
+      memberEnquiry({ role, branchId: 'b1' })));
+    await assertSucceeds(getDoc(doc(branchAdmin(), `enquiries/r_${role}`)));
+    await assertFails(getDoc(doc(branchAdmin2(), `enquiries/r_${role}`)));
+  }
 });

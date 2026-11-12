@@ -13,7 +13,9 @@ class LegalDocuments {
 
   static const String company = AppConstants.companyName;
   static const String supportEmail = AppConstants.supportEmail;
-  static const String supportPhone = '+91 ${AppConstants.supportPhoneDisplay}';
+  static const String supportPhone =
+      '+91 ${AppConstants.supportPhoneDisplay}, '
+      '+91 ${AppConstants.supportPhone2Display}';
 
   static const List<LegalSection> terms = [
     LegalSection(

@@ -173,7 +173,7 @@ class _CatalogViewerPageState extends ConsumerState<CatalogViewerPage> {
       return PdfViewer.file(
         file.path,
         controller: _controller,
-        params: _params(context, c),
+        params: _params(context, c, saved: true),
       );
     }
     if (_stream) {
@@ -189,7 +189,13 @@ class _CatalogViewerPageState extends ConsumerState<CatalogViewerPage> {
     );
   }
 
-  PdfViewerParams _params(BuildContext context, Catalog c) {
+  /// [saved]: opening the file already on the phone (no download), so the
+  /// brief open shows a small spinner, not a download progress bar.
+  PdfViewerParams _params(
+    BuildContext context,
+    Catalog c, {
+    bool saved = false,
+  }) {
     final l10n = AppLocalizations.of(context)!;
     return PdfViewerParams(
       backgroundColor: context.themeSoftSurface,
@@ -211,8 +217,18 @@ class _CatalogViewerPageState extends ConsumerState<CatalogViewerPage> {
       onPageChanged: (p) {
         if (p != null && p != _page && mounted) setState(() => _page = p);
       },
-      loadingBannerBuilder: (ctx, done, total) =>
-          _LoadingBanner(done: done, total: total ?? c.sizeBytes),
+      loadingBannerBuilder: (ctx, done, total) => saved
+          ? Center(
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: ctx.themePrimary,
+                ),
+              ),
+            )
+          : _LoadingBanner(done: done, total: total ?? c.sizeBytes),
       errorBannerBuilder: (ctx, error, _, __) {
         AppLogger.error('Catalog PDF failed to open', error);
         return Center(
@@ -334,8 +350,10 @@ class _LoadingBanner extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
+            // "0 KB / 5.5 MB" at the start, never a blank "/ 5.5 MB".
             total > 0
-                ? '${formatFileSize(done)} / ${formatFileSize(total)}'
+                ? '${done > 0 ? formatFileSize(done) : '0 KB'} / '
+                      '${formatFileSize(total)}'
                 : formatFileSize(done),
             style: AppTypography.caption(color: context.themeTextSecondary),
           ),

@@ -1,5 +1,6 @@
 // filepath: lib/config/routes.dart
 import 'package:balaji_points/services/telemetry/telemetry.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,14 +32,18 @@ import 'package:balaji_points/presentation/screens/common/info/legal_document_pa
 import 'package:balaji_points/presentation/screens/common/onboarding/onboarding_page.dart';
 import 'package:balaji_points/presentation/screens/admin/carpenter_profile_detail_screen.dart';
 import 'package:balaji_points/presentation/screens/admin/daily_spin_history_screen.dart';
-import 'package:balaji_points/presentation/screens/admin/duplicate_accounts_screen.dart';
-import 'package:balaji_points/presentation/screens/admin/export_users_before_cleanup.dart';
-import 'package:balaji_points/presentation/screens/admin/cleanup_duplicate_accounts_screen.dart';
-import 'package:balaji_points/presentation/screens/admin/firestore_backup_screen.dart';
-import 'package:balaji_points/presentation/screens/admin/firebase_duplicate_checker_screen.dart';
-import 'package:balaji_points/presentation/screens/admin/smart_duplicate_cleanup_screen.dart';
+// import 'package:balaji_points/presentation/screens/admin/duplicate_accounts_screen.dart';  // hidden tool, see the routes below
+// import 'package:balaji_points/presentation/screens/admin/export_users_before_cleanup.dart';  // hidden tool, see the routes below
+// import 'package:balaji_points/presentation/screens/admin/cleanup_duplicate_accounts_screen.dart';  // hidden tool, see the routes below
+// import 'package:balaji_points/presentation/screens/admin/firestore_backup_screen.dart';  // hidden tool, see the routes below
+// import 'package:balaji_points/presentation/screens/admin/firebase_duplicate_checker_screen.dart';  // hidden tool, see the routes below
+// import 'package:balaji_points/presentation/screens/admin/smart_duplicate_cleanup_screen.dart';  // hidden tool, see the routes below
 import 'package:balaji_points/presentation/screens/common/catalog/catalogs_page.dart';
 import 'package:balaji_points/presentation/screens/common/contact/contact_us_page.dart';
+import 'package:balaji_points/presentation/screens/guest/guest_home_page.dart';
+import 'package:balaji_points/presentation/screens/guest/branches_page.dart';
+import 'package:balaji_points/presentation/screens/guest/careers_page.dart';
+import 'package:balaji_points/core/models/enquiry.dart';
 import 'package:balaji_points/presentation/screens/common/catalog/catalog_viewer_page.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -70,56 +75,8 @@ GoRouter _buildRouter() {
         AppLogger.nav(path);
       }
 
-      // Skip role checks for public/auth routes.
-      const publicPaths = [
-        '/splash',
-        '/login',
-        '/register',
-        '/complete-registration',
-        '/forgot-password',
-        '/phone-pin-login',
-        '/pin-login',
-        '/pin-reset',
-        '/onboarding',
-        '/terms',
-        '/privacy',
-        // Enquiry form: guests can use it too (no login needed).
-        '/contact-us',
-      ];
-      if (publicPaths.any((p) => path.startsWith(p))) return null;
-
       final role = (await SessionService().getUserRole())?.trim().toLowerCase();
-
-      // super_admin must never access branch admin panel.
-      if (role == 'super_admin') {
-        if (path.startsWith('/admin')) return '/super-admin';
-        return null;
-      }
-
-      // admin must never access super_admin panel.
-      if (role == 'admin') {
-        if (path == '/super-admin') return '/admin';
-        // Redirect admin notifications route.
-        if (path == '/notifications') return '/admin/notifications';
-      }
-
-      // Prevent carpenter from entering admin routes.
-      if (role == 'carpenter' || role == null) {
-        if (path.startsWith('/admin') || path == '/super-admin') return '/';
-      }
-
-      // Robust fallback: normalize admin/notifications sub-paths.
-      if (path.startsWith('/admin/notifications') &&
-          path != '/admin/notifications') {
-        return '/admin/notifications';
-      }
-
-      // Allow admin to access carpenter profile routes
-      if (role == 'admin' && path.startsWith('/admin/carpenter-profile/')) {
-        return null;
-      }
-
-      return null;
+      return redirectForRole(path, role);
     },
 
     errorBuilder: (context, state) {
@@ -330,8 +287,16 @@ GoRouter _buildRouter() {
       ),
       GoRoute(
         path: '/contact-us',
-        builder: (context, _) => const ContactUsPage(),
+        builder: (context, state) => ContactUsPage(
+          initialType: switch (state.uri.queryParameters['type']) {
+            null => null,
+            final id => EnquiryType.fromId(id),
+          },
+        ),
       ),
+      GoRoute(path: '/guest', builder: (context, _) => const GuestHomePage()),
+      GoRoute(path: '/branches', builder: (context, _) => const BranchesPage()),
+      GoRoute(path: '/careers', builder: (context, _) => const CareersPage()),
       GoRoute(path: '/admin', builder: (context, _) => const AdminHomePage()),
       GoRoute(
         path: '/admin/add-bill',
@@ -352,30 +317,34 @@ GoRouter _buildRouter() {
         path: '/admin/spin-history',
         builder: (context, _) => const DailySpinHistoryScreen(),
       ),
-      GoRoute(
-        path: '/admin/duplicate-accounts',
-        builder: (context, _) => const DuplicateAccountsScreen(),
-      ),
-      GoRoute(
-        path: '/admin/export-users',
-        builder: (context, _) => const ExportUsersBeforeCleanupScreen(),
-      ),
-      GoRoute(
-        path: '/admin/cleanup-duplicates',
-        builder: (context, _) => const CleanupDuplicateAccountsScreen(),
-      ),
-      GoRoute(
-        path: '/admin/backup',
-        builder: (context, _) => const FirestoreBackupScreen(),
-      ),
-      GoRoute(
-        path: '/admin/check-duplicates',
-        builder: (context, _) => const FirebaseDuplicateCheckerScreen(),
-      ),
-      GoRoute(
-        path: '/admin/smart-cleanup',
-        builder: (context, _) => const SmartDuplicateCleanupScreen(),
-      ),
+      // Maintenance tools (duplicates, backup, cleanup) are hidden from
+      // every branch admin (2026-11-12): their dashboard cards are commented
+      // out, and these routes too, so they cannot be opened by typing the
+      // address on web. Uncomment both to bring a tool back.
+      // GoRoute(
+      //   path: '/admin/duplicate-accounts',
+      //   builder: (context, _) => const DuplicateAccountsScreen(),
+      // ),
+      // GoRoute(
+      //   path: '/admin/export-users',
+      //   builder: (context, _) => const ExportUsersBeforeCleanupScreen(),
+      // ),
+      // GoRoute(
+      //   path: '/admin/cleanup-duplicates',
+      //   builder: (context, _) => const CleanupDuplicateAccountsScreen(),
+      // ),
+      // GoRoute(
+      //   path: '/admin/backup',
+      //   builder: (context, _) => const FirestoreBackupScreen(),
+      // ),
+      // GoRoute(
+      //   path: '/admin/check-duplicates',
+      //   builder: (context, _) => const FirebaseDuplicateCheckerScreen(),
+      // ),
+      // GoRoute(
+      //   path: '/admin/smart-cleanup',
+      //   builder: (context, _) => const SmartDuplicateCleanupScreen(),
+      // ),
       GoRoute(
         path: '/super-admin',
         builder: (context, _) => const SuperAdminPage(),
@@ -383,4 +352,67 @@ GoRouter _buildRouter() {
       // Note: trailing slash is normalized by the redirect.
     ],
   );
+}
+
+/// Where a screen request should go for this [role] (null = open it).
+/// Pure, so tests can check every role against every screen. [role] is the
+/// saved role, lower case, or null when no one is logged in.
+@visibleForTesting
+String? redirectForRole(String path, String? role) {
+  // Skip role checks for public/auth routes.
+  const publicPaths = [
+    '/splash',
+    '/login',
+    '/register',
+    '/complete-registration',
+    '/forgot-password',
+    '/phone-pin-login',
+    '/pin-login',
+    '/pin-reset',
+    '/onboarding',
+    '/terms',
+    '/privacy',
+    // Guest mode (no login): home, branches, careers, enquiry form.
+    // Catalogs are open too (no admin path). Bills, points, offers and
+    // profile stay behind login.
+    '/contact-us',
+    '/guest',
+    '/branches',
+    '/careers',
+  ];
+  if (publicPaths.any((p) => path.startsWith(p))) return null;
+
+  // super_admin must never access branch admin panel.
+  if (role == 'super_admin') {
+    if (path.startsWith('/admin')) return '/super-admin';
+    return null;
+  }
+
+  // admin must never access super_admin panel.
+  if (role == 'admin') {
+    if (path == '/super-admin') return '/admin';
+    // Redirect admin notifications route.
+    if (path == '/notifications') return '/admin/notifications';
+  }
+
+  // Only admins (and the super admin, handled above) may open admin
+  // screens. Every member role (carpenter, architect, engineer,
+  // interior designer, custom roles) and anyone not logged in is sent
+  // home; this used to check carpenter only.
+  if (role != 'admin') {
+    if (path.startsWith('/admin') || path == '/super-admin') return '/';
+  }
+
+  // Robust fallback: normalize admin/notifications sub-paths.
+  if (path.startsWith('/admin/notifications') &&
+      path != '/admin/notifications') {
+    return '/admin/notifications';
+  }
+
+  // Allow admin to access carpenter profile routes
+  if (role == 'admin' && path.startsWith('/admin/carpenter-profile/')) {
+    return null;
+  }
+
+  return null;
 }

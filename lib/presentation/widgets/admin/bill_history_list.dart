@@ -2,6 +2,8 @@ import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
+import 'package:balaji_points/presentation/widgets/admin/bill_dates.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_table_card.dart';
@@ -360,7 +362,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                       pw.SizedBox(height: 2),
                       pw.Text(
                         '${AppConstants.supportEmail}  ·  '
-                        '${AppConstants.supportPhoneDisplay}',
+                        '${AppConstants.supportPhonesDisplay}',
                         style: const pw.TextStyle(
                           fontSize: 12,
                           color: PdfColors.grey700,
@@ -1102,9 +1104,6 @@ class _BillHistoryListState extends State<BillHistoryList> {
                   final phone = bill['carpenterPhone'] ?? '';
                   final imageUrl = bill['imageUrl'] ?? '';
                   final status = bill['status'] ?? '';
-                  final billDate = bill['billDate'] as Timestamp?;
-                  final approvedAt = bill['approvedAt'] as Timestamp?;
-                  final createdAt = bill['createdAt'] as Timestamp?;
 
                   // Extract points earned (for approved bills)
                   final points = PointsRate.forBill(bill);
@@ -1116,6 +1115,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                         context,
                       )!.carpenter;
                       String? profileImageUrl;
+                      String? roleId;
+                      String? roleName;
 
                       if (carpenterSnapshot.hasData &&
                           carpenterSnapshot.data != null) {
@@ -1129,6 +1130,8 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           )!.carpenter;
                         profileImageUrl =
                             carpenterData['profileImage'] as String?;
+                        roleId = carpenterData['role'] as String?;
+                        roleName = carpenterData['roleName'] as String?;
                       }
 
                       // Apply carpenter name and phone filter
@@ -1229,32 +1232,46 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                               ),
                                       ),
                                       const SizedBox(width: 10),
-                                      // Name, Phone & Status
+                                      // Name (full, up to 2 lines), then
+                                      // phone + status, then site.
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Row(
-                                              children: [
-                                                Flexible(
-                                                  child: Text(
-                                                    carpenterName,
-                                                    style:
-                                                        AppTypography.labelLarge()
-                                                            .copyWith(
-                                                              fontSize: 14,
-                                                              color: AppColors
-                                                                  .primary,
-                                                              height: 1.2,
-                                                            ),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                            Text(
+                                              carpenterName,
+                                              style: AppTypography.labelLarge()
+                                                  .copyWith(
+                                                    fontSize: 14,
+                                                    color: AppColors.primary,
+                                                    height: 1.25,
                                                   ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 3),
+                                            Wrap(
+                                              spacing: 6,
+                                              runSpacing: 3,
+                                              crossAxisAlignment:
+                                                  WrapCrossAlignment.center,
+                                              children: [
+                                                if (phone.isNotEmpty)
+                                                  Text(
+                                                    phone,
+                                                    style: AppTypography.bodyMedium()
+                                                        .copyWith(
+                                                          fontSize: 12,
+                                                          color: context
+                                                              .themeTextSecondary,
+                                                          height: 1.2,
+                                                        ),
+                                                  ),
+                                                RoleTag(
+                                                  roleId: roleId,
+                                                  storedName: roleName,
                                                 ),
-                                                const SizedBox(width: 6),
-                                                // Status Badge - Inline
                                                 StatusChip(
                                                   status: status,
                                                   compact: true,
@@ -1262,20 +1279,6 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 ),
                                               ],
                                             ),
-                                            if (phone.isNotEmpty) ...[
-                                              const SizedBox(height: 2),
-                                              Text(
-                                                phone,
-                                                style: AppTypography.bodyMedium()
-                                                    .copyWith(
-                                                      fontSize: 12,
-                                                      color: context
-                                                          .themeTextSecondary,
-                                                      height: 1.2,
-                                                    ),
-                                              ),
-                                            ],
-                                            // Site Name (NEW)
                                             if ((bill['siteName'] as String?)
                                                     ?.isNotEmpty ??
                                                 false) ...[
@@ -1284,7 +1287,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                                 children: [
                                                   Icon(
                                                     Icons.location_on_rounded,
-                                                    size: 10,
+                                                    size: 11,
                                                     color: context
                                                         .themeContentColor,
                                                   ),
@@ -1313,169 +1316,77 @@ class _BillHistoryListState extends State<BillHistoryList> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      // Right Side: Image Thumbnail, Amount & Points
-                                      Row(
+                                      // Amount & Points in vertical stack
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          // Image Thumbnail
-                                          if (imageUrl.isNotEmpty) ...[
-                                            GestureDetector(
-                                              onTap: () =>
-                                                  _viewBillImage(imageUrl),
-                                              child: Container(
-                                                width: 45,
-                                                height: 45,
-                                                decoration: BoxDecoration(
-                                                  borderRadius: AppRadius.sm8,
-                                                  border: Border.all(
-                                                    color: AppColors.primary
-                                                        .withValues(alpha: 0.3),
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                child: ClipRRect(
-                                                  borderRadius: AppRadius.sm8,
-                                                  child: Stack(
-                                                    children: [
-                                                      Image.network(
-                                                        imageUrl,
-                                                        fit: BoxFit.cover,
-                                                        width: 45,
-                                                        height: 45,
-                                                        errorBuilder:
-                                                            (
-                                                              _,
-                                                              __,
-                                                              ___,
-                                                            ) => Container(
-                                                              color: context
-                                                                  .themeBorder,
-                                                              child: Icon(
-                                                                Icons
-                                                                    .broken_image,
-                                                                size: 18,
-                                                                color: context
-                                                                    .themeTextSecondary,
-                                                              ),
-                                                            ),
-                                                      ),
-                                                      Container(
-                                                        decoration: BoxDecoration(
-                                                          gradient: LinearGradient(
-                                                            begin: Alignment
-                                                                .topCenter,
-                                                            end: Alignment
-                                                                .bottomCenter,
-                                                            colors: [
-                                                              AppColors.black
-                                                                  .withValues(
-                                                                    alpha: 0.3,
-                                                                  ),
-                                                              AppColors
-                                                                  .transparent,
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        child: Center(
-                                                          child: Icon(
-                                                            Icons
-                                                                .zoom_in_rounded,
-                                                            color:
-                                                                AppColors.white,
-                                                            size: 14,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+                                          // Amount
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.success
+                                                  .withValues(alpha: 0.15),
+                                              borderRadius: AppRadius.sm8,
+                                              border: Border.all(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.25),
+                                                width: 1,
                                               ),
                                             ),
-                                            const SizedBox(width: 6),
-                                          ],
-                                          // Amount & Points in vertical stack
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              // Amount
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.success
-                                                      .withValues(alpha: 0.15),
-                                                  borderRadius: AppRadius.sm8,
-                                                  border: Border.all(
-                                                    color: AppColors.primary
-                                                        .withValues(
-                                                          alpha: 0.25,
-                                                        ),
-                                                    width: 1,
+                                            child: Text(
+                                              '₹${amount.toStringAsFixed(0)}',
+                                              style: AppTypography.labelLarge()
+                                                  .copyWith(
+                                                    fontSize: 13,
+                                                    color: AppColors.success,
+                                                    height: 1,
                                                   ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 3),
+                                          // Points
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 3,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: context.themeContentColor
+                                                  .withValues(alpha: 0.15),
+                                              borderRadius: AppRadius.sm8,
+                                              border: Border.all(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.25),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.stars_rounded,
+                                                  size: 10,
+                                                  color: AppColors.primary,
                                                 ),
-                                                child: Text(
-                                                  '₹${amount.toStringAsFixed(0)}',
+                                                const SizedBox(width: 3),
+                                                Text(
+                                                  '$points',
                                                   style:
                                                       AppTypography.labelLarge()
                                                           .copyWith(
-                                                            fontSize: 13,
+                                                            fontSize: 12,
                                                             color: AppColors
-                                                                .success,
+                                                                .primary,
                                                             height: 1,
                                                           ),
                                                 ),
-                                              ),
-                                              const SizedBox(height: 3),
-                                              // Points
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 3,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: context
-                                                      .themeContentColor
-                                                      .withValues(alpha: 0.15),
-                                                  borderRadius: AppRadius.sm8,
-                                                  border: Border.all(
-                                                    color: AppColors.primary
-                                                        .withValues(
-                                                          alpha: 0.25,
-                                                        ),
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.stars_rounded,
-                                                      size: 10,
-                                                      color: AppColors.primary,
-                                                    ),
-                                                    const SizedBox(width: 3),
-                                                    Text(
-                                                      '$points',
-                                                      style:
-                                                          AppTypography.labelLarge()
-                                                              .copyWith(
-                                                                fontSize: 12,
-                                                                color: AppColors
-                                                                    .primary,
-                                                                height: 1,
-                                                              ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -1484,69 +1395,82 @@ class _BillHistoryListState extends State<BillHistoryList> {
 
                                   const SizedBox(height: 8),
 
-                                  // Date Information - Compact
+                                  // Dates with times; the bill photo sits
+                                  // here (not beside the name) so the name
+                                  // always has room.
                                   Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
-                                      if (billDate != null) ...[
-                                        Icon(
-                                          Icons.receipt_long_rounded,
-                                          size: 12,
-                                          color: context.themeContentColor,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        AppText.caption(
-                                          DateFormat(
-                                            'dd MMM yyyy',
-                                          ).format(billDate.toDate()),
-                                          color: context.themeContentColor,
-                                        ),
-                                        if (approvedAt != null) ...[
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            width: 3,
-                                            height: 3,
+                                      Expanded(child: BillDates(bill: bill)),
+                                      if (imageUrl.isNotEmpty) ...[
+                                        const SizedBox(width: 8),
+                                        GestureDetector(
+                                          onTap: () => _viewBillImage(imageUrl),
+                                          child: Container(
+                                            width: 45,
+                                            height: 45,
                                             decoration: BoxDecoration(
-                                              color: context.themeTextMuted,
-                                              shape: BoxShape.circle,
+                                              borderRadius: AppRadius.sm8,
+                                              border: Border.all(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.3),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius: AppRadius.sm8,
+                                              child: Stack(
+                                                children: [
+                                                  Image.network(
+                                                    imageUrl,
+                                                    fit: BoxFit.cover,
+                                                    width: 45,
+                                                    height: 45,
+                                                    errorBuilder:
+                                                        (
+                                                          _,
+                                                          __,
+                                                          ___,
+                                                        ) => Container(
+                                                          color: context
+                                                              .themeBorder,
+                                                          child: Icon(
+                                                            Icons.broken_image,
+                                                            size: 18,
+                                                            color: context
+                                                                .themeTextSecondary,
+                                                          ),
+                                                        ),
+                                                  ),
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        begin:
+                                                            Alignment.topCenter,
+                                                        end: Alignment
+                                                            .bottomCenter,
+                                                        colors: [
+                                                          AppColors.black
+                                                              .withValues(
+                                                                alpha: 0.3,
+                                                              ),
+                                                          AppColors.transparent,
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons.zoom_in_rounded,
+                                                        color: AppColors.white,
+                                                        size: 14,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                          const SizedBox(width: 8),
-                                        ],
-                                      ],
-                                      if (approvedAt != null) ...[
-                                        Icon(
-                                          status == 'approved'
-                                              ? Icons.check_circle_rounded
-                                              : Icons.cancel_rounded,
-                                          size: 12,
-                                          color: status == 'approved'
-                                              ? AppColors.success
-                                              : context.themeError,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        AppText.caption(
-                                          DateFormat(
-                                            'dd MMM, hh:mm a',
-                                          ).format(approvedAt.toDate()),
-                                          color: status == 'approved'
-                                              ? AppColors.success
-                                              : context.themeError,
-                                        ),
-                                      ],
-                                      if (billDate == null &&
-                                          approvedAt == null &&
-                                          createdAt != null) ...[
-                                        Icon(
-                                          Icons.schedule_rounded,
-                                          size: 12,
-                                          color: context.themeTextSecondary,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        AppText.caption(
-                                          DateFormat(
-                                            'dd MMM yyyy',
-                                          ).format(createdAt.toDate()),
-                                          color: context.themeTextSecondary,
                                         ),
                                       ],
                                     ],

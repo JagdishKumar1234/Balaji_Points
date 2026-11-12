@@ -26,7 +26,6 @@ class HomeTopCarpenters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = context.themeSurface;
     final top3 = homeState.topCarpenters.take(3).toList();
 

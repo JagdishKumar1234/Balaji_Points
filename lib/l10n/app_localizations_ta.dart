@@ -4648,4 +4648,244 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get guestEnquiries => 'விருந்தினர் விசாரணைகள்';
+
+  @override
+  String get navMore => 'மேலும்';
+
+  @override
+  String get billRejectedAt => 'நிராகரிக்கப்பட்டது: ';
+
+  @override
+  String get memberDetailsTitle => 'உறுப்பினர் விவரங்கள்';
+
+  @override
+  String get memberApprovedAmount => 'அங்கீகரிக்கப்பட்ட கொள்முதல்';
+
+  @override
+  String get memberDateRange => 'தேதி வரம்பு';
+
+  @override
+  String get memberHistory => 'வரலாறு';
+
+  @override
+  String get memberCall => 'அழை';
+
+  @override
+  String get billPointsCredited => 'வரவு வைக்கப்பட்ட புள்ளிகள்';
+
+  @override
+  String get billMember => 'உறுப்பினர்';
+
+  @override
+  String get billDetailsSection => 'விவரங்கள்';
+
+  @override
+  String get guestContinue => 'விருந்தினராகத் தொடரவும்';
+
+  @override
+  String get guestHomeTitle => 'பாலாஜி பாயின்ட்ஸுக்கு வரவேற்கிறோம்';
+
+  @override
+  String get guestHomeSubtitle => 'பட்டியல்களைப் பாருங்கள், கிளையைக் கண்டறியுங்கள் அல்லது எங்களுடன் பேசுங்கள்.';
+
+  @override
+  String get guestJoinTitle => 'பாலாஜி பாயின்ட்ஸில் சேருங்கள்';
+
+  @override
+  String get guestJoinBody => 'தச்சர்கள், கட்டடக் கலைஞர்கள், பொறியாளர்கள் மற்றும் உள்ளக வடிவமைப்பாளர்கள் ஒவ்வொரு வாங்குதலிலும் புள்ளிகள் பெற்று பரிசுகளை வெல்கிறார்கள்.';
+
+  @override
+  String get guestRegister => 'இப்போது பதிவு செய்யுங்கள்';
+
+  @override
+  String get guestLogin => 'உள்நுழை';
+
+  @override
+  String get guestCatalogsSub => 'லேமினேட், ப்ளைவுட், கதவுகள் மற்றும் பல';
+
+  @override
+  String get guestBranches => 'எங்கள் கிளைகள்';
+
+  @override
+  String get guestBranchesSub => 'முகவரி, தொலைபேசி மற்றும் வழி';
+
+  @override
+  String get guestService => 'சேவை கோரிக்கை';
+
+  @override
+  String get guestServiceSub => 'கிளையிடம் உதவி கேளுங்கள்';
+
+  @override
+  String get guestCareers => 'வேலைவாய்ப்புகள்';
+
+  @override
+  String get guestCareersSub => 'எங்களுடன் பணியாற்ற விண்ணப்பிக்கவும்';
+
+  @override
+  String get guestContactSub => 'தயாரிப்புகள் அல்லது விலைகள் பற்றிய கேள்விகள்';
+
+  @override
+  String get branchDirections => 'வழி';
+
+  @override
+  String get branchesEmpty => 'இதுவரை கிளைகள் இல்லை';
+
+  @override
+  String get enquiryBranchLabel => 'கிளை';
+
+  @override
+  String get enquiryBranchHint => 'கிளையைத் தேர்ந்தெடுக்கவும்';
+
+  @override
+  String get enquiryBranchRequired => 'ஒரு கிளையைத் தேர்ந்தெடுக்கவும்';
+
+  @override
+  String get enquiryTypeService => 'சேவை கோரிக்கை';
+
+  @override
+  String get enquiryTypeCareer => 'வேலைவாய்ப்பு';
+
+  @override
+  String get careerIntro => 'உங்கள் விவரங்களை அனுப்புங்கள். கிளை உங்களை அழைக்கும்.';
+
+  @override
+  String get careerPosition => 'பதவி';
+
+  @override
+  String get careerPositionHint => 'பதவியை உள்ளிடவும்';
+
+  @override
+  String get careerExperience => 'அனுபவம்';
+
+  @override
+  String get careerExperienceHint => 'அனுபவத்தை உள்ளிடவும்';
+
+  @override
+  String get careerAbout => 'உங்களைப் பற்றி';
+
+  @override
+  String get careerAboutHint => 'உங்கள் வேலையைப் பற்றி சில வரிகள் உள்ளிடவும்';
+
+  @override
+  String get careerSubmit => 'விண்ணப்பத்தை அனுப்பு';
+
+  @override
+  String get careerSentTitle => 'விண்ணப்பம் அனுப்பப்பட்டது';
+
+  @override
+  String get careerPositionRequired => 'பதவியை உள்ளிடவும்';
+
+  @override
+  String get branchMapsLink => 'கூகுள் மேப்ஸ் இணைப்பு';
+
+  @override
+  String get branchMapsLinkHint => 'கூகுள் மேப்ஸ் இணைப்பை உள்ளிடவும்';
+
+  @override
+  String get branchMapsLinkHelp => 'கூகுள் மேப்ஸில் கடையைத் திறந்து, பகிர் என்பதைத் தட்டி, இணைப்பை நகலெடுத்து இங்கே ஒட்டவும்.';
+
+  @override
+  String get branchMapsLinkInvalid => 'https:// என தொடங்கும் இணைப்பை ஒட்டவும்';
+
+  @override
+  String get guestLoginMember => 'உறுப்பினரா? உள்நுழையவும்';
+
+  @override
+  String get guestTabHome => 'முகப்பு';
+
+  @override
+  String get guestTabCatalogs => 'பட்டியல்கள்';
+
+  @override
+  String get guestTabBranches => 'கிளைகள்';
+
+  @override
+  String get guestTabContact => 'தொடர்பு';
+
+  @override
+  String get guestTagline => 'உள்ளக அலங்காரத்திற்கான உங்கள் ஒரே கடை';
+
+  @override
+  String get guestHeroTitle => 'ப்ளைவுட், ஹார்டுவேர் & ஃபிட்டிங்ஸ் — அனைத்தும் ஒரே இடத்தில்';
+
+  @override
+  String get guestHeroBody => 'புதிய பட்டியல்களைப் பாருங்கள், அருகிலுள்ள கிளையைக் கண்டறிந்து நிபுணர் உதவி பெறுங்கள்.';
+
+  @override
+  String get guestExploreCatalogs => 'பட்டியல்களைப் பாருங்கள்';
+
+  @override
+  String get guestWeOffer => 'நாங்கள் வழங்குவது';
+
+  @override
+  String get guestOfferPlywood => 'ப்ளைவுட்';
+
+  @override
+  String get guestOfferLaminates => 'லேமினேட்';
+
+  @override
+  String get guestOfferDoors => 'கதவுகள்';
+
+  @override
+  String get guestOfferHardware => 'ஹார்டுவேர்';
+
+  @override
+  String get guestOfferFittings => 'ஃபிட்டிங்ஸ்';
+
+  @override
+  String get guestOfferService => 'சேவை & ஆதரவு';
+
+  @override
+  String get guestStatBranches => 'கிளைகள்';
+
+  @override
+  String get guestStatCatalogs => 'பட்டியல்கள்';
+
+  @override
+  String get guestStatRoles => 'உறுப்பினர் பங்குகள்';
+
+  @override
+  String get guestQuickLinks => 'விரைவு இணைப்புகள்';
+
+  @override
+  String get guestJoinPoint1 => 'ஒவ்வொரு வாங்குதலிலும் புள்ளிகள் பெறுங்கள்';
+
+  @override
+  String get guestJoinPoint2 => 'பயணங்கள், கேஜெட்கள் மற்றும் பல வெல்லுங்கள்';
+
+  @override
+  String get guestJoinPoint3 => 'தினசரி சுழற்சி மற்றும் கிளை சலுகைகள்';
+
+  @override
+  String get guestGrowTitle => 'பாலாஜி பாயின்ட்ஸுடன் உங்கள் வணிகத்தை வளர்த்திடுங்கள்';
+
+  @override
+  String get guestGrowBody => 'கடை வைத்திருக்கிறீர்களா? உங்கள் கடை அல்லது கிளையை பாலாஜி பாயின்ட்ஸில் பதிவு செய்து வாடிக்கையாளர்களுக்கு வெகுமதி அளியுங்கள்.';
+
+  @override
+  String get guestGrowPoint1 => 'உங்கள் உறுப்பினர்களுக்கான தனிப்பயன் பங்குகள்';
+
+  @override
+  String get guestGrowPoint2 => 'உங்கள் சொந்த புள்ளிகள் மற்றும் வெகுமதி அமைப்பு';
+
+  @override
+  String get guestGrowPoint3 => 'உங்கள் குழுவுக்கு முழு நிர்வாகப் பலகம்';
+
+  @override
+  String get guestGrowCta => 'எங்களுடன் கூட்டுசேருங்கள்';
+
+  @override
+  String get enquiryTypePartner => 'என் கடையைப் பதிவு செய்';
+
+  @override
+  String get guestStatCategories => 'வகைகள்';
+
+  @override
+  String get enquiryBranchOptional => 'கிளை (விருப்பம்)';
+
+  @override
+  String get enquiryBranchAny => 'எந்தக் கிளையும் — பாலாஜி பாயின்ட்ஸ் குழு';
+
+  @override
+  String get guestTabGuest => 'விருந்தினர்';
 }

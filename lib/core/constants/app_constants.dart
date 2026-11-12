@@ -14,9 +14,23 @@ class AppConstants {
   // (Store names like "Sri Balaji Plywood and Hardware" are branches.)
   static const String companyName = 'Balaji Points';
   static const String supportEmail = 'aaijitechstudio@gmail.com';
-  static const String supportPhone = '8947038661';
-  static const String supportPhoneDisplay = '89470 38661';
-  static const String supportPhoneE164 = '+918947038661';
+  // Two support numbers, always shown together, in this order.
+  static const String supportPhone = '9680777735';
+  static const String supportPhoneDisplay = '96807 77735';
+  static const String supportPhoneE164 = '+919680777735';
+  static const String supportPhone2 = '8947038661';
+  static const String supportPhone2Display = '89470 38661';
+  static const String supportPhone2E164 = '+918947038661';
+
+  /// (shown, dialable) for every support number, first number first.
+  static const List<(String, String)> supportPhones = [
+    (supportPhoneDisplay, supportPhoneE164),
+    (supportPhone2Display, supportPhone2E164),
+  ];
+
+  /// Both numbers on one line, for text such as legal pages and PDFs.
+  static const String supportPhonesDisplay =
+      '$supportPhoneDisplay, $supportPhone2Display';
 
   // Validation Limits
   static const int minNameLength = 2;

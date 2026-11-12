@@ -263,16 +263,15 @@ class _BranchDetails extends StatelessWidget {
         _Card(
           title: l10n.appSupport,
           children: [
-            _Row(
-              icon: Icons.phone_android_rounded,
-              label: l10n.mobile,
-              value: AppConstants.supportPhoneDisplay,
-              actionIcon: Icons.call_rounded,
-              actionLabel: l10n.mobile,
-              onTap: () => _open(
-                Uri(scheme: 'tel', path: AppConstants.supportPhoneE164),
+            for (final (shown, dial) in AppConstants.supportPhones)
+              _Row(
+                icon: Icons.phone_android_rounded,
+                label: l10n.mobile,
+                value: shown,
+                actionIcon: Icons.call_rounded,
+                actionLabel: l10n.mobile,
+                onTap: () => _open(Uri(scheme: 'tel', path: dial)),
               ),
-            ),
             _Row(
               icon: Icons.email_outlined,
               label: l10n.email,

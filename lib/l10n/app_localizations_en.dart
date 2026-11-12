@@ -4658,4 +4658,244 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guestEnquiries => 'Guest enquiries';
+
+  @override
+  String get navMore => 'More';
+
+  @override
+  String get billRejectedAt => 'Rejected: ';
+
+  @override
+  String get memberDetailsTitle => 'Member details';
+
+  @override
+  String get memberApprovedAmount => 'Approved purchases';
+
+  @override
+  String get memberDateRange => 'Date range';
+
+  @override
+  String get memberHistory => 'History';
+
+  @override
+  String get memberCall => 'Call';
+
+  @override
+  String get billPointsCredited => 'Points credited';
+
+  @override
+  String get billMember => 'Member';
+
+  @override
+  String get billDetailsSection => 'Details';
+
+  @override
+  String get guestContinue => 'Continue as guest';
+
+  @override
+  String get guestHomeTitle => 'Welcome to Balaji Points';
+
+  @override
+  String get guestHomeSubtitle => 'Browse catalogs, find a branch or talk to us.';
+
+  @override
+  String get guestJoinTitle => 'Join Balaji Points';
+
+  @override
+  String get guestJoinBody => 'Carpenters, architects, engineers and interior designers earn points on every purchase and win rewards.';
+
+  @override
+  String get guestRegister => 'Register now';
+
+  @override
+  String get guestLogin => 'Log in';
+
+  @override
+  String get guestCatalogsSub => 'Laminates, plywood, doors and more';
+
+  @override
+  String get guestBranches => 'Our branches';
+
+  @override
+  String get guestBranchesSub => 'Address, phone and directions';
+
+  @override
+  String get guestService => 'Service request';
+
+  @override
+  String get guestServiceSub => 'Ask a branch for help';
+
+  @override
+  String get guestCareers => 'Careers';
+
+  @override
+  String get guestCareersSub => 'Apply to work with us';
+
+  @override
+  String get guestContactSub => 'Questions about products or prices';
+
+  @override
+  String get branchDirections => 'Directions';
+
+  @override
+  String get branchesEmpty => 'No branches yet';
+
+  @override
+  String get enquiryBranchLabel => 'Branch';
+
+  @override
+  String get enquiryBranchHint => 'Select branch';
+
+  @override
+  String get enquiryBranchRequired => 'Select a branch';
+
+  @override
+  String get enquiryTypeService => 'Service request';
+
+  @override
+  String get enquiryTypeCareer => 'Career';
+
+  @override
+  String get careerIntro => 'Send your details. The branch will call you.';
+
+  @override
+  String get careerPosition => 'Position';
+
+  @override
+  String get careerPositionHint => 'Enter position';
+
+  @override
+  String get careerExperience => 'Experience';
+
+  @override
+  String get careerExperienceHint => 'Enter experience';
+
+  @override
+  String get careerAbout => 'About you';
+
+  @override
+  String get careerAboutHint => 'Enter a few lines about your work';
+
+  @override
+  String get careerSubmit => 'Send application';
+
+  @override
+  String get careerSentTitle => 'Application sent';
+
+  @override
+  String get careerPositionRequired => 'Enter the position';
+
+  @override
+  String get branchMapsLink => 'Google Maps link';
+
+  @override
+  String get branchMapsLinkHint => 'Enter Google Maps link';
+
+  @override
+  String get branchMapsLinkHelp => 'Open the store in Google Maps, tap Share, copy the link and paste it here.';
+
+  @override
+  String get branchMapsLinkInvalid => 'Paste a link that starts with https://';
+
+  @override
+  String get guestLoginMember => 'Member? Log in';
+
+  @override
+  String get guestTabHome => 'Home';
+
+  @override
+  String get guestTabCatalogs => 'Catalogs';
+
+  @override
+  String get guestTabBranches => 'Branches';
+
+  @override
+  String get guestTabContact => 'Contact';
+
+  @override
+  String get guestTagline => 'Your one-stop shop for interiors';
+
+  @override
+  String get guestHeroTitle => 'Plywood, hardware & fittings — all under one roof';
+
+  @override
+  String get guestHeroBody => 'Browse the latest catalogs, find your nearest branch and get expert help.';
+
+  @override
+  String get guestExploreCatalogs => 'Explore catalogs';
+
+  @override
+  String get guestWeOffer => 'Everything we offer';
+
+  @override
+  String get guestOfferPlywood => 'Plywood';
+
+  @override
+  String get guestOfferLaminates => 'Laminates';
+
+  @override
+  String get guestOfferDoors => 'Doors';
+
+  @override
+  String get guestOfferHardware => 'Hardware';
+
+  @override
+  String get guestOfferFittings => 'Fittings';
+
+  @override
+  String get guestOfferService => 'Service & support';
+
+  @override
+  String get guestStatBranches => 'Branches';
+
+  @override
+  String get guestStatCatalogs => 'Catalogs';
+
+  @override
+  String get guestStatRoles => 'Member roles';
+
+  @override
+  String get guestQuickLinks => 'Quick links';
+
+  @override
+  String get guestJoinPoint1 => 'Earn points on every purchase';
+
+  @override
+  String get guestJoinPoint2 => 'Win trips, gadgets and more';
+
+  @override
+  String get guestJoinPoint3 => 'Daily spin and branch offers';
+
+  @override
+  String get guestGrowTitle => 'Grow your business with Balaji Points';
+
+  @override
+  String get guestGrowBody => 'Own a store? Register your store or branch on Balaji Points and reward your customers.';
+
+  @override
+  String get guestGrowPoint1 => 'Customized roles for your members';
+
+  @override
+  String get guestGrowPoint2 => 'Your own points and rewards system';
+
+  @override
+  String get guestGrowPoint3 => 'Full admin panel for your team';
+
+  @override
+  String get guestGrowCta => 'Partner with us';
+
+  @override
+  String get enquiryTypePartner => 'Register my store';
+
+  @override
+  String get guestStatCategories => 'Categories';
+
+  @override
+  String get enquiryBranchOptional => 'Branch (optional)';
+
+  @override
+  String get enquiryBranchAny => 'Any branch — Balaji Points team';
+
+  @override
+  String get guestTabGuest => 'Guest';
 }

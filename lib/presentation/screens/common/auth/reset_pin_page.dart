@@ -398,16 +398,17 @@ class _ResetPINPageState extends ConsumerState<ResetPINPage> {
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                _supportPhoneRow(
-                                  label: AppConstants.supportPhoneDisplay,
-                                  color: AppColors.success,
-                                  icon: Icons.phone_android_rounded,
-                                  actionIcon: Icons.call_rounded,
-                                  onTap: () => _makePhoneCall(
-                                    AppConstants.supportPhoneE164,
+                                for (final (shown, dial)
+                                    in AppConstants.supportPhones) ...[
+                                  _supportPhoneRow(
+                                    label: shown,
+                                    color: AppColors.success,
+                                    icon: Icons.phone_android_rounded,
+                                    actionIcon: Icons.call_rounded,
+                                    onTap: () => _makePhoneCall(dial),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
+                                  const SizedBox(height: 8),
+                                ],
                                 _supportPhoneRow(
                                   label: AppConstants.supportEmail,
                                   color: context.themePrimary,

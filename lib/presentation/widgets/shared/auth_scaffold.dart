@@ -61,12 +61,17 @@ class AuthScaffold extends StatelessWidget {
     this.fallbackRoute = '/login',
     this.onBack,
     this.showBackButton = true,
+    this.topAction,
   });
 
   final Widget child;
   final String fallbackRoute;
   final VoidCallback? onBack;
   final bool showBackButton;
+
+  /// Optional button pinned to the top right (e.g. "Guest" on login), so it
+  /// is visible without scrolling.
+  final Widget? topAction;
 
   void _goBack(BuildContext context) {
     if (onBack != null) {
@@ -117,6 +122,12 @@ class AuthScaffold extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (topAction != null)
+                    Positioned(
+                      top: AppSpacing.sm,
+                      right: AppSpacing.sm,
+                      child: topAction!,
+                    ),
                   if (showBackButton)
                     Positioned(
                       top: AppSpacing.sm,

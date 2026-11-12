@@ -77,7 +77,6 @@ class _ExportUsersBeforeCleanupScreenState
         double totalEarnedPoints = 0;
         for (var billDoc in billsSnapshot.docs) {
           final billData = billDoc.data();
-          final amount = (billData['amount'] as num?)?.toDouble() ?? 0.0;
           final status = billData['status'] as String? ?? '';
 
           if (status == 'approved') {

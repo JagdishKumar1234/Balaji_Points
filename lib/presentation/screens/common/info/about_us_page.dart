@@ -156,8 +156,6 @@ class _AboutDeveloperCredits extends StatelessWidget {
   final AppLocalizations l10n;
 
   static const String _email = AppConstants.supportEmail;
-  static const String _phoneDisplay = AppConstants.supportPhoneDisplay;
-  static const String _phoneTel = AppConstants.supportPhoneE164;
 
   Future<void> _tryLaunch(BuildContext context, Uri uri) async {
     try {
@@ -251,38 +249,39 @@ class _AboutDeveloperCredits extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        InkWell(
-          onTap: () => _tryLaunch(context, Uri(scheme: 'tel', path: _phoneTel)),
-          borderRadius: AppRadius.sm8,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.phone_outlined,
-                  size: 20,
-                  color: context.themePrimary,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.phoneNumber, style: captionStyle),
-                      Text(
-                        _phoneDisplay,
-                        style: linkStyle.copyWith(
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ],
+        for (final (shown, dial) in AppConstants.supportPhones)
+          InkWell(
+            onTap: () => _tryLaunch(context, Uri(scheme: 'tel', path: dial)),
+            borderRadius: AppRadius.sm8,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.phone_outlined,
+                    size: 20,
+                    color: context.themePrimary,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l10n.phoneNumber, style: captionStyle),
+                        Text(
+                          shown,
+                          style: linkStyle.copyWith(
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }

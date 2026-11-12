@@ -19,17 +19,27 @@ import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
 import 'package:balaji_points/services/branch/branch_support_service.dart';
 import 'package:balaji_points/services/platform/enquiry_service.dart';
+import 'package:balaji_points/presentation/widgets/shared/branch_picker.dart';
+import 'package:balaji_points/services/branch/public_branches.dart';
 
 /// Contact Us on one screen, no scrolling needed to send:
 /// * Logged-in member: a strip with their branch's phone and email (tap to
 ///   call / mail), a topic, and a message. Name, phone, branch and role go
 ///   with it automatically, so it lands with that branch's admin.
-/// * Guest: Balaji Points support strip, topic, name + mobile, message.
-///   The enquiry has no branch or role and goes to the super admin.
+/// * Guest: Balaji Points support strip, topic, branch, name + mobile,
+///   message.
+///   The guest may pick a branch (its admin gets the enquiry); without one
+///   it goes to the super admin.
 /// The message box takes the space that is left; with the keyboard open
 /// the page scrolls instead.
 class ContactUsPage extends ConsumerStatefulWidget {
-  const ContactUsPage({super.key});
+  const ContactUsPage({super.key, this.initialType, this.inTab = false});
+
+  /// Shown as a tab (guest mode): no back arrow.
+  final bool inTab;
+
+  /// Topic chosen on arrival (e.g. Service request from the guest home).
+  final EnquiryType? initialType;
 
   @override
   ConsumerState<ContactUsPage> createState() => _ContactUsPageState();
@@ -40,7 +50,10 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
   final _name = TextEditingController();
   final _phone = TextEditingController();
   final _message = TextEditingController();
-  EnquiryType? _type;
+  late EnquiryType? _type = widget.initialType;
+
+  /// Guests choose which branch gets the enquiry.
+  PublicBranch? _branch;
   bool _sending = false;
   bool _sent = false;
 
@@ -89,6 +102,12 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
             phone: _tenDigits(_phone.text),
             message: _message.text,
             appVersion: version,
+            guestBranchId: sender.isMember || !(_type?.needsBranch ?? true)
+                ? null
+                : _branch?.id,
+            guestBranchName: sender.isMember || !(_type?.needsBranch ?? true)
+                ? ''
+                : (_branch?.label ?? ''),
           );
       if (mounted) setState(() => _sent = true);
     } on EnquiryTooSoon catch (e) {
@@ -127,7 +146,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
             title: l10n.contactUs,
             showLogo: false,
             showProfileButton: false,
-            showBackButton: true,
+            showBackButton: !widget.inTab,
             onBackTap: () => context.canPop() ? context.pop() : context.go('/'),
           ),
           Expanded(
@@ -165,6 +184,10 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                                     child: _sent
                                         ? _Sent(
                                             sender: sender,
+                                            guestBranch:
+                                                (_type?.needsBranch ?? true)
+                                                ? _branch?.label ?? ''
+                                                : '',
                                             onAnother: () => setState(() {
                                               _sent = false;
                                               _type = null;
@@ -209,42 +232,43 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
             builder: (field) => Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // One row of topics; swipe for more on narrow phones.
-                SizedBox(
-                  height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: types.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (_, i) {
-                      final t = types[i];
-                      final on = _type == t;
-                      return ChoiceChip(
-                        label: Text(enquiryTypeLabel(l10n, t)),
-                        selected: on,
-                        showCheckmark: false,
-                        visualDensity: VisualDensity.compact,
-                        selectedColor: context.themePrimary,
-                        backgroundColor: context.themeCard,
-                        side: BorderSide(
-                          color: on
-                              ? context.themePrimary
-                              : field.hasError
-                              ? context.themeError
-                              : context.themeBorder,
-                        ),
-                        labelStyle: AppTypography.labelMedium(
-                          color: on
-                              ? context.themeOnPrimary
-                              : context.themeTextPrimary,
-                        ),
-                        onSelected: (_) {
-                          setState(() => _type = t);
-                          field.didChange(t);
+                // All topics visible (wraps to a second line), so none
+                // hides off the edge of a small phone.
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    for (final t in types)
+                      Builder(
+                        builder: (_) {
+                          final on = _type == t;
+                          return ChoiceChip(
+                            label: Text(enquiryTypeLabel(l10n, t)),
+                            selected: on,
+                            showCheckmark: false,
+                            visualDensity: VisualDensity.compact,
+                            selectedColor: context.themePrimary,
+                            backgroundColor: context.themeCard,
+                            side: BorderSide(
+                              color: on
+                                  ? context.themePrimary
+                                  : field.hasError
+                                  ? context.themeError
+                                  : context.themeBorder,
+                            ),
+                            labelStyle: AppTypography.labelMedium(
+                              color: on
+                                  ? context.themeOnPrimary
+                                  : context.themeTextPrimary,
+                            ),
+                            onSelected: (_) {
+                              setState(() => _type = t);
+                              field.didChange(t);
+                            },
+                          );
                         },
-                      );
-                    },
-                  ),
+                      ),
+                  ],
                 ),
                 if (field.hasError)
                   Padding(
@@ -258,6 +282,17 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
             ),
           ),
           const SizedBox(height: 12),
+          // A store partnership goes to the super admin: no branch needed.
+          if (!sender.isMember && (_type?.needsBranch ?? true)) ...[
+            // Optional: a picked branch's admin gets it; otherwise the
+            // Balaji Points team (super admin) does.
+            BranchPicker(
+              value: _branch,
+              required: false,
+              onChanged: (b) => setState(() => _branch = b),
+            ),
+            const SizedBox(height: 12),
+          ],
           if (sender.isMember && !askName) ...[
             Text(
               l10n.contactSendingAs(
@@ -415,6 +450,9 @@ String enquiryTypeLabel(AppLocalizations l10n, EnquiryType t) => switch (t) {
   EnquiryType.pointsBills => l10n.enquiryTypePointsBills,
   EnquiryType.appHelp => l10n.enquiryTypeAppHelp,
   EnquiryType.membership => l10n.enquiryTypeMembership,
+  EnquiryType.service => l10n.enquiryTypeService,
+  EnquiryType.career => l10n.enquiryTypeCareer,
+  EnquiryType.partner => l10n.enquiryTypePartner,
   EnquiryType.other => l10n.enquiryTypeOther,
 };
 
@@ -444,8 +482,7 @@ class _BranchStrip extends ConsumerWidget {
     return _ContactStrip(
       caption: l10n.contactYourBranch,
       name: s.branch.name,
-      phone: phone,
-      dial: phone.isEmpty ? null : BranchSupport.dialable(phone),
+      phones: [if (phone.isNotEmpty) (phone, BranchSupport.dialable(phone))],
       email: s.adminEmail,
     );
   }
@@ -458,8 +495,7 @@ class _SupportStrip extends StatelessWidget {
   Widget build(BuildContext context) => _ContactStrip(
     caption: AppLocalizations.of(context)!.appSupport,
     name: AppConstants.companyName,
-    phone: AppConstants.supportPhoneDisplay,
-    dial: AppConstants.supportPhoneE164,
+    phones: AppConstants.supportPhones,
     email: AppConstants.supportEmail,
   );
 }
@@ -468,115 +504,124 @@ class _ContactStrip extends StatelessWidget {
   const _ContactStrip({
     required this.caption,
     required this.name,
-    required this.phone,
-    required this.dial,
+    required this.phones,
     required this.email,
   });
 
   final String caption;
   final String name;
-  final String phone;
-  final String? dial;
+
+  /// (shown, dialable); support has two numbers, a branch usually one.
+  final List<(String, String)> phones;
   final String email;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: AppRadius.forCard,
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.storefront_rounded, color: AppColors.gold),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$caption · $name',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.labelLarge(color: AppColors.white),
-                ),
-                if (phone.isNotEmpty)
-                  Text(
-                    phone,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.caption(
-                      color: AppColors.white.withValues(alpha: 0.85),
-                    ),
-                  ),
-                if (email.isNotEmpty)
-                  Text(
-                    email,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.caption(
-                      color: AppColors.white.withValues(alpha: 0.85),
-                    ),
-                  ),
-              ],
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+    decoration: BoxDecoration(
+      color: AppColors.primary,
+      borderRadius: AppRadius.forCard,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Title on its own full-width line, so it is never cut.
+        Row(
+          children: [
+            const Icon(Icons.storefront_rounded, color: AppColors.gold),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '$caption · $name',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelLarge(color: AppColors.white),
+              ),
             ),
-          ),
-          if (dial != null)
-            _RoundAction(
-              icon: Icons.call_rounded,
-              tooltip: l10n.enquiryCall,
-              uri: Uri(scheme: 'tel', path: dial),
-            ),
-          if (email.isNotEmpty)
-            _RoundAction(
-              icon: Icons.email_outlined,
-              tooltip: l10n.email,
-              uri: Uri(scheme: 'mailto', path: email),
-            ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+        const SizedBox(height: 10),
+        // Every number and the email is its own tap target; they wrap to
+        // the next line instead of being cut off.
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final (shown, dial) in phones)
+              _ContactPill(
+                icon: Icons.call_rounded,
+                label: shown,
+                uri: Uri(scheme: 'tel', path: dial),
+              ),
+            if (email.isNotEmpty)
+              _ContactPill(
+                icon: Icons.email_outlined,
+                label: email,
+                uri: Uri(scheme: 'mailto', path: email),
+              ),
+          ],
+        ),
+      ],
+    ),
+  );
 }
 
-class _RoundAction extends StatelessWidget {
-  const _RoundAction({
+class _ContactPill extends StatelessWidget {
+  const _ContactPill({
     required this.icon,
-    required this.tooltip,
+    required this.label,
     required this.uri,
   });
 
   final IconData icon;
-  final String tooltip;
+  final String label;
   final Uri uri;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(left: 6),
-    child: IconButton.filled(
-      tooltip: tooltip,
-      onPressed: () => launchUrl(uri),
-      style: IconButton.styleFrom(
-        backgroundColor: AppColors.gold,
-        foregroundColor: AppColors.primary,
+  Widget build(BuildContext context) => Material(
+    color: AppColors.white.withValues(alpha: 0.12),
+    borderRadius: AppRadius.pill,
+    child: InkWell(
+      borderRadius: AppRadius.pill,
+      onTap: () => launchUrl(uri),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: AppColors.gold),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                style: AppTypography.labelMedium(color: AppColors.white),
+              ),
+            ),
+          ],
+        ),
       ),
-      icon: Icon(icon, size: 20),
     ),
   );
 }
 
 class _Sent extends StatelessWidget {
-  const _Sent({required this.sender, required this.onAnother});
+  const _Sent({
+    required this.sender,
+    required this.onAnother,
+    this.guestBranch = '',
+  });
   final EnquirySender sender;
   final VoidCallback onAnother;
+
+  /// The branch a guest picked (members use their own).
+  final String guestBranch;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final body = sender.isMember && sender.branchName.isNotEmpty
-        ? l10n.enquirySentBranch(sender.branchName)
+    final branchName = sender.isMember ? sender.branchName : guestBranch;
+    final body = branchName.isNotEmpty
+        ? l10n.enquirySentBranch(branchName)
         : l10n.enquirySentTeam;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

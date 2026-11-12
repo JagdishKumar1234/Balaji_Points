@@ -4,15 +4,23 @@ import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/legal/legal_documents.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The company is "Balaji Points" and support is one email and phone,
-/// everywhere. Store names such as "Sri Balaji Plywood and Hardware" are
+/// The company is "Balaji Points" and support is one email and two phone
+/// numbers (96807 77735 first, then 89470 38661), everywhere. Store names such as "Sri Balaji Plywood and Hardware" are
 /// branches, not the company.
 void main() {
   test('one company name and support contact', () {
     expect(AppConstants.companyName, 'Balaji Points');
     expect(AppConstants.supportEmail, 'aaijitechstudio@gmail.com');
-    expect(AppConstants.supportPhone, '8947038661');
-    expect(AppConstants.supportPhoneE164, '+918947038661');
+    expect(AppConstants.supportPhone, '9680777735');
+    expect(AppConstants.supportPhoneE164, '+919680777735');
+    expect(AppConstants.supportPhone2, '8947038661');
+    expect(AppConstants.supportPhone2E164, '+918947038661');
+    expect(AppConstants.supportPhones.map((p) => p.$2).toList(), [
+      '+919680777735',
+      '+918947038661',
+    ]);
+    // Legal pages list both numbers, first number first.
+    expect(LegalDocuments.supportPhone, '+91 96807 77735, +91 89470 38661');
     expect(LegalDocuments.company, AppConstants.companyName);
     expect(LegalDocuments.supportEmail, AppConstants.supportEmail);
   });

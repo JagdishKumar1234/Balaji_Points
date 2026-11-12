@@ -1,10 +1,17 @@
-import 'package:balaji_points/services/auth/role_service.dart';
+import 'dart:async';
+
 import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
+import 'package:balaji_points/presentation/screens/admin/bill_details_page.dart';
+import 'package:balaji_points/presentation/widgets/admin/bill_dates.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
+import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
+import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
+import 'package:balaji_points/services/auth/role_service.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -15,7 +22,15 @@ import 'package:balaji_points/services/auth/pin_auth_service.dart';
 import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+/// Admin view of one member (any of the 4 roles): profile, live points and
+/// bill counts, pending bills to approve or reject, and the full history.
+///
+/// Every number comes from Firestore (nothing typed in): the member's
+/// `users` record, `user_points` (the source of truth for points and tier,
+/// updated with each approval) and their `bills`. The three streams are
+/// opened once, so changing a filter never reloads the data.
 class CarpenterProfileDetailScreen extends StatefulWidget {
   final String carpenterId;
 
@@ -28,10 +43,29 @@ class CarpenterProfileDetailScreen extends StatefulWidget {
 
 class _CarpenterProfileDetailScreenState
     extends State<CarpenterProfileDetailScreen> {
-  DateTime? _historyStartDate;
-  DateTime? _historyEndDate;
+  late final Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream;
+  late final Stream<DocumentSnapshot<Map<String, dynamic>>> _pointsStream;
+  late final Stream<QuerySnapshot<Map<String, dynamic>>> _billsStream;
+
+  /// 'all', 'approved', 'pending' or 'rejected'.
   String _statusFilter = 'all';
   String? _siteFilter;
+  DateTimeRange? _range;
+
+  @override
+  void initState() {
+    super.initState();
+    final db = appFirestore;
+    _userStream = db.collection('users').doc(widget.carpenterId).snapshots();
+    _pointsStream = db
+        .collection('user_points')
+        .doc(widget.carpenterId)
+        .snapshots();
+    _billsStream = db
+        .collection('bills')
+        .where('carpenterId', isEqualTo: widget.carpenterId)
+        .snapshots();
+  }
 
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
@@ -261,713 +295,408 @@ class _CarpenterProfileDetailScreenState
     });
   }
 
-  Future<void> _selectHistoryDate(
-    BuildContext context,
-    bool isStartDate,
-  ) async {
-    final picked = await showDatePicker(
+  Future<void> _pickRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
       context: context,
-      initialDate: isStartDate
-          ? (_historyStartDate ?? DateTime.now())
-          : (_historyEndDate ?? DateTime.now()),
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: AppColors.primary,
-              onPrimary: AppColors.white,
-              surface: context.themeSurface,
-              onSurface: context.themeTextPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      lastDate: now,
+      initialDateRange: _range,
     );
-
-    if (picked != null) {
-      setState(() {
-        if (isStartDate) {
-          _historyStartDate = picked;
-        } else {
-          _historyEndDate = picked;
-        }
-      });
-    }
+    if (picked != null) setState(() => _range = picked);
   }
+
+  void _clearFilters() => setState(() {
+    _statusFilter = 'all';
+    _siteFilter = null;
+    _range = null;
+  });
+
+  bool get _hasFilters =>
+      _statusFilter != 'all' || _siteFilter != null || _range != null;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.carpenterId)
-          .snapshots(),
+    final l10n = AppLocalizations.of(context)!;
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: _userStream,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(color: context.themePrimary),
-          );
-        }
-
-        if (!snapshot.hasData || !snapshot.data!.exists) {
+        final userData = snapshot.data?.data();
+        if (userData == null) {
+          final loading =
+              snapshot.connectionState == ConnectionState.waiting &&
+              !snapshot.hasError;
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: AppColors.white,
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_rounded,
-                  color: AppColors.textPrimary,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              title: AppText.title(
-                AppLocalizations.of(context)!.carpenterDetails,
-              ),
-            ),
+            backgroundColor: context.themeBackground,
+            appBar: AppBar(title: Text(l10n.memberDetailsTitle)),
             body: Center(
-              child: AppText.body(
-                AppLocalizations.of(context)!.carpenterNotFound,
-              ),
+              child: loading
+                  ? CircularProgressIndicator(color: context.themePrimary)
+                  : AppText.body(l10n.carpenterNotFound),
             ),
           );
         }
 
-        final userData = snapshot.data!.data() as Map<String, dynamic>;
-        final firstName = userData['firstName'] ?? '';
-        final lastName = userData['lastName'] ?? '';
-        final phone = userData['phone'] ?? '';
-        final totalPoints = (userData['totalPoints'] ?? 0) as num;
-        final tier = userData['tier'] ?? 'Bronze';
-        final profileImage = userData['profileImage'] ?? '';
-        final branchId = userData['branchId'] ?? '';
-        final createdAt = userData['createdAt'] as Timestamp?;
-        final carpenterName = '$firstName $lastName';
+        final phone = (userData['phone'] ?? '') as String;
+        final name =
+            '${(userData['firstName'] ?? '').toString().trim()} '
+                    '${(userData['lastName'] ?? '').toString().trim()}'
+                .trim();
 
         return Scaffold(
           backgroundColor: context.themeBackground,
           appBar: AppBar(
-            backgroundColor: AppColors.white,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_rounded,
-                color: AppColors.textPrimary,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            title: AppText.title(
-              AppLocalizations.of(context)!.carpenterDetails,
-            ),
+            title: Text(l10n.memberDetailsTitle),
             centerTitle: false,
-            actions: context.isDesktop
-                ? [
-                    // Desktop: Show as button group
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          OutlinedButton.icon(
-                            icon: Icon(
-                              Icons.lock_reset_rounded,
-                              color: context.themePrimary,
-                            ),
-                            label: Text(AppLocalizations.of(context)!.resetPin),
-                            onPressed: () => _resetPinDialog(
-                              context,
-                              widget.carpenterId,
-                              phone,
-                              carpenterName,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          OutlinedButton.icon(
-                            icon: Icon(
-                              Icons.edit_rounded,
-                              color: context.themePrimary,
-                            ),
-                            label: Text(AppLocalizations.of(context)!.edit),
-                            onPressed: () => _showEditDialog(
-                              context,
-                              widget.carpenterId,
-                              userData,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ]
-                : [
-                    // Mobile: Show as icons
-                    IconButton(
-                      icon: Icon(
-                        Icons.lock_reset_rounded,
-                        color: context.themePrimary,
-                      ),
-                      onPressed: () => _resetPinDialog(
-                        context,
-                        widget.carpenterId,
-                        phone,
-                        carpenterName,
-                      ),
-                      tooltip: AppLocalizations.of(context)!.resetPin,
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.edit_rounded,
-                        color: context.themePrimary,
-                      ),
-                      onPressed: () => _showEditDialog(
-                        context,
-                        widget.carpenterId,
-                        userData,
-                      ),
-                      tooltip: AppLocalizations.of(context)!.edit,
-                    ),
-                  ],
-          ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Carpenter Profile Card
-                AppCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      ClipOval(
-                        child: profileImage.isNotEmpty
-                            ? Image.network(
-                                profileImage,
-                                width: 56,
-                                height: 56,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) {
-                                  return Container(
-                                    width: 56,
-                                    height: 56,
-                                    color: context.themeBackground,
-                                    child: Icon(
-                                      Icons.person_rounded,
-                                      size: 28,
-                                      color: context.themeTextSecondary,
-                                    ),
-                                  );
-                                },
-                              )
-                            : Container(
-                                width: 56,
-                                height: 56,
-                                color: context.themeBackground,
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  size: 28,
-                                  color: context.themeTextSecondary,
-                                ),
-                              ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AppText.section(
-                              '$firstName $lastName',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 3),
-                            Row(
-                              children: [
-                                const Icon(Icons.phone_rounded, size: 12),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: AppText.caption(
-                                    phone,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.success,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: AppText.caption(
-                                AppLocalizations.of(context)!.active,
-                                color: AppColors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+            actions: [
+              if (context.isDesktop) ...[
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.lock_reset_rounded),
+                  label: Text(l10n.resetPin),
+                  onPressed: () =>
+                      _resetPinDialog(context, widget.carpenterId, phone, name),
                 ),
-                const SizedBox(height: 12),
-                // Statistics Card - 3 Column Layout
-                AppCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      // Total Points Header
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: context.themeContentColor.withValues(
-                                alpha: 0.1,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.star_rounded,
-                              size: 18,
-                              color: context.themeContentColor,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AppText.section(
-                                  PointsUtils.formatPoints(totalPoints),
-                                ),
-                                const SizedBox(height: 1),
-                                AppText.caption(
-                                  AppLocalizations.of(
-                                    context,
-                                  )!.totalPointsLabel,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getTierColor(tier),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: AppText.caption(
-                              tier,
-                              color: AppColors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      // 3 Column Stats
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatColumn(
-                              context,
-                              Icons.check_circle_rounded,
-                              '32',
-                              AppLocalizations.of(context)!.approvedLabel,
-                              AppColors.success,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildStatColumn(
-                              context,
-                              Icons.schedule_rounded,
-                              '5',
-                              AppLocalizations.of(context)!.pendingStatus,
-                              AppColors.warning,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildStatColumn(
-                              context,
-                              Icons.cancel_rounded,
-                              '2',
-                              AppLocalizations.of(context)!.rejectedLabel,
-                              AppColors.error,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                const SizedBox(width: 8),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.edit_rounded),
+                  label: Text(l10n.edit),
+                  onPressed: () =>
+                      _showEditDialog(context, widget.carpenterId, userData),
                 ),
-                const SizedBox(height: 12),
-
-                // Carpenter Information
-                FutureBuilder<Map<String, dynamic>?>(
-                  future: BranchService().getBranch(branchId),
-                  builder: (context, branchSnapshot) {
-                    final branchName =
-                        branchSnapshot.data?['shortName'] ??
-                        branchSnapshot.data?['name'] ??
-                        (branchId.isNotEmpty ? branchId : '-');
-
-                    return AppCard(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.person_rounded,
-                                size: 16,
-                                color: context.themeContentColor,
-                              ),
-                              const SizedBox(width: 5),
-                              AppText.section(
-                                AppLocalizations.of(
-                                  context,
-                                )!.carpenterInformation,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.phone_rounded,
-                                          size: 11,
-                                        ),
-                                        const SizedBox(width: 3),
-                                        AppText.caption(
-                                          AppLocalizations.of(context)!.phone,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 1),
-                                    AppText.caption(
-                                      phone,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.calendar_today_rounded,
-                                          size: 11,
-                                        ),
-                                        const SizedBox(width: 3),
-                                        AppText.caption(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.memberSince,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 1),
-                                    AppText.caption(
-                                      createdAt != null
-                                          ? DateFormat(
-                                              'dd MMM',
-                                            ).format(createdAt.toDate())
-                                          : '-',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.business_rounded,
-                                          size: 11,
-                                        ),
-                                        const SizedBox(width: 3),
-                                        AppText.caption(
-                                          AppLocalizations.of(context)!.branch,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 1),
-                                    AppText.caption(
-                                      branchName,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star_rounded,
-                                          size: 11,
-                                        ),
-                                        const SizedBox(width: 3),
-                                        AppText.caption(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.totalPointsLabel,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 1),
-                                    AppText.caption(
-                                      PointsUtils.formatPoints(totalPoints),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                const SizedBox(width: 12),
+              ] else ...[
+                IconButton(
+                  icon: const Icon(Icons.lock_reset_rounded),
+                  tooltip: l10n.resetPin,
+                  onPressed: () =>
+                      _resetPinDialog(context, widget.carpenterId, phone, name),
                 ),
-                const SizedBox(height: 10),
-
-                // Pending Bill Requests Section
-                _buildPendingBillsSection(context, widget.carpenterId),
-
-                const SizedBox(height: 16),
-
-                // Complete History Header
-                Text(
-                  AppLocalizations.of(context)!.completeHistory,
-                  style: AppTypography.labelLarge().copyWith(fontSize: 18),
+                IconButton(
+                  icon: const Icon(Icons.edit_rounded),
+                  tooltip: l10n.edit,
+                  onPressed: () =>
+                      _showEditDialog(context, widget.carpenterId, userData),
                 ),
-                const SizedBox(height: 12),
-
-                // Filters Section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.tune_rounded,
-                          size: 18,
-                          color: context.themeContentColor,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          AppLocalizations.of(context)!.filters,
-                          style: AppTypography.labelMedium().copyWith(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _statusFilter = 'all';
-                          _siteFilter = null;
-                          _historyStartDate = null;
-                          _historyEndDate = null;
-                        });
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.refresh_rounded,
-                            size: 16,
-                            color: context.themePrimary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            AppLocalizations.of(context)!.clearAll,
-                            style: AppTypography.labelSmall().copyWith(
-                              fontSize: 12,
-                              color: context.themePrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-
-                // Site Filter Dropdown
-                _buildSiteFilterDropdown(context, widget.carpenterId),
-                const SizedBox(height: 10),
-
-                // Date Range Filters
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => _selectHistoryDate(context, true),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.themeSoftSurface,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: _historyStartDate != null
-                                  ? context.themePrimary
-                                  : context.themeBorder,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: 14,
-                                color: context.themeTextSecondary,
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  _historyStartDate != null
-                                      ? DateFormat(
-                                          'dd MMM',
-                                        ).format(_historyStartDate!)
-                                      : AppLocalizations.of(context)!.fromDate,
-                                  style: AppTypography.bodySmall().copyWith(
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => _selectHistoryDate(context, false),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.themeSoftSurface,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: _historyEndDate != null
-                                  ? context.themePrimary
-                                  : context.themeBorder,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: 14,
-                                color: context.themeTextSecondary,
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  _historyEndDate != null
-                                      ? DateFormat(
-                                          'dd MMM',
-                                        ).format(_historyEndDate!)
-                                      : AppLocalizations.of(context)!.toDate,
-                                  style: AppTypography.bodySmall().copyWith(
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                // Status Filter Pills
-                Row(
-                  children: [
-                    _buildFilterPill(
-                      context,
-                      AppLocalizations.of(context)!.all,
-                      'all',
-                      AppColors.primaryOnDark,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterPill(
-                      context,
-                      AppLocalizations.of(context)!.approvedLabel,
-                      'approved',
-                      AppColors.success,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterPill(
-                      context,
-                      AppLocalizations.of(context)!.pendingStatus,
-                      'pending',
-                      AppColors.warning,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterPill(
-                      context,
-                      AppLocalizations.of(context)!.rejectedLabel,
-                      'rejected',
-                      AppColors.error,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                // History Items
-                _buildHistoryList(context, widget.carpenterId),
-
-                const SizedBox(height: 20),
               ],
-            ),
+            ],
+          ),
+          body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            stream: _pointsStream,
+            builder: (context, pointsSnap) {
+              final points = pointsSnap.data?.data();
+              return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: _billsStream,
+                builder: (context, billsSnap) {
+                  final bills =
+                      billsSnap.data?.docs
+                          .map((d) => {...d.data(), 'billId': d.id})
+                          .toList() ??
+                      const <Map<String, dynamic>>[];
+                  return _body(
+                    context,
+                    userData: userData,
+                    name: name,
+                    phone: phone,
+                    points: points,
+                    bills: bills,
+                    billsLoaded: billsSnap.hasData,
+                  );
+                },
+              );
+            },
           ),
         );
       },
     );
+  }
+
+  Widget _body(
+    BuildContext context, {
+    required Map<String, dynamic> userData,
+    required String name,
+    required String phone,
+    required Map<String, dynamic>? points,
+    required List<Map<String, dynamic>> bills,
+    required bool billsLoaded,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    final total =
+        (points?['totalPoints'] as num?) ??
+        (userData['totalPoints'] as num?) ??
+        0;
+    final tier =
+        (points?['tier'] as String?) ??
+        (userData['tier'] as String?) ??
+        'Bronze';
+
+    final counts = <String, int>{'approved': 0, 'pending': 0, 'rejected': 0};
+    var approvedAmount = 0.0;
+    for (final b in bills) {
+      final s = (b['status'] as String? ?? 'pending').toLowerCase();
+      counts[s] = (counts[s] ?? 0) + 1;
+      if (s == 'approved') {
+        approvedAmount += (b['amount'] as num?)?.toDouble() ?? 0;
+      }
+    }
+
+    final pending =
+        bills.where((b) => (b['status'] ?? 'pending') == 'pending').toList()
+          ..sort(_newestFirst);
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        24 + MediaQuery.paddingOf(context).bottom,
+      ),
+      child: ResponsiveContainer(
+        maxWidth: 820,
+        padding: EdgeInsets.zero,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _ProfileCard(userData: userData, name: name, phone: phone),
+            const SizedBox(height: 12),
+            _PointsCard(
+              totalPoints: total,
+              tier: tier,
+              tierColor: _getTierColor(tier),
+              approvedAmount: approvedAmount,
+              counts: counts,
+              loaded: billsLoaded,
+              selected: _statusFilter,
+              onSelect: (s) => setState(
+                () => _statusFilter = _statusFilter == s ? 'all' : s,
+              ),
+            ),
+            if (pending.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              _SectionTitle(
+                icon: Icons.schedule_rounded,
+                color: AppColors.warning,
+                title: l10n.pendingBillRequests,
+                count: pending.length,
+              ),
+              const SizedBox(height: 10),
+              for (final b in pending)
+                _BillCard(
+                  bill: b,
+                  onApprove: () => _approvePendingBill(b),
+                  onReject: () => _rejectPendingBill(b['billId'] as String),
+                ),
+            ],
+            const SizedBox(height: 20),
+            _SectionTitle(
+              icon: Icons.history_rounded,
+              color: context.themePrimary,
+              title: l10n.memberHistory,
+            ),
+            const SizedBox(height: 10),
+            _filters(context, bills, counts),
+            const SizedBox(height: 12),
+            ..._history(context, bills, points, billsLoaded),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static int _newestFirst(Map<String, dynamic> a, Map<String, dynamic> b) {
+    DateTime d(Map<String, dynamic> m) =>
+        ((m['createdAt'] ?? m['billDate'] ?? m['date']) as Timestamp?)
+            ?.toDate() ??
+        DateTime(1970);
+    return d(b).compareTo(d(a));
+  }
+
+  Widget _filters(
+    BuildContext context,
+    List<Map<String, dynamic>> bills,
+    Map<String, int> counts,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final sites =
+        bills
+            .map((b) => (b['siteName'] as String? ?? '').trim())
+            .where((s) => s.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+    final fmt = DateFormat('dd MMM yy');
+    Widget chip(String id, String label, int? n, Color color) {
+      final on = _statusFilter == id;
+      return ChoiceChip(
+        label: Text(n == null ? label : '$label  $n'),
+        selected: on,
+        showCheckmark: false,
+        visualDensity: VisualDensity.compact,
+        selectedColor: color,
+        backgroundColor: context.themeCard,
+        side: BorderSide(color: on ? color : context.themeBorder),
+        labelStyle: AppTypography.labelMedium(
+          color: on ? AppColors.white : context.themeTextPrimary,
+        ),
+        onSelected: (_) => setState(() => _statusFilter = id),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            chip('all', l10n.all, bills.length, context.themePrimary),
+            chip(
+              'approved',
+              l10n.approvedLabel,
+              counts['approved'],
+              AppColors.success,
+            ),
+            chip(
+              'pending',
+              l10n.pendingStatus,
+              counts['pending'],
+              AppColors.warning,
+            ),
+            chip(
+              'rejected',
+              l10n.rejectedLabel,
+              counts['rejected'],
+              context.themeError,
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            if (sites.isNotEmpty) ...[
+              Expanded(
+                child: DropdownButtonFormField<String?>(
+                  initialValue: sites.contains(_siteFilter)
+                      ? _siteFilter
+                      : null,
+                  isExpanded: true,
+                  isDense: true,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    prefixIcon: const Icon(Icons.location_on_rounded, size: 18),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                    border: OutlineInputBorder(borderRadius: AppRadius.md12),
+                  ),
+                  items: [
+                    DropdownMenuItem(value: null, child: Text(l10n.allSites)),
+                    for (final s in sites)
+                      DropdownMenuItem(
+                        value: s,
+                        child: Text(s, overflow: TextOverflow.ellipsis),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() => _siteFilter = v),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.date_range_rounded, size: 18),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+                ),
+                label: Text(
+                  _range == null
+                      ? l10n.memberDateRange
+                      : '${fmt.format(_range!.start)} – '
+                            '${fmt.format(_range!.end)}',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onPressed: _pickRange,
+              ),
+            ),
+            if (_hasFilters)
+              IconButton(
+                tooltip: l10n.clearAll,
+                icon: const Icon(Icons.filter_alt_off_rounded),
+                onPressed: _clearFilters,
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// Bills (after the filters) plus other point entries such as daily spin
+  /// rewards. Bill approvals are not repeated: they are the bills.
+  List<Widget> _history(
+    BuildContext context,
+    List<Map<String, dynamic>> bills,
+    Map<String, dynamic>? points,
+    bool loaded,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    if (!loaded) {
+      return [
+        Padding(
+          padding: const EdgeInsets.all(24),
+          child: Center(
+            child: CircularProgressIndicator(color: context.themePrimary),
+          ),
+        ),
+      ];
+    }
+
+    bool inRange(Timestamp? t) {
+      if (_range == null) return true;
+      if (t == null) return false;
+      final d = t.toDate();
+      return !d.isBefore(_range!.start) &&
+          d.isBefore(_range!.end.add(const Duration(days: 1)));
+    }
+
+    final entries = <Map<String, dynamic>>[
+      for (final b in bills)
+        if ((_statusFilter == 'all' ||
+                (b['status'] ?? 'pending') == _statusFilter) &&
+            (_siteFilter == null || b['siteName'] == _siteFilter) &&
+            inRange((b['createdAt'] ?? b['billDate']) as Timestamp?))
+          {...b, '_kind': 'bill'},
+      // Other point entries only when not filtering by bill status or site.
+      if (_statusFilter == 'all' && _siteFilter == null)
+        for (final raw in (points?['pointsHistory'] as List?) ?? const [])
+          if (raw is Map &&
+              raw['billId'] == null &&
+              inRange(raw['date'] as Timestamp?))
+            {...Map<String, dynamic>.from(raw), '_kind': 'points'},
+    ]..sort(_newestFirst);
+
+    if (entries.isEmpty) {
+      return [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 28),
+          child: Center(
+            child: Text(
+              l10n.noHistoryFound,
+              style: AppTypography.bodyMedium(
+                color: context.themeTextSecondary,
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+    return [
+      for (final e in entries)
+        e['_kind'] == 'bill' ? _BillCard(bill: e) : _PointsEntryCard(entry: e),
+    ];
   }
 
   Future<void> _showEditDialog(
@@ -1127,437 +856,6 @@ class _CarpenterProfileDetailScreenState
       phoneController.dispose();
       branchIdController.dispose();
     });
-  }
-
-  Widget _buildStatColumn(
-    BuildContext context,
-    IconData icon,
-    String count,
-    String label,
-    Color color,
-  ) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, size: 20, color: color),
-        ),
-        const SizedBox(height: 6),
-        AppText.section(count, color: color),
-        const SizedBox(height: 2),
-        AppText.caption(label),
-      ],
-    );
-  }
-
-  Widget _buildFilterPill(
-    BuildContext context,
-    String label,
-    String value,
-    Color color,
-  ) {
-    final isSelected = value == 'all' || _statusFilter == value;
-    final selectedForeground =
-        ThemeData.estimateBrightnessForColor(color) == Brightness.dark
-        ? AppColors.white
-        : AppColors.navigation;
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _statusFilter = value;
-        });
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? color : context.themeSoftSurface,
-        foregroundColor: isSelected
-            ? selectedForeground
-            : context.themeTextPrimary,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: !isSelected
-              ? BorderSide(color: context.themeBorder)
-              : BorderSide.none,
-        ),
-      ),
-      child: Text(
-        label,
-        style: AppTypography.labelSmall().copyWith(fontSize: 12),
-      ),
-    );
-  }
-
-  Widget _buildSiteFilterDropdown(BuildContext context, String carpenterId) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', isEqualTo: carpenterId)
-          .snapshots(),
-      builder: (context, snapshot) {
-        final sites = <String>[];
-
-        if (snapshot.hasData) {
-          for (var doc in snapshot.data!.docs) {
-            try {
-              final data = doc.data() as Map<String, dynamic>?;
-              if (data != null) {
-                final site = (data['siteName'] as String?) ?? '';
-                if (site.isNotEmpty && !sites.contains(site)) {
-                  sites.add(site);
-                }
-              }
-            } catch (e) {
-              // Silently ignore documents without siteName
-            }
-          }
-        }
-
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: context.themeSoftSurface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: context.themeBorder),
-          ),
-          child: DropdownButton<String?>(
-            value: _siteFilter,
-            underline: const SizedBox(),
-            isExpanded: true,
-            items: [
-              DropdownMenuItem(
-                value: null,
-                child: Text(
-                  AppLocalizations.of(context)!.allSites,
-                  style: AppTypography.bodySmall().copyWith(fontSize: 12),
-                ),
-              ),
-              ...sites.map(
-                (site) => DropdownMenuItem(
-                  value: site,
-                  child: Text(
-                    site,
-                    style: AppTypography.bodySmall().copyWith(fontSize: 12),
-                  ),
-                ),
-              ),
-            ],
-            onChanged: (value) {
-              setState(() {
-                _siteFilter = value;
-              });
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildPendingBillsSection(BuildContext context, String carpenterId) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .where('carpenterId', isEqualTo: carpenterId)
-          .where('status', isEqualTo: 'pending')
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(color: context.themePrimary),
-          );
-        }
-
-        final bills = snapshot.data?.docs ?? [];
-
-        if (bills.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.schedule_rounded,
-                  size: 20,
-                  color: AppColors.warning,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  AppLocalizations.of(context)!.pendingBillRequests,
-                  style: AppTypography.labelLarge().copyWith(
-                    fontSize: 16,
-                    color: AppColors.warning,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.warning.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${bills.length}',
-                    style: AppTypography.labelSmall().copyWith(
-                      color: AppColors.warning,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: bills.length,
-              itemBuilder: (context, index) {
-                final billData = bills[index].data() as Map<String, dynamic>;
-                billData['billId'] = bills[index].id;
-                return _buildPendingBillCard(context, billData);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildPendingBillCard(
-    BuildContext context,
-    Map<String, dynamic> bill,
-  ) {
-    final imageUrl = bill['imageUrl'] as String? ?? '';
-    final billNumber = bill['billNumber'] ?? 'N/A';
-    final siteName = bill['siteName'] ?? '-';
-    final amount = bill['amount'] ?? 0;
-    final billDate = bill['billDate'] as Timestamp?;
-    final billId = bill['billId'] as String?;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: context.themeSurface,
-        borderRadius: AppRadius.md12,
-        border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                if (imageUrl.isNotEmpty)
-                  GestureDetector(
-                    onTap: () => showFullScreenImage(context, imageUrl),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Image.network(
-                        imageUrl,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: 60,
-                          height: 60,
-                          color: context.themeBackground,
-                          child: Icon(
-                            Icons.receipt_rounded,
-                            size: 24,
-                            color: context.themeTextSecondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: context.themeBackground,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Icon(
-                      Icons.receipt_rounded,
-                      size: 24,
-                      color: context.themeTextSecondary,
-                    ),
-                  ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(
-                            0xFFFFA500,
-                          ).withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: Text(
-                          'PENDING',
-                          style: AppTypography.labelSmall().copyWith(
-                            fontSize: 12,
-                            color: AppColors.warning,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        AppLocalizations.of(context)!.siteMaterialPurchase,
-                        style: AppTypography.labelMedium().copyWith(
-                          fontSize: 12,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        AppLocalizations.of(context)!.billNo2('$billNumber'),
-                        style: AppTypography.bodySmall().copyWith(
-                          fontSize: 12,
-                          color: context.themeTextSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        AppLocalizations.of(context)!.site3('$siteName'),
-                        style: AppTypography.bodySmall().copyWith(
-                          fontSize: 12,
-                          color: context.themeTextSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        billDate != null
-                            ? DateFormat(
-                                'dd MMM yyyy • hh:mm a',
-                              ).format(billDate.toDate())
-                            : '-',
-                        style: AppTypography.bodySmall().copyWith(
-                          fontSize: 12,
-                          color: context.themeTextSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.warning.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.pendingStatus,
-                        style: AppTypography.labelSmall().copyWith(
-                          fontSize: 12,
-                          color: AppColors.warning,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '₹${amount.toStringAsFixed(0)}',
-                          style: AppTypography.labelMedium().copyWith(
-                            fontSize: 13,
-                            color: context.themeTextPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          AppLocalizations.of(
-                            context,
-                          )!.pts7(PointsRate.forBill(bill).toStringAsFixed(2)),
-                          style: AppTypography.bodySmall().copyWith(
-                            fontSize: 12,
-                            color: context.themeTextSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _rejectPendingBill(billId ?? ''),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.error.withValues(alpha: 0.1),
-                      foregroundColor: AppColors.error,
-                      side: BorderSide(
-                        color: AppColors.error.withValues(alpha: 0.3),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    icon: const Icon(Icons.close_rounded, size: 16),
-                    label: Text(
-                      AppLocalizations.of(context)!.reject,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _approvePendingBill(bill),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.success,
-                      foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    icon: const Icon(Icons.check_rounded, size: 16),
-                    label: Text(
-                      AppLocalizations.of(context)!.approve,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Future<void> _approvePendingBill(Map<String, dynamic> bill) async {
@@ -1738,430 +1036,655 @@ class _CarpenterProfileDetailScreenState
           Center(child: CircularProgressIndicator(color: context.themePrimary)),
     );
   }
+}
 
-  Widget _buildHistoryList(BuildContext context, String carpenterId) {
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: _getCombinedHistoryStream(carpenterId),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(color: context.themePrimary),
-          );
-        }
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({
+    required this.icon,
+    required this.color,
+    required this.title,
+    this.count,
+  });
 
-        final events = snapshot.data ?? [];
-        if (events.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(
-                AppLocalizations.of(context)!.noHistoryFound,
-                style: AppTypography.bodyMedium().copyWith(
-                  color: context.themeTextSecondary,
-                ),
-              ),
-            ),
-          );
-        }
+  final IconData icon;
+  final Color color;
+  final String title;
+  final int? count;
 
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            final event = events[index];
-            if (event['type'] == 'bill') {
-              return _buildBillItem(context, event);
-            } else {
-              return _buildPointsItem(context, event);
-            }
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildBillItem(BuildContext context, Map<String, dynamic> bill) {
-    final imageUrl = bill['imageUrl'] as String? ?? '';
-    final billNumber = bill['billNumber'] ?? 'N/A';
-    final siteName = bill['siteName'] ?? '-';
-    final amount = bill['amount'] ?? 0;
-    final status = bill['status'] ?? 'pending';
-    final billDate = bill['billDate'] as Timestamp?;
-
-    final statusColor = status == 'approved'
-        ? AppColors.success
-        : status == 'rejected'
-        ? AppColors.error
-        : AppColors.warning;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: context.themeSoftSurface,
-        borderRadius: AppRadius.md12,
-        border: Border.all(color: context.themeBorder),
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Icon(icon, size: 20, color: color),
+      const SizedBox(width: 8),
+      Flexible(
+        child: Text(
+          title,
+          style: AppTypography.h5(color: context.themeTextPrimary),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            if (imageUrl.isNotEmpty)
-              GestureDetector(
-                onTap: () => showFullScreenImage(context, imageUrl),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Image.network(
-                    imageUrl,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 60,
-                      height: 60,
-                      color: context.themeBackground,
-                      child: Icon(
-                        Icons.receipt_rounded,
-                        size: 24,
-                        color: context.themeTextSecondary,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            else
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: context.themeBackground,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(
-                  Icons.receipt_rounded,
-                  size: 24,
-                  color: context.themeTextSecondary,
+      if (count != null) ...[
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: AppRadius.pill,
+          ),
+          child: Text('$count', style: AppTypography.labelSmall(color: color)),
+        ),
+      ],
+    ],
+  );
+}
+
+/// Photo, full name, role, tier and status, then phone (tap to call),
+/// branch and member-since date.
+class _ProfileCard extends StatelessWidget {
+  const _ProfileCard({
+    required this.userData,
+    required this.name,
+    required this.phone,
+  });
+
+  final Map<String, dynamic> userData;
+  final String name;
+  final String phone;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final image = (userData['profileImage'] ?? '') as String;
+    final branchId = (userData['branchId'] ?? '') as String;
+    final createdAt = userData['createdAt'] as Timestamp?;
+    final active = userData['active'] != false;
+    final avatarFallback = Icon(
+      Icons.person_rounded,
+      size: 32,
+      color: context.themeTextSecondary,
+    );
+
+    return AppCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: context.themePrimary.withValues(alpha: 0.08),
+                child: ClipOval(
+                  child: image.isEmpty
+                      ? avatarFallback
+                      : Image.network(
+                          image,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => avatarFallback,
+                        ),
                 ),
               ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.themeContentColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    child: Text(
-                      'BILL',
-                      style: AppTypography.labelSmall().copyWith(
-                        fontSize: 12,
-                        color: context.themeContentColor,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    AppLocalizations.of(context)!.siteMaterialPurchase,
-                    style: AppTypography.labelMedium().copyWith(fontSize: 12),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    AppLocalizations.of(context)!.billNo2('$billNumber'),
-                    style: AppTypography.bodySmall().copyWith(
-                      fontSize: 12,
-                      color: context.themeTextSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    AppLocalizations.of(context)!.site3('$siteName'),
-                    style: AppTypography.bodySmall().copyWith(
-                      fontSize: 12,
-                      color: context.themeTextSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    billDate != null
-                        ? DateFormat(
-                            'dd MMM yyyy • hh:mm a',
-                          ).format(billDate.toDate())
-                        : '-',
-                    style: AppTypography.bodySmall().copyWith(
-                      fontSize: 12,
-                      color: context.themeTextSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    status[0].toUpperCase() + status.substring(1),
-                    style: AppTypography.labelSmall().copyWith(
-                      fontSize: 12,
-                      color: statusColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '₹${amount.toStringAsFixed(0)}',
-                      style: AppTypography.labelMedium().copyWith(
-                        fontSize: 13,
-                        color: context.themeTextPrimary,
+                      name.isEmpty ? '—' : name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.h5(color: context.themeTextPrimary),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        RoleTag(
+                          roleId: userData['role'] as String?,
+                          storedName: userData['roleName'] as String?,
+                        ),
+                        StatusChip(
+                          status: active ? 'active' : 'inactive',
+                          compact: true,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Divider(height: 1, color: context.themeBorder),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _InfoTile(
+                  icon: Icons.phone_rounded,
+                  label: l10n.phone,
+                  value: phone.isEmpty ? '—' : phone,
+                  onTap: phone.isEmpty
+                      ? null
+                      : () => launchUrl(Uri(scheme: 'tel', path: phone)),
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder<Map<String, dynamic>?>(
+                  future: branchId.isEmpty
+                      ? Future.value(null)
+                      : BranchService().getBranch(branchId),
+                  builder: (context, snap) => _InfoTile(
+                    icon: Icons.storefront_rounded,
+                    label: l10n.branch,
+                    value:
+                        (snap.data?['shortName'] ??
+                                snap.data?['name'] ??
+                                (branchId.isEmpty ? '—' : branchId))
+                            .toString(),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: _InfoTile(
+                  icon: Icons.calendar_today_rounded,
+                  label: l10n.memberSince,
+                  value: createdAt == null
+                      ? '—'
+                      : DateFormat('dd MMM yyyy').format(createdAt.toDate()),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: AppRadius.md12,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 13, color: context.themeTextSecondary),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption(
+                    color: context.themeTextSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.labelMedium(
+              color: onTap == null
+                  ? context.themeTextPrimary
+                  : context.themePrimary,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Points and tier, approved purchase total, and live bill counts. Tapping
+/// a count filters the history to that status (tap again to clear).
+class _PointsCard extends StatelessWidget {
+  const _PointsCard({
+    required this.totalPoints,
+    required this.tier,
+    required this.tierColor,
+    required this.approvedAmount,
+    required this.counts,
+    required this.loaded,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  final num totalPoints;
+  final String tier;
+  final Color tierColor;
+  final double approvedAmount;
+  final Map<String, int> counts;
+  final bool loaded;
+  final String selected;
+  final ValueChanged<String> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final money = NumberFormat.decimalPattern('en_IN');
+    return AppCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.totalPointsLabel,
+                      style: AppTypography.caption(
+                        color: context.themeTextSecondary,
                       ),
                     ),
-                    const SizedBox(height: 2),
                     Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.pts7(PointsRate.forBill(bill).toStringAsFixed(2)),
-                      style: AppTypography.bodySmall().copyWith(
-                        fontSize: 12,
-                        color: context.themeTextSecondary,
+                      PointsUtils.formatPoints(totalPoints),
+                      style: AppTypography.h3(color: context.themePrimary),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: tierColor.withValues(alpha: 0.15),
+                  borderRadius: AppRadius.pill,
+                  border: Border.all(color: tierColor.withValues(alpha: 0.5)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.workspace_premium_rounded,
+                      size: 16,
+                      color: tierColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      tier,
+                      style: AppTypography.labelMedium(
+                        color: context.themeTextPrimary,
                       ),
                     ),
                   ],
                 ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${l10n.memberApprovedAmount}: ₹${money.format(approvedAmount.round())}',
+            style: AppTypography.caption(color: context.themeTextSecondary),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              for (final s in [
+                (
+                  'approved',
+                  l10n.approvedLabel,
+                  Icons.check_circle_rounded,
+                  AppColors.success,
+                ),
+                (
+                  'pending',
+                  l10n.pendingStatus,
+                  Icons.schedule_rounded,
+                  AppColors.warning,
+                ),
+                (
+                  'rejected',
+                  l10n.rejectedLabel,
+                  Icons.cancel_rounded,
+                  context.themeError,
+                ),
+              ]) ...[
+                if (s.$1 != 'approved') const SizedBox(width: 8),
+                Expanded(
+                  child: _CountTile(
+                    label: s.$2,
+                    icon: s.$3,
+                    color: s.$4,
+                    count: loaded ? counts[s.$1] ?? 0 : null,
+                    selected: selected == s.$1,
+                    onTap: () => onSelect(s.$1),
+                  ),
+                ),
               ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CountTile extends StatelessWidget {
+  const _CountTile({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.count,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color color;
+  final int? count;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: color.withValues(alpha: selected ? 0.18 : 0.08),
+    borderRadius: AppRadius.md12,
+    child: InkWell(
+      borderRadius: AppRadius.md12,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.md12,
+          border: Border.all(
+            color: selected ? color : color.withValues(alpha: 0.2),
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 18, color: color),
+            const SizedBox(height: 4),
+            Text(
+              count?.toString() ?? '–',
+              style: AppTypography.h5(color: color),
             ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: context.themeTextSecondary,
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.caption(color: context.themeTextSecondary),
             ),
           ],
         ),
       ),
+    ),
+  );
+}
+
+/// One bill: photo (tap to zoom), amount, site and bill number, status and
+/// points, then all dates with times. Tap opens the bill details. Pending
+/// bills get Approve / Reject buttons.
+class _BillCard extends StatelessWidget {
+  const _BillCard({required this.bill, this.onApprove, this.onReject});
+
+  final Map<String, dynamic> bill;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final image = bill['imageUrl'] as String? ?? '';
+    final site = (bill['siteName'] as String? ?? '').trim();
+    final number = (bill['billNumber'] ?? '').toString().trim();
+    final amount = (bill['amount'] as num?) ?? 0;
+    final status = (bill['status'] as String? ?? 'pending').toLowerCase();
+    final pointsValue = PointsRate.forBill(bill);
+    final money = NumberFormat.decimalPattern('en_IN');
+    final thumbFallback = Icon(
+      Icons.receipt_long_rounded,
+      color: context.themeTextSecondary,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: context.themeCard,
+        borderRadius: AppRadius.md12,
+        child: InkWell(
+          borderRadius: AppRadius.md12,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BillDetailsPage(
+                billId: bill['billId'] as String,
+                initialBillData: bill,
+              ),
+            ),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: AppRadius.md12,
+              border: Border.all(
+                color: status == 'pending'
+                    ? AppColors.warning.withValues(alpha: 0.4)
+                    : context.themeBorder,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: image.isEmpty
+                          ? null
+                          : () => showFullScreenImage(context, image),
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: context.themeSoftSurface,
+                          borderRadius: AppRadius.sm8,
+                          border: Border.all(color: context.themeBorder),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: image.isEmpty
+                            ? thumbFallback
+                            : Image.network(
+                                image,
+                                fit: BoxFit.cover,
+                                cacheWidth: 168,
+                                errorBuilder: (_, __, ___) => thumbFallback,
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '₹${money.format(amount.round())}',
+                            style: AppTypography.h5(
+                              color: context.themeTextPrimary,
+                            ),
+                          ),
+                          if (site.isNotEmpty)
+                            Text(
+                              l10n.site3(site),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.bodySmall(
+                                color: context.themeTextSecondary,
+                              ),
+                            ),
+                          if (number.isNotEmpty && number != 'N/A')
+                            Text(
+                              l10n.billNo2(number),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.bodySmall(
+                                color: context.themeTextSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        StatusChip(
+                          status: status,
+                          compact: true,
+                          showIcon: true,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          l10n.pts7(pointsValue.toStringAsFixed(2)),
+                          style: AppTypography.labelMedium(
+                            color: context.themePrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                BillDates(bill: bill),
+                if (onApprove != null && onReject != null) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: onReject,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: context.themeError,
+                            side: BorderSide(
+                              color: context.themeError.withValues(alpha: 0.5),
+                            ),
+                          ),
+                          icon: const Icon(Icons.close_rounded, size: 18),
+                          label: Text(l10n.reject),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: onApprove,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.success,
+                            foregroundColor: AppColors.white,
+                          ),
+                          icon: const Icon(Icons.check_rounded, size: 18),
+                          label: Text(l10n.approve),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
+}
 
-  Widget _buildPointsItem(BuildContext context, Map<String, dynamic> points) {
-    final pointsValue = points['points'] ?? 0;
-    final reason =
-        points['reason'] ?? AppLocalizations.of(context)!.pointsAwarded;
-    final timestamp = points['timestamp'] as Timestamp?;
+/// A points entry that is not a bill (e.g. daily spin reward).
+class _PointsEntryCard extends StatelessWidget {
+  const _PointsEntryCard({required this.entry});
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: context.themeSoftSurface,
-        borderRadius: AppRadius.md12,
-        border: Border.all(color: context.themeBorder),
-      ),
-      child: Padding(
+  final Map<String, dynamic> entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final value = (entry['points'] as num?) ?? 0;
+    final raw = (entry['reason'] as String? ?? '').trim();
+    final reason = raw.toLowerCase() == 'daily spin'
+        ? l10n.dailySpin
+        : (raw.isEmpty ? l10n.pointsAwarded : raw);
+    final date = (entry['date'] as Timestamp?)?.toDate();
+    final positive = value >= 0;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Container(
         padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: context.themeCard,
+          borderRadius: AppRadius.md12,
+          border: Border.all(color: context.themeBorder),
+        ),
         child: Row(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: context.themeContentColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(6),
+                color: context.themeGoldSoft,
+                shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.star_outlined,
-                size: 24,
-                color: context.themeContentColor,
-              ),
+              child: Icon(Icons.stars_rounded, color: context.themePrimary),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.themeContentColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    child: Text(
-                      'POINTS',
-                      style: AppTypography.labelSmall().copyWith(
-                        fontSize: 12,
-                        color: context.themeContentColor,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
                   Text(
                     reason,
-                    style: AppTypography.labelMedium().copyWith(fontSize: 12),
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    timestamp != null
-                        ? DateFormat(
-                            'dd MMM yyyy • hh:mm a',
-                          ).format(timestamp.toDate())
-                        : '-',
-                    style: AppTypography.bodySmall().copyWith(
-                      fontSize: 12,
-                      color: context.themeTextSecondary,
+                    style: AppTypography.labelLarge(
+                      color: context.themeTextPrimary,
                     ),
                   ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.approvedLabel,
-                    style: AppTypography.labelSmall().copyWith(
-                      fontSize: 12,
-                      color: AppColors.success,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
+                  if (date != null)
                     Text(
-                      '+${pointsValue.toStringAsFixed(2)}',
-                      style: AppTypography.labelMedium().copyWith(
-                        fontSize: 13,
-                        color: context.themeTextPrimary,
-                      ),
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.pointsLabel,
-                      style: AppTypography.bodySmall().copyWith(
-                        fontSize: 12,
+                      DateFormat('dd MMM yyyy, hh:mm a').format(date),
+                      style: AppTypography.caption(
                         color: context.themeTextSecondary,
                       ),
                     ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: context.themeTextSecondary,
+            Text(
+              '${positive ? '+' : ''}${value.toStringAsFixed(2)}',
+              style: AppTypography.h5(
+                color: positive ? AppColors.success : context.themeError,
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Stream<List<Map<String, dynamic>>> _getCombinedHistoryStream(
-    String carpenterId,
-  ) {
-    return FirebaseFirestore.instance
-        .collection('bills')
-        .where('carpenterId', isEqualTo: carpenterId)
-        .snapshots()
-        .asyncMap((billSnapshot) async {
-          final bills = billSnapshot.docs.map((doc) {
-            final data = doc.data();
-            return {...data, 'type': 'bill'};
-          }).toList();
-
-          final pointsSnapshot = await FirebaseFirestore.instance
-              .collection('points_history')
-              .where('userId', isEqualTo: carpenterId)
-              .get();
-
-          final points = pointsSnapshot.docs.map((doc) {
-            final data = doc.data();
-            return {...data, 'type': 'points'};
-          }).toList();
-
-          final combined = [...bills, ...points];
-          combined.sort((a, b) {
-            final dateA = (a['timestamp'] ?? a['billDate']) as Timestamp?;
-            final dateB = (b['timestamp'] ?? b['billDate']) as Timestamp?;
-
-            if (dateA == null || dateB == null) return 0;
-            return dateB.compareTo(dateA);
-          });
-
-          // Apply filters
-          return combined.where((event) {
-            // Site filter (only applies to bills)
-            if (_siteFilter != null && event['type'] == 'bill') {
-              final siteName = event['siteName'] as String? ?? '';
-              if (siteName != _siteFilter) {
-                return false;
-              }
-            }
-
-            final status = event['status'] as String? ?? 'pending';
-
-            // Status filter pills
-            if (_statusFilter == 'all') {
-              // All pills selected is same as "All" button
-            } else if (_statusFilter == 'approved' && status != 'approved') {
-              return false;
-            } else if (_statusFilter == 'pending' && status != 'pending') {
-              return false;
-            } else if (_statusFilter == 'rejected' && status != 'rejected') {
-              return false;
-            }
-
-            // Date range filter
-            final timestamp = event['timestamp'] ?? event['billDate'];
-            if (timestamp != null) {
-              final date = timestamp is Timestamp
-                  ? timestamp.toDate()
-                  : (timestamp as DateTime);
-              if (_historyStartDate != null &&
-                  date.isBefore(_historyStartDate!)) {
-                return false;
-              }
-              if (_historyEndDate != null &&
-                  date.isAfter(_historyEndDate!.add(const Duration(days: 1)))) {
-                return false;
-              }
-            }
-
-            return true;
-          }).toList();
-        });
   }
 }

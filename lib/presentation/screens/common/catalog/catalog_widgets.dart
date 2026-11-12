@@ -23,6 +23,7 @@ class CatalogNavBar extends StatelessWidget {
     this.subtitle,
     this.fallback = '/',
     this.actions,
+    this.showBack = true,
   });
 
   final String title;
@@ -30,13 +31,17 @@ class CatalogNavBar extends StatelessWidget {
   final String fallback;
   final List<Widget>? actions;
 
+  /// False inside a tab bar (guest mode), where there is nothing to go
+  /// back to.
+  final bool showBack;
+
   @override
   Widget build(BuildContext context) => HomeNavBar(
     title: title,
     subtitle: subtitle,
     showLogo: false,
     showProfileButton: false,
-    showBackButton: true,
+    showBackButton: showBack,
     onBackTap: () => context.canPop() ? context.pop() : context.go(fallback),
     actions: actions,
   );

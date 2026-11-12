@@ -4,6 +4,8 @@ import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
+import 'package:balaji_points/presentation/widgets/admin/bill_dates.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_table_card.dart';
@@ -655,9 +657,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
       final status = bill['status'] ?? 'pending';
       final billDate = bill['billDate'] as Timestamp?;
       final createdAt = bill['createdAt'] as Timestamp?;
-      final displayDate = billDate?.toDate() ?? createdAt?.toDate();
+      // Submitted date and time (the bill's own date when there is no
+      // submit time recorded).
+      final displayDate = createdAt?.toDate() ?? billDate?.toDate();
       final dateStr = displayDate != null
-          ? DateFormat('dd MMM yyyy').format(displayDate)
+          ? DateFormat('dd MMM yyyy, hh:mm a').format(displayDate)
           : 'N/A';
       final carpenterId = bill['carpenterId'] ?? '';
 
@@ -1115,9 +1119,6 @@ class _PendingBillsListState extends State<PendingBillsList> {
                       final amount = bill['amount'] ?? 0;
                       final phone = bill['carpenterPhone'] ?? "";
                       final imageUrl = bill['imageUrl'] ?? "";
-                      final createdAt = bill['createdAt'] as Timestamp?;
-                      final billDate = bill['billDate'] as Timestamp?;
-                      final approvedAt = bill['approvedAt'] as Timestamp?;
 
                       return FutureBuilder<Map<String, dynamic>?>(
                         future: _fetchCarpenterData(carpenterId),
@@ -1127,6 +1128,8 @@ class _PendingBillsListState extends State<PendingBillsList> {
                             context,
                           )!.carpenter;
                           String? profileImageUrl;
+                          String? roleId;
+                          String? roleName;
 
                           if (carpenterSnapshot.hasData &&
                               carpenterSnapshot.data != null) {
@@ -1141,6 +1144,8 @@ class _PendingBillsListState extends State<PendingBillsList> {
                             }
                             profileImageUrl =
                                 carpenterData['profileImage'] as String?;
+                            roleId = carpenterData['role'] as String?;
+                            roleName = carpenterData['roleName'] as String?;
                           }
 
                           // Apply carpenter name and phone filter
@@ -1271,20 +1276,36 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                               color: context
                                                                   .themePrimary,
                                                             ),
-                                                    maxLines: 1,
+                                                    maxLines: 2,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                   ),
-                                                  if (phone.isNotEmpty)
-                                                    Text(
-                                                      phone,
-                                                      style: AppTypography.bodyMedium()
-                                                          .copyWith(
-                                                            fontSize: 12,
-                                                            color: context
-                                                                .themeTextSecondary,
-                                                          ),
-                                                    ),
+                                                  const SizedBox(height: 2),
+                                                  // Phone + role; wraps on
+                                                  // narrow phones.
+                                                  Wrap(
+                                                    spacing: 6,
+                                                    runSpacing: 3,
+                                                    crossAxisAlignment:
+                                                        WrapCrossAlignment
+                                                            .center,
+                                                    children: [
+                                                      if (phone.isNotEmpty)
+                                                        Text(
+                                                          phone,
+                                                          style: AppTypography.bodyMedium()
+                                                              .copyWith(
+                                                                fontSize: 12,
+                                                                color: context
+                                                                    .themeTextSecondary,
+                                                              ),
+                                                        ),
+                                                      RoleTag(
+                                                        roleId: roleId,
+                                                        storedName: roleName,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -1764,96 +1785,11 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
                                       const SizedBox(height: 6),
 
-                                      // ------------ DATE ROW -------------
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Bill Date
-                                          if (billDate != null)
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.receipt_long_rounded,
-                                                  size: 14,
-                                                  color:
-                                                      context.themeContentColor,
-                                                ),
-                                                const SizedBox(width: 6),
-                                                AppText.caption(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!.billDate3,
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                                AppText.labelSmall(
-                                                  DateFormat(
-                                                    'dd MMM yyyy',
-                                                  ).format(billDate.toDate()),
-                                                  color:
-                                                      context.themeContentColor,
-                                                ),
-                                              ],
-                                            ),
-                                          // Approved Date (if available)
-                                          if (approvedAt != null) ...[
-                                            if (billDate != null)
-                                              const SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.check_circle_rounded,
-                                                  size: 14,
-                                                  color: AppColors.success,
-                                                ),
-                                                const SizedBox(width: 6),
-                                                AppText.caption(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!.approved2,
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                                AppText.labelSmall(
-                                                  DateFormat(
-                                                    'dd MMM yyyy, hh:mm a',
-                                                  ).format(approvedAt.toDate()),
-                                                  color: AppColors.success,
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                          // Submitted Date (if bill date not available, show createdAt)
-                                          if (billDate == null &&
-                                              createdAt != null)
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.schedule_rounded,
-                                                  size: 14,
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                                const SizedBox(width: 6),
-                                                AppText.caption(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!.submitted2,
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                                AppText.caption(
-                                                  DateFormat(
-                                                    'dd MMM yyyy, hh:mm a',
-                                                  ).format(createdAt.toDate()),
-                                                  color: context
-                                                      .themeTextSecondary,
-                                                ),
-                                              ],
-                                            ),
-                                        ],
-                                      ),
+                                      // ------------ DATES -------------
+                                      // Bill date, submitted and decided,
+                                      // each with its time; wraps on small
+                                      // phones instead of cutting off.
+                                      BillDates(bill: bill),
 
                                       // ------------ BILL IMAGE (if expanded) -------------
                                       if (isExpanded &&

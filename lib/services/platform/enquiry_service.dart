@@ -66,10 +66,16 @@ class EnquiryService {
 
   /// Members get their details pre-filled; anyone else is a guest.
   Future<EnquirySender> currentSender() async {
-    final role = (await _session.getUserRole())?.trim().toLowerCase();
+    final saved = (await _session.getUserRole())?.trim().toLowerCase() ?? '';
+    // Every logged-in account except admins is a member of its own branch:
+    // the 4 built-in roles, custom roles from the super admin, and older
+    // accounts with no role saved (they count as carpenters).
+    final role = saved.isEmpty ? AppConstants.roleCarpenter : saved;
     final branchId = (await _session.getBranchId())?.trim();
     final userId = (await _session.getUserId())?.trim();
-    if (!AppConstants.isMemberRole(role) ||
+    final isAdmin =
+        role == AppConstants.roleAdmin || role == AppConstants.roleSuperAdmin;
+    if (isAdmin ||
         branchId == null ||
         branchId.isEmpty ||
         userId == null ||
@@ -101,6 +107,10 @@ class EnquiryService {
     required String message,
     String city = '',
     String appVersion = '',
+    String? guestBranchId,
+    String guestBranchName = '',
+    String position = '',
+    String experience = '',
     DateTime? now,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -127,8 +137,19 @@ class EnquiryService {
       data['branchId'] = sender.branchId;
       data['role'] = sender.role;
       if (sender.branchName.isNotEmpty) data['branchName'] = sender.branchName;
-    } else if (city.trim().isNotEmpty) {
-      data['city'] = city.trim();
+    } else {
+      // A guest picks the branch; its admin gets the enquiry.
+      if (guestBranchId != null && guestBranchId.isNotEmpty) {
+        data['branchId'] = guestBranchId;
+        if (guestBranchName.trim().isNotEmpty) {
+          data['branchName'] = guestBranchName.trim();
+        }
+      }
+      if (city.trim().isNotEmpty) data['city'] = city.trim();
+    }
+    if (type == EnquiryType.career) {
+      if (position.trim().isNotEmpty) data['position'] = position.trim();
+      if (experience.trim().isNotEmpty) data['experience'] = experience.trim();
     }
     await _col.add(data);
     await prefs.setInt(_lastSentKey, clock.millisecondsSinceEpoch);
@@ -136,9 +157,9 @@ class EnquiryService {
 
   // ── Admin side ───────────────────────────────────────────────────────────
 
-  /// A branch admin's enquiries ([branchId] set: that branch's logged-in
-  /// members), or the super admin's guest enquiries ([branchId] null: no
-  /// branch). Newest first, sorted on the phone so no index is needed.
+  /// A branch admin's enquiries ([branchId] set: that branch's members and
+  /// the guests who picked it), or the super admin's view of every guest
+  /// enquiry ([branchId] null). Newest first, sorted on the phone so no index is needed.
   Stream<List<Enquiry>> watch({String? branchId}) {
     final q = branchId == null
         ? _col.where('source', isEqualTo: 'guest')

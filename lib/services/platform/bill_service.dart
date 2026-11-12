@@ -12,8 +12,23 @@ import '../notifications/notification_service.dart';
 import 'image_compress_service.dart';
 
 class BillService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  BillService({FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
+
+  final FirebaseFirestore _firestore;
+
+  /// Only needed for photo uploads, so it is created on first use.
+  late final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  /// The signed-in Firebase user, if Firebase Auth is available.
+  static User? _firebaseUser() {
+    try {
+      return FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      return null;
+    }
+  }
+
   final SessionService _sessionService = SessionService();
 
   /// Store code mapping for bill ID generation
@@ -479,7 +494,7 @@ class BillService {
 
       // Get admin info BEFORE transaction
       AppLogger.info('Step 1: Getting admin info...');
-      final fbUser = FirebaseAuth.instance.currentUser;
+      final fbUser = _firebaseUser();
       AppLogger.info('  FirebaseAuth currentUser: ${fbUser?.uid ?? "null"}');
 
       final sessionPhone = await _sessionService.getPhoneNumber();
@@ -1001,7 +1016,7 @@ class BillService {
       }
 
       // Step 5: Get admin info
-      final fbUser = FirebaseAuth.instance.currentUser;
+      final fbUser = _firebaseUser();
       final sessionPhone = await _sessionService.getPhoneNumber();
       final sessionUserId = await _sessionService.getUserId();
       final adminPhone = sessionPhone ?? fbUser?.phoneNumber ?? 'admin';

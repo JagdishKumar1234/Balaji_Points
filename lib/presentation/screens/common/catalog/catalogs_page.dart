@@ -16,7 +16,10 @@ import 'package:balaji_points/services/platform/catalog_service.dart';
 /// and every catalog cover below. Tapping a cover opens the PDF directly,
 /// so Home -> Catalogs -> catalog is two taps.
 class CatalogsPage extends ConsumerStatefulWidget {
-  const CatalogsPage({super.key, this.initialCategoryId});
+  const CatalogsPage({super.key, this.initialCategoryId, this.inTab = false});
+
+  /// Shown as a tab (guest mode): no back arrow.
+  final bool inTab;
 
   /// Pre-selected chip (old `/catalogs/{categoryId}` links).
   final String? initialCategoryId;
@@ -78,6 +81,7 @@ class _CatalogsPageState extends ConsumerState<CatalogsPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatalogNavBar(
+            showBack: !widget.inTab,
             title: l10n.catalogs,
             subtitle: catalogs == null
                 ? l10n.catalogsSubtitle

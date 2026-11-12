@@ -1176,7 +1176,11 @@ exports.onUserDeleted = onDocumentDeleted(
  * and a Firebase sign-in token for the admin's own user document is
  * returned. Five wrong PINs lock the phone for 15 minutes.
  */
-exports.adminPinSignIn = onCall(async (request) => {
+exports.adminPinSignIn = onCall({
+  // Runs as the Firebase Admin SDK service account, which can sign custom
+  // tokens (the default compute account cannot: signBlob was denied).
+  serviceAccount: "firebase-adminsdk-fbsvc@balajipoints.iam.gserviceaccount.com",
+}, async (request) => {
   const phone = pinSignIn.normalizePhone(request.data && request.data.phone);
   const pin = String((request.data && request.data.pin) || "");
   if (phone.length !== 10 || !/^\d{4,6}$/.test(pin)) {

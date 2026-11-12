@@ -88,6 +88,7 @@ class _SuperAdminBranchesTabState extends State<SuperAdminBranchesTab> {
                           shortName: data['shortName'] as String? ?? '',
                           address: data['address'] as String? ?? '',
                           phone: data['phone'] as String? ?? '',
+                          mapsUrl: data['mapsUrl'] as String? ?? '',
                           isActive: isActive,
                           celebrationEnabled:
                               data['diwaliCelebrationEnabled'] as bool? ??
@@ -146,6 +147,7 @@ class _BranchLoadError extends StatelessWidget {
 
 class _BranchCard extends StatefulWidget {
   final String branchId, branchCode, name, shortName, address, phone;
+  final String mapsUrl;
   final bool isActive;
   final bool celebrationEnabled;
   const _BranchCard({
@@ -156,6 +158,7 @@ class _BranchCard extends StatefulWidget {
     required this.shortName,
     required this.address,
     required this.phone,
+    this.mapsUrl = '',
     required this.isActive,
     required this.celebrationEnabled,
   });
@@ -239,6 +242,7 @@ class _BranchCardState extends State<_BranchCard> {
             branchCode: widget.branchCode,
             address: widget.address,
             phone: widget.phone,
+            mapsUrl: widget.mapsUrl,
           ),
         ),
       ),
@@ -255,8 +259,12 @@ class BranchFormData {
     required this.branchCode,
     required this.address,
     required this.phone,
+    this.mapsUrl = '',
   });
   final String id, name, shortName, branchCode, address, phone;
+
+  /// Google Maps link for the store's exact pin (shown to guests).
+  final String mapsUrl;
 }
 
 /// Add or edit a branch. With [existing] it edits (code locked).
@@ -279,6 +287,7 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
   );
   late final _addrCtrl = TextEditingController(text: widget.existing?.address);
   late final _phoneCtrl = TextEditingController(text: widget.existing?.phone);
+  late final _mapsCtrl = TextEditingController(text: widget.existing?.mapsUrl);
   bool _saving = false;
 
   bool get _editing => widget.existing != null;
@@ -290,6 +299,7 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
     _codeCtrl.dispose();
     _addrCtrl.dispose();
     _phoneCtrl.dispose();
+    _mapsCtrl.dispose();
     super.dispose();
   }
 
@@ -302,6 +312,7 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
       shortName: _shortCtrl.text.trim(),
       address: _addrCtrl.text.trim(),
       phone: _phoneCtrl.text.trim(),
+      mapsUrl: _mapsCtrl.text.trim(),
     );
     if (!mounted) return;
     setState(() => _saving = false);
@@ -325,6 +336,7 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
       branchCode: _codeCtrl.text.trim().toUpperCase(),
       address: _addrCtrl.text.trim(),
       phone: _phoneCtrl.text.trim(),
+      mapsUrl: _mapsCtrl.text.trim(),
       createdBy: creatorId,
     );
     if (!mounted) return;
@@ -401,6 +413,20 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
                 AppLocalizations.of(context)!.phone,
                 hint: AppLocalizations.of(context)!.hintPhone,
                 keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _field(
+                _mapsCtrl,
+                AppLocalizations.of(context)!.branchMapsLink,
+                hint: AppLocalizations.of(context)!.branchMapsLinkHint,
+                keyboardType: TextInputType.url,
+                helperText: AppLocalizations.of(context)!.branchMapsLinkHelp,
+                validator: (v) {
+                  final t = (v ?? '').trim();
+                  return t.isEmpty || t.startsWith('https://')
+                      ? null
+                      : AppLocalizations.of(context)!.branchMapsLinkInvalid;
+                },
               ),
             ],
           ),

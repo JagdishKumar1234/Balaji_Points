@@ -4647,4 +4647,244 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get guestEnquiries => 'अतिथि पूछताछ';
+
+  @override
+  String get navMore => 'और';
+
+  @override
+  String get billRejectedAt => 'अस्वीकृत: ';
+
+  @override
+  String get memberDetailsTitle => 'सदस्य विवरण';
+
+  @override
+  String get memberApprovedAmount => 'स्वीकृत खरीद';
+
+  @override
+  String get memberDateRange => 'तारीख सीमा';
+
+  @override
+  String get memberHistory => 'इतिहास';
+
+  @override
+  String get memberCall => 'कॉल करें';
+
+  @override
+  String get billPointsCredited => 'जमा हुए पॉइंट्स';
+
+  @override
+  String get billMember => 'सदस्य';
+
+  @override
+  String get billDetailsSection => 'विवरण';
+
+  @override
+  String get guestContinue => 'अतिथि के रूप में जारी रखें';
+
+  @override
+  String get guestHomeTitle => 'बालाजी पॉइंट्स में स्वागत है';
+
+  @override
+  String get guestHomeSubtitle => 'कैटलॉग देखें, शाखा खोजें या हमसे बात करें।';
+
+  @override
+  String get guestJoinTitle => 'बालाजी पॉइंट्स से जुड़ें';
+
+  @override
+  String get guestJoinBody => 'कारपेंटर, आर्किटेक्ट, इंजीनियर और इंटीरियर डिज़ाइनर हर खरीद पर पॉइंट्स कमाते हैं और इनाम जीतते हैं।';
+
+  @override
+  String get guestRegister => 'अभी रजिस्टर करें';
+
+  @override
+  String get guestLogin => 'लॉग इन';
+
+  @override
+  String get guestCatalogsSub => 'लैमिनेट, प्लाईवुड, दरवाज़े और बहुत कुछ';
+
+  @override
+  String get guestBranches => 'हमारी शाखाएँ';
+
+  @override
+  String get guestBranchesSub => 'पता, फ़ोन और रास्ता';
+
+  @override
+  String get guestService => 'सर्विस अनुरोध';
+
+  @override
+  String get guestServiceSub => 'शाखा से मदद माँगें';
+
+  @override
+  String get guestCareers => 'करियर';
+
+  @override
+  String get guestCareersSub => 'हमारे साथ काम करने के लिए आवेदन करें';
+
+  @override
+  String get guestContactSub => 'प्रोडक्ट या कीमत के बारे में सवाल';
+
+  @override
+  String get branchDirections => 'रास्ता';
+
+  @override
+  String get branchesEmpty => 'अभी कोई शाखा नहीं';
+
+  @override
+  String get enquiryBranchLabel => 'शाखा';
+
+  @override
+  String get enquiryBranchHint => 'शाखा चुनें';
+
+  @override
+  String get enquiryBranchRequired => 'एक शाखा चुनें';
+
+  @override
+  String get enquiryTypeService => 'सर्विस अनुरोध';
+
+  @override
+  String get enquiryTypeCareer => 'करियर';
+
+  @override
+  String get careerIntro => 'अपना विवरण भेजें। शाखा आपको कॉल करेगी।';
+
+  @override
+  String get careerPosition => 'पद';
+
+  @override
+  String get careerPositionHint => 'पद दर्ज करें';
+
+  @override
+  String get careerExperience => 'अनुभव';
+
+  @override
+  String get careerExperienceHint => 'अनुभव दर्ज करें';
+
+  @override
+  String get careerAbout => 'आपके बारे में';
+
+  @override
+  String get careerAboutHint => 'अपने काम के बारे में कुछ पंक्तियाँ लिखें';
+
+  @override
+  String get careerSubmit => 'आवेदन भेजें';
+
+  @override
+  String get careerSentTitle => 'आवेदन भेज दिया गया';
+
+  @override
+  String get careerPositionRequired => 'पद दर्ज करें';
+
+  @override
+  String get branchMapsLink => 'गूगल मैप्स लिंक';
+
+  @override
+  String get branchMapsLinkHint => 'गूगल मैप्स लिंक दर्ज करें';
+
+  @override
+  String get branchMapsLinkHelp => 'गूगल मैप्स में स्टोर खोलें, शेयर दबाएँ, लिंक कॉपी करके यहाँ पेस्ट करें।';
+
+  @override
+  String get branchMapsLinkInvalid => 'https:// से शुरू होने वाला लिंक पेस्ट करें';
+
+  @override
+  String get guestLoginMember => 'सदस्य हैं? लॉग इन करें';
+
+  @override
+  String get guestTabHome => 'होम';
+
+  @override
+  String get guestTabCatalogs => 'कैटलॉग';
+
+  @override
+  String get guestTabBranches => 'शाखाएँ';
+
+  @override
+  String get guestTabContact => 'संपर्क';
+
+  @override
+  String get guestTagline => 'इंटीरियर के लिए आपकी एक ही दुकान';
+
+  @override
+  String get guestHeroTitle => 'प्लाईवुड, हार्डवेयर और फिटिंग्स — सब एक ही जगह';
+
+  @override
+  String get guestHeroBody => 'नए कैटलॉग देखें, नज़दीकी शाखा खोजें और विशेषज्ञ मदद पाएँ।';
+
+  @override
+  String get guestExploreCatalogs => 'कैटलॉग देखें';
+
+  @override
+  String get guestWeOffer => 'हम क्या देते हैं';
+
+  @override
+  String get guestOfferPlywood => 'प्लाईवुड';
+
+  @override
+  String get guestOfferLaminates => 'लैमिनेट';
+
+  @override
+  String get guestOfferDoors => 'दरवाज़े';
+
+  @override
+  String get guestOfferHardware => 'हार्डवेयर';
+
+  @override
+  String get guestOfferFittings => 'फिटिंग्स';
+
+  @override
+  String get guestOfferService => 'सर्विस और सहायता';
+
+  @override
+  String get guestStatBranches => 'शाखाएँ';
+
+  @override
+  String get guestStatCatalogs => 'कैटलॉग';
+
+  @override
+  String get guestStatRoles => 'सदस्य भूमिकाएँ';
+
+  @override
+  String get guestQuickLinks => 'त्वरित लिंक';
+
+  @override
+  String get guestJoinPoint1 => 'हर खरीद पर पॉइंट्स कमाएँ';
+
+  @override
+  String get guestJoinPoint2 => 'ट्रिप, गैजेट और बहुत कुछ जीतें';
+
+  @override
+  String get guestJoinPoint3 => 'डेली स्पिन और शाखा ऑफ़र';
+
+  @override
+  String get guestGrowTitle => 'बालाजी पॉइंट्स के साथ अपना व्यापार बढ़ाएँ';
+
+  @override
+  String get guestGrowBody => 'आपकी दुकान है? अपनी दुकान या शाखा बालाजी पॉइंट्स पर रजिस्टर करें और अपने ग्राहकों को इनाम दें।';
+
+  @override
+  String get guestGrowPoint1 => 'आपके सदस्यों के लिए अपनी भूमिकाएँ';
+
+  @override
+  String get guestGrowPoint2 => 'आपका अपना पॉइंट्स और इनाम सिस्टम';
+
+  @override
+  String get guestGrowPoint3 => 'आपकी टीम के लिए पूरा एडमिन पैनल';
+
+  @override
+  String get guestGrowCta => 'हमसे जुड़ें';
+
+  @override
+  String get enquiryTypePartner => 'मेरी दुकान रजिस्टर करें';
+
+  @override
+  String get guestStatCategories => 'श्रेणियाँ';
+
+  @override
+  String get enquiryBranchOptional => 'शाखा (वैकल्पिक)';
+
+  @override
+  String get enquiryBranchAny => 'कोई भी शाखा — बालाजी पॉइंट्स टीम';
+
+  @override
+  String get guestTabGuest => 'अतिथि';
 }

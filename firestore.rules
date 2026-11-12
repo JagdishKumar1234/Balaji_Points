@@ -626,8 +626,9 @@ service cloud.firestore {
     // Contact Us enquiries. Anyone can send one (members log in with a PIN
     // and guests not at all, so neither has a Firebase sign-in); every
     // field is checked instead. A member's enquiry names their branch and
-    // role and only that branch's admin (or the super admin) can read it.
-    // A guest's has no branch, role or user and only the super admin sees it.
+    // role; a guest picks a branch (no role or user). Only that branch's
+    // admin (or the super admin) can read it; the super admin also reads
+    // guest enquiries that have no branch.
     function isEnquirySuperAdmin() {
       return request.auth != null
           && exists(/databases/$(database)/documents/users/$(request.auth.uid))
@@ -643,11 +644,14 @@ service cloud.firestore {
     function isValidNewEnquiry(d) {
       return d.keys().hasOnly(['type', 'name', 'phone', 'message', 'source',
                                'status', 'createdAt', 'platform', 'appVersion',
-                               'userId', 'branchId', 'branchName', 'role', 'city'])
+                               'userId', 'branchId', 'branchName', 'role', 'city',
+                               'position', 'experience'])
           && d.keys().hasAll(['type', 'name', 'phone', 'message', 'source',
                               'status', 'createdAt'])
           && d.type in ['product', 'quotation', 'points_bills', 'app_help',
-                        'membership', 'other']
+                        'membership', 'service', 'career', 'partner', 'other']
+          && (!d.keys().hasAny(['position']) || (d.position is string && d.position.size() <= 60))
+          && (!d.keys().hasAny(['experience']) || (d.experience is string && d.experience.size() <= 40))
           && d.name is string && d.name.size() >= 2 && d.name.size() <= 60
           && d.phone is string && d.phone.matches('^[6-9][0-9]{9}$')
           && d.message is string && d.message.size() >= 10 && d.message.size() <= 1000
@@ -663,7 +667,11 @@ service cloud.firestore {
                 && (!d.keys().hasAny(['branchName']) || (d.branchName is string && d.branchName.size() <= 80))
                 && !d.keys().hasAny(['city']))
               || (d.source == 'guest'
-                && !d.keys().hasAny(['userId', 'branchId', 'branchName', 'role'])
+                // A guest may pick a branch (it must be active) but never
+                // claims a role or a user account.
+                && !d.keys().hasAny(['userId', 'role'])
+                && (!d.keys().hasAny(['branchId']) || isActiveBranch(d.branchId))
+                && (!d.keys().hasAny(['branchName']) || (d.branchName is string && d.branchName.size() <= 80))
                 && (!d.keys().hasAny(['city']) || (d.city is string && d.city.size() <= 60))));
     }
     match /enquiries/{enquiryId} {

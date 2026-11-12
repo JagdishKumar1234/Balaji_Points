@@ -312,17 +312,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                     icon: Icons.support_agent_rounded,
                     iconColor: AppColors.success,
                     children: [
-                      _buildContactItem(
-                        context: context,
-                        icon: Icons.phone_android_rounded,
-                        label: l10n.mobile,
-                        value: AppConstants.supportPhoneDisplay,
-                        onTap: () => _makePhoneCall(
-                          context,
-                          AppConstants.supportPhoneE164,
+                      for (final (shown, dial)
+                          in AppConstants.supportPhones) ...[
+                        _buildContactItem(
+                          context: context,
+                          icon: Icons.phone_android_rounded,
+                          label: l10n.mobile,
+                          value: shown,
+                          onTap: () => _makePhoneCall(context, dial),
                         ),
-                      ),
-                      const SizedBox(height: 12),
+                        const SizedBox(height: 12),
+                      ],
                       _buildContactItem(
                         context: context,
                         icon: Icons.email_outlined,

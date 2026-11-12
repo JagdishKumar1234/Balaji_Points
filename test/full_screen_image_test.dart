@@ -103,9 +103,15 @@ void main() {
     final source = File(
       'lib/presentation/screens/admin/carpenter_profile_detail_screen.dart',
     ).readAsStringSync();
+    // Pending bills and history both use one shared bill card, whose photo
+    // opens full screen.
     expect(
-      'showFullScreenImage(context, imageUrl)'.allMatches(source),
-      hasLength(2),
+      'showFullScreenImage(context, image)'.allMatches(source),
+      hasLength(1),
+    );
+    expect(
+      RegExp(r'_BillCard\(').allMatches(source).length,
+      greaterThanOrEqualTo(3), // class + pending + history
     );
   });
 }

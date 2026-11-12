@@ -8,6 +8,12 @@ enum EnquiryType {
   pointsBills('points_bills'),
   appHelp('app_help'),
   membership('membership'),
+  service('service'),
+  career('career'),
+
+  /// A store owner asking to join Balaji Points: no branch, goes to the
+  /// super admin.
+  partner('partner'),
   other('other');
 
   const EnquiryType(this.id);
@@ -22,20 +28,30 @@ enum EnquiryType {
   static const List<EnquiryType> forMember = [
     product,
     quotation,
+    service,
     pointsBills,
     appHelp,
     other,
   ];
+
+  /// Career applications have their own screen, so they are not listed.
   static const List<EnquiryType> forGuest = [
     product,
     quotation,
+    service,
     membership,
+    partner,
     other,
   ];
+
+  /// Topics that go to a branch (the guest must pick one). A store
+  /// partnership goes to the super admin instead.
+  bool get needsBranch => this != partner;
 }
 
-/// Who sent it. A member's enquiry carries their branch and role, so it goes
-/// to that branch's admin. A guest's has neither and goes to the super admin.
+/// Who sent it. A member's enquiry carries their branch and role. A guest
+/// picks a branch (no role); either way it goes to that branch's admin, and
+/// the super admin also sees every guest enquiry.
 enum EnquirySource { member, guest }
 
 enum EnquiryStatus {
@@ -64,6 +80,8 @@ class Enquiry {
     this.role,
     this.userId,
     this.city = '',
+    this.position = '',
+    this.experience = '',
     this.createdAt,
     this.resolvedAt,
   });
@@ -80,6 +98,10 @@ class Enquiry {
   final String? role;
   final String? userId;
   final String city;
+
+  /// Career applications: role applied for and experience.
+  final String position;
+  final String experience;
   final DateTime? createdAt;
   final DateTime? resolvedAt;
 
@@ -101,6 +123,8 @@ class Enquiry {
     role: d['role'] as String?,
     userId: d['userId'] as String?,
     city: d['city'] as String? ?? '',
+    position: d['position'] as String? ?? '',
+    experience: d['experience'] as String? ?? '',
     createdAt: (d['createdAt'] as Timestamp?)?.toDate(),
     resolvedAt: (d['resolvedAt'] as Timestamp?)?.toDate(),
   );
