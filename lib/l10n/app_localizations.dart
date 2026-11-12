@@ -63,8 +63,7 @@ import 'app_localizations_ta.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -72,8 +71,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -85,19 +83,18 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('hi'),
-    Locale('ta'),
+    Locale('ta')
   ];
 
   /// No description provided for @appName.
@@ -3578,13 +3575,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Page {page} of {pages} · {from}–{to} of {total}'**
-  String tablePageInfo(
-    String page,
-    String pages,
-    String from,
-    String to,
-    String total,
-  );
+  String tablePageInfo(String page, String pages, String from, String to, String total);
 
   /// No description provided for @noRows.
   ///
@@ -4040,12 +4031,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{entries} carpenters  ·  {totalPoints} points  ·  {totalReward} reward  ·  {totalBonus} bonus'**
-  String carpentersPointsRewardBonus(
-    String entries,
-    String totalPoints,
-    String totalReward,
-    String totalBonus,
-  );
+  String carpentersPointsRewardBonus(String entries, String totalPoints, String totalReward, String totalBonus);
 
   /// No description provided for @bonus.
   ///
@@ -4830,7 +4816,7 @@ abstract class AppLocalizations {
   /// No description provided for @approveThisBillOfPointsWill.
   ///
   /// In en, this message translates to:
-  /// **'Approve this bill of ₹{amount}?\n\n{amount2} points will be added to the carpenter.'**
+  /// **'Approve this bill of ₹{amount}?\n\n{amount2} points will be added to the member.'**
   String approveThisBillOfPointsWill(String amount, String amount2);
 
   /// No description provided for @billApprovedAndPointsAddedSuccessfully.
@@ -6361,11 +6347,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{branchName}: reset {usersReset} users and deleted {historyDocumentsDeleted} history records. Accounts and bills were kept.'**
-  String resetUsersAndDeletedHistoryRecords(
-    String branchName,
-    String usersReset,
-    String historyDocumentsDeleted,
-  );
+  String resetUsersAndDeletedHistoryRecords(String branchName, String usersReset, String historyDocumentsDeleted);
 
   /// No description provided for @thisPermanentlyClearsPointsAndPoints.
   ///
@@ -6377,12 +6359,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{branchName} has {eligibleUsers} eligible users, {currentPoints} points and {historyDocuments} history items.'**
-  String hasEligibleUsersPointsAndHistory(
-    String branchName,
-    String eligibleUsers,
-    String currentPoints,
-    String historyDocuments,
-  );
+  String hasEligibleUsersPointsAndHistory(String branchName, String eligibleUsers, String currentPoints, String historyDocuments);
 
   /// No description provided for @resetBranchPoints.
   ///
@@ -8033,10 +8010,633 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Missing: {items}'**
   String itemsMissing(String items);
+
+  /// No description provided for @rupeesPerPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rupees per point'**
+  String get rupeesPerPoint;
+
+  /// No description provided for @rupeesPerPointHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 1000 means 1 point for every ₹1,000'**
+  String get rupeesPerPointHint;
+
+  /// No description provided for @enterValidRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number from 1 to 10,00,000'**
+  String get enterValidRate;
+
+  /// No description provided for @ptPerRupees.
+  ///
+  /// In en, this message translates to:
+  /// **'1 pt / ₹{rupees}'**
+  String ptPerRupees(String rupees);
+
+  /// No description provided for @yourPointsRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rate: 1 point for every ₹{rupees}'**
+  String yourPointsRate(String rupees);
+
+  /// No description provided for @pointsRateByRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Points rate'**
+  String get pointsRateByRole;
+
+  /// No description provided for @enterRupeesPerPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter rupees per point'**
+  String get enterRupeesPerPoint;
+
+  /// No description provided for @catalogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalogs'**
+  String get catalogs;
+
+  /// No description provided for @catalogsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product catalogs by category'**
+  String get catalogsSubtitle;
+
+  /// No description provided for @catalogCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 catalog} other{{count} catalogs}}'**
+  String catalogCount(int count);
+
+  /// No description provided for @catalogPages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 page} other{{count} pages}}'**
+  String catalogPages(int count);
+
+  /// No description provided for @catalogView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get catalogView;
+
+  /// No description provided for @catalogShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get catalogShare;
+
+  /// No description provided for @catalogZoomIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get catalogZoomIn;
+
+  /// No description provided for @catalogZoomOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get catalogZoomOut;
+
+  /// No description provided for @catalogZoomFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit to screen'**
+  String get catalogZoomFit;
+
+  /// No description provided for @catalogDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get catalogDownload;
+
+  /// No description provided for @catalogsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No catalogs yet'**
+  String get catalogsEmpty;
+
+  /// No description provided for @catalogsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalogs will appear here once Balaji Points adds them.'**
+  String get catalogsEmptyMessage;
+
+  /// No description provided for @catalogLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load catalogs. Check your internet and try again.'**
+  String get catalogLoadError;
+
+  /// No description provided for @catalogOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open this catalog. Check your internet and try again.'**
+  String get catalogOpenError;
+
+  /// No description provided for @catalogShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} – Balaji Points catalog\n{url}'**
+  String catalogShareText(String title, String url);
+
+  /// No description provided for @catalogOnlineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens online. Nothing is saved on your phone unless you tap Download.'**
+  String get catalogOnlineHint;
+
+  /// No description provided for @catalogPageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {total}'**
+  String catalogPageOf(int page, int total);
+
+  /// No description provided for @catalogAdminAddCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add category'**
+  String get catalogAdminAddCategory;
+
+  /// No description provided for @catalogAdminEditCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit category'**
+  String get catalogAdminEditCategory;
+
+  /// No description provided for @catalogAdminCategoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Category name'**
+  String get catalogAdminCategoryName;
+
+  /// No description provided for @catalogAdminDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get catalogAdminDescription;
+
+  /// No description provided for @catalogAdminAddCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add catalog'**
+  String get catalogAdminAddCatalog;
+
+  /// No description provided for @catalogAdminEditCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit catalog'**
+  String get catalogAdminEditCatalog;
+
+  /// No description provided for @catalogAdminCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get catalogAdminCategory;
+
+  /// No description provided for @catalogAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog title'**
+  String get catalogAdminTitle;
+
+  /// No description provided for @catalogAdminBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand (optional)'**
+  String get catalogAdminBrand;
+
+  /// No description provided for @catalogAdminYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get catalogAdminYear;
+
+  /// No description provided for @catalogAdminOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Display order'**
+  String get catalogAdminOrder;
+
+  /// No description provided for @catalogAdminPickPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose PDF'**
+  String get catalogAdminPickPdf;
+
+  /// No description provided for @catalogAdminReplacePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace PDF'**
+  String get catalogAdminReplacePdf;
+
+  /// No description provided for @catalogAdminPickCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose cover image'**
+  String get catalogAdminPickCover;
+
+  /// No description provided for @catalogAdminCoverAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'If you don\'t choose a cover, the first page of the PDF is used.'**
+  String get catalogAdminCoverAuto;
+
+  /// No description provided for @catalogAdminPdfTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'This PDF is {size}. The limit is 25 MB. Compress it and try again.'**
+  String catalogAdminPdfTooLarge(String size);
+
+  /// No description provided for @catalogAdminNotPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'That file is not a PDF.'**
+  String get catalogAdminNotPdf;
+
+  /// No description provided for @catalogAdminUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading… {percent}%'**
+  String catalogAdminUploading(int percent);
+
+  /// No description provided for @catalogAdminSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog saved'**
+  String get catalogAdminSaved;
+
+  /// No description provided for @catalogAdminHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide from members'**
+  String get catalogAdminHide;
+
+  /// No description provided for @catalogAdminShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show to members'**
+  String get catalogAdminShow;
+
+  /// No description provided for @catalogAdminHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get catalogAdminHidden;
+
+  /// No description provided for @catalogAdminDeleteCatalogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"? Members will no longer see it.'**
+  String catalogAdminDeleteCatalogConfirm(String title);
+
+  /// No description provided for @catalogAdminDeleteCategoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete the category \"{name}\"?'**
+  String catalogAdminDeleteCategoryConfirm(String name);
+
+  /// No description provided for @catalogAdminCategoryNotEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete or move the catalogs in this category first.'**
+  String get catalogAdminCategoryNotEmpty;
+
+  /// No description provided for @catalogAdminEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No catalogs yet. Add a category, then upload a PDF.'**
+  String get catalogAdminEmpty;
+
+  /// No description provided for @catalogAdminNeedCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a category first.'**
+  String get catalogAdminNeedCategory;
+
+  /// No description provided for @catalogAdminRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get catalogAdminRequired;
+
+  /// No description provided for @catalogAdminSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save: {details}'**
+  String catalogAdminSaveFailed(String details);
+
+  /// No description provided for @catalogAdminPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Only admins signed in with email can change catalogs.'**
+  String get catalogAdminPermission;
+
+  /// No description provided for @catalogAdminPdfRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a PDF file.'**
+  String get catalogAdminPdfRequired;
+
+  /// No description provided for @catalogAdminHintCategoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter category name'**
+  String get catalogAdminHintCategoryName;
+
+  /// No description provided for @catalogAdminHintDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter description'**
+  String get catalogAdminHintDescription;
+
+  /// No description provided for @catalogAdminHintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter catalog title'**
+  String get catalogAdminHintTitle;
+
+  /// No description provided for @catalogAdminHintBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter brand name'**
+  String get catalogAdminHintBrand;
+
+  /// No description provided for @catalogAdminHintYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter year'**
+  String get catalogAdminHintYear;
+
+  /// No description provided for @catalogAdminHintOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter display order'**
+  String get catalogAdminHintOrder;
+
+  /// No description provided for @enquiryHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How can we help?'**
+  String get enquiryHeroTitle;
+
+  /// No description provided for @enquiryHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send your question. We usually reply within one working day.'**
+  String get enquiryHeroSubtitle;
+
+  /// No description provided for @enquiryGoesToBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Goes to {branch}'**
+  String enquiryGoesToBranch(String branch);
+
+  /// No description provided for @enquiryGoesToTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Goes to the Balaji Points team'**
+  String get enquiryGoesToTeam;
+
+  /// No description provided for @enquiryTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What is it about?'**
+  String get enquiryTypeLabel;
+
+  /// No description provided for @enquiryTypeProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product enquiry'**
+  String get enquiryTypeProduct;
+
+  /// No description provided for @enquiryTypeQuotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk order / quote'**
+  String get enquiryTypeQuotation;
+
+  /// No description provided for @enquiryTypePointsBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Points & bills'**
+  String get enquiryTypePointsBills;
+
+  /// No description provided for @enquiryTypeAppHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'App help'**
+  String get enquiryTypeAppHelp;
+
+  /// No description provided for @enquiryTypeMembership.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a member'**
+  String get enquiryTypeMembership;
+
+  /// No description provided for @enquiryTypeOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get enquiryTypeOther;
+
+  /// No description provided for @enquiryNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get enquiryNameLabel;
+
+  /// No description provided for @enquiryNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get enquiryNameHint;
+
+  /// No description provided for @enquiryPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get enquiryPhoneLabel;
+
+  /// No description provided for @enquiryPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter mobile number'**
+  String get enquiryPhoneHint;
+
+  /// No description provided for @enquiryCityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City (optional)'**
+  String get enquiryCityLabel;
+
+  /// No description provided for @enquiryCityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter city'**
+  String get enquiryCityHint;
+
+  /// No description provided for @enquiryMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get enquiryMessageLabel;
+
+  /// No description provided for @enquiryMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your message'**
+  String get enquiryMessageHint;
+
+  /// No description provided for @enquiryNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get enquiryNameRequired;
+
+  /// No description provided for @enquiryPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid 10-digit mobile number'**
+  String get enquiryPhoneInvalid;
+
+  /// No description provided for @enquiryMessageTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Write at least 10 characters'**
+  String get enquiryMessageTooShort;
+
+  /// No description provided for @enquirySend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send enquiry'**
+  String get enquirySend;
+
+  /// No description provided for @enquirySentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enquiry sent'**
+  String get enquirySentTitle;
+
+  /// No description provided for @enquirySentBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you. {branch} will contact you soon.'**
+  String enquirySentBranch(String branch);
+
+  /// No description provided for @enquirySentTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you. Our team will contact you soon.'**
+  String get enquirySentTeam;
+
+  /// No description provided for @enquirySendAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Send another'**
+  String get enquirySendAnother;
+
+  /// No description provided for @enquiryTooSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait {minutes} min before sending another enquiry.'**
+  String enquiryTooSoon(int minutes);
+
+  /// No description provided for @enquiryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send. Check your internet and try again.'**
+  String get enquiryFailed;
+
+  /// No description provided for @enquiryReachDirectly.
+  ///
+  /// In en, this message translates to:
+  /// **'Or reach us directly'**
+  String get enquiryReachDirectly;
+
+  /// No description provided for @enquiryCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get enquiryCall;
+
+  /// No description provided for @enquiries.
+  ///
+  /// In en, this message translates to:
+  /// **'Enquiries'**
+  String get enquiries;
+
+  /// No description provided for @enquiriesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No enquiries yet'**
+  String get enquiriesEmpty;
+
+  /// No description provided for @enquiriesOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get enquiriesOpen;
+
+  /// No description provided for @enquiriesResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get enquiriesResolved;
+
+  /// No description provided for @enquiryMarkResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark resolved'**
+  String get enquiryMarkResolved;
+
+  /// No description provided for @enquiryReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get enquiryReopen;
+
+  /// No description provided for @enquiryGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get enquiryGuest;
+
+  /// No description provided for @enquiriesNoAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your admin email to see enquiries.'**
+  String get enquiriesNoAccess;
+
+  /// No description provided for @contactYourBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Your branch'**
+  String get contactYourBranch;
+
+  /// No description provided for @contactSendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send us a message'**
+  String get contactSendMessage;
+
+  /// No description provided for @contactSendingAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending as {name}'**
+  String contactSendingAs(String name);
+
+  /// No description provided for @guestEnquiries.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest enquiries'**
+  String get guestEnquiries;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -8045,28 +8645,26 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'hi', 'ta'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'hi', 'ta'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'hi':
-      return AppLocalizationsHi();
-    case 'ta':
-      return AppLocalizationsTa();
+    case 'en': return AppLocalizationsEn();
+    case 'hi': return AppLocalizationsHi();
+    case 'ta': return AppLocalizationsTa();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

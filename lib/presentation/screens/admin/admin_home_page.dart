@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/platform/enquiry_service.dart';
+import 'package:balaji_points/presentation/widgets/admin/enquiries_management.dart';
 import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ import 'package:balaji_points/services/auth/session_service.dart';
 import '../../widgets/admin/admin_dashboard.dart';
 import '../../widgets/admin/pending_bills_list.dart';
 import '../../widgets/admin/offers_management.dart';
+import '../../widgets/admin/catalogs_management.dart';
 import '../../widgets/admin/users_list.dart';
 import '../../widgets/admin/daily_spin_management.dart';
 import '../../widgets/admin/bill_history_list.dart';
@@ -492,6 +495,10 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return AppLocalizations.of(context)!.smartCleanup;
       case 'greeting':
         return AppLocalizations.of(context)!.sendGreeting;
+      case 'catalogs':
+        return AppLocalizations.of(context)!.catalogs;
+      case 'enquiries':
+        return AppLocalizations.of(context)!.enquiries;
       default:
         return AppLocalizations.of(context)!.admin;
     }
@@ -560,6 +567,14 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return const SmartDuplicateCleanupScreen();
       case 'greeting':
         return const SendGreetingPage(embedded: true);
+      case 'catalogs':
+        return const CatalogsManagement();
+      case 'enquiries':
+        // Only this admin's branch; never another branch's members.
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: EnquiriesManagement(branchId: adminEnquiriesKey()),
+        );
       default:
         return const SizedBox.shrink();
     }

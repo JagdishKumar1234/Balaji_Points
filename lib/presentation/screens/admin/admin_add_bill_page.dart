@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -204,8 +206,14 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
     );
   }
 
-  double _calculatePoints(double amount) {
-    return amount / 1000;
+  int _rupeesPerPoint = PointsRate.defaultRupeesPerPoint;
+
+  double _calculatePoints(double amount) =>
+      PointsRate.pointsFor(amount, _rupeesPerPoint);
+
+  Future<void> _loadRateFor(Map<String, dynamic>? carpenter) async {
+    final rate = await RoleService().rateForRole(carpenter?['role'] as String?);
+    if (mounted) setState(() => _rupeesPerPoint = rate);
   }
 
   Future<void> _submitBill() async {
@@ -415,7 +423,11 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
   ) {
     final l10n = AppLocalizations.of(context);
     final duplicateAmount = (duplicateBill['amount'] ?? 0).toDouble();
-    final duplicatePoints = duplicateAmount / 1000;
+    // The existing bill's own points (its saved rate), not today's rate.
+    final duplicatePoints = PointsRate.forBill(
+      Map<String, dynamic>.from(duplicateBill),
+      rupeesPerPoint: _rupeesPerPoint,
+    );
 
     AppLogger.warning('⚠️ Duplicate Warning Dialog shown to admin');
 
@@ -795,6 +807,7 @@ class _AdminAddBillPageState extends State<AdminAddBillPage> {
                                 setState(() {
                                   _selectedCarpenter = carpenter;
                                 });
+                                _loadRateFor(carpenter);
                               },
                             ),
 

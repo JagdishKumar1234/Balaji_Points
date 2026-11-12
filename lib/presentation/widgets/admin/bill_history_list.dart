@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
@@ -256,7 +257,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
         final billId = doc.id;
         final amount = (bill['amount'] ?? 0) as num;
         final amountDouble = amount.toDouble();
-        final points = (bill['pointsEarned'] ?? (amountDouble / 1000)) as num;
+        final num points = PointsRate.forBill(bill);
         final status = (bill['status'] ?? '') as String;
         final phone = (bill['carpenterPhone'] ?? '') as String;
         final billDate = bill['billDate'] as Timestamp?;
@@ -595,7 +596,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
       final bill = billDoc.data() as Map<String, dynamic>;
       final billId = billDoc.id;
       final amount = (bill['amount'] ?? 0).toDouble();
-      final points = amount / 1000;
+      final points = PointsRate.forBill(bill);
       final status = bill['status'] ?? 'unknown';
       final approvedAt = bill['approvedAt'] as Timestamp?;
       final displayDate = approvedAt?.toDate();
@@ -1106,7 +1107,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
                   final createdAt = bill['createdAt'] as Timestamp?;
 
                   // Extract points earned (for approved bills)
-                  final points = bill['pointsEarned'] ?? (amount / 1000);
+                  final points = PointsRate.forBill(bill);
 
                   return FutureBuilder<Map<String, dynamic>?>(
                     future: _fetchCarpenterData(carpenterId),

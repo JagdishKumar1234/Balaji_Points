@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:balaji_points/core/constants/app_constants.dart';
@@ -15,13 +16,19 @@ class AppRole {
     this.abbreviation = '',
     this.isActive = true,
     this.isBuiltIn = false,
-  });
+    int? rupeesPerPoint,
+  }) : _rupeesPerPoint = rupeesPerPoint;
 
   final String id;
   final String name;
   final String abbreviation;
   final bool isActive;
   final bool isBuiltIn;
+  final int? _rupeesPerPoint;
+
+  /// Rupees of approved purchases per point for this role (the built-in
+  /// default when the role record sets none).
+  int get rupeesPerPoint => _rupeesPerPoint ?? PointsRate.defaultFor(id);
 
   /// Carpenter is the core role of the rewards program and can never be
   /// removed from registration (enforced in Firestore rules as well).
@@ -129,6 +136,10 @@ class RoleService {
               // The protected role is always active, whatever the document.
               isActive: builtIn.isProtected || _isActive(data),
               isBuiltIn: true,
+              rupeesPerPoint: PointsRate.sanitize(
+                data['rupeesPerPoint'],
+                fallback: builtIn.rupeesPerPoint,
+              ),
             );
     }
 
@@ -143,6 +154,10 @@ class RoleService {
         name: name,
         abbreviation: _clean(data['abbreviation']) ?? '',
         isActive: _isActive(data),
+        rupeesPerPoint: PointsRate.sanitize(
+          data['rupeesPerPoint'],
+          fallback: PointsRate.defaultRupeesPerPoint,
+        ),
       );
     }
 
@@ -189,9 +204,41 @@ class RoleService {
 
   /// Creates a custom role in a transaction so two admins cannot create the
   /// same role ID at the same moment.
+  /// Rates by role ID, cached for a few minutes; used wherever points are
+  /// previewed or credited.
+  static Map<String, int>? _rateCache;
+  static DateTime? _rateCacheAt;
+
+  static Map<String, int> ratesFrom(List<AppRole> roles) => {
+    for (final r in roles) r.id: r.rupeesPerPoint,
+  };
+
+  /// Rupees per point for [roleId] (the role's default when unknown).
+  Future<int> rateForRole(String? roleId) async {
+    final id = (roleId ?? '').trim().toLowerCase();
+    final stale =
+        _rateCacheAt == null ||
+        DateTime.now().difference(_rateCacheAt!) > const Duration(minutes: 5);
+    if (_rateCache == null || stale) {
+      try {
+        _rateCache = ratesFrom(await listRoles());
+        _rateCacheAt = DateTime.now();
+      } catch (_) {
+        // Offline or denied: keep any old cache, else role defaults.
+      }
+    }
+    return _rateCache?[id] ?? PointsRate.defaultFor(id);
+  }
+
+  static void clearRateCache() {
+    _rateCache = null;
+    _rateCacheAt = null;
+  }
+
   Future<AppRole> createRole({
     required String name,
     required String abbreviation,
+    int rupeesPerPoint = PointsRate.defaultRupeesPerPoint,
   }) async {
     final cleanName = name.trim().replaceAll(RegExp(r'\s+'), ' ');
     final cleanAbbreviation = abbreviation.trim();
@@ -208,11 +255,16 @@ class RoleService {
       throw const RoleException(RoleErrorCode.builtInId);
     }
 
+    if (rupeesPerPoint < PointsRate.minRupeesPerPoint ||
+        rupeesPerPoint > PointsRate.maxRupeesPerPoint) {
+      throw const RoleException(RoleErrorCode.invalidName);
+    }
     final ref = _roles.doc(id);
     final role = AppRole(
       id: id,
       name: cleanName,
       abbreviation: cleanAbbreviation,
+      rupeesPerPoint: rupeesPerPoint,
     );
     await _firestore.runTransaction((tx) async {
       final existing = await tx.get(ref);
@@ -223,10 +275,12 @@ class RoleService {
         'abbreviation': role.abbreviation,
         'isActive': true,
         'isBuiltIn': false,
+        'rupeesPerPoint': role.rupeesPerPoint,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
     });
+    clearRateCache();
     return role;
   }
 
@@ -237,12 +291,16 @@ class RoleService {
     AppRole role, {
     required String name,
     required String abbreviation,
+    int? rupeesPerPoint,
   }) async {
     final cleanName = name.trim().replaceAll(RegExp(r'\s+'), ' ');
     final cleanAbbreviation = abbreviation.trim();
+    final rate = rupeesPerPoint ?? role.rupeesPerPoint;
     if (cleanName.length < nameMinLength ||
         cleanName.length > nameMaxLength ||
-        cleanAbbreviation.length > abbreviationMaxLength) {
+        cleanAbbreviation.length > abbreviationMaxLength ||
+        rate < PointsRate.minRupeesPerPoint ||
+        rate > PointsRate.maxRupeesPerPoint) {
       throw const RoleException(RoleErrorCode.invalidName);
     }
     final ref = _roles.doc(role.id);
@@ -252,6 +310,7 @@ class RoleService {
         tx.update(ref, {
           'name': cleanName,
           'abbreviation': cleanAbbreviation,
+          'rupeesPerPoint': rate,
           'updatedAt': FieldValue.serverTimestamp(),
         });
       } else {
@@ -262,17 +321,20 @@ class RoleService {
           'abbreviation': cleanAbbreviation,
           'isActive': role.isActive,
           'isBuiltIn': AppRole.builtInIds.contains(role.id),
+          'rupeesPerPoint': rate,
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),
         });
       }
     });
+    clearRateCache();
     return AppRole(
       id: role.id,
       name: cleanName,
       abbreviation: cleanAbbreviation,
       isActive: role.isActive,
       isBuiltIn: role.isBuiltIn,
+      rupeesPerPoint: rate,
     );
   }
 
@@ -297,6 +359,7 @@ class RoleService {
           'roleId': role.id,
           'name': role.name,
           'abbreviation': role.abbreviation,
+          'rupeesPerPoint': role.rupeesPerPoint,
           'isActive': isActive,
           'isBuiltIn': AppRole.builtInIds.contains(role.id),
           'createdAt': FieldValue.serverTimestamp(),

@@ -1231,7 +1231,7 @@
   "approvedDate": "Approved Date",
   "actions": "Actions",
   "exportAllBillsToPdf": "Export all bills to PDF",
-  "approveThisBillOfPointsWill": "Approve this bill of ₹{amount}?\n\n{amount2} points will be added to the carpenter.",
+  "approveThisBillOfPointsWill": "Approve this bill of ₹{amount}?\n\n{amount2} points will be added to the member.",
   "@approveThisBillOfPointsWill": {
     "placeholders": {
       "amount": {
@@ -2524,5 +2524,196 @@
         "type": "String"
       }
     }
-  }
+  },
+  "rupeesPerPoint": "Rupees per point",
+  "rupeesPerPointHint": "e.g. 1000 means 1 point for every ₹1,000",
+  "enterValidRate": "Enter a number from 1 to 10,00,000",
+  "ptPerRupees": "1 pt / ₹{rupees}",
+  "@ptPerRupees": {
+    "placeholders": {
+      "rupees": {
+        "type": "String"
+      }
+    }
+  },
+  "yourPointsRate": "Your rate: 1 point for every ₹{rupees}",
+  "@yourPointsRate": {
+    "placeholders": {
+      "rupees": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsRateByRole": "Points rate",
+  "enterRupeesPerPoint": "Enter rupees per point",
+  "catalogs": "Catalogs",
+  "catalogsSubtitle": "Product catalogs by category",
+  "catalogCount": "{count, plural, =1{1 catalog} other{{count} catalogs}}",
+  "@catalogCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogPages": "{count, plural, =1{1 page} other{{count} pages}}",
+  "@catalogPages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogView": "View",
+  "catalogShare": "Share",
+  "catalogZoomIn": "Zoom in",
+  "catalogZoomOut": "Zoom out",
+  "catalogZoomFit": "Fit to screen",
+  "catalogDownload": "Download",
+  "catalogsEmpty": "No catalogs yet",
+  "catalogsEmptyMessage": "Catalogs will appear here once Balaji Points adds them.",
+  "catalogLoadError": "Could not load catalogs. Check your internet and try again.",
+  "catalogOpenError": "Could not open this catalog. Check your internet and try again.",
+  "catalogShareText": "{title} – Balaji Points catalog\n{url}",
+  "@catalogShareText": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogOnlineHint": "Opens online. Nothing is saved on your phone unless you tap Download.",
+  "catalogPageOf": "Page {page} of {total}",
+  "@catalogPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogAdminAddCategory": "Add category",
+  "catalogAdminEditCategory": "Edit category",
+  "catalogAdminCategoryName": "Category name",
+  "catalogAdminDescription": "Description (optional)",
+  "catalogAdminAddCatalog": "Add catalog",
+  "catalogAdminEditCatalog": "Edit catalog",
+  "catalogAdminCategory": "Category",
+  "catalogAdminTitle": "Catalog title",
+  "catalogAdminBrand": "Brand (optional)",
+  "catalogAdminYear": "Year",
+  "catalogAdminOrder": "Display order",
+  "catalogAdminPickPdf": "Choose PDF",
+  "catalogAdminReplacePdf": "Replace PDF",
+  "catalogAdminPickCover": "Choose cover image",
+  "catalogAdminCoverAuto": "If you don't choose a cover, the first page of the PDF is used.",
+  "catalogAdminPdfTooLarge": "This PDF is {size}. The limit is 25 MB. Compress it and try again.",
+  "@catalogAdminPdfTooLarge": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogAdminNotPdf": "That file is not a PDF.",
+  "catalogAdminUploading": "Uploading… {percent}%",
+  "@catalogAdminUploading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogAdminSaved": "Catalog saved",
+  "catalogAdminHide": "Hide from members",
+  "catalogAdminShow": "Show to members",
+  "catalogAdminHidden": "Hidden",
+  "catalogAdminDeleteCatalogConfirm": "Delete \"{title}\"? Members will no longer see it.",
+  "@catalogAdminDeleteCatalogConfirm": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogAdminDeleteCategoryConfirm": "Delete the category \"{name}\"?",
+  "@catalogAdminDeleteCategoryConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogAdminCategoryNotEmpty": "Delete or move the catalogs in this category first.",
+  "catalogAdminEmpty": "No catalogs yet. Add a category, then upload a PDF.",
+  "catalogAdminNeedCategory": "Add a category first.",
+  "catalogAdminRequired": "Required",
+  "catalogAdminSaveFailed": "Could not save: {details}",
+  "@catalogAdminSaveFailed": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogAdminPermission": "Only admins signed in with email can change catalogs.",
+  "catalogAdminPdfRequired": "Choose a PDF file.",
+  "catalogAdminHintCategoryName": "Enter category name",
+  "catalogAdminHintDescription": "Enter description",
+  "catalogAdminHintTitle": "Enter catalog title",
+  "catalogAdminHintBrand": "Enter brand name",
+  "catalogAdminHintYear": "Enter year",
+  "catalogAdminHintOrder": "Enter display order",
+  "enquiryHeroTitle": "How can we help?",
+  "enquiryHeroSubtitle": "Send your question. We usually reply within one working day.",
+  "enquiryGoesToBranch": "Goes to {branch}",
+  "@enquiryGoesToBranch": {"placeholders": {"branch": {"type": "String"}}},
+  "enquiryGoesToTeam": "Goes to the Balaji Points team",
+  "enquiryTypeLabel": "What is it about?",
+  "enquiryTypeProduct": "Product enquiry",
+  "enquiryTypeQuotation": "Bulk order / quote",
+  "enquiryTypePointsBills": "Points & bills",
+  "enquiryTypeAppHelp": "App help",
+  "enquiryTypeMembership": "Become a member",
+  "enquiryTypeOther": "Other",
+  "enquiryNameLabel": "Your name",
+  "enquiryNameHint": "Enter your name",
+  "enquiryPhoneLabel": "Mobile number",
+  "enquiryPhoneHint": "Enter mobile number",
+  "enquiryCityLabel": "City (optional)",
+  "enquiryCityHint": "Enter city",
+  "enquiryMessageLabel": "Message",
+  "enquiryMessageHint": "Enter your message",
+  "enquiryNameRequired": "Enter your name",
+  "enquiryPhoneInvalid": "Enter a valid 10-digit mobile number",
+  "enquiryMessageTooShort": "Write at least 10 characters",
+  "enquirySend": "Send enquiry",
+  "enquirySentTitle": "Enquiry sent",
+  "enquirySentBranch": "Thank you. {branch} will contact you soon.",
+  "@enquirySentBranch": {"placeholders": {"branch": {"type": "String"}}},
+  "enquirySentTeam": "Thank you. Our team will contact you soon.",
+  "enquirySendAnother": "Send another",
+  "enquiryTooSoon": "Please wait {minutes} min before sending another enquiry.",
+  "@enquiryTooSoon": {"placeholders": {"minutes": {"type": "int"}}},
+  "enquiryFailed": "Could not send. Check your internet and try again.",
+  "enquiryReachDirectly": "Or reach us directly",
+  "enquiryCall": "Call",
+  "enquiries": "Enquiries",
+  "enquiriesEmpty": "No enquiries yet",
+  "enquiriesOpen": "Open",
+  "enquiriesResolved": "Resolved",
+  "enquiryMarkResolved": "Mark resolved",
+  "enquiryReopen": "Reopen",
+  "enquiryGuest": "Guest",
+  "enquiriesNoAccess": "Sign in with your admin email to see enquiries.",
+  "contactYourBranch": "Your branch",
+  "contactSendMessage": "Send us a message",
+  "contactSendingAs": "Sending as {name}",
+  "@contactSendingAs": {"placeholders": {"name": {"type": "String"}}},
+  "guestEnquiries": "Guest enquiries"
 }

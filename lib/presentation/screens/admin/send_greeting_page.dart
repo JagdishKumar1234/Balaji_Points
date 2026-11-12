@@ -6,6 +6,7 @@ import 'package:balaji_points/core/models/greeting_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/services/platform/image_compress_service.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
@@ -154,7 +155,11 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
       final fileName = 'greeting_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final ref = _storage.ref().child('greeting_images/$fileName');
 
-      await ref.putFile(imageFile);
+      final bytes = await ImageCompressService.compress(
+        await imageFile.readAsBytes(),
+        profile: ImageCompressProfile.banner,
+      );
+      await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
       final url = await ref.getDownloadURL();
       return url;
     } catch (e) {

@@ -546,7 +546,7 @@ service cloud.firestore {
       function isValidRoleData(id) {
         let d = request.resource.data;
         return d.keys().hasOnly(['roleId', 'name', 'abbreviation', 'isActive',
-                                 'isBuiltIn', 'createdAt', 'updatedAt'])
+                                 'isBuiltIn', 'rupeesPerPoint', 'createdAt', 'updatedAt'])
             && d.keys().hasAll(['roleId', 'name', 'abbreviation', 'isActive', 'isBuiltIn'])
             && d.roleId == id
             && d.name is string
@@ -556,6 +556,11 @@ service cloud.firestore {
             && d.abbreviation.size() <= 10
             && d.isActive is bool
             && d.isBuiltIn == isBuiltInRoleId(id)
+            // Rupees of purchases per point (optional; role defaults apply).
+            && (!d.keys().hasAny(['rupeesPerPoint'])
+                || (d.rupeesPerPoint is number
+                    && d.rupeesPerPoint >= 1
+                    && d.rupeesPerPoint <= 1000000))
             && (!d.keys().hasAny(['updatedAt']) || d.updatedAt == request.time)
             // Carpenter is the core role and can never be removed from signup.
             && (id != 'carpenter' || d.isActive == true);
@@ -590,6 +595,88 @@ service cloud.firestore {
       allow read: if true;
       // Writes only from Firebase Console / Admin SDK (not client apps)
       allow write: if false;
+    }
+
+    // Product catalogs: every member can read. Only a branch admin or the
+    // super admin (Firebase Auth email account with users/{uid}.role set)
+    // can add, change or delete them, from the admin Catalogs screen.
+    function isCatalogManager() {
+      return request.auth != null
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+              in ['admin', 'super_admin'];
+    }
+    match /catalog_categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isCatalogManager()
+                            && request.resource.data.name is string
+                            && request.resource.data.name.size() >= 2
+                            && request.resource.data.name.size() <= 40;
+      allow delete: if isCatalogManager();
+    }
+    match /catalogs/{catalogId} {
+      allow read: if true;
+      allow create, update: if isCatalogManager()
+                            && request.resource.data.title is string
+                            && request.resource.data.categoryId is string
+                            && exists(/databases/$(database)/documents/catalog_categories/$(request.resource.data.categoryId));
+      allow delete: if isCatalogManager();
+    }
+
+    // Contact Us enquiries. Anyone can send one (members log in with a PIN
+    // and guests not at all, so neither has a Firebase sign-in); every
+    // field is checked instead. A member's enquiry names their branch and
+    // role and only that branch's admin (or the super admin) can read it.
+    // A guest's has no branch, role or user and only the super admin sees it.
+    function isEnquirySuperAdmin() {
+      return request.auth != null
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin';
+    }
+    function isEnquiryBranchAdmin(branchId) {
+      return request.auth != null
+          && branchId is string
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.branchId == branchId;
+    }
+    function isValidNewEnquiry(d) {
+      return d.keys().hasOnly(['type', 'name', 'phone', 'message', 'source',
+                               'status', 'createdAt', 'platform', 'appVersion',
+                               'userId', 'branchId', 'branchName', 'role', 'city'])
+          && d.keys().hasAll(['type', 'name', 'phone', 'message', 'source',
+                              'status', 'createdAt'])
+          && d.type in ['product', 'quotation', 'points_bills', 'app_help',
+                        'membership', 'other']
+          && d.name is string && d.name.size() >= 2 && d.name.size() <= 60
+          && d.phone is string && d.phone.matches('^[6-9][0-9]{9}$')
+          && d.message is string && d.message.size() >= 10 && d.message.size() <= 1000
+          && d.status == 'new'
+          && d.createdAt == request.time
+          && (!d.keys().hasAny(['platform']) || (d.platform is string && d.platform.size() <= 20))
+          && (!d.keys().hasAny(['appVersion']) || (d.appVersion is string && d.appVersion.size() <= 20))
+          && ((d.source == 'member'
+                && d.userId is string && d.userId.size() > 0 && d.userId.size() <= 128
+                && isActiveBranch(d.branchId)
+                && d.role is string && d.role.size() > 0 && d.role.size() <= 40
+                && !(d.role in ['admin', 'super_admin'])
+                && (!d.keys().hasAny(['branchName']) || (d.branchName is string && d.branchName.size() <= 80))
+                && !d.keys().hasAny(['city']))
+              || (d.source == 'guest'
+                && !d.keys().hasAny(['userId', 'branchId', 'branchName', 'role'])
+                && (!d.keys().hasAny(['city']) || (d.city is string && d.city.size() <= 60))));
+    }
+    match /enquiries/{enquiryId} {
+      allow create: if isValidNewEnquiry(request.resource.data);
+      allow read: if isEnquirySuperAdmin()
+                  || isEnquiryBranchAdmin(resource.data.branchId);
+      // Admins only mark an enquiry resolved or open again.
+      allow update: if (isEnquirySuperAdmin()
+                        || isEnquiryBranchAdmin(resource.data.branchId))
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status', 'resolvedAt', 'resolvedBy'])
+                    && request.resource.data.status in ['new', 'resolved'];
+      allow delete: if isEnquirySuperAdmin();
     }
 
     // ============================================

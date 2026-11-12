@@ -44,9 +44,11 @@ void main() {
         'abbreviation',
         'isActive',
         'isBuiltIn',
+        'rupeesPerPoint',
         'createdAt',
         'updatedAt',
       });
+      expect(data['rupeesPerPoint'], 1000);
       expect(data['roleId'], 'tile_fitter');
       expect(data['name'], 'Tile Fitter');
       expect(data['abbreviation'], 'TF');

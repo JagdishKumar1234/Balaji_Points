@@ -9,6 +9,9 @@
 //   E Road carpenter  9000000001 / PIN 1111
 //   Karur carpenter   9000000002 / PIN 2222
 //   E Road admin      9000000003 / PIN 3333
+//   E Road architect  9000000005 / PIN 5555
+//   E Road engineer   9000000006 / PIN 6666
+//   E Road interior designer 9000000007 / PIN 7777
 //   Karur admin       karur.admin@test.local / Test@12345
 //   Super admin       aaijitechstudio@gmail.com / TestSuper@123
 const crypto = require("crypto");
@@ -57,6 +60,10 @@ async function main() {
     {phone: "9000000001", first: "Erode", last: "Carpenter", role: "carpenter", branch: "erode_main", pin: "1111"},
     {phone: "9000000002", first: "Karur", last: "Carpenter", role: "carpenter", branch: "karur_test", pin: "2222"},
     {phone: "9000000003", first: "Erode", last: "Admin", role: "admin", branch: "erode_main", pin: "3333"},
+    // One member of each role in E Road, for the per-role points rate test.
+    {phone: "9000000005", first: "Erode", last: "Architect", role: "architect", branch: "erode_main", pin: "5555"},
+    {phone: "9000000006", first: "Erode", last: "Engineer", role: "engineer", branch: "erode_main", pin: "6666"},
+    {phone: "9000000007", first: "Erode", last: "Designer", role: "interior_designer", branch: "erode_main", pin: "7777"},
   ];
   for (const u of pinUsers) {
     await db.doc(`users/${u.phone}`).set({

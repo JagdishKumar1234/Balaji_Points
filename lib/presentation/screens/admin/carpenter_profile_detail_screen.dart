@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:flutter/material.dart';
@@ -1495,7 +1497,7 @@ class _CarpenterProfileDetailScreenState
                         Text(
                           AppLocalizations.of(
                             context,
-                          )!.pts7('${(amount / 1000).toStringAsFixed(2)}'),
+                          )!.pts7(PointsRate.forBill(bill).toStringAsFixed(2)),
                           style: AppTypography.bodySmall().copyWith(
                             fontSize: 12,
                             color: context.themeTextSecondary,
@@ -1561,6 +1563,18 @@ class _CarpenterProfileDetailScreenState
   Future<void> _approvePendingBill(Map<String, dynamic> bill) async {
     final billId = bill['billId'] as String?;
     final amount = (bill['amount'] ?? 0).toDouble();
+    // Preview at the member's role rate, the same rate approval credits.
+    String? role;
+    try {
+      final member = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.carpenterId)
+          .get();
+      role = member.data()?['role'] as String?;
+    } catch (_) {}
+    final rate = await RoleService().rateForRole(role);
+    final previewPoints = PointsRate.forBill(bill, rupeesPerPoint: rate);
+    if (!mounted) return;
 
     final confirm = await showDialog<bool>(
       context: context,
@@ -1570,7 +1584,7 @@ class _CarpenterProfileDetailScreenState
         content: AppText.body(
           AppLocalizations.of(context)!.approveThisBillOfPointsWill2(
             '${amount.toStringAsFixed(0)}',
-            '${(amount / 1000).toStringAsFixed(2)}',
+            previewPoints.toStringAsFixed(2),
           ),
         ),
         actions: [
@@ -1925,7 +1939,7 @@ class _CarpenterProfileDetailScreenState
                     Text(
                       AppLocalizations.of(
                         context,
-                      )!.pts7('${(amount / 1000).toStringAsFixed(2)}'),
+                      )!.pts7(PointsRate.forBill(bill).toStringAsFixed(2)),
                       style: AppTypography.bodySmall().copyWith(
                         fontSize: 12,
                         color: context.themeTextSecondary,

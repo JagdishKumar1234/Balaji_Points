@@ -1,4 +1,7 @@
+import 'package:balaji_points/services/platform/enquiry_service.dart';
+import 'package:balaji_points/presentation/widgets/admin/enquiries_management.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/admin/catalogs_management.dart';
 import 'package:flutter/services.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +32,14 @@ class SuperAdminPage extends ConsumerStatefulWidget {
 class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
     with DoubleTapExitMixin {
   int _tab = 0; // branches, create admin, points reset, roles
+
+  @override
+  void initState() {
+    super.initState();
+    // Load guest enquiries in the background so the tab opens with the list
+    // already there (kept for the session, live updates after that).
+    ref.listenManual(enquiriesProvider(null), (_, __) {});
+  }
 
   Future<void> _logout() async {
     final l10n = AppLocalizations.of(context)!;
@@ -156,6 +167,16 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
                     selectedIcon: const Icon(Icons.badge_rounded),
                     label: AppLocalizations.of(context)!.roles,
                   ),
+                  NavigationDestination(
+                    icon: const Icon(Icons.menu_book_outlined),
+                    selectedIcon: const Icon(Icons.menu_book_rounded),
+                    label: AppLocalizations.of(context)!.catalogs,
+                  ),
+                  NavigationDestination(
+                    icon: const Icon(Icons.mark_email_unread_outlined),
+                    selectedIcon: const Icon(Icons.mark_email_unread_rounded),
+                    label: AppLocalizations.of(context)!.guestEnquiries,
+                  ),
                 ],
               ),
         body: ResponsiveRoleNavigation(
@@ -181,6 +202,16 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
               icon: Icons.badge_outlined,
               selectedIcon: Icons.badge_rounded,
             ),
+            RoleNavigationItem(
+              label: AppLocalizations.of(context)!.catalogs,
+              icon: Icons.menu_book_outlined,
+              selectedIcon: Icons.menu_book_rounded,
+            ),
+            RoleNavigationItem(
+              label: AppLocalizations.of(context)!.guestEnquiries,
+              icon: Icons.mark_email_unread_outlined,
+              selectedIcon: Icons.mark_email_unread_rounded,
+            ),
           ],
           selectedIndex: _tab,
           onSelected: (index) => setState(() => _tab = index),
@@ -198,7 +229,11 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
               0 => const SuperAdminBranchesTab(),
               1 => const SuperAdminCreateAdminTab(),
               2 => const SuperAdminPointsCleanupTab(),
-              _ => const SuperAdminRolesTab(),
+              3 => const SuperAdminRolesTab(),
+              4 => const CatalogsManagement(),
+              // Guest enquiries only (no branch). Members' enquiries go to
+              // their own branch admin, not here.
+              _ => const EnquiriesManagement(),
             },
           ),
         ),

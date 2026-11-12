@@ -126,3 +126,6 @@ coverage/
 
 # Written by build_release.sh on every build
 BUILD_REPORT.txt
+
+# Original catalog PDFs (hundreds of MB); compressed copies are uploaded to Storage
+docs/catelogue/

@@ -722,6 +722,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
                                     title: l10n.profileSectionSupport,
                                     children: [
                                       ProfileMenuTile(
+                                        icon: Icons.mark_email_unread_rounded,
+                                        title: l10n.contactUs,
+                                        onTap: () =>
+                                            context.push('/contact-us'),
+                                      ),
+                                      ProfileMenuTile(
                                         icon: Icons.support_agent_rounded,
                                         title: l10n.helpSupport,
                                         onTap: () =>

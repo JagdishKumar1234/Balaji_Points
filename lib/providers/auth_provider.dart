@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:balaji_points/core/models/user.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
+import 'package:balaji_points/services/auth/admin_pin_sign_in_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
@@ -784,6 +785,14 @@ class AuthNotifier extends Notifier<AuthState> {
           userData['docId'] as String? ??
           userData['id'] as String? ??
           phoneNumber;
+      // A branch admin also gets a real Firebase sign-in (checked on the
+      // server), so admin-only data like their branch's enquiries can be
+      // read. Done before the post-login step, which then uses this
+      // sign-in for the admin's own record.
+      final loginRole = (userData['role'] as String? ?? '').toLowerCase();
+      if (loginRole == AppConstants.roleAdmin) {
+        await AdminPinSignInService().signIn(phone: phoneNumber, pin: pin);
+      }
       final postLogin = await _migration.completePostPinLogin(
         phone: phoneNumber,
         legacyDocId: legacyDocId,

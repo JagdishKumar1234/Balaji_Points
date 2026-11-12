@@ -1,3 +1,7 @@
+import 'package:balaji_points/services/platform/catalog_service.dart';
+import 'package:balaji_points/services/platform/catalog_file_cache.dart';
+import 'package:balaji_points/core/models/catalog.dart';
+import 'package:balaji_points/presentation/screens/common/catalog/catalog_widgets.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
@@ -21,7 +25,6 @@ import 'package:balaji_points/core/logger.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/home_provider.dart';
 import 'package:balaji_points/providers/wallet_provider.dart';
-import 'package:balaji_points/providers/theme_provider.dart';
 import 'package:balaji_points/providers/loading_provider.dart';
 import 'package:balaji_points/providers/branch_celebration_provider.dart';
 import 'package:balaji_points/presentation/screens/carpenter/home/widgets/diwali_celebration_dialog.dart';
@@ -73,6 +76,37 @@ class _HomePageState extends ConsumerState<HomePage>
     );
     _loadAppVersion();
     _loadDismissedGreeting();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _prefetchCatalogs());
+  }
+
+  /// Loads the catalog lists and category covers in the background, so the
+  /// Catalogs button opens a ready screen.
+  void _prefetchCatalogs() {
+    if (!mounted) return;
+    prefetchCatalogs(ref);
+    // PDFs too, so a catalog opens instantly. Starts a few seconds after
+    // Home so it never competes with Home's own data; one file at a time.
+    CatalogFileCache.instance.init();
+    Future.delayed(const Duration(seconds: 4), () {
+      if (!mounted) return;
+      ref.listenManual<AsyncValue<List<Catalog>>>(
+        allCatalogsProvider,
+        (_, next) => next.whenData(CatalogFileCache.instance.preload),
+        fireImmediately: true,
+      );
+    });
+    // Covers for the Catalogs grid, decoded at the grid's size.
+    ref
+        .read(allCatalogsProvider.future)
+        .then((list) {
+          if (!mounted) return;
+          precacheCatalogCovers(
+            context,
+            list.map((c) => c.coverUrl),
+            width: kCatalogGridDecodeWidth,
+          );
+        })
+        .catchError((_) {});
   }
 
   Future<void> _loadDismissedGreeting() async {
@@ -350,9 +384,16 @@ class _HomePageState extends ConsumerState<HomePage>
             ),
           ],
         ),
+        // Exactly two actions: Catalogs and Profile. (Theme switch lives
+        // in Profile.)
         actions: [
-          // Theme toggle
-          _ThemeToggleButton(fg: fg),
+          IconButton(
+            tooltip: l10n.catalogs,
+            icon: Icon(Icons.menu_book_rounded, color: fg),
+            onPressed: () => context.push('/catalogs'),
+          ),
+          _ProfileAvatarButton(imageUrl: homeState.profileImage),
+          const SizedBox(width: 4),
         ],
       ),
       body: Stack(
@@ -552,29 +593,28 @@ class _HomePageState extends ConsumerState<HomePage>
 }
 
 // ---------------------------------------------------------------------------
-// _ThemeToggleButton
+// _ProfileAvatarButton
 // ---------------------------------------------------------------------------
 
-class _ThemeToggleButton extends ConsumerWidget {
-  final Color fg;
-  const _ThemeToggleButton({required this.fg});
+class _ProfileAvatarButton extends StatelessWidget {
+  const _ProfileAvatarButton({required this.imageUrl});
+
+  final String? imageUrl;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget build(BuildContext context) {
+    final url = imageUrl?.trim() ?? '';
     return IconButton(
-      tooltip: isDark
-          ? AppLocalizations.of(context)!.switchToLight
-          : AppLocalizations.of(context)!.switchToDark,
-      onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
-      icon: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        transitionBuilder: (child, anim) =>
-            RotationTransition(turns: anim, child: child),
+      tooltip: AppLocalizations.of(context)!.profile,
+      onPressed: () => context.go('/profile'),
+      icon: CircleAvatar(
+        radius: 16,
+        backgroundColor: context.themePrimary.withValues(alpha: 0.12),
+        foregroundImage: url.isEmpty ? null : NetworkImage(url),
         child: Icon(
-          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round_rounded,
-          key: ValueKey(isDark),
-          color: fg,
+          Icons.person_rounded,
+          size: 18,
+          color: context.themePrimary,
         ),
       ),
     );

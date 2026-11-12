@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -31,6 +33,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
 
   Map<String, dynamic>? _billData;
   Map<String, dynamic>? _carpenterData;
+  int _rupeesPerPoint = PointsRate.defaultRupeesPerPoint;
   bool _isLoading = true;
   bool _isProcessing = false;
 
@@ -69,6 +72,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       final doc = await _firestore.collection('users').doc(carpenterId).get();
       if (doc.exists) {
         _carpenterData = doc.data();
+        _rupeesPerPoint = await RoleService().rateForRole(
+          _carpenterData?['role'] as String?,
+        );
         return;
       }
 
@@ -80,6 +86,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
 
       if (query.docs.isNotEmpty) {
         _carpenterData = query.docs.first.data();
+        _rupeesPerPoint = await RoleService().rateForRole(
+          _carpenterData?['role'] as String?,
+        );
       }
     } catch (e) {
       AppLogger.debug('Error loading carpenter data: $e');
@@ -673,7 +682,10 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
 
   Widget _buildBillSummaryCard(BuildContext context) {
     final amount = (_billData!['amount'] ?? 0) as num;
-    final points = (amount / 1000).toStringAsFixed(2);
+    final points = PointsRate.forBill(
+      _billData!,
+      rupeesPerPoint: _rupeesPerPoint,
+    ).toStringAsFixed(2);
     final billDate = _billData!['billDate'] as Timestamp?;
     final billNumber = _billData!['billNumber'] as String? ?? 'N/A';
 
@@ -868,7 +880,12 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                             ),
                           ),
                           Text(
-                            AppLocalizations.of(context)!.t1Pt1000,
+                            PointsRate.label(
+                              PointsRate.sanitize(
+                                _billData!['rupeesPerPoint'],
+                                fallback: _rupeesPerPoint,
+                              ),
+                            ),
                             style: AppTypography.bodySmall().copyWith(
                               fontSize: 12,
                             ),

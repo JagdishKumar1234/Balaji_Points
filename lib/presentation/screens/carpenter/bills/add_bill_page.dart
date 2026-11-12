@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/profile/profile_completeness.dart';
 import 'package:balaji_points/providers/branch_celebration_provider.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
@@ -80,6 +82,8 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
 
   /// While bills are paused the paused message is all the user needs, so the
   /// profile is only checked once bills are open.
+  int _rupeesPerPoint = PointsRate.defaultRupeesPerPoint;
+
   void _checkProfileOnce() {
     if (_profileChecked) return;
     _profileChecked = true;
@@ -92,6 +96,10 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
       // Every member role needs a photo, first and last name and a mobile
       // number before submitting bills.
       final completeness = ProfileCompleteness.from(userData);
+      final rate = await RoleService().rateForRole(
+        userData?['role'] as String?,
+      );
+      if (mounted) setState(() => _rupeesPerPoint = rate);
       if (!completeness.isReadyForBills) {
         if (mounted) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -506,7 +514,11 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
   ) {
     final l10n = AppLocalizations.of(context);
     final duplicateAmount = (duplicateBill['amount'] ?? 0).toDouble();
-    final duplicatePoints = duplicateAmount / 1000;
+    // The existing bill's own points (its saved rate), not today's rate.
+    final duplicatePoints = PointsRate.forBill(
+      Map<String, dynamic>.from(duplicateBill),
+      rupeesPerPoint: _rupeesPerPoint,
+    );
     final duplicateDate = duplicateBill['billDate'] as Timestamp?;
     final duplicateDateStr = duplicateDate != null
         ? '${duplicateDate.toDate().day}/${duplicateDate.toDate().month}/${duplicateDate.toDate().year}'
@@ -1013,7 +1025,10 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
                         builder: (context, value, _) {
                           final amount = double.tryParse(value.text.trim());
                           if (amount != null && amount > 0) {
-                            final estimatedPoints = amount / 1000;
+                            final estimatedPoints = PointsRate.pointsFor(
+                              amount,
+                              _rupeesPerPoint,
+                            );
                             final pointsDisplay = estimatedPoints
                                 .toStringAsFixed(2);
                             return Container(

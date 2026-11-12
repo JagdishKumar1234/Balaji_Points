@@ -37,6 +37,9 @@ import 'package:balaji_points/presentation/screens/admin/cleanup_duplicate_accou
 import 'package:balaji_points/presentation/screens/admin/firestore_backup_screen.dart';
 import 'package:balaji_points/presentation/screens/admin/firebase_duplicate_checker_screen.dart';
 import 'package:balaji_points/presentation/screens/admin/smart_duplicate_cleanup_screen.dart';
+import 'package:balaji_points/presentation/screens/common/catalog/catalogs_page.dart';
+import 'package:balaji_points/presentation/screens/common/contact/contact_us_page.dart';
+import 'package:balaji_points/presentation/screens/common/catalog/catalog_viewer_page.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/logger.dart';
@@ -80,6 +83,8 @@ GoRouter _buildRouter() {
         '/onboarding',
         '/terms',
         '/privacy',
+        // Enquiry form: guests can use it too (no login needed).
+        '/contact-us',
       ];
       if (publicPaths.any((p) => path.startsWith(p))) return null;
 
@@ -289,6 +294,43 @@ GoRouter _buildRouter() {
       GoRoute(
         path: '/daily-spin',
         builder: (context, _) => const DailySpinPage(),
+      ),
+      // Product catalogs: full screen, outside the tab shell, open to every
+      // signed-in role. One screen (category chips + covers) -> reader.
+      GoRoute(
+        path: '/catalogs',
+        builder: (context, _) => const CatalogsPage(),
+        routes: [
+          GoRoute(
+            path: ':categoryId',
+            // Old links: the same screen with that category's chip selected.
+            builder: (context, state) => CatalogsPage(
+              initialCategoryId: state.pathParameters['categoryId'],
+            ),
+            routes: [
+              GoRoute(
+                path: ':catalogId',
+                builder: (context, state) => CatalogViewerPage(
+                  categoryId: state.pathParameters['categoryId']!,
+                  catalogId: state.pathParameters['catalogId']!,
+                ),
+                routes: [
+                  // Old links: the reader now opens directly on the catalog.
+                  GoRoute(
+                    path: 'view',
+                    redirect: (context, state) =>
+                        '/catalogs/${state.pathParameters['categoryId']}'
+                        '/${state.pathParameters['catalogId']}',
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/contact-us',
+        builder: (context, _) => const ContactUsPage(),
       ),
       GoRoute(path: '/admin', builder: (context, _) => const AdminHomePage()),
       GoRoute(

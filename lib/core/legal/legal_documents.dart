@@ -51,8 +51,10 @@ class LegalDocuments {
     ),
     LegalSection(
       'Balaji Points',
-      '• Points are earned at the rate shown in the app (currently 1 point '
-          'for every ₹1,000 of approved purchases).\n'
+      '• Points are earned at the rate set for your role and shown in the '
+          'app (for example 1 point for every ₹1,000 of approved purchases '
+          'for carpenters and interior designers, and 1 point for every '
+          '₹5,000 for architects and engineers).\n'
           '• Points have no cash value, cannot be sold or transferred, and '
           'cannot be exchanged for money.\n'
           '• Points may be reversed if a bill is returned, cancelled, found '

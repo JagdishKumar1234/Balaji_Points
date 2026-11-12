@@ -8,9 +8,7 @@ class AppConstants {
   static const String appConfigCollection = 'app_config';
   static const String appConfigDocument = 'version';
 
-  // Points Conversion
-  static const int pointsPerThousandRupees = 1;
-  static const String pointsConversionText = '1000 ₹ = 1 Point';
+  // Points conversion is per role: see core/points/points_rate.dart.
 
   // Company and support contact: the same everywhere in the app.
   // (Store names like "Sri Balaji Plywood and Hardware" are branches.)

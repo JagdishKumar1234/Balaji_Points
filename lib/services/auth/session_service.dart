@@ -3,6 +3,7 @@
 import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
+import 'package:balaji_points/services/user/user_migration_service.dart';
 
 /// Service for managing user session with secure storage
 class SessionService {
@@ -187,6 +188,7 @@ class SessionService {
   Future<void> clearSession() async {
     Telemetry.logout();
     UserPointsSyncService().reset();
+    UserMigrationService.clearResolvedIds();
     await _storage.deleteAll();
   }
 

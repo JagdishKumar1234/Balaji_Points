@@ -8,7 +8,7 @@ import {
   assertFails,
 } from '@firebase/rules-unit-testing';
 import {
-  doc, getDoc, getDocs, collection, setDoc, updateDoc, deleteDoc,
+  doc, getDoc, getDocs, collection, setDoc, updateDoc, deleteDoc, query, where,
   serverTimestamp,
 } from 'firebase/firestore';
 
@@ -156,4 +156,150 @@ test('super admin can edit branch details but not the branch code', async () => 
 });
 test('other users cannot edit branches', async () => {
   await assertFails(updateDoc(doc(otherUser(), 'branches/b1'), { name: 'Hacked' }));
+});
+
+// ── Points rate per role ────────────────────────────────────────────────────
+test('super admin can set rupees per point on a role', async () => {
+  await assertSucceeds(setDoc(doc(superAdmin(), 'roles/plumber'), customRole({ rupeesPerPoint: 2000 })));
+  await assertSucceeds(updateDoc(doc(superAdmin(), 'roles/mason'), {
+    rupeesPerPoint: 5000, updatedAt: serverTimestamp(),
+  }));
+});
+
+test('rupees per point must be a number from 1 to 10,00,000', async () => {
+  await assertFails(setDoc(doc(superAdmin(), 'roles/plumber'), customRole({ rupeesPerPoint: 0 })));
+  await assertFails(setDoc(doc(superAdmin(), 'roles/plumber'), customRole({ rupeesPerPoint: 2000000 })));
+  await assertFails(setDoc(doc(superAdmin(), 'roles/plumber'), customRole({ rupeesPerPoint: '1000' })));
+});
+
+test('a built-in role can carry its own rate', async () => {
+  await assertSucceeds(setDoc(doc(superAdmin(), 'roles/engineer'), {
+    roleId: 'engineer', name: 'Engineer', abbreviation: 'Er.', isActive: true, isBuiltIn: true,
+    rupeesPerPoint: 5000, createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+  }));
+});
+
+test('other users cannot change a role rate', async () => {
+  await assertFails(updateDoc(doc(otherUser(), 'roles/mason'), {
+    rupeesPerPoint: 1, updatedAt: serverTimestamp(),
+  }));
+});
+
+// ── Product catalogs ────────────────────────────────────────────────────────
+const seedCatalogs = () => env.withSecurityRulesDisabled(async (ctx) => {
+  const db = ctx.firestore();
+  await setDoc(doc(db, 'users/adm'), { role: 'admin', branchId: 'b1' });
+  await setDoc(doc(db, 'users/mem'), { role: 'carpenter', branchId: 'b1' });
+  await setDoc(doc(db, 'catalog_categories/doors'), { name: 'Doors' });
+  await setDoc(doc(db, 'catalogs/kanb'), { categoryId: 'doors', title: 'Kan-B' });
+});
+const branchAdmin = () =>
+  env.authenticatedContext('adm', { email: 'a@test.local', email_verified: false }).firestore();
+const member = () => env.authenticatedContext('mem').firestore();
+
+test('anyone can read catalogs and categories', async () => {
+  await seedCatalogs();
+  await assertSucceeds(getDocs(collection(guest(), 'catalog_categories')));
+  await assertSucceeds(getDoc(doc(member(), 'catalogs/kanb')));
+});
+test('branch admin and super admin can manage catalogs', async () => {
+  await seedCatalogs();
+  for (const db of [branchAdmin(), superAdmin()]) {
+    await assertSucceeds(setDoc(doc(db, 'catalog_categories/plywood'), { name: 'Plywood' }));
+    await assertSucceeds(setDoc(doc(db, 'catalogs/saburi'), { categoryId: 'plywood', title: 'Saburi' }));
+    await assertSucceeds(updateDoc(doc(db, 'catalogs/saburi'), { active: false }));
+    await assertSucceeds(deleteDoc(doc(db, 'catalogs/saburi')));
+  }
+});
+test('members, guests and unknown users cannot change catalogs', async () => {
+  await seedCatalogs();
+  for (const db of [guest(), member(), otherUser()]) {
+    await assertFails(setDoc(doc(db, 'catalogs/x'), { categoryId: 'doors', title: 'X' }));
+    await assertFails(updateDoc(doc(db, 'catalogs/kanb'), { active: false }));
+    await assertFails(deleteDoc(doc(db, 'catalogs/kanb')));
+    await assertFails(setDoc(doc(db, 'catalog_categories/x'), { name: 'Xyz' }));
+  }
+});
+test('catalog must point at an existing category and have a title', async () => {
+  await seedCatalogs();
+  await assertFails(setDoc(doc(branchAdmin(), 'catalogs/y'), { categoryId: 'nope', title: 'Y' }));
+  await assertFails(setDoc(doc(branchAdmin(), 'catalogs/y'), { categoryId: 'doors' }));
+  await assertFails(setDoc(doc(branchAdmin(), 'catalog_categories/z'), { name: 'Z' }));
+});
+
+// ── Contact Us enquiries ───────────────────────────────────────────────────
+async function seedEnquiryUsers() {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore();
+    await setDoc(doc(db, 'users/adm'), { role: 'admin', branchId: 'b1' });
+    await setDoc(doc(db, 'users/adm2'), { role: 'admin', branchId: 'b2' });
+    await setDoc(doc(db, 'branches/b2'), { isActive: true, branchCode: 'B2', name: 'Branch 2' });
+    await setDoc(doc(db, 'enquiries/m1'), {
+      type: 'product', name: 'Ravi', phone: '9876543210', message: 'Need plywood rates',
+      source: 'member', status: 'new', userId: 'u9', branchId: 'b1', role: 'carpenter',
+    });
+    await setDoc(doc(db, 'enquiries/g1'), {
+      type: 'membership', name: 'Guest', phone: '9876543211', message: 'How do I join?',
+      source: 'guest', status: 'new',
+    });
+  });
+}
+const memberEnquiry = (over = {}) => ({
+  type: 'points_bills', name: 'Ravi Kumar', phone: '9876543210',
+  message: 'My bill is still pending since Monday', source: 'member',
+  status: 'new', createdAt: serverTimestamp(), platform: 'android', appVersion: '1.1.2',
+  userId: 'u9', branchId: 'b1', branchName: 'Branch 1', role: 'architect', ...over,
+});
+const guestEnquiry = (over = {}) => ({
+  type: 'quotation', name: 'Suresh', phone: '9123456780',
+  message: 'Need a quote for 40 doors', source: 'guest', status: 'new',
+  createdAt: serverTimestamp(), city: 'Erode', ...over,
+});
+const branchAdmin2 = () =>
+  env.authenticatedContext('adm2', { email: 'b@test.local' }).firestore();
+
+test('a PIN member (no sign-in) and a guest can send an enquiry', async () => {
+  await seedEnquiryUsers();
+  await assertSucceeds(setDoc(doc(guest(), 'enquiries/new1'), memberEnquiry()));
+  await assertSucceeds(setDoc(doc(guest(), 'enquiries/new2'), guestEnquiry()));
+});
+
+test('enquiries with bad or extra fields are refused', async () => {
+  await seedEnquiryUsers();
+  const db = guest();
+  await assertFails(setDoc(doc(db, 'enquiries/x1'), memberEnquiry({ phone: '12345' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x2'), memberEnquiry({ message: 'hi' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x3'), memberEnquiry({ type: 'spam' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x4'), memberEnquiry({ status: 'resolved' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x5'), memberEnquiry({ isAdmin: true })));
+  await assertFails(setDoc(doc(db, 'enquiries/x6'), memberEnquiry({ branchId: 'nope' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x7'), memberEnquiry({ role: 'admin' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x8'), memberEnquiry({ createdAt: new Date(0) })));
+  // A guest cannot claim a branch or role.
+  await assertFails(setDoc(doc(db, 'enquiries/x9'), guestEnquiry({ branchId: 'b1' })));
+  await assertFails(setDoc(doc(db, 'enquiries/x10'), guestEnquiry({ role: 'carpenter' })));
+});
+
+test('a branch admin reads only their own branch; guests go to super admin', async () => {
+  await seedEnquiryUsers();
+  await assertSucceeds(getDoc(doc(branchAdmin(), 'enquiries/m1')));
+  await assertSucceeds(getDocs(query(collection(branchAdmin(), 'enquiries'), where('branchId', '==', 'b1'))));
+  await assertFails(getDoc(doc(branchAdmin2(), 'enquiries/m1')));
+  await assertFails(getDoc(doc(branchAdmin(), 'enquiries/g1')));
+  await assertFails(getDocs(collection(branchAdmin(), 'enquiries')));
+  await assertSucceeds(getDocs(collection(superAdmin(), 'enquiries')));
+  await assertFails(getDoc(doc(guest(), 'enquiries/m1')));
+  await assertFails(getDocs(collection(guest(), 'enquiries')));
+});
+
+test('admins can only mark an enquiry resolved or open again', async () => {
+  await seedEnquiryUsers();
+  await assertSucceeds(updateDoc(doc(branchAdmin(), 'enquiries/m1'),
+    { status: 'resolved', resolvedAt: serverTimestamp(), resolvedBy: 'adm' }));
+  await assertFails(updateDoc(doc(branchAdmin(), 'enquiries/m1'), { message: 'edited' }));
+  await assertFails(updateDoc(doc(branchAdmin2(), 'enquiries/m1'), { status: 'resolved' }));
+  await assertFails(updateDoc(doc(guest(), 'enquiries/m1'), { status: 'resolved' }));
+  await assertSucceeds(updateDoc(doc(superAdmin(), 'enquiries/g1'), { status: 'resolved' }));
+  await assertFails(deleteDoc(doc(branchAdmin(), 'enquiries/m1')));
+  await assertSucceeds(deleteDoc(doc(superAdmin(), 'enquiries/g1')));
 });

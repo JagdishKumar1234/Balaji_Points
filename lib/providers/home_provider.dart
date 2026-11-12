@@ -189,8 +189,12 @@ class HomeNotifier extends Notifier<HomeState> {
 
   Future<void> _loadProfileThenRankings() async {
     try {
-      await ref.read(carpenterPointsProvider.notifier).ensureLoaded();
-      await _loadUser();
+      // Points and profile load side by side; the points listener in build()
+      // fills in the tier if points land after the profile.
+      await Future.wait([
+        ref.read(carpenterPointsProvider.notifier).ensureLoaded(),
+        _loadUser(),
+      ]);
     } catch (e, st) {
       AppLogger.error('HomeNotifier load failed', e, st);
       state = state.copyWith(error: e.toString());
@@ -215,6 +219,16 @@ class HomeNotifier extends Notifier<HomeState> {
   }
 
   Future<void> _loadUser() async {
+    // The copy saved on the phone first, so the card fills in at once.
+    try {
+      final cached = await _userService.getCurrentUserData(cacheOnly: true);
+      if (cached != null) {
+        final c = Map<String, dynamic>.from(cached)..remove('totalPoints');
+        final points = ref.read(carpenterPointsProvider);
+        if (points.loaded) c['tier'] = points.tier;
+        state = state.copyWith(userData: c, loading: false);
+      }
+    } catch (_) {}
     try {
       final data = await _userService.getCurrentUserData();
       final docId = await _resolveDocId();

@@ -3,6 +3,8 @@ import 'package:balaji_points/services/notifications/notification_visibility.dar
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:balaji_points/services/platform/enquiry_service.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -11,15 +13,15 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 
 /// Admin dashboard: 8 section cards with live Firestore counts.
-class AdminDashboard extends StatefulWidget {
+class AdminDashboard extends ConsumerStatefulWidget {
   const AdminDashboard({super.key, required this.onOpenSection});
   final void Function(String section) onOpenSection;
 
   @override
-  State<AdminDashboard> createState() => _AdminDashboardState();
+  ConsumerState<AdminDashboard> createState() => _AdminDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboard> {
+class _AdminDashboardState extends ConsumerState<AdminDashboard> {
   static const List<_SectionCard> _sections = [
     _SectionCard(
       id: 'pending',
@@ -41,6 +43,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
       label: 'Send Greeting',
       icon: Icons.message_rounded,
     ),
+    _SectionCard(
+      id: 'catalogs',
+      label: 'Catalogs',
+      icon: Icons.menu_book_rounded,
+    ),
+    _SectionCard(
+      id: 'enquiries',
+      label: 'Enquiries',
+      icon: Icons.mark_email_unread_rounded,
+    ),
     _SectionCard(id: 'users', label: 'Users', icon: Icons.people_rounded),
     _SectionCard(
       id: 'notifications',
@@ -48,31 +60,34 @@ class _AdminDashboardState extends State<AdminDashboard> {
       icon: Icons.notifications_rounded,
     ),
     _SectionCard(id: 'spin', label: 'Spin', icon: Icons.casino_rounded),
-    _SectionCard(
-      id: 'points-repair',
-      label: 'Points Repair',
-      icon: Icons.build_circle_rounded,
-    ),
-    _SectionCard(
-      id: 'duplicates',
-      label: 'Duplicates',
-      icon: Icons.content_copy_rounded,
-    ),
-    _SectionCard(
-      id: 'backup',
-      label: 'Backup',
-      icon: Icons.cloud_download_rounded,
-    ),
-    _SectionCard(
-      id: 'check-duplicates',
-      label: 'Check Firebase',
-      icon: Icons.search_rounded,
-    ),
-    _SectionCard(
-      id: 'smart-cleanup',
-      label: 'Smart Cleanup',
-      icon: Icons.auto_delete_rounded,
-    ),
+    // Maintenance tools, hidden from every branch admin (2026-11-12).
+    // The screens are still in the app (admin_home_page.dart routes them
+    // by id); uncomment a card to show that tool again.
+    // _SectionCard(
+    //   id: 'points-repair',
+    //   label: 'Points Repair',
+    //   icon: Icons.build_circle_rounded,
+    // ),
+    // _SectionCard(
+    //   id: 'duplicates',
+    //   label: 'Duplicates',
+    //   icon: Icons.content_copy_rounded,
+    // ),
+    // _SectionCard(
+    //   id: 'backup',
+    //   label: 'Backup',
+    //   icon: Icons.cloud_download_rounded,
+    // ),
+    // _SectionCard(
+    //   id: 'check-duplicates',
+    //   label: 'Check Firebase',
+    //   icon: Icons.search_rounded,
+    // ),
+    // _SectionCard(
+    //   id: 'smart-cleanup',
+    //   label: 'Smart Cleanup',
+    //   icon: Icons.auto_delete_rounded,
+    // ),
   ];
 
   int _refreshKey = 0;
@@ -84,6 +99,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    // Starts (and keeps) the enquiry list, so the Enquiries screen opens
+    // instantly; the tile shows how many are still open.
+    // No count when the list could not be read (e.g. a PIN login), never a
+    // stale cached one.
+    final enquiriesAsync = ref.watch(enquiriesProvider(adminEnquiriesKey()));
+    final openEnquiries = enquiriesAsync.hasError
+        ? null
+        : enquiriesAsync.asData?.value.where((e) => e.isOpen).length;
     return ColoredBox(
       color: context.themeBackground,
       child: Padding(
@@ -136,6 +159,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         int? secondaryCount;
                         if (s.id == 'pending') count = pendingBillsCount;
                         if (s.id == 'notifications') count = notificationCount;
+                        if (s.id == 'enquiries') count = openEnquiries;
                         if (s.id == 'users') {
                           count = totalUsersCount;
                           secondaryCount = carpentersCount;
@@ -321,9 +345,11 @@ class _SectionTile extends StatelessWidget {
       'history' => l10n.billHistory,
       'offers' => l10n.offers,
       'greeting' => l10n.sendGreeting,
+      'catalogs' => l10n.catalogs,
       'users' => l10n.users,
       'notifications' => l10n.notifications,
       'spin' => l10n.spin,
+      'enquiries' => l10n.enquiries,
       'points-repair' => l10n.pointsRepair,
       'duplicates' => l10n.duplicateAccounts,
       'backup' => l10n.backupDatabase,

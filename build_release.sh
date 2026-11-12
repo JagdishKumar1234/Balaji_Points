@@ -109,6 +109,28 @@ clean_build() {
 }
 
 ################################################################################
+# FUNCTION: Leave pdfrx's web-only PDF engine out of the Android build
+################################################################################
+# pdfrx ships a WASM PDF engine (about 4 MB) that only the web app uses;
+# Android has its own native engine. It is removed for this build and put
+# back on exit (even if the build fails), so web and debug builds still work.
+strip_pdfrx_wasm() {
+    print_header "Removing web-only PDF engine (about 4 MB)"
+
+    cd "$PROJECT_DIR"
+    flutter pub get
+    trap restore_pdfrx_wasm EXIT
+    dart run pdfrx:remove_wasm_modules
+    print_success "pdfrx WASM left out of this build"
+}
+
+restore_pdfrx_wasm() {
+    cd "$PROJECT_DIR"
+    dart run pdfrx:remove_wasm_modules --revert >/dev/null 2>&1 \
+        && echo -e "${GREEN}✓ pdfrx WASM restored for web/debug builds${NC}"
+}
+
+################################################################################
 # FUNCTION: Build Release APK
 ################################################################################
 build_apk() {
@@ -326,6 +348,11 @@ main() {
 
     # Step 3: Clean build
     clean_build
+
+    echo ""
+
+    # Step 3b: Leave the web-only PDF engine out (restored on exit)
+    strip_pdfrx_wasm
 
     echo ""
 

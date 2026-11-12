@@ -216,6 +216,7 @@ class UserService {
   /// Fresh user data from Firestore (server) with session profile merged for instant display.
   Future<Map<String, dynamic>?> getCurrentUserData({
     bool forceRefresh = false,
+    bool cacheOnly = false,
   }) async {
     try {
       final docId = await _getUserDocId();
@@ -229,7 +230,11 @@ class UserService {
           .doc(docId)
           .get(
             GetOptions(
-              source: forceRefresh ? Source.server : Source.serverAndCache,
+              source: cacheOnly
+                  ? Source.cache
+                  : forceRefresh
+                  ? Source.server
+                  : Source.serverAndCache,
             ),
           );
 
@@ -259,7 +264,8 @@ class UserService {
       AppLogger.info('User data loaded for id: $docId');
       return data;
     } catch (e) {
-      AppLogger.error('Error getting current user data', e);
+      // A cache miss (nothing saved yet) is normal, not an error.
+      if (!cacheOnly) AppLogger.error('Error getting current user data', e);
       return null;
     }
   }

@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/logger.dart';
 import '../auth/session_service.dart';
 import '../notifications/notification_service.dart';
+import 'image_compress_service.dart';
 
 class BillService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -20,6 +23,44 @@ class BillService {
     'Balaji Decor': 'BDC',
     'Balaji Tiles': 'BTL',
   };
+
+  /// The bill's saved rate if it has one, else the member's role rate.
+  Future<int> _rateForBill(String billId, String carpenterId) async {
+    try {
+      final bill = await _firestore.collection('bills').doc(billId).get();
+      final saved = bill.data()?['rupeesPerPoint'];
+      if (saved != null) {
+        final rate = PointsRate.sanitize(saved, fallback: 0);
+        if (rate > 0) return rate;
+      }
+    } catch (e) {
+      AppLogger.warning('Could not read bill rate: $e');
+    }
+    return _rateForCarpenter(carpenterId);
+  }
+
+  /// Rupees per point for the member who owns a bill, from their role.
+  Future<int> _rateForCarpenter(String carpenterId) async {
+    String? role;
+    try {
+      final byId = await _firestore.collection('users').doc(carpenterId).get();
+      if (byId.exists) {
+        role = byId.data()?['role'] as String?;
+      } else {
+        final byPhone = await _firestore
+            .collection('users')
+            .where('phone', isEqualTo: carpenterId)
+            .limit(1)
+            .get();
+        if (byPhone.docs.isNotEmpty) {
+          role = byPhone.docs.first.data()['role'] as String?;
+        }
+      }
+    } catch (e) {
+      AppLogger.warning('Could not read member role for rate: $e');
+    }
+    return RoleService().rateForRole(role);
+  }
 
   /// Get store code from store name, default to first 3 letters uppercase
   String _getStoreCode(String? storeName) {
@@ -53,10 +94,15 @@ class BillService {
     try {
       final ref = _storage.ref().child('bill_images/$billId.jpg');
 
-      AppLogger.info('Uploading bill image: bill_images/$billId.jpg');
+      // Every bill photo (member or admin) is made light here, once.
+      final bytes = await ImageCompressService.compress(imageBytes);
+      AppLogger.info(
+        'Uploading bill image: bill_images/$billId.jpg '
+        '(${(bytes.length / 1024).round()} KB)',
+      );
 
       final uploadTask = await ref.putData(
-        imageBytes,
+        bytes,
         SettableMetadata(
           contentType: 'image/jpeg',
           customMetadata: {
@@ -109,6 +155,7 @@ class BillService {
       }
 
       final branchId = await _sessionService.getBranchId();
+      final rupeesPerPoint = await _rateForCarpenter(carpenterId);
 
       // Generate professional bill number: BP-{STORE_CODE}-{YYYYMMDD}-{RANDOM_6_DIGITS}
       final billNumber = _generateBillNumber(storeName);
@@ -123,6 +170,9 @@ class BillService {
         'imageUrl': imageUrl ?? '',
         'status': 'pending',
         'pointsEarned': 0,
+        // The member's role rate when submitted; shown until approval.
+        'rupeesPerPoint': rupeesPerPoint,
+        'expectedPoints': PointsRate.pointsFor(amount, rupeesPerPoint),
         'branchId': branchId,
         'billDate': Timestamp.fromDate(billDate ?? DateTime.now()),
         'siteName': storeName ?? '',
@@ -274,6 +324,7 @@ class BillService {
       AppLogger.info('✅ Final carpenterBranchId: $carpenterBranchId');
 
       AppLogger.debug('📝 Step 4: Preparing bill data...');
+      final rupeesPerPoint = await _rateForCarpenter(carpenterId);
       // Generate professional bill number: BP-{STORE_CODE}-{YYYYMMDD}-{RANDOM_6_DIGITS}
       final billNumber = _generateBillNumber(storeName);
       AppLogger.info('✅ Generated billNumber: $billNumber');
@@ -287,6 +338,8 @@ class BillService {
         'imageUrl': imageUrl ?? '',
         'status': 'pending',
         'pointsEarned': 0,
+        'rupeesPerPoint': rupeesPerPoint,
+        'expectedPoints': PointsRate.pointsFor(amount, rupeesPerPoint),
         'branchId': carpenterBranchId,
         'billDate': Timestamp.fromDate(billDate ?? DateTime.now()),
         'siteName': storeName ?? '',
@@ -416,7 +469,11 @@ class BillService {
       AppLogger.debug('   ✓ amount is valid: $amount');
       AppLogger.info('  ✓ amount is valid: $amount');
 
-      final pointsEarned = amount / 1000;
+      // The rate is locked when the bill is submitted (the member was shown
+      // points at that rate). Older bills without one use the member's
+      // current role rate.
+      final rupeesPerPoint = await _rateForBill(billId, carpenterId);
+      final pointsEarned = PointsRate.pointsFor(amount, rupeesPerPoint);
       AppLogger.debug('   ✓ pointsEarned calculated: $pointsEarned');
       AppLogger.info('  ✓ pointsEarned calculated: $pointsEarned');
 
@@ -585,6 +642,7 @@ class BillService {
           transaction.update(billRef, {
             'status': 'approved',
             'pointsEarned': pointsEarned,
+            'rupeesPerPoint': rupeesPerPoint,
             'approvedBy': adminUserId,
             'approvedByPhone': adminPhone,
             'approvedAt': FieldValue.serverTimestamp(),

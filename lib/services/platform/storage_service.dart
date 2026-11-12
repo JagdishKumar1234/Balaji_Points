@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../../core/logger.dart';
+import 'image_compress_service.dart';
 
 class StorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -26,8 +27,12 @@ class StorageService {
       final Reference ref = _storage.ref().child(filePath);
 
       // Upload bytes with metadata (works on mobile and web)
-      final UploadTask uploadTask = ref.putData(
+      final bytes = await ImageCompressService.compress(
         imageBytes,
+        profile: ImageCompressProfile.profile,
+      );
+      final UploadTask uploadTask = ref.putData(
+        bytes,
         SettableMetadata(
           contentType: 'image/jpeg',
           customMetadata: {

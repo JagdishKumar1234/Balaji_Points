@@ -1,0 +1,40 @@
+{
+  "files": "/Users/jagdishkumar/Documents/BalajiPoints_Catalogs/ready_to_upload",
+  "categories": [
+    {
+      "name": "Laminates",
+      "description": "Laminate sheets and door laminate designs",
+      "catalogs": [
+        {"file": "virgo_abco_lam_2025", "title": "Virgo ABCO Lam 2025", "brand": "Virgo ABCO", "year": 2025},
+        {"file": "virgo_new_abco", "title": "Virgo New ABCO", "brand": "Virgo ABCO", "year": 0},
+        {"file": "blinco_premium_laminates", "title": "Blinco Premium Laminates", "brand": "Blinco", "year": 0},
+        {"file": "laminate_design_card", "title": "Laminate Door Designs", "brand": "", "year": 0}
+      ]
+    },
+    {
+      "name": "Doors",
+      "description": "Kan-B designer and pooja room doors",
+      "catalogs": [
+        {"file": "kanb_door_travelogue_2024", "title": "Kan-B Door Travelogue 2024", "brand": "Kan-B", "year": 2024},
+        {"file": "kanb_3200_series", "title": "Kan-B Matrubhoomi 3200 Series (6 mm CNC Grooves)", "brand": "Kan-B", "year": 0},
+        {"file": "kanb_avatar_series", "title": "Kan-B Avatar Series", "brand": "Kan-B", "year": 0},
+        {"file": "kanb_e3_pro", "title": "Kan-B E3 Pro", "brand": "Kan-B", "year": 0},
+        {"file": "akaash_ganga_pr_series", "title": "Kan-B Akaash Ganga Pooja Room Doors", "brand": "Kan-B", "year": 0}
+      ]
+    },
+    {
+      "name": "Plywood",
+      "description": "Plywood and board products",
+      "catalogs": [
+        {"file": "saburi_plywood_products", "title": "Saburi Plywood Products", "brand": "Saburi", "year": 0}
+      ]
+    },
+    {
+      "name": "Hardware",
+      "description": "Soft-close fittings and hardware",
+      "catalogs": [
+        {"file": "woods_finesse_2024", "title": "Woods Finesse Soft-close Series 2024", "brand": "Woods", "year": 2024}
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -415,6 +416,11 @@ class _RoleCard extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           _Tag(
+                            label: PointsRate.label(role.rupeesPerPoint),
+                            bg: context.themeGoldSoft,
+                            fg: context.themeTextPrimary,
+                          ),
+                          _Tag(
                             label: role.isActive ? l10n.active : l10n.deleted,
                             bg: role.isActive
                                 ? context.themeSuccessSoft
@@ -502,6 +508,10 @@ class _AddRoleDialogState extends State<_AddRoleDialog> {
   late final _abbreviation = TextEditingController(
     text: widget.existing?.abbreviation,
   );
+  late final _rate = TextEditingController(
+    text:
+        '${widget.existing?.rupeesPerPoint ?? PointsRate.defaultRupeesPerPoint}',
+  );
   bool _saving = false;
   String? _serverError;
 
@@ -511,6 +521,7 @@ class _AddRoleDialogState extends State<_AddRoleDialog> {
   void dispose() {
     _name.dispose();
     _abbreviation.dispose();
+    _rate.dispose();
     super.dispose();
   }
 
@@ -541,15 +552,18 @@ class _AddRoleDialogState extends State<_AddRoleDialog> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
     try {
+      final rate = int.parse(_rate.text.trim());
       final role = _editing
           ? await widget.service.updateRole(
               widget.existing!,
               name: _name.text,
               abbreviation: _abbreviation.text,
+              rupeesPerPoint: rate,
             )
           : await widget.service.createRole(
               name: _name.text,
               abbreviation: _abbreviation.text,
+              rupeesPerPoint: rate,
             );
       if (mounted) Navigator.pop(context, role);
     } catch (error) {
@@ -609,6 +623,29 @@ class _AddRoleDialogState extends State<_AddRoleDialog> {
                           RoleService.abbreviationMaxLength
                       ? l10n.use10CharactersOrLess
                       : null,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                // Rupees of purchases that earn one point for this role.
+                TextFormField(
+                  controller: _rate,
+                  enabled: !_saving,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _saving ? null : _save(),
+                  decoration: InputDecoration(
+                    labelText: l10n.rupeesPerPoint,
+                    hintText: l10n.enterRupeesPerPoint,
+                    helperText: l10n.rupeesPerPointHint,
+                    prefixText: '₹ ',
+                  ),
+                  validator: (value) {
+                    final n = int.tryParse((value ?? '').trim());
+                    return n == null ||
+                            n < PointsRate.minRupeesPerPoint ||
+                            n > PointsRate.maxRupeesPerPoint
+                        ? l10n.enterValidRate
+                        : null;
+                  },
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Container(

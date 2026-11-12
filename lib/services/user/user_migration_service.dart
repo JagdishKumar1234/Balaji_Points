@@ -69,15 +69,25 @@ class UserMigrationService {
     return _users.doc(normalized);
   }
 
+  /// Resolved ids for this app run. Finding the canonical document takes
+  /// several reads in a row; Home and other screens ask for it many times.
+  static final Map<String, String> _resolvedIds = {};
+
+  /// Forget the remembered id (on logout or account switch).
+  static void clearResolvedIds() => _resolvedIds.clear();
+
   Future<String> resolveCanonicalUserId({
     required String phone,
     String? firebaseUid,
   }) async {
+    final key = '${normalizePhone(phone)}|${firebaseUid ?? ''}';
+    final known = _resolvedIds[key];
+    if (known != null) return known;
     final ref = await resolveCanonicalUserRef(
       phone: phone,
       firebaseUid: firebaseUid,
     );
-    return ref.id;
+    return _resolvedIds[key] = ref.id;
   }
 
   /// Copy legacy `users/{phone}` → `users/{uid}` once; mark phone doc inactive.

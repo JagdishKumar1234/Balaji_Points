@@ -264,6 +264,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ],
                     ),
                   ),
+                  // Not a member yet: ask a question without logging in.
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () => context.push('/contact-us'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: context.themeTextSecondary,
+                        minimumSize: const Size(48, 40),
+                      ),
+                      icon: const Icon(Icons.support_agent_rounded, size: 18),
+                      label: Text(AppLocalizations.of(context)!.contactUs),
+                    ),
+                  ),
                 ],
               ),
             ),

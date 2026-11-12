@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -80,7 +81,7 @@ class _ExportUsersBeforeCleanupScreenState
           final status = billData['status'] as String? ?? '';
 
           if (status == 'approved') {
-            totalEarnedPoints += amount / 1000;
+            totalEarnedPoints += PointsRate.forBill(billData);
           }
         }
 

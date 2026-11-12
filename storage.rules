@@ -61,6 +61,24 @@ service firebase.storage {
       allow delete: if true;
     }
 
+    // Product catalogs (PDF + cover image). Anyone can read. Only a branch
+    // admin or the super admin can upload or delete (checked against their
+    // Firestore users/{uid} record): PDFs up to 25 MB, covers up to 1 MB.
+    function isCatalogManager() {
+      return request.auth != null
+          && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role
+              in ['admin', 'super_admin'];
+    }
+    match /catalogs/{catalogId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isCatalogManager()
+          && ((request.resource.contentType == 'application/pdf'
+               && request.resource.size <= 25 * 1024 * 1024)
+              || (request.resource.contentType.matches('image/(jpeg|png)')
+               && request.resource.size <= 1024 * 1024));
+      allow delete: if isCatalogManager();
+    }
+
     // Deny all other paths
     match /{allPaths=**} {
       allow read, write: if false;

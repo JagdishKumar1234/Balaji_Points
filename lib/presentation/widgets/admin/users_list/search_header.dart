@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -130,7 +131,7 @@ class _SearchHeaderState extends State<SearchHeader> {
 
           totalBillAmount += amount;
           if (status == 'approved') {
-            totalEarnedPoints += amount / 1000;
+            totalEarnedPoints += PointsRate.forBill(billData);
           }
         }
 

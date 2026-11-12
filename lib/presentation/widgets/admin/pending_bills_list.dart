@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
@@ -60,6 +62,13 @@ class _PendingBillsListState extends State<PendingBillsList> {
     final billId = bill['billId'];
     final carpenterId = bill['carpenterId'];
     final amount = (bill['amount'] ?? 0).toDouble();
+    // Preview at the member's role rate, the same rate approval credits.
+    final carpenterData = await _fetchCarpenterData(carpenterId);
+    final previewRate = await RoleService().rateForRole(
+      carpenterData?['role'] as String?,
+    );
+    final previewPoints = PointsRate.forBill(bill, rupeesPerPoint: previewRate);
+    if (!mounted) return;
 
     AppLogger.debug(
       '   Extracted: billId="$billId", carpenterId="$carpenterId", amount=$amount',
@@ -74,7 +83,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
         content: AppText.body(
           AppLocalizations.of(context)!.approveThisBillOfPointsWill(
             '${amount.toStringAsFixed(0)}',
-            '${(amount / 1000).toStringAsFixed(2)}',
+            previewPoints.toStringAsFixed(2),
           ),
         ),
         actions: [
@@ -322,7 +331,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
         final billDate = billData['billDate'] as Timestamp?;
         final createdAt = billData['createdAt'] as Timestamp?;
         final billNumber = billData['billNumber'] as String? ?? '';
-        final points = amount / 1000;
+        final points = PointsRate.forBill(billData);
 
         totalBills++;
         totalPoints += points;
@@ -642,7 +651,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
       final bill = billDoc.data() as Map<String, dynamic>;
       final billId = billDoc.id;
       final amount = (bill['amount'] ?? 0).toDouble();
-      final points = amount / 1000;
+      final points = PointsRate.forBill(bill);
       final status = bill['status'] ?? 'pending';
       final billDate = bill['billDate'] as Timestamp?;
       final createdAt = bill['createdAt'] as Timestamp?;
@@ -1324,7 +1333,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                         AppLocalizations.of(
                                                           context,
                                                         )!.pts4(
-                                                          '${(amount / 1000).toStringAsFixed(2)}',
+                                                          PointsRate.forBill(
+                                                            bill,
+                                                          ).toStringAsFixed(2),
                                                         ),
                                                       ),
                                                     ],

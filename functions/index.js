@@ -29,6 +29,7 @@ const SUPER_ADMIN_EMAIL = "aaijitechstudio@gmail.com";
 const {isPointsResetMember} = require("./points_reset_members");
 const {inAppRecordFor} = require("./in_app_record");
 const {isFutureBillDate, indiaDayBounds} = require("./bill_date");
+const pinSignIn = require("./admin_pin_signin");
 
 /**
  * Verifies the authenticated caller against the configured super-admin profile.
@@ -562,6 +563,29 @@ function calculateTier(points) {
   return "Bronze";
 }
 
+const DEFAULT_RUPEES_PER_POINT = {
+  carpenter: 1000, interior_designer: 1000, architect: 5000, engineer: 5000,
+};
+
+/**
+ * Rupees of approved purchases per point for a role: the role record's
+ * `rupeesPerPoint`, else the built-in default for that role, else 1000.
+ * @param {string|undefined} role - The member's role ID.
+ * @return {Promise<number>} Rupees per point.
+ */
+async function rupeesPerPointForRole(role) {
+  const id = String(role || "").trim().toLowerCase();
+  const fallback = DEFAULT_RUPEES_PER_POINT[id] || 1000;
+  if (!id) return fallback;
+  try {
+    const doc = await db.collection("roles").doc(id).get();
+    const n = Number(doc.exists ? doc.data().rupeesPerPoint : NaN);
+    return Number.isFinite(n) && n >= 1 && n <= 1000000 ? n : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
 /**
  * Resolve the canonical user document for a carpenterId.
  * carpenterId may be a UID or a phone number (legacy).
@@ -855,10 +879,16 @@ exports.onBillStatusChanged = onDocumentWritten(
           }
         }
 
-        // 1 point per ₹1000 (supports decimals, e.g. ₹2500 → 2.5 pts).
-        const pointsEarned = after.pointsEarned != null ?
+        // Points at the member's role rate (rupees per point, set per role
+        // by the super admin), with decimals (₹2500 at 1000 → 2.5 pts).
+        // Rate locked at submission (bill.rupeesPerPoint), else role rate.
+        const savedRate = Number(after.rupeesPerPoint);
+        const rate = Number.isFinite(savedRate) && savedRate >= 1 && savedRate <= 1000000 ?
+          savedRate :
+          await rupeesPerPointForRole(user.data.role);
+        const pointsEarned = Number(after.pointsEarned) > 0 ?
           Number(after.pointsEarned) :
-          amount / 1000;
+          amount / rate;
         const currentPoints = pointsSnap.exists ?
           (pointsSnap.data().totalPoints || 0) :
           (user.data.totalPoints || 0);
@@ -1136,3 +1166,50 @@ exports.onUserDeleted = onDocumentDeleted(
       return null;
     },
 );
+
+/**
+ * PIN login for branch admins. A PIN login has no Firebase sign-in, so the
+ * security rules cannot tell an admin from anyone else and admin-only data
+ * (enquiries, catalog editing) is refused. The app calls this once during
+ * an admin's PIN login with the PIN just typed; the PIN is checked here on
+ * the server (never a hash from the phone, since user records are public)
+ * and a Firebase sign-in token for the admin's own user document is
+ * returned. Five wrong PINs lock the phone for 15 minutes.
+ */
+exports.adminPinSignIn = onCall(async (request) => {
+  const phone = pinSignIn.normalizePhone(request.data && request.data.phone);
+  const pin = String((request.data && request.data.pin) || "");
+  if (phone.length !== 10 || !/^\d{4,6}$/.test(pin)) {
+    throw new HttpsError("invalid-argument", "Phone and PIN are required.");
+  }
+
+  const attemptsRef = db.doc(`pin_signin_attempts/${phone}`);
+  const now = Date.now();
+  const attempts = (await attemptsRef.get()).data();
+  if (pinSignIn.isLocked(attempts, now)) {
+    throw new HttpsError("resource-exhausted",
+        "Too many wrong PINs. Try again in 15 minutes.");
+  }
+
+  const byField = await db.collection("users")
+      .where("phone", "==", phone).get();
+  let docs = byField.docs.map((d) => ({id: d.id, data: d.data()}));
+  if (docs.length === 0) {
+    const byId = await db.doc(`users/${phone}`).get();
+    if (byId.exists) docs = [{id: byId.id, data: byId.data()}];
+  }
+
+  const match = pinSignIn.matchAdmin(docs, pin);
+  if (!match) {
+    await attemptsRef.set(pinSignIn.afterFailure(attempts, now));
+    throw new HttpsError("permission-denied", "Not a branch admin PIN.");
+  }
+
+  await attemptsRef.delete();
+  const token = await admin.auth().createCustomToken(match.id, {
+    role: "admin",
+    branchId: match.branchId,
+    loginMethod: "pin",
+  });
+  return {token, uid: match.id};
+});
