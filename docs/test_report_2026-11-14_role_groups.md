@@ -63,3 +63,39 @@ See `docs/test_report_2026-11-11_write_flows.md` → "How to run these tests
 again". Extra test accounts now in the seed: Karur architect 9000000010/1010,
 engineer 9000000011/1111, interior designer 9000000012/1212; waiting sign-ups
 9000000013/1313 (E Road), 9000000014/1414 (Karur); rejected 9000000015/1515.
+
+## Release 1.1.3 (35)
+
+AAB: `build/app/outputs/bundle/release/app-release.aab` (69.4 MB, signed), commit `538997c`.
+
+### What's new (Play Store, max 500 characters)
+
+**English**
+```
+What's new in 1.1.3
+• Fairer leaderboards: carpenters and interior designers now compete together, and architects and engineers together, within your own branch.
+• Two daily lucky draws: one for each group, open to members with a bill approved that day.
+• New accounts are approved by your branch. You'll get a notification once approved.
+• A bill photo is now required when adding a bill.
+• Bug fixes and security improvements.
+```
+
+**Hindi**
+```
+1.1.3 में नया
+• निष्पक्ष लीडरबोर्ड: कारपेंटर और इंटीरियर डिज़ाइनर आपस में, और आर्किटेक्ट और इंजीनियर आपस में, अपनी ही शाखा में मुकाबला करते हैं।
+• रोज़ दो लकी ड्रॉ: हर ग्रुप के लिए एक, उस दिन बिल अप्रूव होने वाले सदस्यों के लिए।
+• नए खाते आपकी शाखा मंज़ूर करती है। मंज़ूरी पर आपको सूचना मिलेगी।
+• बिल जोड़ते समय बिल की फ़ोटो अब ज़रूरी है।
+• बग सुधार और सुरक्षा सुधार।
+```
+
+**Tamil**
+```
+1.1.3 இல் புதியவை
+• நியாயமான தரவரிசை: தச்சர்கள், உள் அலங்கார வடிவமைப்பாளர்கள் ஒரு குழு; கட்டிடக் கலைஞர்கள், பொறியாளர்கள் ஒரு குழு; உங்கள் கிளைக்குள் மட்டும்.
+• தினமும் இரண்டு குலுக்கல்கள்: ஒவ்வொரு குழுவிற்கும் ஒன்று, அன்று பில் அங்கீகரிக்கப்பட்டவர்களுக்கு.
+• புதிய கணக்குகளை உங்கள் கிளை அங்கீகரிக்கும். அங்கீகரித்ததும் அறிவிப்பு வரும்.
+• பில் சேர்க்கும்போது பில் புகைப்படம் இப்போது அவசியம்.
+• பிழைத் திருத்தங்கள், பாதுகாப்பு மேம்பாடுகள்.
+```
