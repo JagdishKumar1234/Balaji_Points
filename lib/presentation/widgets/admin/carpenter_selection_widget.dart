@@ -1,4 +1,4 @@
-import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
@@ -159,9 +159,9 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
                       // Members only (admins and super admins are excluded)
                       carpenters = carpenters.where((doc) {
                         final user = doc.data() as Map<String, dynamic>;
-                        final role = user['role'] as String?;
-                        // All four member roles can have bills added.
-                        return AppConstants.isMemberRole(role);
+                        // Approved members of all four roles can have bills
+                        // added; pending / rejected sign-ups cannot.
+                        return MemberFilter.isActiveMember(user);
                       }).toList();
 
                       // Apply search filter

@@ -1,4 +1,4 @@
-import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -14,11 +14,13 @@ class UsersListView extends StatelessWidget {
   final String searchQuery;
   final String selectedTier;
   final String selectedSort;
+  final MemberRoleFilter roleFilter;
 
   const UsersListView({
     required this.searchQuery,
     required this.selectedTier,
     required this.selectedSort,
+    this.roleFilter = MemberRoleFilter.all,
     super.key,
   });
 
@@ -58,12 +60,18 @@ class UsersListView extends StatelessWidget {
 
         var users = snapshot.data?.docs ?? [];
 
-        // Filter: Only show non-admin users (carpenters)
+        // Approved members only; pending and rejected sign-ups are on the
+        // Account requests screen.
         users = users.where((doc) {
           final data = doc.data() as Map<String, dynamic>;
-          final role = data['role'] as String?;
-          if (role == 'admin') return false;
-          return AppConstants.isMemberRole(role);
+          return MemberFilter.isActiveMember(data);
+        }).toList();
+        final totalMembers = users.length;
+
+        // Group / role filter
+        users = users.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return roleFilter.matches(data['role'] as String?);
         }).toList();
 
         // Apply search filter
@@ -123,8 +131,9 @@ class UsersListView extends StatelessWidget {
           }
         });
 
+        final Widget list;
         if (users.isEmpty) {
-          return Padding(
+          list = Padding(
             padding: const EdgeInsets.all(16),
             child: EmptyState(
               icon: Icons.people_outline_rounded,
@@ -132,11 +141,9 @@ class UsersListView extends StatelessWidget {
               message: AppLocalizations.of(context)!.carpentersAppearHere,
             ),
           );
-        }
-
-        // Use grid layout on desktop, list on mobile
-        if (context.isDesktop) {
-          return GridView.builder(
+        } else if (context.isDesktop) {
+          // Grid on desktop, list on mobile
+          list = GridView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -152,17 +159,35 @@ class UsersListView extends StatelessWidget {
               return UserListItem(userId: user.id, userData: data);
             },
           );
+        } else {
+          list = ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              final data = user.data() as Map<String, dynamic>;
+
+              return UserListItem(userId: user.id, userData: data);
+            },
+          );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final user = users[index];
-            final data = user.data() as Map<String, dynamic>;
-
-            return UserListItem(userId: user.id, userData: data);
-          },
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Text(
+                AppLocalizations.of(
+                  context,
+                )!.filteredMemberCount('${users.length}', '$totalMembers'),
+                style: AppTypography.bodySmall().copyWith(
+                  color: context.themeTextSecondary,
+                ),
+              ),
+            ),
+            Expanded(child: list),
+          ],
         );
       },
     );

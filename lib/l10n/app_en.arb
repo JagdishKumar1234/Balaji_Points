@@ -2672,7 +2672,13 @@
   "enquiryHeroTitle": "How can we help?",
   "enquiryHeroSubtitle": "Send your question. We usually reply within one working day.",
   "enquiryGoesToBranch": "Goes to {branch}",
-  "@enquiryGoesToBranch": {"placeholders": {"branch": {"type": "String"}}},
+  "@enquiryGoesToBranch": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
   "enquiryGoesToTeam": "Goes to the Balaji Points team",
   "enquiryTypeLabel": "What is it about?",
   "enquiryTypeProduct": "Product enquiry",
@@ -2695,11 +2701,23 @@
   "enquirySend": "Send enquiry",
   "enquirySentTitle": "Enquiry sent",
   "enquirySentBranch": "Thank you. {branch} will contact you soon.",
-  "@enquirySentBranch": {"placeholders": {"branch": {"type": "String"}}},
+  "@enquirySentBranch": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
   "enquirySentTeam": "Thank you. Our team will contact you soon.",
   "enquirySendAnother": "Send another",
   "enquiryTooSoon": "Please wait {minutes} min before sending another enquiry.",
-  "@enquiryTooSoon": {"placeholders": {"minutes": {"type": "int"}}},
+  "@enquiryTooSoon": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "enquiryFailed": "Could not send. Check your internet and try again.",
   "enquiryReachDirectly": "Or reach us directly",
   "enquiryCall": "Call",
@@ -2714,7 +2732,13 @@
   "contactYourBranch": "Your branch",
   "contactSendMessage": "Send us a message",
   "contactSendingAs": "Sending as {name}",
-  "@contactSendingAs": {"placeholders": {"name": {"type": "String"}}},
+  "@contactSendingAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "guestEnquiries": "Guest enquiries",
   "navMore": "More",
   "billRejectedAt": "Rejected: ",
@@ -2803,5 +2827,256 @@
   "drawerSectionExplore": "Explore",
   "drawerSectionSupport": "Help & support",
   "offerBannerChange": "Change",
-  "loggingOut": "Logging out…"
+  "loggingOut": "Logging out…",
+  "groupTradeTitle": "Top Carpenters & Interior Designers",
+  "groupProfessionalTitle": "Top Architects & Engineers",
+  "groupTradeShort": "Carpenter & Interior",
+  "groupProfessionalShort": "Architect & Engineer",
+  "rankOfTotal": "Rank {rank} of {total}",
+  "@rankOfTotal": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "membersInYourGroup": "{count} members in your group · your branch",
+  "@membersInYourGroup": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "spinGroupDoneToday": "Today's draw for this group is done",
+  "spinGroupHint": "Each group has its own draw, once a day",
+  "spinNoQualifiedToday": "No qualified members today. A member needs at least one bill approved today.",
+  "todaySalesValue": "Today's sales {amount}",
+  "@todaySalesValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSalesToday": "{count} qualified · {amount} sales today",
+  "@groupSalesToday": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "todaysWinnerYourGroup": "Today's winner · {group}",
+  "@todaysWinnerYourGroup": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "drawNotHappenedYet": "Today's draw hasn't happened yet",
+  "allRolesBeforeSplit": "All roles",
+  "allGroups": "All",
+  "allMembers": "All members",
+  "filteredMemberCount": "{shown} of {total} members",
+  "@filteredMemberCount": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "accountRequestSentTitle": "Request sent",
+  "accountRequestSentBody": "Your account request has been sent to {branch}. You can sign in once the branch approves it.",
+  "@accountRequestSentBody": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "accountPendingTitle": "Waiting for approval",
+  "accountPendingBody": "Your account is waiting for approval from {branch}. Please try signing in later.",
+  "@accountPendingBody": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "accountRejectedTitle": "Account not approved",
+  "accountRejectedBody": "Your account request was not approved by {branch}. Please contact the branch.",
+  "@accountRejectedBody": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectReasonValue": "Reason: {reason}",
+  "@rejectReasonValue": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "callBranchPhone": "Call branch · {phone}",
+  "@callBranchPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "yourBranchFallback": "your branch",
+  "phoneTakenPending": "An account request for this number is already waiting for approval at {branch}.",
+  "@phoneTakenPending": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneTakenRejected": "This number already has an account at {branch}. Please contact the branch.",
+  "@phoneTakenRejected": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneTakenApproved": "An account already exists for this number. Please sign in.",
+  "phoneTakenOtherBranch": "This number is already registered with another Balaji Points branch. Please contact support.",
+  "numberAlreadyRegistered": "Number already registered",
+  "accountRequests": "Account requests",
+  "accountRequestsPendingTab": "Pending ({count})",
+  "@accountRequestsPendingTab": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "accountRequestsRejectedTab": "Rejected ({count})",
+  "@accountRequestsRejectedTab": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "noPendingRequests": "No account requests waiting",
+  "noPendingRequestsHint": "New sign-ups from your branch appear here for approval.",
+  "noRejectedRequests": "No rejected accounts",
+  "approveAccountConfirm": "Approve {name}? They can sign in straight away.",
+  "@approveAccountConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectAccountTitle": "Reject {name}?",
+  "@rejectAccountTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectReasonOptional": "Reason (optional)",
+  "rejectReasonNotCustomer": "Not a customer",
+  "rejectReasonWrongBranch": "Wrong branch",
+  "rejectReasonDuplicate": "Duplicate account",
+  "accountApprovedToast": "{name} approved",
+  "@accountApprovedToast": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "accountRejectedToast": "{name} rejected",
+  "@accountRejectedToast": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "possibleDuplicate": "Possible duplicate: {name} has the same name",
+  "@possibleDuplicate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "requestedOn": "Requested {date}",
+  "@requestedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "memberAddedApproveLater": "Member added. Approve them on Account requests.",
+  "enterRejectReason": "Enter reason",
+  "waApprovedMessage": "Hello {name}, your Balaji Points account at {branch} is approved. You can now sign in to the app and start adding your bills. Thank you!",
+  "@waApprovedMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "waRejectedMessage": "Hello {name}, your Balaji Points account request at {branch} could not be approved.{reason} Please contact us at the store for help. Thank you!",
+  "@waRejectedMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "branch": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "waReasonPart": " Reason: {reason}.",
+  "@waReasonPart": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "letMemberKnowTitle": "Let {name} know",
+  "@letMemberKnowTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "letMemberKnowApproved": "An app notification has been sent. Also send a WhatsApp message from your phone?",
+  "letMemberKnowRejected": "Send a polite WhatsApp message from your phone?",
+  "sendWhatsApp": "Send WhatsApp",
+  "notNow": "Not now",
+  "whatsAppNotAvailable": "Could not open WhatsApp on this device."
 }

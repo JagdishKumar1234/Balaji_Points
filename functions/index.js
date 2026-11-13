@@ -8,6 +8,8 @@
  *  3. onPointsChanged            – tier recalculation safety-net on user_points write
  *  4. onUserDeleted              – cascade-delete user_points / bills / points_history
  *  5. onBranchRenamed / onRoleRenamed – copy renamed branch / role names onto users
+ *  6. onMemberSignUp             – mark a new member sign-up pending + push the branch admin
+ *  7. reviewMemberAccount        – the member's branch admin approves or rejects a sign-up
  *
  * Branch-isolation contract (applied in every trigger that touches user data):
  *   bill.branchId  must equal  user.branchId
@@ -30,6 +32,7 @@ const {isPointsResetMember} = require("./points_reset_members");
 const {inAppRecordFor} = require("./in_app_record");
 const {isFutureBillDate, indiaDayBounds} = require("./bill_date");
 const pinSignIn = require("./admin_pin_signin");
+const approval = require("./account_approval");
 
 /**
  * Verifies the authenticated caller against the configured super-admin profile.
@@ -1216,4 +1219,110 @@ exports.adminPinSignIn = onCall({
     loginMethod: "pin",
   });
   return {token, uid: match.id};
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. onMemberSignUp  –  a member who signs up themselves waits for approval
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.onMemberSignUp = onDocumentWritten("users/{userId}", async (event) => {
+  const before = event.data.before.exists ? event.data.before.data() : undefined;
+  const after = event.data.after.exists ? event.data.after.data() : undefined;
+  if (!approval.isNewMemberSignUp(before, after)) return null;
+
+  const userId = event.params.userId;
+  const branchId = String(after.branchId).trim();
+  await event.data.after.ref.set({
+    profile_verified: false,
+    approvalStatus: after.approvalStatus === "rejected" ? "rejected" : "pending",
+    approvalRequestedAt: after.approvalRequestedAt ||
+      FieldValue.serverTimestamp(),
+    approvalNotifiedAt: FieldValue.serverTimestamp(),
+  }, {merge: true});
+
+  // Push every admin of this branch (the in-app record is saved by
+  // processNotificationQueue even when a push cannot be delivered).
+  const name = `${after.firstName || ""} ${after.lastName || ""}`.trim() ||
+    after.displayName || after.phone || "New member";
+  const roleName = after.roleName || after.role || "Member";
+  const admins = await db.collection("users")
+      .where("branchId", "==", branchId).where("role", "==", "admin").get();
+  const batch = db.batch();
+  let queued = 0;
+  for (const adminDoc of admins.docs) {
+    const token = adminDoc.data().fcmToken;
+    batch.set(db.collection("notification_queue").doc(), {
+      userId: adminDoc.id,
+      fcmToken: typeof token === "string" ? token : "",
+      branchId,
+      type: "newUserRegistered",
+      title: "New account request",
+      body: `${name} · ${roleName}`,
+      data: {
+        userId,
+        userPhone: after.phone || "",
+        screen: "/account-requests",
+      },
+      priority: "high",
+      status: "pending",
+      createdAt: FieldValue.serverTimestamp(),
+    });
+    queued++;
+  }
+  if (queued > 0) await batch.commit();
+  console.log(`[onMemberSignUp/${userId}] pending; ${queued} admin(s) notified`);
+  return null;
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. reviewMemberAccount  –  approve or reject a member sign-up
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.reviewMemberAccount = onCall(async (request) => {
+  const caller = request.auth;
+  if (!caller) {
+    throw new HttpsError("unauthenticated", "Please sign in again.");
+  }
+  const data = request.data || {};
+  const userId = String(data.userId || "").trim();
+  const action = data.action;
+  if (!userId || (action !== "approve" && action !== "reject")) {
+    throw new HttpsError("invalid-argument", "Choose an account and action.");
+  }
+
+  // Only the admin of the member's own branch (never the super admin).
+  const callerSnap = await db.collection("users").doc(caller.uid).get();
+  const callerData = callerSnap.exists ? callerSnap.data() : null;
+  const targetRef = db.collection("users").doc(userId);
+  const targetSnap = await targetRef.get();
+  const target = targetSnap.exists ? targetSnap.data() : null;
+
+  const denied = approval.reviewDenied(callerData, target);
+  if (denied) throw new HttpsError("permission-denied", denied);
+
+  const name = callerData ?
+    `${callerData.firstName || ""} ${callerData.lastName || ""}`.trim() : "";
+  const fields = approval.reviewFields(action,
+      {uid: caller.uid, name: name || "Branch admin"},
+      data.reason, FieldValue.serverTimestamp());
+  await targetRef.set(fields, {merge: true});
+
+  // Tell the member when they are approved and have a push token.
+  if (action === "approve" && typeof target.fcmToken === "string" &&
+      target.fcmToken) {
+    await db.collection("notification_queue").add({
+      userId,
+      fcmToken: target.fcmToken,
+      branchId: target.branchId || null,
+      type: "accountApproved",
+      title: "Account approved",
+      body: "Your Balaji Points account is approved. You can sign in now.",
+      data: {screen: "/login"},
+      priority: "high",
+      status: "pending",
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  }
+  console.log(`[reviewMemberAccount] ${caller.uid} ${action}d ${userId}`);
+  return {ok: true, status: fields.approvalStatus};
 });

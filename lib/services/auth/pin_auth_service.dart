@@ -43,6 +43,7 @@ class PinAuthService {
     String? profileImageUrl,
     String? branchId,
     String? role,
+    bool createdByAdmin = false,
   }) async {
     try {
       final normalized = normalizePhone(phone);
@@ -165,6 +166,14 @@ class PinAuthService {
           'role': assignedRole,
           'branchId': branchId,
           'status': 'verified',
+          // Member accounts start unapproved; an admin-added one is
+          // approved straight after by reviewMemberAccount.
+          if (AppConstants.isMemberRole(assignedRole)) ...{
+            'profile_verified': false,
+            'approvalStatus': 'pending',
+            'approvalRequestedAt': FieldValue.serverTimestamp(),
+          },
+          if (createdByAdmin) 'createdByAdmin': true,
           'totalPoints': 0,
           'tier': 'Bronze',
           'createdAt': FieldValue.serverTimestamp(),

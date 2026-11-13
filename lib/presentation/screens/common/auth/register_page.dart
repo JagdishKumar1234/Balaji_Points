@@ -18,6 +18,7 @@ import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import '../../../../providers/auth_provider.dart';
+import 'package:balaji_points/presentation/screens/common/auth/account_status_page.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({
@@ -206,6 +207,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           _ => '/',
         };
         context.go(route);
+      } else if (state is AuthPendingApproval) {
+        context.go('/account-status', extra: state);
+      } else if (state is AuthPhoneTaken) {
+        showPhoneTakenDialog(context, state.result);
       } else if (state is AuthError) {
         _showMessage(state.message);
       }

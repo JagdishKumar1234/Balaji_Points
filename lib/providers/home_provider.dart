@@ -1,7 +1,8 @@
+import 'package:balaji_points/core/points/leaderboard_group.dart';
 import 'package:balaji_points/core/profile/profile_completeness.dart';
+import 'package:balaji_points/services/leaderboard/leaderboard_service.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/services/platform/offer_visibility.dart';
-import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,9 +29,15 @@ class HomeState {
   final String? userDocId;
   final int? userRank;
 
-  // Leaderboard
+  // Leaderboard: only the signed-in member's own branch and role group.
   final List<CarpenterRank> topCarpenters;
   final bool rankingsLoading;
+
+  /// The group this member is ranked in (null for non-members).
+  final LeaderboardGroup? rankingGroup;
+
+  /// How many members compete on this member's board.
+  final int rankingTotal;
 
   // Offers
   final List<OfferItem> offers;
@@ -49,6 +56,8 @@ class HomeState {
     this.userRank,
     this.topCarpenters = const [],
     this.rankingsLoading = true,
+    this.rankingGroup,
+    this.rankingTotal = 0,
     this.offers = const [],
     this.offersLoading = true,
     this.greeting,
@@ -80,6 +89,8 @@ class HomeState {
     bool clearUserRank = false,
     List<CarpenterRank>? topCarpenters,
     bool? rankingsLoading,
+    LeaderboardGroup? rankingGroup,
+    int? rankingTotal,
     List<OfferItem>? offers,
     bool? offersLoading,
     GreetingItem? greeting,
@@ -93,6 +104,8 @@ class HomeState {
     userRank: clearUserRank ? null : (userRank ?? this.userRank),
     topCarpenters: topCarpenters ?? this.topCarpenters,
     rankingsLoading: rankingsLoading ?? this.rankingsLoading,
+    rankingGroup: rankingGroup ?? this.rankingGroup,
+    rankingTotal: rankingTotal ?? this.rankingTotal,
     offers: offers ?? this.offers,
     offersLoading: offersLoading ?? this.offersLoading,
     greeting: greeting ?? this.greeting,
@@ -207,10 +220,12 @@ class HomeNotifier extends Notifier<HomeState> {
   /// Last known rankings from this phone, shown until the server replies.
   Future<void> _showCachedRankings() async {
     try {
-      final ranked = await _fetchRanked(source: Source.cache);
-      if (ranked.isEmpty || state.topCarpenters.isNotEmpty) return;
+      final board = await _fetchBoard(source: Source.cache);
+      if (board.entries.isEmpty || state.topCarpenters.isNotEmpty) return;
       state = state.copyWith(
-        topCarpenters: ranked.take(10).toList(),
+        topCarpenters: _toRanks(board.entries.take(10)),
+        rankingGroup: board.group,
+        rankingTotal: board.total,
         rankingsLoading: false,
       );
     } catch (_) {
@@ -346,20 +361,14 @@ class HomeNotifier extends Notifier<HomeState> {
 
   Future<void> _refreshRankings() async {
     try {
-      final ranked = await _fetchRanked();
-      final docId = state.userDocId;
-
-      int? userRank;
-      if (docId != null) {
-        final match = ranked.where((c) => c.userId == docId);
-        if (match.isNotEmpty) userRank = match.first.rank;
-      }
-
+      final board = await _fetchBoard();
       state = state.copyWith(
-        topCarpenters: ranked.take(10).toList(),
+        topCarpenters: _toRanks(board.entries.take(10)),
+        rankingGroup: board.group,
+        rankingTotal: board.total,
         rankingsLoading: false,
-        userRank: userRank,
-        clearUserRank: userRank == null,
+        userRank: board.currentUser?.rank,
+        clearUserRank: board.currentUser == null,
       );
     } catch (e, st) {
       AppLogger.error('HomeNotifier rankings failed', e, st);
@@ -367,55 +376,39 @@ class HomeNotifier extends Notifier<HomeState> {
     }
   }
 
-  Future<List<CarpenterRank>> _fetchRanked({
+  /// This member's board: their own branch and role group only. With no
+  /// branch known the board is empty — other branches are never read.
+  Future<LeaderboardResult> _fetchBoard({
     Source source = Source.serverAndCache,
   }) async {
-    // Leaderboard is per branch: all member roles compete within their store.
-    final branchId = await CurrentBranchService().resolveBranchId();
-    final options = GetOptions(source: source);
-    final qs = branchId == null
-        ? await _firestore.collection('users').get(options)
-        : await _firestore
-              .collection('users')
-              .where('branchId', isEqualTo: branchId)
-              .get(options);
-    final docId = state.userDocId;
-
-    final carpenters = <CarpenterRank>[];
-    for (final doc in qs.docs) {
-      final d = doc.data();
-      if (!AppConstants.isMemberRole(d['role'] as String?)) continue;
-
-      final fn = (d['firstName'] as String? ?? '').trim();
-      final ln = (d['lastName'] as String? ?? '').trim();
-      final name = '$fn $ln'.trim();
-
-      carpenters.add(
-        CarpenterRank(
-          rank: 0,
-          name: name.isEmpty ? 'Member' : name,
-          points: PointsUtils.asDouble(d['totalPoints']),
-          imageUrl: d['profileImage'] as String?,
-          userId: doc.id,
-          isCurrentUser: doc.id == docId,
-        ),
-      );
-    }
-
-    carpenters.sort((a, b) => b.points.compareTo(a.points));
-
-    return List.generate(
-      carpenters.length,
-      (i) => CarpenterRank(
-        rank: i + 1,
-        name: carpenters[i].name,
-        points: carpenters[i].points,
-        imageUrl: carpenters[i].imageUrl,
-        userId: carpenters[i].userId,
-        isCurrentUser: carpenters[i].isCurrentUser,
-      ),
+    final profileBranch = (state.userData?['branchId'] as String? ?? '').trim();
+    final branchId = profileBranch.isNotEmpty
+        ? profileBranch
+        : await CurrentBranchService().resolveBranchId();
+    // The group comes from the member's own record when it is loaded.
+    final role = state.userData?['role'] as String?;
+    final group = state.userData == null ? null : LeaderboardGroups.of(role);
+    if (state.userData != null && group == null) return LeaderboardResult.empty;
+    return LeaderboardService(firestore: _firestore).load(
+      branchId: branchId,
+      group: group,
+      currentUserId: state.userDocId ?? await _session.getUserId(),
+      currentPhone: await _session.getPhoneNumber(),
+      source: source,
     );
   }
+
+  static List<CarpenterRank> _toRanks(Iterable<LeaderboardEntry> entries) => [
+    for (final e in entries)
+      CarpenterRank(
+        rank: e.rank,
+        name: e.name,
+        points: e.points,
+        imageUrl: e.imageUrl,
+        userId: e.userId,
+        isCurrentUser: e.isCurrentUser,
+      ),
+  ];
 
   Future<String?> _resolveDocId() async {
     final userId = await _session.getUserId();

@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:balaji_points/core/constants/app_constants.dart';
-import 'package:balaji_points/core/utils/points_utils.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/services/leaderboard/leaderboard_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 
@@ -121,97 +122,47 @@ class BranchCelebrationService {
     return null;
   }
 
+  /// The top three and the signed-in member's own rank, counted only among
+  /// approved members of the same branch **and the same role group**.
   Future<BranchCelebrationSummary> loadCelebrationSummary(
     String branchId,
   ) async {
-    final users = await _firestore
-        .collection('users')
-        .where('branchId', isEqualTo: branchId)
-        .get();
-    final memberDocs = users.docs.where((doc) {
-      final data = doc.data();
-      return AppConstants.isMemberRole(data['role'] as String?) &&
-          data['status'] != 'deleted';
-    }).toList();
-
-    final pointsSnapshot = await _firestore
-        .collection('user_points')
-        .where('branchId', isEqualTo: branchId)
-        .get();
-    final pointsById = <String, Map<String, dynamic>>{};
-    for (final pointsDoc in pointsSnapshot.docs) {
-      pointsById[pointsDoc.id] = pointsDoc.data();
-      final userId = pointsDoc.data()['userId'] as String?;
-      if (userId != null && userId.isNotEmpty) {
-        pointsById[userId] = pointsDoc.data();
+    final sessionId = (await _session.getUserId())?.trim() ?? '';
+    final sessionPhone = (await _session.getPhoneNumber())?.trim() ?? '';
+    final service = LeaderboardService(firestore: _firestore);
+    var board = await service.load(
+      branchId: branchId,
+      currentUserId: sessionId,
+      currentPhone: sessionPhone,
+    );
+    // Profile not found by ID or phone: fall back to the role saved at login.
+    if (board.group == null) {
+      final group = LeaderboardGroups.of(await _session.getUserRole());
+      final role = await _session.getUserRole();
+      if (group != null && AppConstants.isMemberRole(role)) {
+        board = await service.load(
+          branchId: branchId,
+          group: group,
+          currentUserId: sessionId,
+          currentPhone: sessionPhone,
+        );
       }
     }
 
-    final rows =
-        <({String id, String uid, String phone, String name, double points})>[];
-    for (final userDoc in memberDocs) {
-      final data = userDoc.data();
-      final uid = data['uid'] as String? ?? '';
-      final phone = data['phone'] as String? ?? '';
-      final pointsData =
-          pointsById[userDoc.id] ??
-          (uid.isEmpty ? null : pointsById[uid]) ??
-          (phone.isEmpty ? null : pointsById[phone]);
-      final resolvedPoints = pointsData == null
-          ? _asDouble(data['totalPoints'])
-          : PointsUtils.resolveTotalPoints(pointsData);
-      final firstName = (data['firstName'] as String? ?? '').trim();
-      final lastName = (data['lastName'] as String? ?? '').trim();
-      final savedName = '$firstName $lastName'.trim();
-      // Google accounts may only have a display name.
-      final fullName = savedName.isNotEmpty
-          ? savedName
-          : (data['displayName'] as String? ?? data['name'] as String? ?? '')
-                .trim();
-      rows.add((
-        id: userDoc.id,
-        uid: uid,
-        phone: phone,
-        name: fullName.isEmpty ? 'Member' : fullName,
-        points: resolvedPoints,
-      ));
-    }
-
-    rows.sort((a, b) {
-      final byPoints = b.points.compareTo(a.points);
-      return byPoints != 0
-          ? byPoints
-          : a.name.toLowerCase().compareTo(b.name.toLowerCase());
-    });
-
-    final sessionId = (await _session.getUserId())?.trim() ?? '';
-    final sessionPhone = (await _session.getPhoneNumber())?.trim() ?? '';
-    var currentIndex = sessionId.isEmpty
-        ? -1
-        : rows.indexWhere((row) => row.id == sessionId);
-    if (currentIndex < 0 && sessionId.isNotEmpty) {
-      currentIndex = rows.indexWhere((row) => row.uid == sessionId);
-    }
-    if (currentIndex < 0 && sessionPhone.isNotEmpty) {
-      currentIndex = rows.indexWhere((row) => row.phone == sessionPhone);
-    }
-
-    BranchCelebrationEntry entryAt(int index) => BranchCelebrationEntry(
-      name: rows[index].name,
-      points: rows[index].points,
-      rank: index + 1,
-      isCurrentUser: index == currentIndex,
-    );
+    BranchCelebrationEntry entryOf(LeaderboardEntry e) =>
+        BranchCelebrationEntry(
+          name: e.name,
+          points: e.points,
+          rank: e.rank,
+          isCurrentUser: e.isCurrentUser,
+        );
 
     return BranchCelebrationSummary(
-      topThree: [
-        for (var index = 0; index < rows.length && index < 3; index++)
-          entryAt(index),
-      ],
-      currentUser: currentIndex < 0 ? null : entryAt(currentIndex),
+      topThree: [for (final e in board.entries.take(3)) entryOf(e)],
+      currentUser: board.currentUser == null
+          ? null
+          : entryOf(board.currentUser!),
     );
   }
 
-  static double _asDouble(dynamic value) =>
-      value is num ? value.toDouble() : double.tryParse('$value') ?? 0;
 }

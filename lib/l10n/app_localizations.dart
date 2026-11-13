@@ -9185,6 +9185,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logging out…'**
   String get loggingOut;
+
+  /// No description provided for @groupTradeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Carpenters & Interior Designers'**
+  String get groupTradeTitle;
+
+  /// No description provided for @groupProfessionalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Architects & Engineers'**
+  String get groupProfessionalTitle;
+
+  /// No description provided for @groupTradeShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter & Interior'**
+  String get groupTradeShort;
+
+  /// No description provided for @groupProfessionalShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Architect & Engineer'**
+  String get groupProfessionalShort;
+
+  /// No description provided for @rankOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank {rank} of {total}'**
+  String rankOfTotal(String rank, String total);
+
+  /// No description provided for @membersInYourGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members in your group · your branch'**
+  String membersInYourGroup(String count);
+
+  /// No description provided for @spinGroupDoneToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s draw for this group is done'**
+  String get spinGroupDoneToday;
+
+  /// No description provided for @spinGroupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Each group has its own draw, once a day'**
+  String get spinGroupHint;
+
+  /// No description provided for @spinNoQualifiedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No qualified members today. A member needs at least one bill approved today.'**
+  String get spinNoQualifiedToday;
+
+  /// No description provided for @todaySalesValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s sales {amount}'**
+  String todaySalesValue(String amount);
+
+  /// No description provided for @groupSalesToday.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} qualified · {amount} sales today'**
+  String groupSalesToday(String count, String amount);
+
+  /// No description provided for @todaysWinnerYourGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s winner · {group}'**
+  String todaysWinnerYourGroup(String group);
+
+  /// No description provided for @drawNotHappenedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s draw hasn\'t happened yet'**
+  String get drawNotHappenedYet;
+
+  /// No description provided for @allRolesBeforeSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'All roles'**
+  String get allRolesBeforeSplit;
+
+  /// No description provided for @allGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allGroups;
+
+  /// No description provided for @allMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'All members'**
+  String get allMembers;
+
+  /// No description provided for @filteredMemberCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{shown} of {total} members'**
+  String filteredMemberCount(String shown, String total);
+
+  /// No description provided for @accountRequestSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent'**
+  String get accountRequestSentTitle;
+
+  /// No description provided for @accountRequestSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account request has been sent to {branch}. You can sign in once the branch approves it.'**
+  String accountRequestSentBody(String branch);
+
+  /// No description provided for @accountPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for approval'**
+  String get accountPendingTitle;
+
+  /// No description provided for @accountPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is waiting for approval from {branch}. Please try signing in later.'**
+  String accountPendingBody(String branch);
+
+  /// No description provided for @accountRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account not approved'**
+  String get accountRejectedTitle;
+
+  /// No description provided for @accountRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account request was not approved by {branch}. Please contact the branch.'**
+  String accountRejectedBody(String branch);
+
+  /// No description provided for @rejectReasonValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String rejectReasonValue(String reason);
+
+  /// No description provided for @callBranchPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Call branch · {phone}'**
+  String callBranchPhone(String phone);
+
+  /// No description provided for @yourBranchFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'your branch'**
+  String get yourBranchFallback;
+
+  /// No description provided for @phoneTakenPending.
+  ///
+  /// In en, this message translates to:
+  /// **'An account request for this number is already waiting for approval at {branch}.'**
+  String phoneTakenPending(String branch);
+
+  /// No description provided for @phoneTakenRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'This number already has an account at {branch}. Please contact the branch.'**
+  String phoneTakenRejected(String branch);
+
+  /// No description provided for @phoneTakenApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'An account already exists for this number. Please sign in.'**
+  String get phoneTakenApproved;
+
+  /// No description provided for @phoneTakenOtherBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'This number is already registered with another Balaji Points branch. Please contact support.'**
+  String get phoneTakenOtherBranch;
+
+  /// No description provided for @numberAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Number already registered'**
+  String get numberAlreadyRegistered;
+
+  /// No description provided for @accountRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Account requests'**
+  String get accountRequests;
+
+  /// No description provided for @accountRequestsPendingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending ({count})'**
+  String accountRequestsPendingTab(String count);
+
+  /// No description provided for @accountRequestsRejectedTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected ({count})'**
+  String accountRequestsRejectedTab(String count);
+
+  /// No description provided for @noPendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No account requests waiting'**
+  String get noPendingRequests;
+
+  /// No description provided for @noPendingRequestsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New sign-ups from your branch appear here for approval.'**
+  String get noPendingRequestsHint;
+
+  /// No description provided for @noRejectedRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No rejected accounts'**
+  String get noRejectedRequests;
+
+  /// No description provided for @approveAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve {name}? They can sign in straight away.'**
+  String approveAccountConfirm(String name);
+
+  /// No description provided for @rejectAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject {name}?'**
+  String rejectAccountTitle(String name);
+
+  /// No description provided for @rejectReasonOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (optional)'**
+  String get rejectReasonOptional;
+
+  /// No description provided for @rejectReasonNotCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a customer'**
+  String get rejectReasonNotCustomer;
+
+  /// No description provided for @rejectReasonWrongBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong branch'**
+  String get rejectReasonWrongBranch;
+
+  /// No description provided for @rejectReasonDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate account'**
+  String get rejectReasonDuplicate;
+
+  /// No description provided for @accountApprovedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} approved'**
+  String accountApprovedToast(String name);
+
+  /// No description provided for @accountRejectedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} rejected'**
+  String accountRejectedToast(String name);
+
+  /// No description provided for @possibleDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible duplicate: {name} has the same name'**
+  String possibleDuplicate(String name);
+
+  /// No description provided for @requestedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested {date}'**
+  String requestedOn(String date);
+
+  /// No description provided for @memberAddedApproveLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Member added. Approve them on Account requests.'**
+  String get memberAddedApproveLater;
+
+  /// No description provided for @enterRejectReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter reason'**
+  String get enterRejectReason;
+
+  /// No description provided for @waApprovedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello {name}, your Balaji Points account at {branch} is approved. You can now sign in to the app and start adding your bills. Thank you!'**
+  String waApprovedMessage(String name, String branch);
+
+  /// No description provided for @waRejectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello {name}, your Balaji Points account request at {branch} could not be approved.{reason} Please contact us at the store for help. Thank you!'**
+  String waRejectedMessage(String name, String branch, String reason);
+
+  /// No description provided for @waReasonPart.
+  ///
+  /// In en, this message translates to:
+  /// **' Reason: {reason}.'**
+  String waReasonPart(String reason);
+
+  /// No description provided for @letMemberKnowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let {name} know'**
+  String letMemberKnowTitle(String name);
+
+  /// No description provided for @letMemberKnowApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'An app notification has been sent. Also send a WhatsApp message from your phone?'**
+  String get letMemberKnowApproved;
+
+  /// No description provided for @letMemberKnowRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a polite WhatsApp message from your phone?'**
+  String get letMemberKnowRejected;
+
+  /// No description provided for @sendWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Send WhatsApp'**
+  String get sendWhatsApp;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// No description provided for @whatsAppNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp on this device.'**
+  String get whatsAppNotAvailable;
 }
 
 class _AppLocalizationsDelegate

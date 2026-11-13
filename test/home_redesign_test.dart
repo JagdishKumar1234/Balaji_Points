@@ -276,10 +276,14 @@ void main() {
     );
   });
 
-  test('the home leaderboard ranks all four member roles', () {
+  test('the home leaderboard ranks inside the member\'s own role group', () {
     final source = File('lib/providers/home_provider.dart').readAsStringSync();
-    expect(source, contains('AppConstants.isMemberRole('));
+    // Branch + group board (see role_group_leaderboard_test.dart).
+    expect(source, contains('LeaderboardService('));
+    expect(source, contains('LeaderboardGroups.of(role)'));
     expect(source, isNot(contains("role != 'carpenter'")));
+    // Never every branch's users when the branch is unknown.
+    expect(source, isNot(contains("_firestore.collection('users').get(")));
   });
 
   test('home cards appear with no staggered delay', () {

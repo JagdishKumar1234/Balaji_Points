@@ -43,6 +43,9 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
   final SessionService _sessionService = SessionService();
 
   Uint8List? _selectedImageBytes;
+
+  /// Set when Submit is tapped with no bill photo (the box turns red).
+  bool _showPhotoError = false;
   DateTime? _billDate;
   bool _isSubmitting = false;
   StreamSubscription<bool>? _celebrationSubscription;
@@ -228,7 +231,10 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
       );
       if (image != null) {
         final bytes = await image.readAsBytes();
-        setState(() => _selectedImageBytes = bytes);
+        setState(() {
+          _selectedImageBytes = bytes;
+          _showPhotoError = false;
+        });
       }
     } catch (e) {
       AppLogger.error('Error picking image', e);
@@ -255,7 +261,10 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
       );
       if (image != null) {
         final bytes = await image.readAsBytes();
-        setState(() => _selectedImageBytes = bytes);
+        setState(() {
+          _selectedImageBytes = bytes;
+          _showPhotoError = false;
+        });
       }
     } catch (e) {
       AppLogger.error('Error taking photo', e);
@@ -364,6 +373,19 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
     }
 
     final l10n = AppLocalizations.of(context);
+    // A bill photo is required for every member bill.
+    if (_selectedImageBytes == null) {
+      setState(() => _showPhotoError = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.uploadBillPhoto),
+          backgroundColor: context.themeError,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -513,7 +535,6 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
     String? vendorName,
   ) {
     final l10n = AppLocalizations.of(context);
-    final duplicateAmount = (duplicateBill['amount'] ?? 0).toDouble();
     // The existing bill's own points (its saved rate), not today's rate.
     final duplicatePoints = PointsRate.forBill(
       Map<String, dynamic>.from(duplicateBill),
@@ -606,39 +627,6 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
                                 siteName,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.currency_rupee_rounded,
-                          size: 16,
-                          color: AppColors.success,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.amountLabel,
-                                style: Theme.of(context).textTheme.labelSmall
-                                    ?.copyWith(
-                                      color: context.themeTextSecondary,
-                                    ),
-                              ),
-                              Text(
-                                '₹${duplicateAmount.toStringAsFixed(0)}',
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.success,
-                                    ),
                               ),
                             ],
                           ),
@@ -938,21 +926,21 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
 
                       // Bill Image
                       _sectionLabel(
-                        l10n?.billImage ??
-                            AppLocalizations.of(context)!.billImage,
+                        '${l10n?.billImage ?? AppLocalizations.of(context)!.billImage} *',
                       ),
                       const SizedBox(height: 12),
                       GestureDetector(
                         onTap: _showImageSourceDialog,
                         child: Container(
+                          key: const ValueKey('bill-photo-box'),
                           height: 180,
                           decoration: BoxDecoration(
                             color: context.themeSurface,
                             borderRadius: AppRadius.all16,
                             border: Border.all(
-                              color: context.themePrimary.withValues(
-                                alpha: 0.3,
-                              ),
+                              color: _showPhotoError
+                                  ? context.themeError
+                                  : context.themePrimary.withValues(alpha: 0.3),
                               width: 2,
                             ),
                           ),

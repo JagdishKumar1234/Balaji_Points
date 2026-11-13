@@ -135,6 +135,39 @@ test('nobody can self-register as admin or super admin', async () => {
   await assertFails(setDoc(doc(otherUser('u6'), 'users/u6'), registration('u6', 'super_admin')));
 });
 
+// ── Account approval (only the server may approve) ──────────────────────────
+test('a sign-up may save itself as pending', async () => {
+  await assertSucceeds(setDoc(doc(otherUser('p1'), 'users/p1'), {
+    ...registration('p1', 'carpenter'),
+    profile_verified: false, approvalStatus: 'pending', approvalRequestedAt: serverTimestamp(),
+  }));
+});
+test('a sign-up cannot approve itself', async () => {
+  await assertFails(setDoc(doc(otherUser('p2'), 'users/p2'), {
+    ...registration('p2', 'carpenter'), profile_verified: true,
+  }));
+  await assertFails(setDoc(doc(otherUser('p3'), 'users/p3'), {
+    ...registration('p3', 'carpenter'), approvalStatus: 'approved',
+  }));
+  await assertFails(setDoc(doc(otherUser('p4'), 'users/p4'), {
+    ...registration('p4', 'carpenter'), profile_verified: false, approvedBy: 'me',
+  }));
+});
+test('no app can change approval fields on an existing account', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'users/p5'), {
+      ...registration('p5', 'carpenter'), profile_verified: false, approvalStatus: 'pending',
+    });
+  });
+  for (const db of [otherUser('p5'), guest(), otherUser('someone')]) {
+    await assertFails(updateDoc(doc(db, 'users/p5'), { profile_verified: true }));
+    await assertFails(updateDoc(doc(db, 'users/p5'), { approvalStatus: 'approved' }));
+    await assertFails(updateDoc(doc(db, 'users/p5'), { approvalStatus: 'pending', rejectReason: 'x' }));
+  }
+  // Ordinary profile edits still work.
+  await assertSucceeds(updateDoc(doc(otherUser('p5'), 'users/p5'), { firstName: 'Ravi' }));
+});
+
 // ── Editing ─────────────────────────────────────────────────────────────────
 test('super admin can rename a role and its short form (ID unchanged)', async () => {
   await assertSucceeds(updateDoc(doc(superAdmin(), 'roles/mason'),

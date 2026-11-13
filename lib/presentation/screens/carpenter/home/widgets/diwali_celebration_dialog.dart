@@ -364,17 +364,9 @@ class _YourPrizeCard extends StatelessWidget {
                   label: l10n.myPoints,
                   value: _formatPoints(entry.points),
                 ),
-                _PrizeValue(
-                  label: l10n.reward,
-                  value: _formatCurrency(entry.rewardAmount),
-                ),
-                if (entry.bonusAmount > 0) ...[
-                  _PrizeValue(
-                    label: l10n.bonus2,
-                    value: _formatCurrency(entry.bonusAmount),
-                  ),
+                // No rupee amounts are shown to members: prize only.
+                if (entry.bonusAmount > 0)
                   _PrizeValue(label: l10n.gift, value: entry.giftDetails),
-                ],
               ],
             ),
           ],
@@ -454,10 +446,7 @@ class _TopThreeList extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          l10n.bonus(
-                            _formatCurrency(entry.bonusAmount),
-                            entry.giftDetails,
-                          ),
+                          entry.giftDetails,
                           style: AppTypography.caption(
                             color: colors.onSurfaceVariant,
                           ),
@@ -517,8 +506,3 @@ class _ReportMessage extends StatelessWidget {
 
 String _formatPoints(double points) =>
     NumberFormat('#,##0.00', 'en_IN').format(points);
-String _formatCurrency(int amount) => NumberFormat.currency(
-  locale: 'en_IN',
-  symbol: '₹',
-  decimalDigits: 0,
-).format(amount);

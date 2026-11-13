@@ -1,3 +1,5 @@
+import 'package:balaji_points/services/auth/account_approval_service.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,6 +46,27 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
     return q.docs.isNotEmpty;
   }
 
+  /// Approves the account the admin just added (server checks the branch).
+  Future<bool> _approveNewMember(String phone) async {
+    try {
+      final normalized = _pinAuthService.normalizePhone(phone);
+      final q = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: normalized)
+          .limit(1)
+          .get();
+      if (q.docs.isEmpty) return false;
+      await AccountApprovalService().review(
+        userId: q.docs.first.id,
+        approve: true,
+      );
+      return true;
+    } catch (_) {
+      // Still on the Account requests screen for a later approval.
+      return false;
+    }
+  }
+
   Future<void> _createCarpenter() async {
     final l10n = AppLocalizations.of(context)!;
     final phoneRaw = _phoneController.text.trim();
@@ -70,17 +93,29 @@ class _AddCarpenterDialogState extends State<AddCarpenterDialog> {
     setState(() => _creating = true);
 
     try {
+      // Added by the admin: in this admin's branch, and approved at once.
+      final branchId = CurrentBranchService.adminBranchId;
       final success = await _pinAuthService.setPinForPhone(
         phone: phoneRaw,
         pin: pin,
         firstName: firstName.isNotEmpty ? firstName : null,
         lastName: lastName.isNotEmpty ? lastName : null,
+        branchId: branchId,
+        createdByAdmin: true,
       );
+      var approved = false;
+      if (success) {
+        approved = await _approveNewMember(phoneRaw);
+      }
 
       setState(() => _creating = false);
 
       if (success && mounted) {
-        _showSnack(AppLocalizations.of(context)!.carpenterCreatedSuccessfully);
+        _showSnack(
+          approved
+              ? AppLocalizations.of(context)!.carpenterCreatedSuccessfully
+              : AppLocalizations.of(context)!.memberAddedApproveLater,
+        );
         widget.onCarpenterAdded?.call();
         Navigator.of(context).pop();
       } else if (!success && mounted) {

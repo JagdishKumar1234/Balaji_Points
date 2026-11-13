@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/services/branch/daily_winner_scope.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -58,9 +60,25 @@ class HomeTopCarpenters extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    AppLocalizations.of(context)!.topCarpentersTitle,
-                    style: AppTypography.h5(color: context.themeTextPrimary),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        homeState.rankingGroup?.boardTitle(context) ??
+                            AppLocalizations.of(context)!.topCarpentersTitle,
+                        style: AppTypography.h5(
+                          color: context.themeTextPrimary,
+                        ),
+                      ),
+                      if (!homeState.rankingsLoading &&
+                          homeState.rankingTotal > 0)
+                        AppText.labelSmall(
+                          AppLocalizations.of(
+                            context,
+                          )!.membersInYourGroup('${homeState.rankingTotal}'),
+                          color: context.themeTextSecondary,
+                        ),
+                    ],
                   ),
                 ),
                 GestureDetector(
@@ -146,9 +164,17 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Each branch draws its own winner; members only see theirs.
+    // Each branch draws one winner per role group; members only ever see
+    // their own branch's winner for their own group.
     final branchId = ref.watch(currentBranchProvider).asData?.value?.id;
-    if (branchId == null || branchId.isEmpty) {
+    final role = ref.watch(
+      homeProvider.select((s) => s.userData?['role'] as String?),
+    );
+    final hasProfile = ref.watch(
+      homeProvider.select((s) => s.userData != null),
+    );
+    final group = LeaderboardGroups.of(role);
+    if (!hasProfile || group == null || branchId == null || branchId.isEmpty) {
       return _WinnerCardShell(
         isDark: isDark,
         child: _WinnerShimmer(isDark: isDark),
@@ -158,7 +184,7 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('daily_winners')
-          .doc(DailyWinnerScope.docId(branchId, _todayKey))
+          .doc(DailyWinnerScope.docId(branchId, group, _todayKey))
           .snapshots(),
       builder: (context, snap) {
         // Loading
@@ -199,7 +225,9 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.todaysWinner,
+                        AppLocalizations.of(
+                          context,
+                        )!.todaysWinnerYourGroup(group.shortLabel(context)),
                         style: AppTypography.overline(
                           color: AppColors.warning,
                         ).copyWith(letterSpacing: 0.8),
@@ -213,7 +241,7 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        AppLocalizations.of(context)!.spinNotDoneYet(_todayKey),
+                        AppLocalizations.of(context)!.drawNotHappenedYet,
                         style: AppTypography.caption(
                           color: context.themeTextSecondary,
                         ),
@@ -303,7 +331,9 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.todaysLuckyWinner,
+                      AppLocalizations.of(
+                        context,
+                      )!.todaysWinnerYourGroup(group.shortLabel(context)),
                       style: AppTypography.overline(
                         color: AppColors.warning,
                       ).copyWith(letterSpacing: 0.8),
@@ -498,6 +528,14 @@ class HomeYourPositionCard extends StatelessWidget {
                       color: AppColors.white.withValues(alpha: 0.65),
                     ).copyWith(letterSpacing: 0.8),
                   ),
+                  if (homeState.rankingTotal > 0)
+                    Text(
+                      l10n.rankOfTotal(
+                        '${homeState.userRank}',
+                        '${homeState.rankingTotal}',
+                      ),
+                      style: AppTypography.labelSmall(color: AppColors.warning),
+                    ),
                   const SizedBox(height: 3),
                   Text(
                     homeState.displayName,

@@ -5095,4 +5095,235 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get loggingOut => 'लॉग आउट हो रहा है…';
+
+  @override
+  String get groupTradeTitle => 'टॉप कारपेंटर और इंटीरियर डिज़ाइनर';
+
+  @override
+  String get groupProfessionalTitle => 'टॉप आर्किटेक्ट और इंजीनियर';
+
+  @override
+  String get groupTradeShort => 'कारपेंटर और इंटीरियर';
+
+  @override
+  String get groupProfessionalShort => 'आर्किटेक्ट और इंजीनियर';
+
+  @override
+  String rankOfTotal(String rank, String total) {
+    return '$total में से रैंक $rank';
+  }
+
+  @override
+  String membersInYourGroup(String count) {
+    return 'आपके ग्रुप में $count सदस्य · आपकी ब्रांच';
+  }
+
+  @override
+  String get spinGroupDoneToday => 'इस ग्रुप का आज का ड्रॉ हो चुका है';
+
+  @override
+  String get spinGroupHint => 'हर ग्रुप का अपना ड्रॉ, दिन में एक बार';
+
+  @override
+  String get spinNoQualifiedToday =>
+      'आज कोई योग्य सदस्य नहीं। सदस्य का आज कम से कम एक बिल अप्रूव होना चाहिए।';
+
+  @override
+  String todaySalesValue(String amount) {
+    return 'आज की बिक्री $amount';
+  }
+
+  @override
+  String groupSalesToday(String count, String amount) {
+    return '$count योग्य · आज $amount बिक्री';
+  }
+
+  @override
+  String todaysWinnerYourGroup(String group) {
+    return 'आज का विजेता · $group';
+  }
+
+  @override
+  String get drawNotHappenedYet => 'आज का ड्रॉ अभी नहीं हुआ है';
+
+  @override
+  String get allRolesBeforeSplit => 'सभी भूमिकाएँ';
+
+  @override
+  String get allGroups => 'सभी';
+
+  @override
+  String get allMembers => 'सभी सदस्य';
+
+  @override
+  String filteredMemberCount(String shown, String total) {
+    return '$total में से $shown सदस्य';
+  }
+
+  @override
+  String get accountRequestSentTitle => 'अनुरोध भेजा गया';
+
+  @override
+  String accountRequestSentBody(String branch) {
+    return 'आपका खाता अनुरोध $branch को भेज दिया गया है। ब्रांच की मंज़ूरी के बाद आप साइन इन कर सकेंगे।';
+  }
+
+  @override
+  String get accountPendingTitle => 'मंज़ूरी का इंतज़ार';
+
+  @override
+  String accountPendingBody(String branch) {
+    return 'आपका खाता $branch की मंज़ूरी का इंतज़ार कर रहा है। कृपया बाद में साइन इन करें।';
+  }
+
+  @override
+  String get accountRejectedTitle => 'खाता मंज़ूर नहीं हुआ';
+
+  @override
+  String accountRejectedBody(String branch) {
+    return 'आपका खाता अनुरोध $branch द्वारा मंज़ूर नहीं किया गया। कृपया ब्रांच से संपर्क करें।';
+  }
+
+  @override
+  String rejectReasonValue(String reason) {
+    return 'कारण: $reason';
+  }
+
+  @override
+  String callBranchPhone(String phone) {
+    return 'ब्रांच को कॉल करें · $phone';
+  }
+
+  @override
+  String get yourBranchFallback => 'आपकी ब्रांच';
+
+  @override
+  String phoneTakenPending(String branch) {
+    return 'इस नंबर का खाता अनुरोध पहले से $branch में मंज़ूरी के लिए लंबित है।';
+  }
+
+  @override
+  String phoneTakenRejected(String branch) {
+    return 'इस नंबर का खाता पहले से $branch में है। कृपया ब्रांच से संपर्क करें।';
+  }
+
+  @override
+  String get phoneTakenApproved =>
+      'इस नंबर का खाता पहले से है। कृपया साइन इन करें।';
+
+  @override
+  String get phoneTakenOtherBranch =>
+      'यह नंबर पहले से बालाजी पॉइंट्स की दूसरी ब्रांच में रजिस्टर्ड है। कृपया सपोर्ट से संपर्क करें।';
+
+  @override
+  String get numberAlreadyRegistered => 'नंबर पहले से रजिस्टर्ड है';
+
+  @override
+  String get accountRequests => 'खाता अनुरोध';
+
+  @override
+  String accountRequestsPendingTab(String count) {
+    return 'लंबित ($count)';
+  }
+
+  @override
+  String accountRequestsRejectedTab(String count) {
+    return 'अस्वीकृत ($count)';
+  }
+
+  @override
+  String get noPendingRequests => 'कोई खाता अनुरोध लंबित नहीं';
+
+  @override
+  String get noPendingRequestsHint =>
+      'आपकी ब्रांच के नए साइन-अप मंज़ूरी के लिए यहाँ दिखेंगे।';
+
+  @override
+  String get noRejectedRequests => 'कोई अस्वीकृत खाता नहीं';
+
+  @override
+  String approveAccountConfirm(String name) {
+    return '$name को मंज़ूर करें? वे तुरंत साइन इन कर सकेंगे।';
+  }
+
+  @override
+  String rejectAccountTitle(String name) {
+    return '$name को अस्वीकार करें?';
+  }
+
+  @override
+  String get rejectReasonOptional => 'कारण (वैकल्पिक)';
+
+  @override
+  String get rejectReasonNotCustomer => 'ग्राहक नहीं';
+
+  @override
+  String get rejectReasonWrongBranch => 'गलत ब्रांच';
+
+  @override
+  String get rejectReasonDuplicate => 'डुप्लिकेट खाता';
+
+  @override
+  String accountApprovedToast(String name) {
+    return '$name मंज़ूर';
+  }
+
+  @override
+  String accountRejectedToast(String name) {
+    return '$name अस्वीकृत';
+  }
+
+  @override
+  String possibleDuplicate(String name) {
+    return 'संभावित डुप्लिकेट: $name का नाम समान है';
+  }
+
+  @override
+  String requestedOn(String date) {
+    return 'अनुरोध $date';
+  }
+
+  @override
+  String get memberAddedApproveLater =>
+      'सदस्य जोड़ा गया। खाता अनुरोध में मंज़ूर करें।';
+
+  @override
+  String get enterRejectReason => 'कारण दर्ज करें';
+
+  @override
+  String waApprovedMessage(String name, String branch) {
+    return 'नमस्ते $name, $branch में आपका बालाजी पॉइंट्स खाता मंज़ूर हो गया है। अब आप ऐप में साइन इन करके अपने बिल जोड़ सकते हैं। धन्यवाद!';
+  }
+
+  @override
+  String waRejectedMessage(String name, String branch, String reason) {
+    return 'नमस्ते $name, $branch में आपका बालाजी पॉइंट्स खाता अनुरोध मंज़ूर नहीं हो सका।$reason मदद के लिए कृपया स्टोर से संपर्क करें। धन्यवाद!';
+  }
+
+  @override
+  String waReasonPart(String reason) {
+    return ' कारण: $reason।';
+  }
+
+  @override
+  String letMemberKnowTitle(String name) {
+    return '$name को बताएँ';
+  }
+
+  @override
+  String get letMemberKnowApproved =>
+      'ऐप नोटिफ़िकेशन भेज दिया गया है। क्या अपने फ़ोन से WhatsApp संदेश भी भेजें?';
+
+  @override
+  String get letMemberKnowRejected =>
+      'क्या अपने फ़ोन से एक विनम्र WhatsApp संदेश भेजें?';
+
+  @override
+  String get sendWhatsApp => 'WhatsApp भेजें';
+
+  @override
+  String get notNow => 'अभी नहीं';
+
+  @override
+  String get whatsAppNotAvailable => 'इस डिवाइस पर WhatsApp नहीं खुल सका।';
 }

@@ -19,6 +19,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/mixins/double_tap_exit_mixin.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
@@ -107,6 +108,11 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
   ];
 
   void _openSection(String section) {
+    // Account requests is its own screen (the super admin opens it too).
+    if (section == 'requests') {
+      context.push('/account-requests');
+      return;
+    }
     setState(() {
       _showDashboard = false;
       _selectedSection = section;
@@ -514,9 +520,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         // - Include carpenters (role == 'carpenter') OR missing/empty role
         final count = docs.where((doc) {
           final data = doc.data() as Map<String, dynamic>;
-          final role = data['role'] as String?;
-          if (role == 'admin') return false;
-          return AppConstants.isMemberRole(role);
+          // Approved members only.
+          return MemberFilter.isActiveMember(data);
         }).length;
 
         if (snapshot.connectionState == ConnectionState.waiting) {

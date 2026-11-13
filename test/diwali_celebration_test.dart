@@ -47,6 +47,7 @@ Future<BranchCelebrationSummary> _load({String? userId, String? phone}) async {
       'branchId': 'b1',
       'phone': '${nextPhone++}',
       'totalPoints': entry.value.$2,
+      'profile_verified': true,
     });
   }
   // Older Erode accounts have no role saved: they still count as carpenters.
@@ -55,12 +56,14 @@ Future<BranchCelebrationSummary> _load({String? userId, String? phone}) async {
     'branchId': 'b1',
     'phone': '9000000009',
     'totalPoints': 50,
+    'profile_verified': true,
   });
   await db.collection('users').doc('other').set({
     'firstName': 'Other',
     'role': 'carpenter',
     'branchId': 'b2',
     'totalPoints': 9999,
+    'profile_verified': true,
   });
   await db.collection('users').doc('admin').set({
     'firstName': 'Admin',
@@ -132,7 +135,7 @@ void main() {
     });
 
     test(
-      'all four are ranked together; staff and other branches are not',
+      'ranked only inside their own role group; staff and other branches are not',
       () async {
         final db = FakeFirebaseFirestore();
         const people = {
@@ -143,6 +146,7 @@ void main() {
           'staff': ('Staff', 'admin', 'b1', 900),
           'boss': ('Boss', 'super_admin', 'b1', 900),
           'away': ('Away', 'architect', 'b2', 900),
+          'awayc': ('AwayC', 'carpenter', 'b2', 900),
         };
         for (final entry in people.entries) {
           final (name, role, branch, points) = entry.value;
@@ -151,15 +155,22 @@ void main() {
             'role': role,
             'branchId': branch,
             'totalPoints': points,
+            'profile_verified': true,
           });
         }
-        final summary = await BranchCelebrationService(
-          firestore: db,
-          session: _FakeSession(userId: 'i'),
-        ).loadCelebrationSummary('b1');
-        expect(summary.topThree.map((e) => e.name), ['Arun', 'Ezhil', 'Indu']);
-        expect(summary.currentUser!.name, 'Indu');
-        expect(summary.currentUser!.rank, 3);
+        Future<BranchCelebrationSummary> as(String id) =>
+            BranchCelebrationService(
+              firestore: db,
+              session: _FakeSession(userId: id),
+            ).loadCelebrationSummary('b1');
+
+        final trade = await as('i');
+        expect(trade.topThree.map((e) => e.name), ['Indu', 'Chitra']);
+        expect(trade.currentUser!.rank, 1);
+
+        final pro = await as('e');
+        expect(pro.topThree.map((e) => e.name), ['Arun', 'Ezhil']);
+        expect(pro.currentUser!.rank, 2);
       },
     );
 
@@ -228,12 +239,14 @@ void main() {
         'role': 'carpenter',
         'branchId': 'b1',
         'totalPoints': 10,
+        'profile_verified': true,
       });
       await db.collection('users').doc('top').set({
         'firstName': 'Asha',
         'role': 'carpenter',
         'branchId': 'b1',
         'totalPoints': 50,
+        'profile_verified': true,
       });
       final me = (await BranchCelebrationService(
         firestore: db,
@@ -250,6 +263,7 @@ void main() {
         'role': 'carpenter',
         'branchId': 'b1',
         'totalPoints': 10,
+        'profile_verified': true,
       });
       final me = (await BranchCelebrationService(
         firestore: db,
@@ -298,7 +312,8 @@ void main() {
       await _pumpDialog(tester, await load(tester, 'e'));
       expect(find.text('Your Diwali prize'), findsOneWidget);
       expect(find.text('100.00'), findsOneWidget);
-      expect(find.text('₹1,000'), findsOneWidget);
+      // Members never see rupee amounts.
+      expect(find.textContaining('₹'), findsNothing);
       expect(find.text('Asha'), findsOneWidget);
       expect(find.text('Chitra'), findsOneWidget);
       expect(find.textContaining('Dinesh'), findsNothing);
@@ -366,7 +381,9 @@ void main() {
       tester,
     ) async {
       await _pumpDialog(tester, await load(tester, 'a'));
-      expect(find.text('₹10,000'), findsOneWidget);
+      // The prize (trophy / gift) is shown, never a rupee amount.
+      expect(find.text('Mega Trophy'), findsWidgets);
+      expect(find.textContaining('₹'), findsNothing);
       expect(find.text('Asha (You)'), findsOneWidget);
       await _finish(tester);
     });

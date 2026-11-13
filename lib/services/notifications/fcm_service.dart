@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -198,9 +199,13 @@ class FCMService {
 
   void _handleMessageNavigation(RemoteMessage message) {
     try {
+      // A new account request opens the Requests screen; everything else
+      // opens Notifications.
+      final screen = message.data['screen']?.toString();
+      _pendingScreen = screen == '/account-requests' ? screen : null;
       final context = navigatorKey.currentContext;
       if (context != null) {
-        context.pushNamed('notifications');
+        _navigate(context);
       } else {
         _pendingNavigation = true;
       }
@@ -210,13 +215,24 @@ class FCMService {
   }
 
   bool _pendingNavigation = false;
+  String? _pendingScreen;
+
+  void _navigate(BuildContext context) {
+    final screen = _pendingScreen;
+    _pendingScreen = null;
+    if (screen != null) {
+      context.push(screen);
+    } else {
+      context.pushNamed('notifications');
+    }
+  }
 
   void processPendingNavigation() {
     if (_pendingNavigation) {
       _pendingNavigation = false;
       final context = navigatorKey.currentContext;
       if (context != null) {
-        context.pushNamed('notifications');
+        _navigate(context);
       }
     }
   }

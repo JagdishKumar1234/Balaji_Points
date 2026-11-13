@@ -1,5 +1,7 @@
 import 'package:balaji_points/core/points/points_rate.dart';
-import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -17,6 +19,8 @@ class SearchHeader extends StatefulWidget {
   final String searchQuery;
   final String selectedTier;
   final String selectedSort;
+  final MemberRoleFilter roleFilter;
+  final ValueChanged<MemberRoleFilter> onRoleFilterChanged;
   final List<String> tiers;
   final bool isExporting;
   final Function(String) onSearchChanged;
@@ -30,6 +34,8 @@ class SearchHeader extends StatefulWidget {
     required this.searchQuery,
     required this.selectedTier,
     required this.selectedSort,
+    this.roleFilter = MemberRoleFilter.all,
+    required this.onRoleFilterChanged,
     required this.tiers,
     required this.isExporting,
     required this.onSearchChanged,
@@ -64,18 +70,24 @@ class _SearchHeaderState extends State<SearchHeader> {
     );
 
     try {
+      // This admin's branch only (never every branch's members).
       final query = await FirebaseFirestore.instance
           .collection('users')
-          .orderBy('createdAt', descending: false)
+          .forAdminBranch()
           .get();
 
-      var users = query.docs.toList();
+      var users = query.docs.toList()
+        ..sort((a, b) {
+          final ta = a.data()['createdAt'];
+          final tb = b.data()['createdAt'];
+          if (ta is Timestamp && tb is Timestamp) return ta.compareTo(tb);
+          return 0;
+        });
 
       users = users.where((doc) {
         final data = doc.data();
-        final role = data['role'] as String?;
-        if (role == 'admin') return false;
-        return AppConstants.isMemberRole(role);
+        return MemberFilter.isActiveMember(data) &&
+            widget.roleFilter.matches(data['role'] as String?);
       }).toList();
 
       users = users.where((doc) {
@@ -466,6 +478,60 @@ class _SearchHeaderState extends State<SearchHeader> {
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Group / role filter
+          Container(
+            height: 44,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: context.themeSoftSurface,
+              borderRadius: AppRadius.md12,
+              border: Border.all(
+                color: context.themePrimary.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<MemberRoleFilter>(
+                key: const ValueKey('member-role-filter'),
+                value: widget.roleFilter,
+                isExpanded: true,
+                icon: Icon(
+                  Icons.arrow_drop_down_rounded,
+                  color: context.themeContentColor,
+                ),
+                style: AppTypography.labelLarge().copyWith(
+                  fontSize: 13,
+                  color: context.themeTextPrimary,
+                ),
+                items: [
+                  for (final f in MemberRoleFilter.options)
+                    DropdownMenuItem(
+                      value: f,
+                      child: Padding(
+                        // Roles are indented under their group.
+                        padding: EdgeInsets.only(
+                          left: f.roleValue != null ? 16 : 0,
+                        ),
+                        child: Text(
+                          memberRoleFilterLabel(context, f),
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: context.themeTextPrimary,
+                            fontWeight: f.roleValue != null
+                                ? FontWeight.w400
+                                : FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+                onChanged: (f) {
+                  if (f != null) widget.onRoleFilterChanged(f);
+                },
+              ),
             ),
           ),
         ],

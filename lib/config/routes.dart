@@ -1,4 +1,8 @@
 // filepath: lib/config/routes.dart
+import 'package:balaji_points/presentation/screens/common/auth/account_status_page.dart';
+import 'package:balaji_points/presentation/screens/admin/account_requests_screen.dart';
+import 'package:balaji_points/providers/auth_provider.dart' show AuthPendingApproval;
+import 'package:balaji_points/services/auth/account_approval_service.dart' show AccountGate;
 import 'package:balaji_points/services/telemetry/telemetry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -177,6 +181,24 @@ GoRouter _buildRouter() {
           completeGoogleProfile: true,
           googleProfile: state.extra as Map<String, dynamic>?,
         ),
+      ),
+      // Member account waiting for approval / rejected / request sent.
+      GoRoute(
+        path: '/account-status',
+        builder: (context, state) {
+          final extra = state.extra;
+          return extra is AuthPendingApproval
+              ? AccountStatusPage(
+                  gate: extra.gate,
+                  justRegistered: extra.justRegistered,
+                )
+              : const AccountStatusPage(gate: AccountGate(status: 'pending'));
+        },
+      ),
+      // Branch admin only: approve / reject new sign-ups of their branch.
+      GoRoute(
+        path: '/account-requests',
+        builder: (context, _) => const AccountRequestsScreen(),
       ),
       GoRoute(
         path: '/forgot-password',
@@ -366,6 +388,7 @@ String? redirectForRole(String path, String? role) {
     '/register',
     '/complete-registration',
     '/forgot-password',
+    '/account-status',
     '/phone-pin-login',
     '/pin-login',
     '/pin-reset',
@@ -381,6 +404,12 @@ String? redirectForRole(String path, String? role) {
     '/careers',
   ];
   if (publicPaths.any((p) => path.startsWith(p))) return null;
+
+  // Account requests: branch admins only (never the super admin).
+  if (path.startsWith('/account-requests')) {
+    if (role == 'admin') return null;
+    return role == 'super_admin' ? '/super-admin' : '/';
+  }
 
   // super_admin must never access branch admin panel.
   if (role == 'super_admin') {

@@ -64,6 +64,8 @@ class _PINLoginPageState extends ConsumerState<PINLoginPage> {
     ref.listen<AuthState>(authProvider, (_, state) {
       if (state is AuthAuthenticated) {
         _onAuthenticated(state);
+      } else if (state is AuthPendingApproval) {
+        context.go('/account-status', extra: state);
       } else if (state is AuthError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

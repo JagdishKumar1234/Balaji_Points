@@ -1,3 +1,5 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -27,6 +29,11 @@ class UserListItem extends StatelessWidget {
       default:
         return AppColors.textSecondary;
     }
+  }
+
+  String get _roleId {
+    final role = (userData['role'] as String? ?? '').trim().toLowerCase();
+    return role.isEmpty ? AppConstants.roleCarpenter : role;
   }
 
   @override
@@ -130,12 +137,30 @@ class UserListItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          phone,
-                          style: AppTypography.bodyMedium().copyWith(
-                            fontSize: 13,
-                            color: context.themeTextSecondary,
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                phone,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.bodyMedium().copyWith(
+                                  fontSize: 13,
+                                  color: context.themeTextSecondary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Role of the member; old accounts with no role
+                            // saved are carpenters.
+                            Flexible(
+                              child: RoleTag(
+                                key: const ValueKey('user-role-tag'),
+                                roleId: _roleId,
+                                storedName: userData['roleName'] as String?,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

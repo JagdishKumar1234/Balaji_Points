@@ -187,7 +187,10 @@ void main() {
       expect(auth, contains("loginMethod: 'email'"));
       expect(auth, contains("loginMethod: 'google'"));
       expect(auth, contains("Telemetry.signUp(method: 'email')"));
-      expect('Telemetry.identify('.allMatches(auth), hasLength(5));
+      expect(auth, contains("Telemetry.signUp(method: 'google')"));
+      // Sign-in paths only: a new sign-up is not signed in until the
+      // branch admin approves it.
+      expect('Telemetry.identify('.allMatches(auth), hasLength(3));
       expect(
         read('lib/services/auth/session_service.dart'),
         contains('Telemetry.logout();'),

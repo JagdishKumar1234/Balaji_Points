@@ -5114,4 +5114,235 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loggingOut => 'Logging out…';
+
+  @override
+  String get groupTradeTitle => 'Top Carpenters & Interior Designers';
+
+  @override
+  String get groupProfessionalTitle => 'Top Architects & Engineers';
+
+  @override
+  String get groupTradeShort => 'Carpenter & Interior';
+
+  @override
+  String get groupProfessionalShort => 'Architect & Engineer';
+
+  @override
+  String rankOfTotal(String rank, String total) {
+    return 'Rank $rank of $total';
+  }
+
+  @override
+  String membersInYourGroup(String count) {
+    return '$count members in your group · your branch';
+  }
+
+  @override
+  String get spinGroupDoneToday => 'Today\'s draw for this group is done';
+
+  @override
+  String get spinGroupHint => 'Each group has its own draw, once a day';
+
+  @override
+  String get spinNoQualifiedToday =>
+      'No qualified members today. A member needs at least one bill approved today.';
+
+  @override
+  String todaySalesValue(String amount) {
+    return 'Today\'s sales $amount';
+  }
+
+  @override
+  String groupSalesToday(String count, String amount) {
+    return '$count qualified · $amount sales today';
+  }
+
+  @override
+  String todaysWinnerYourGroup(String group) {
+    return 'Today\'s winner · $group';
+  }
+
+  @override
+  String get drawNotHappenedYet => 'Today\'s draw hasn\'t happened yet';
+
+  @override
+  String get allRolesBeforeSplit => 'All roles';
+
+  @override
+  String get allGroups => 'All';
+
+  @override
+  String get allMembers => 'All members';
+
+  @override
+  String filteredMemberCount(String shown, String total) {
+    return '$shown of $total members';
+  }
+
+  @override
+  String get accountRequestSentTitle => 'Request sent';
+
+  @override
+  String accountRequestSentBody(String branch) {
+    return 'Your account request has been sent to $branch. You can sign in once the branch approves it.';
+  }
+
+  @override
+  String get accountPendingTitle => 'Waiting for approval';
+
+  @override
+  String accountPendingBody(String branch) {
+    return 'Your account is waiting for approval from $branch. Please try signing in later.';
+  }
+
+  @override
+  String get accountRejectedTitle => 'Account not approved';
+
+  @override
+  String accountRejectedBody(String branch) {
+    return 'Your account request was not approved by $branch. Please contact the branch.';
+  }
+
+  @override
+  String rejectReasonValue(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String callBranchPhone(String phone) {
+    return 'Call branch · $phone';
+  }
+
+  @override
+  String get yourBranchFallback => 'your branch';
+
+  @override
+  String phoneTakenPending(String branch) {
+    return 'An account request for this number is already waiting for approval at $branch.';
+  }
+
+  @override
+  String phoneTakenRejected(String branch) {
+    return 'This number already has an account at $branch. Please contact the branch.';
+  }
+
+  @override
+  String get phoneTakenApproved =>
+      'An account already exists for this number. Please sign in.';
+
+  @override
+  String get phoneTakenOtherBranch =>
+      'This number is already registered with another Balaji Points branch. Please contact support.';
+
+  @override
+  String get numberAlreadyRegistered => 'Number already registered';
+
+  @override
+  String get accountRequests => 'Account requests';
+
+  @override
+  String accountRequestsPendingTab(String count) {
+    return 'Pending ($count)';
+  }
+
+  @override
+  String accountRequestsRejectedTab(String count) {
+    return 'Rejected ($count)';
+  }
+
+  @override
+  String get noPendingRequests => 'No account requests waiting';
+
+  @override
+  String get noPendingRequestsHint =>
+      'New sign-ups from your branch appear here for approval.';
+
+  @override
+  String get noRejectedRequests => 'No rejected accounts';
+
+  @override
+  String approveAccountConfirm(String name) {
+    return 'Approve $name? They can sign in straight away.';
+  }
+
+  @override
+  String rejectAccountTitle(String name) {
+    return 'Reject $name?';
+  }
+
+  @override
+  String get rejectReasonOptional => 'Reason (optional)';
+
+  @override
+  String get rejectReasonNotCustomer => 'Not a customer';
+
+  @override
+  String get rejectReasonWrongBranch => 'Wrong branch';
+
+  @override
+  String get rejectReasonDuplicate => 'Duplicate account';
+
+  @override
+  String accountApprovedToast(String name) {
+    return '$name approved';
+  }
+
+  @override
+  String accountRejectedToast(String name) {
+    return '$name rejected';
+  }
+
+  @override
+  String possibleDuplicate(String name) {
+    return 'Possible duplicate: $name has the same name';
+  }
+
+  @override
+  String requestedOn(String date) {
+    return 'Requested $date';
+  }
+
+  @override
+  String get memberAddedApproveLater =>
+      'Member added. Approve them on Account requests.';
+
+  @override
+  String get enterRejectReason => 'Enter reason';
+
+  @override
+  String waApprovedMessage(String name, String branch) {
+    return 'Hello $name, your Balaji Points account at $branch is approved. You can now sign in to the app and start adding your bills. Thank you!';
+  }
+
+  @override
+  String waRejectedMessage(String name, String branch, String reason) {
+    return 'Hello $name, your Balaji Points account request at $branch could not be approved.$reason Please contact us at the store for help. Thank you!';
+  }
+
+  @override
+  String waReasonPart(String reason) {
+    return ' Reason: $reason.';
+  }
+
+  @override
+  String letMemberKnowTitle(String name) {
+    return 'Let $name know';
+  }
+
+  @override
+  String get letMemberKnowApproved =>
+      'An app notification has been sent. Also send a WhatsApp message from your phone?';
+
+  @override
+  String get letMemberKnowRejected =>
+      'Send a polite WhatsApp message from your phone?';
+
+  @override
+  String get sendWhatsApp => 'Send WhatsApp';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get whatsAppNotAvailable => 'Could not open WhatsApp on this device.';
 }

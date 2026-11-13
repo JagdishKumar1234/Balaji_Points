@@ -8,6 +8,8 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:intl/intl.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
 
 class DailySpinHistoryScreen extends StatefulWidget {
   const DailySpinHistoryScreen({super.key});
@@ -18,6 +20,10 @@ class DailySpinHistoryScreen extends StatefulWidget {
 
 class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
   late DateTime _selectedMonth;
+
+  /// Each role group has its own daily draw. Draws from before the split
+  /// (no group saved) were from every role and show under both.
+  LeaderboardGroup _group = LeaderboardGroup.trade;
 
   @override
   void initState() {
@@ -116,6 +122,19 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
               ],
             ),
           ),
+          Container(
+            color: AppColors.white,
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: SegmentedButton<LeaderboardGroup>(
+              segments: [
+                for (final g in LeaderboardGroup.values)
+                  ButtonSegment(value: g, label: Text(g.shortLabel(context))),
+              ],
+              selected: {_group},
+              showSelectedIcon: false,
+              onSelectionChanged: (s) => setState(() => _group = s.first),
+            ),
+          ),
           const Divider(height: 1),
           // Calendar Grid
           Expanded(
@@ -154,6 +173,8 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
             )) {
               continue;
             }
+            final recordGroup = DailyWinnerScope.groupOf(data);
+            if (recordGroup != null && recordGroup != _group) continue;
             final dateStr = data['date'] as String?;
             if (dateStr != null) {
               try {
@@ -385,7 +406,8 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          AppLocalizations.of(context)!.spinWinner,
+                          '${AppLocalizations.of(context)!.spinWinner} · '
+                          '${DailyWinnerScope.groupOf(spinData)?.shortLabel(context) ?? AppLocalizations.of(context)!.allRolesBeforeSplit}',
                           style: AppTypography.labelSmall().copyWith(
                             fontSize: 12,
                             color: context.themeTextSecondary,

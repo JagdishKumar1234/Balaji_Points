@@ -1,6 +1,5 @@
 import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -9,6 +8,9 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
+import 'package:balaji_points/services/spin/daily_spin_service.dart';
 import 'todays_eligible_carpenters.dart';
 
 class DailySpinManagement extends StatefulWidget {
@@ -22,6 +24,11 @@ class _DailySpinManagementState extends State<DailySpinManagement>
     with TickerProviderStateMixin {
   bool _isSpinning = false;
   String? _winnerName;
+
+  /// Each role group has its own draw, once a day.
+  LeaderboardGroup _group = LeaderboardGroup.trade;
+  final _spin = DailySpinService();
+  static String get _today => DailyWinnerScope.dayKey(DateTime.now());
   AnimationController? _spinAnimationController;
   AnimationController? _pulseAnimationController;
   Animation<double>? _spinAnimation;
@@ -61,32 +68,18 @@ class _DailySpinManagementState extends State<DailySpinManagement>
     super.dispose();
   }
 
-  /// This branch's most recent winner, or null. Other branches' draws are
-  /// ignored, so one branch's spin never blocks another's.
-  static Future<Map<String, dynamic>?> _lastBranchWinner() async {
-    final recent = await FirebaseFirestore.instance
-        .collection('daily_prize_winners')
-        .orderBy('timestamp', descending: true)
-        .limit(50)
-        .get();
-    final branch = CurrentBranchService.adminBranchId;
-    for (final doc in recent.docs) {
-      if (DailyWinnerScope.belongsTo(doc.data(), branch)) return doc.data();
-    }
-    return null;
-  }
+  /// Today's winner for this branch and the selected group, or null.
+  Future<Map<String, dynamic>?> _todaysGroupWinner() => _spin.winnerOn(
+    branchId: CurrentBranchService.adminBranchId,
+    group: _group,
+    date: _today,
+  );
 
-  Future<bool> _canSpinToday() async {
-    final lastSpinData = await _lastBranchWinner();
-    if (lastSpinData == null) return true;
-
-    final lastSpinTimestamp = lastSpinData['timestamp'] as Timestamp?;
-    if (lastSpinTimestamp == null) return true;
-
-    final lastSpinTime = lastSpinTimestamp.toDate();
-    final hoursSinceLastSpin = DateTime.now().difference(lastSpinTime).inHours;
-    return hoursSinceLastSpin >= 24;
-  }
+  Future<bool> _canSpinToday() => _spin.canSpin(
+    branchId: CurrentBranchService.adminBranchId,
+    group: _group,
+    date: _today,
+  );
 
   Future<void> _spinWheel() async {
     final canSpin = await _canSpinToday();
@@ -100,7 +93,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    AppLocalizations.of(context)!.pleaseWait24HoursFromThe,
+                    AppLocalizations.of(context)!.spinGroupDoneToday,
                     style: TextStyle(color: context.themeOnSecondary),
                   ),
                 ),
@@ -114,6 +107,8 @@ class _DailySpinManagementState extends State<DailySpinManagement>
       }
       return;
     }
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() {
       _isSpinning = true;
@@ -124,39 +119,20 @@ class _DailySpinManagementState extends State<DailySpinManagement>
     _spinAnimationController?.forward();
 
     try {
-      // Get today's eligible carpenters (those with approved bills today)
-      final today = DateTime.now();
-      final todayStr =
-          '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
-
-      // Query bills that were approved today
-      final billsQuery = await FirebaseFirestore.instance
-          .collection('bills')
-          .forAdminBranch()
-          .where('status', isEqualTo: 'approved')
-          .where('approvedDate', isEqualTo: todayStr)
-          .get();
-
-      if (billsQuery.docs.isEmpty) {
+      final branchId = CurrentBranchService.adminBranchId ?? '';
+      final results = await Future.wait([
+        _spin.spin(branchId: branchId, group: _group, date: _today),
+        // Let the wheel turn for its full animation.
+        Future<void>.delayed(const Duration(seconds: 3)),
+      ]);
+      final winner = results.first as SpinCandidate?;
+      if (winner == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline_rounded,
-                    color: context.themeOnSecondary,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.noCarpentersWithApprovedBillsToday,
-                      style: TextStyle(color: context.themeOnSecondary),
-                    ),
-                  ),
-                ],
+              content: Text(
+                l10n.spinNoQualifiedToday,
+                style: TextStyle(color: context.themeOnSecondary),
               ),
               backgroundColor: context.themeSecondary,
               behavior: SnackBarBehavior.floating,
@@ -167,90 +143,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
         }
         return;
       }
-
-      // Get unique carpenter IDs from approved bills
-      final carpenterIds = <String>{};
-      for (final doc in billsQuery.docs) {
-        final data = doc.data();
-        final carpenterId = data['carpenterId'] as String?;
-        if (carpenterId != null && carpenterId.isNotEmpty) {
-          carpenterIds.add(carpenterId);
-        }
-      }
-
-      if (carpenterIds.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.error_outline_rounded, color: AppColors.white),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.noEligibleCarpentersFound,
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: context.themeError,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-            ),
-          );
-          setState(() => _isSpinning = false);
-        }
-        return;
-      }
-
-      // Select random carpenter from eligible list
-      final random = Random();
-      final eligibleList = carpenterIds.toList();
-      final randomIndex = random.nextInt(eligibleList.length);
-      final selectedCarpenterId = eligibleList[randomIndex];
-
-      final carpenterDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(selectedCarpenterId)
-          .get();
-
-      if (!carpenterDoc.exists)
-        throw Exception(AppLocalizations.of(context)!.carpenterNotFound);
-
-      final carpenterData = carpenterDoc.data()!;
-      final firstName = carpenterData['firstName'] ?? '';
-      final lastName = carpenterData['lastName'] ?? '';
-      final carpenterName = '$firstName $lastName'.trim().isEmpty
-          ? AppLocalizations.of(context)!.unknown
-          : '$firstName $lastName'.trim();
-      final carpenterPhoto = carpenterData['profileImage'] ?? '';
-
-      await Future.delayed(const Duration(seconds: 3));
-
-      // Save winner to database
-      final branchId = CurrentBranchService.adminBranchId ?? '';
-      await FirebaseFirestore.instance.collection('daily_prize_winners').add({
-        'branchId': branchId,
-        'carpenterId': selectedCarpenterId,
-        'carpenterName': carpenterName,
-        'carpenterPhoto': carpenterPhoto,
-        'date': todayStr,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      // Also update a daily winner document for easy access on carpenter home screen
-      await FirebaseFirestore.instance
-          .collection('daily_winners')
-          // One winner per branch per day.
-          .doc(DailyWinnerScope.docId(branchId, todayStr))
-          .set({
-            'branchId': branchId,
-            'carpenterId': selectedCarpenterId,
-            'carpenterName': carpenterName,
-            'carpenterPhoto': carpenterPhoto,
-            'date': todayStr,
-            'timestamp': FieldValue.serverTimestamp(),
-          }, SetOptions(merge: true));
+      final carpenterName = winner.name;
 
       if (mounted) {
         setState(() {
@@ -385,6 +278,14 @@ class _DailySpinManagementState extends State<DailySpinManagement>
             ),
           ),
 
+          // Group switch: each group has its own draw.
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+              child: _buildGroupSwitch(),
+            ),
+          ),
+
           // Spin Wheel Section
           SliverToBoxAdapter(
             child: Padding(
@@ -394,7 +295,13 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           ),
 
           // Today's Eligible Carpenters
-          const SliverToBoxAdapter(child: TodaysEligibleCarpenters()),
+          SliverToBoxAdapter(
+            child: TodaysEligibleCarpenters(
+              key: ValueKey(_group),
+              group: _group,
+              date: _today,
+            ),
+          ),
 
           // Today's Winners
           SliverToBoxAdapter(
@@ -411,6 +318,34 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGroupSwitch() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SegmentedButton<LeaderboardGroup>(
+          segments: [
+            for (final g in LeaderboardGroup.values)
+              ButtonSegment(value: g, label: Text(g.shortLabel(context))),
+          ],
+          selected: {_group},
+          showSelectedIcon: false,
+          onSelectionChanged: _isSpinning
+              ? null
+              : (s) => setState(() {
+                  _group = s.first;
+                  _winnerName = null;
+                }),
+        ),
+        const SizedBox(height: 6),
+        AppText.bodySmall(
+          AppLocalizations.of(context)!.spinGroupHint,
+          color: context.themeTextSecondary,
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 
@@ -585,34 +520,11 @@ class _DailySpinManagementState extends State<DailySpinManagement>
 
               // Status Badge
               FutureBuilder<Map<String, dynamic>?>(
-                future: _lastBranchWinner(),
+                future: _todaysGroupWinner(),
                 builder: (context, lastSpinSnapshot) {
-                  String statusText = AppLocalizations.of(
-                    context,
-                  )!.noPreviousSpins;
-                  if (lastSpinSnapshot.data != null) {
-                    final lastSpinData = lastSpinSnapshot.data!;
-                    final lastSpinTimestamp =
-                        lastSpinData['timestamp'] as Timestamp?;
-                    if (lastSpinTimestamp != null) {
-                      final lastSpinTime = lastSpinTimestamp.toDate();
-                      final nextSpinTime = lastSpinTime.add(
-                        const Duration(hours: 24),
-                      );
-                      final hoursRemaining = nextSpinTime
-                          .difference(DateTime.now())
-                          .inHours;
-                      final minutesRemaining =
-                          nextSpinTime.difference(DateTime.now()).inMinutes %
-                          60;
-                      statusText = canSpin
-                          ? AppLocalizations.of(context)!.readyToSpin
-                          : AppLocalizations.of(context)!.nextSpinInHM(
-                              '$hoursRemaining',
-                              '$minutesRemaining',
-                            );
-                    }
-                  }
+                  final statusText = canSpin
+                      ? AppLocalizations.of(context)!.readyToSpin
+                      : AppLocalizations.of(context)!.spinGroupDoneToday;
 
                   return Container(
                     padding: const EdgeInsets.symmetric(
@@ -644,11 +556,15 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                           size: 20,
                         ),
                         const SizedBox(width: 8),
-                        AppText.section(
-                          statusText,
-                          color: canSpin
-                              ? AppColors.successText
-                              : context.themeSecondary,
+                        // Long messages wrap instead of overflowing.
+                        Flexible(
+                          child: AppText.section(
+                            statusText,
+                            textAlign: TextAlign.center,
+                            color: canSpin
+                                ? AppColors.successText
+                                : context.themeSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -811,6 +727,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                     (doc) => DailyWinnerScope.belongsTo(
                       doc.data() as Map<String, dynamic>?,
                       CurrentBranchService.adminBranchId,
+                      group: _group,
                     ),
                   )
                   .toList();
@@ -985,6 +902,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                     (doc) => DailyWinnerScope.belongsTo(
                       doc.data() as Map<String, dynamic>?,
                       CurrentBranchService.adminBranchId,
+                      group: _group,
                     ),
                   )
                   .toList();

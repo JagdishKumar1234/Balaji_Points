@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
 import 'search_header.dart';
 import 'users_list_view.dart';
 import 'add_carpenter_dialog.dart';
@@ -15,6 +16,7 @@ class _UsersListState extends State<UsersList> {
   String _searchQuery = '';
   String _selectedTier = 'All';
   String _selectedSort = 'points';
+  MemberRoleFilter _roleFilter = MemberRoleFilter.all;
   final List<String> _tiers = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
   bool _isExporting = false;
   late TextEditingController _searchController;
@@ -59,6 +61,8 @@ class _UsersListState extends State<UsersList> {
               searchQuery: _searchQuery,
               selectedTier: _selectedTier,
               selectedSort: _selectedSort,
+              roleFilter: _roleFilter,
+              onRoleFilterChanged: (f) => setState(() => _roleFilter = f),
               tiers: _tiers,
               isExporting: _isExporting,
               onSearchChanged: (value) {
@@ -81,6 +85,7 @@ class _UsersListState extends State<UsersList> {
                 searchQuery: _searchQuery,
                 selectedTier: _selectedTier,
                 selectedSort: _selectedSort,
+                roleFilter: _roleFilter,
               ),
             ),
           ],

@@ -17,6 +17,10 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/services/auth/biometric_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
+import 'package:balaji_points/services/auth/account_approval_service.dart';
+import 'package:balaji_points/providers/auth_provider.dart' show AuthPendingApproval;
+import 'package:balaji_points/config/routes.dart' show navigatorKey;
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/platform/app_startup_service.dart';
 import 'package:balaji_points/services/platform/onboarding_prefs.dart';
@@ -106,6 +110,9 @@ class _SplashPageState extends State<SplashPage> {
           // Not awaited: home opens now and fills in as the data arrives.
           unawaited(UserPointsSyncService().syncNow(force: true));
           context.go('/');
+          // A member whose account is not approved (or was rejected later)
+          // is signed out; checked after home opens so startup stays fast.
+          unawaited(_recheckApproval());
         }
       } else {
         final onboardingDone = await OnboardingPrefs.isCompleted();
@@ -115,6 +122,22 @@ class _SplashPageState extends State<SplashPage> {
     } catch (_) {
       if (mounted) context.go('/login');
     }
+  }
+
+  Future<void> _recheckApproval() async {
+    final gate = await AccountApprovalService().gateForSession(
+      userId: await _sessionService.getUserId(),
+      phone: await _sessionService.getPhoneNumber(),
+    );
+    if (gate == null) return;
+    await _sessionService.clearSession();
+    try {
+      await firebase_auth.FirebaseAuth.instance.signOut();
+    } catch (_) {}
+    navigatorKey.currentContext?.go(
+      '/account-status',
+      extra: AuthPendingApproval(gate),
+    );
   }
 
   @override

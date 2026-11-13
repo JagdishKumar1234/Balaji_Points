@@ -5141,4 +5141,239 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get loggingOut => 'வெளியேறுகிறது…';
+
+  @override
+  String get groupTradeTitle =>
+      'சிறந்த தச்சர்கள் & உள் அலங்கார வடிவமைப்பாளர்கள்';
+
+  @override
+  String get groupProfessionalTitle =>
+      'சிறந்த கட்டிடக் கலைஞர்கள் & பொறியாளர்கள்';
+
+  @override
+  String get groupTradeShort => 'தச்சர் & உள் அலங்காரம்';
+
+  @override
+  String get groupProfessionalShort => 'கட்டிடக் கலைஞர் & பொறியாளர்';
+
+  @override
+  String rankOfTotal(String rank, String total) {
+    return '$total இல் தரவரிசை $rank';
+  }
+
+  @override
+  String membersInYourGroup(String count) {
+    return 'உங்கள் குழுவில் $count உறுப்பினர்கள் · உங்கள் கிளை';
+  }
+
+  @override
+  String get spinGroupDoneToday => 'இந்தக் குழுவின் இன்றைய குலுக்கல் முடிந்தது';
+
+  @override
+  String get spinGroupHint =>
+      'ஒவ்வொரு குழுவிற்கும் தனி குலுக்கல், நாளுக்கு ஒரு முறை';
+
+  @override
+  String get spinNoQualifiedToday =>
+      'இன்று தகுதியான உறுப்பினர்கள் இல்லை. இன்று குறைந்தது ஒரு பில் அங்கீகரிக்கப்பட வேண்டும்.';
+
+  @override
+  String todaySalesValue(String amount) {
+    return 'இன்றைய விற்பனை $amount';
+  }
+
+  @override
+  String groupSalesToday(String count, String amount) {
+    return '$count தகுதி · இன்று $amount விற்பனை';
+  }
+
+  @override
+  String todaysWinnerYourGroup(String group) {
+    return 'இன்றைய வெற்றியாளர் · $group';
+  }
+
+  @override
+  String get drawNotHappenedYet => 'இன்றைய குலுக்கல் இன்னும் நடக்கவில்லை';
+
+  @override
+  String get allRolesBeforeSplit => 'அனைத்து பணிகள்';
+
+  @override
+  String get allGroups => 'அனைத்தும்';
+
+  @override
+  String get allMembers => 'அனைத்து உறுப்பினர்கள்';
+
+  @override
+  String filteredMemberCount(String shown, String total) {
+    return '$total இல் $shown உறுப்பினர்கள்';
+  }
+
+  @override
+  String get accountRequestSentTitle => 'கோரிக்கை அனுப்பப்பட்டது';
+
+  @override
+  String accountRequestSentBody(String branch) {
+    return 'உங்கள் கணக்கு கோரிக்கை $branch க்கு அனுப்பப்பட்டது. கிளை அங்கீகரித்த பிறகு நீங்கள் உள்நுழையலாம்.';
+  }
+
+  @override
+  String get accountPendingTitle => 'அங்கீகாரத்திற்காகக் காத்திருக்கிறது';
+
+  @override
+  String accountPendingBody(String branch) {
+    return 'உங்கள் கணக்கு $branch இன் அங்கீகாரத்திற்காகக் காத்திருக்கிறது. பின்னர் உள்நுழைய முயற்சிக்கவும்.';
+  }
+
+  @override
+  String get accountRejectedTitle => 'கணக்கு அங்கீகரிக்கப்படவில்லை';
+
+  @override
+  String accountRejectedBody(String branch) {
+    return 'உங்கள் கணக்கு கோரிக்கை $branch ஆல் அங்கீகரிக்கப்படவில்லை. கிளையைத் தொடர்பு கொள்ளவும்.';
+  }
+
+  @override
+  String rejectReasonValue(String reason) {
+    return 'காரணம்: $reason';
+  }
+
+  @override
+  String callBranchPhone(String phone) {
+    return 'கிளையை அழைக்கவும் · $phone';
+  }
+
+  @override
+  String get yourBranchFallback => 'உங்கள் கிளை';
+
+  @override
+  String phoneTakenPending(String branch) {
+    return 'இந்த எண்ணிற்கான கணக்கு கோரிக்கை ஏற்கனவே $branch இல் அங்கீகாரத்திற்காகக் காத்திருக்கிறது.';
+  }
+
+  @override
+  String phoneTakenRejected(String branch) {
+    return 'இந்த எண்ணிற்கு ஏற்கனவே $branch இல் கணக்கு உள்ளது. கிளையைத் தொடர்பு கொள்ளவும்.';
+  }
+
+  @override
+  String get phoneTakenApproved =>
+      'இந்த எண்ணிற்கு ஏற்கனவே கணக்கு உள்ளது. உள்நுழையவும்.';
+
+  @override
+  String get phoneTakenOtherBranch =>
+      'இந்த எண் ஏற்கனவே மற்றொரு பாலாஜி பாயிண்ட்ஸ் கிளையில் பதிவு செய்யப்பட்டுள்ளது. ஆதரவைத் தொடர்பு கொள்ளவும்.';
+
+  @override
+  String get numberAlreadyRegistered => 'எண் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது';
+
+  @override
+  String get accountRequests => 'கணக்கு கோரிக்கைகள்';
+
+  @override
+  String accountRequestsPendingTab(String count) {
+    return 'நிலுவையில் ($count)';
+  }
+
+  @override
+  String accountRequestsRejectedTab(String count) {
+    return 'நிராகரிக்கப்பட்டது ($count)';
+  }
+
+  @override
+  String get noPendingRequests => 'காத்திருக்கும் கணக்கு கோரிக்கைகள் இல்லை';
+
+  @override
+  String get noPendingRequestsHint =>
+      'உங்கள் கிளையின் புதிய பதிவுகள் அங்கீகாரத்திற்காக இங்கே தோன்றும்.';
+
+  @override
+  String get noRejectedRequests => 'நிராகரிக்கப்பட்ட கணக்குகள் இல்லை';
+
+  @override
+  String approveAccountConfirm(String name) {
+    return '$name ஐ அங்கீகரிக்கவா? அவர்கள் உடனே உள்நுழையலாம்.';
+  }
+
+  @override
+  String rejectAccountTitle(String name) {
+    return '$name ஐ நிராகரிக்கவா?';
+  }
+
+  @override
+  String get rejectReasonOptional => 'காரணம் (விருப்பம்)';
+
+  @override
+  String get rejectReasonNotCustomer => 'வாடிக்கையாளர் அல்ல';
+
+  @override
+  String get rejectReasonWrongBranch => 'தவறான கிளை';
+
+  @override
+  String get rejectReasonDuplicate => 'நகல் கணக்கு';
+
+  @override
+  String accountApprovedToast(String name) {
+    return '$name அங்கீகரிக்கப்பட்டார்';
+  }
+
+  @override
+  String accountRejectedToast(String name) {
+    return '$name நிராகரிக்கப்பட்டார்';
+  }
+
+  @override
+  String possibleDuplicate(String name) {
+    return 'நகலாக இருக்கலாம்: $name அதே பெயர்';
+  }
+
+  @override
+  String requestedOn(String date) {
+    return 'கோரப்பட்டது $date';
+  }
+
+  @override
+  String get memberAddedApproveLater =>
+      'உறுப்பினர் சேர்க்கப்பட்டார். கணக்கு கோரிக்கைகளில் அங்கீகரிக்கவும்.';
+
+  @override
+  String get enterRejectReason => 'காரணத்தை உள்ளிடவும்';
+
+  @override
+  String waApprovedMessage(String name, String branch) {
+    return 'வணக்கம் $name, $branch இல் உங்கள் பாலாஜி பாயிண்ட்ஸ் கணக்கு அங்கீகரிக்கப்பட்டது. இப்போது ஆப்பில் உள்நுழைந்து உங்கள் பில்களைச் சேர்க்கலாம். நன்றி!';
+  }
+
+  @override
+  String waRejectedMessage(String name, String branch, String reason) {
+    return 'வணக்கம் $name, $branch இல் உங்கள் பாலாஜி பாயிண்ட்ஸ் கணக்கு கோரிக்கை அங்கீகரிக்கப்படவில்லை.$reason உதவிக்கு கடையைத் தொடர்பு கொள்ளவும். நன்றி!';
+  }
+
+  @override
+  String waReasonPart(String reason) {
+    return ' காரணம்: $reason.';
+  }
+
+  @override
+  String letMemberKnowTitle(String name) {
+    return '$name க்குத் தெரிவிக்கவும்';
+  }
+
+  @override
+  String get letMemberKnowApproved =>
+      'ஆப் அறிவிப்பு அனுப்பப்பட்டது. உங்கள் ஃபோனிலிருந்து WhatsApp செய்தியும் அனுப்பவா?';
+
+  @override
+  String get letMemberKnowRejected =>
+      'உங்கள் ஃபோனிலிருந்து ஒரு மரியாதையான WhatsApp செய்தி அனுப்பவா?';
+
+  @override
+  String get sendWhatsApp => 'WhatsApp அனுப்பு';
+
+  @override
+  String get notNow => 'இப்போது வேண்டாம்';
+
+  @override
+  String get whatsAppNotAvailable =>
+      'இந்த சாதனத்தில் WhatsApp ஐத் திறக்க முடியவில்லை.';
 }

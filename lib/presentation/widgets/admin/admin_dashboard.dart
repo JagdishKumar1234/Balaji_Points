@@ -1,4 +1,4 @@
-import 'package:balaji_points/core/constants/app_constants.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
 import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,6 +23,11 @@ class AdminDashboard extends ConsumerStatefulWidget {
 
 class _AdminDashboardState extends ConsumerState<AdminDashboard> {
   static const List<_SectionCard> _sections = [
+    _SectionCard(
+      id: 'requests',
+      label: 'Account requests',
+      icon: Icons.how_to_reg_rounded,
+    ),
     _SectionCard(
       id: 'pending',
       label: 'Pending Bills',
@@ -132,11 +137,18 @@ class _AdminDashboardState extends ConsumerState<AdminDashboard> {
                 builder: (context, usersSnap) {
                   final usersDocs = usersSnap.data?.docs ?? const [];
                   final carpentersCount = usersDocs.where((doc) {
-                    final role = doc.data()['role'] as String?;
-                    if (role == 'admin') return false;
-                    return AppConstants.isMemberRole(role);
+                    // Approved members only.
+                    return MemberFilter.isActiveMember(doc.data());
                   }).length;
                   final totalUsersCount = carpentersCount;
+                  // New member sign-ups still waiting for approval.
+                  final requestsCount = usersDocs.where((doc) {
+                    final d = doc.data();
+                    return LeaderboardGroups.of(d['role'] as String?) !=
+                            null &&
+                        d['status'] != 'deleted' &&
+                        AccountApproval.statusOf(d) == AccountApproval.pending;
+                  }).length;
 
                   return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                     stream: FirebaseFirestore.instance
@@ -160,6 +172,7 @@ class _AdminDashboardState extends ConsumerState<AdminDashboard> {
                         if (s.id == 'pending') count = pendingBillsCount;
                         if (s.id == 'notifications') count = notificationCount;
                         if (s.id == 'enquiries') count = openEnquiries;
+                        if (s.id == 'requests') count = requestsCount;
                         if (s.id == 'users') {
                           count = totalUsersCount;
                           secondaryCount = carpentersCount;
@@ -350,6 +363,7 @@ class _SectionTile extends StatelessWidget {
       'notifications' => l10n.notifications,
       'spin' => l10n.spin,
       'enquiries' => l10n.enquiries,
+      'requests' => l10n.accountRequests,
       'points-repair' => l10n.pointsRepair,
       'duplicates' => l10n.duplicateAccounts,
       'backup' => l10n.backupDatabase,

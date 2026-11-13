@@ -1,128 +1,42 @@
 import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
+import 'package:balaji_points/services/spin/daily_spin_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+/// Members of one role group who qualify for today's draw in this branch
+/// (at least one bill approved today), with their sales today.
 class TodaysEligibleCarpenters extends StatelessWidget {
-  const TodaysEligibleCarpenters({super.key});
+  const TodaysEligibleCarpenters({
+    super.key,
+    required this.group,
+    required this.date,
+  });
 
-  Future<List<Map<String, dynamic>>> _getTodaysEligibleCarpenters() async {
-    try {
-      // Get today's date in YYYY-MM-DD format
-      final today = DateTime.now();
-      final todayStr =
-          '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+  final LeaderboardGroup group;
 
-      debugPrint('Fetching eligible carpenters for date: $todayStr');
+  /// `YYYY-MM-DD`.
+  final String date;
 
-      // Query bills that were approved today
-      final billsQuery = await FirebaseFirestore.instance
-          .collection('bills')
-          .forAdminBranch()
-          .where('status', isEqualTo: 'approved')
-          .where('approvedDate', isEqualTo: todayStr)
-          .get();
+  Future<List<SpinCandidate>> _load() => DailySpinService().eligible(
+    branchId: CurrentBranchService.adminBranchId,
+    group: group,
+    date: date,
+  );
 
-      debugPrint('Found ${billsQuery.docs.length} approved bills today');
-
-      // Get unique carpenter IDs
-      final carpenterIds = <String>{};
-      final carpenterBills = <String, List<Map<String, dynamic>>>{};
-
-      for (final doc in billsQuery.docs) {
-        final data = doc.data();
-        // Bills store the member as `carpenterId`; `userId` is only on
-        // very old records.
-        final carpenterId =
-            (data['carpenterId'] as String?) ?? (data['userId'] as String?);
-
-        if (carpenterId != null && carpenterId.isNotEmpty) {
-          carpenterIds.add(carpenterId);
-
-          // Store bill info for this carpenter
-          if (!carpenterBills.containsKey(carpenterId)) {
-            carpenterBills[carpenterId] = [];
-          }
-          carpenterBills[carpenterId]!.add({
-            'billNumber': data['billNumber'],
-            'totalAmount': data['amount'] ?? data['totalAmount'] ?? 0,
-            'points': data['pointsEarned'] ?? data['points'] ?? 0,
-          });
-        }
-      }
-
-      debugPrint(
-        'Unique carpenters with approved bills today: ${carpenterIds.length}',
-      );
-
-      // Fetch carpenter details
-      final eligibleCarpenters = <Map<String, dynamic>>[];
-
-      for (final carpenterId in carpenterIds) {
-        try {
-          final userDoc = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(carpenterId)
-              .get();
-
-          if (userDoc.exists) {
-            final userData = userDoc.data();
-            if (userData != null) {
-              final firstName = userData['firstName'] as String? ?? '';
-              final lastName = userData['lastName'] as String? ?? '';
-              final name = '$firstName $lastName'.trim().isEmpty
-                  ? 'Unknown'
-                  : '$firstName $lastName'.trim();
-
-              final bills = carpenterBills[carpenterId] ?? [];
-              // Points can have decimals (₹12,500 → 12.5).
-              final totalPoints = bills.fold<num>(
-                0,
-                (acc, bill) => acc + (bill['points'] as num? ?? 0),
-              );
-
-              eligibleCarpenters.add({
-                'id': carpenterId,
-                'name': name,
-                'firstName': firstName,
-                'lastName': lastName,
-                'profileImage': userData['profileImage'],
-                'phone': userData['phone'],
-                'billsCount': bills.length,
-                'totalPoints': totalPoints,
-                'bills': bills,
-              });
-            }
-          }
-        } catch (e) {
-          debugPrint('Error fetching user $carpenterId: $e');
-        }
-      }
-
-      // Sort by total points descending
-      eligibleCarpenters.sort((a, b) {
-        final aPoints = (a['totalPoints'] as num?) ?? 0;
-        final bPoints = (b['totalPoints'] as num?) ?? 0;
-        return bPoints.compareTo(aPoints);
-      });
-
-      debugPrint('Returning ${eligibleCarpenters.length} eligible carpenters');
-      return eligibleCarpenters;
-    } catch (e) {
-      debugPrint('Error getting today\'s eligible carpenters: $e');
-      return [];
-    }
-  }
+  static String _rupees(num v) =>
+      '₹${NumberFormat.decimalPattern('en_IN').format(v.round())}';
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _getTodaysEligibleCarpenters(),
+    return FutureBuilder<List<SpinCandidate>>(
+      future: _load(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildLoadingCard(context);
@@ -230,12 +144,12 @@ class TodaysEligibleCarpenters extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           AppText.label(
-            AppLocalizations.of(context)!.noEligibleCarpentersToday,
+            group.shortLabel(context),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           AppText.body(
-            AppLocalizations.of(context)!.noCarpentersHaveApprovedBillsToday,
+            AppLocalizations.of(context)!.spinNoQualifiedToday,
             color: context.themeTextSecondary,
             textAlign: TextAlign.center,
           ),
@@ -246,9 +160,9 @@ class TodaysEligibleCarpenters extends StatelessWidget {
 
   Widget _buildEligibleCarpentersList(
     BuildContext context,
-    List<Map<String, dynamic>> carpenters,
+    List<SpinCandidate> carpenters,
   ) {
-    final todayStr = DateFormat('MMMM d, y').format(DateTime.now());
+    final groupSales = carpenters.fold<double>(0, (t, c) => t + c.todaySales);
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -296,14 +210,15 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText.label(
-                        AppLocalizations.of(context)!.todaySEligibleCarpenters,
+                        group.shortLabel(context),
                         color: AppColors.white,
                       ),
                       const SizedBox(height: 4),
                       AppText.body(
-                        AppLocalizations.of(
-                          context,
-                        )!.eligible('$todayStr', '${carpenters.length}'),
+                        AppLocalizations.of(context)!.groupSalesToday(
+                          '${carpenters.length}',
+                          _rupees(groupSales),
+                        ),
                         color: AppColors.white.withValues(alpha: 0.9),
                       ),
                     ],
@@ -332,14 +247,13 @@ class TodaysEligibleCarpenters extends StatelessWidget {
 
   Widget _buildCarpenterCard(
     BuildContext context,
-    Map<String, dynamic> carpenter,
+    SpinCandidate carpenter,
     int rank,
   ) {
-    final name = carpenter['name'] as String;
-    final phone = carpenter['phone'] as String? ?? 'N/A';
-    final billsCount = carpenter['billsCount'] as int;
-    final totalPoints = carpenter['totalPoints'] ?? 0;
-    final profileImage = carpenter['profileImage'] as String?;
+    final name = carpenter.name;
+    final phone = carpenter.phone ?? 'N/A';
+    final billsCount = carpenter.billsCount;
+    final profileImage = carpenter.profileImage;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -480,13 +394,16 @@ class TodaysEligibleCarpenters extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.monetization_on_rounded,
+                    const Icon(
+                      Icons.currency_rupee_rounded,
                       size: 14,
-                      color: AppColors.warning,
+                      color: AppColors.white,
                     ),
-                    const SizedBox(width: 4),
-                    AppText.label('+$totalPoints'),
+                    const SizedBox(width: 2),
+                    AppText.label(
+                      _rupees(carpenter.todaySales).substring(1),
+                      color: AppColors.white,
+                    ),
                   ],
                 ),
               ),

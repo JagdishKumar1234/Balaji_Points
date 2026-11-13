@@ -12,6 +12,12 @@
 //   E Road architect  9000000005 / PIN 5555
 //   E Road engineer   9000000006 / PIN 6666
 //   E Road interior designer 9000000007 / PIN 7777
+//   Karur architect   9000000010 / PIN 1010
+//   Karur engineer    9000000011 / PIN 1111
+//   Karur interior designer 9000000012 / PIN 1212
+//   Waiting sign-ups (cannot sign in until approved):
+//     E Road carpenter 9000000013 / PIN 1313, Karur architect 9000000014 / PIN 1414
+//   Rejected sign-up: Karur carpenter 9000000015 / PIN 1515
 //   Karur admin       karur.admin@test.local / Test@12345
 //   Super admin       aaijitechstudio@gmail.com / TestSuper@123
 const crypto = require("crypto");
@@ -64,6 +70,17 @@ async function main() {
     {phone: "9000000005", first: "Erode", last: "Architect", role: "architect", branch: "erode_main", pin: "5555"},
     {phone: "9000000006", first: "Erode", last: "Engineer", role: "engineer", branch: "erode_main", pin: "6666"},
     {phone: "9000000007", first: "Erode", last: "Designer", role: "interior_designer", branch: "erode_main", pin: "7777"},
+    // All four roles in Karur too, for the role-group boards and spins.
+    {phone: "9000000010", first: "Karur", last: "Architect", role: "architect", branch: "karur_test", pin: "1010"},
+    {phone: "9000000011", first: "Karur", last: "Engineer", role: "engineer", branch: "karur_test", pin: "1111"},
+    {phone: "9000000012", first: "Karur", last: "Designer", role: "interior_designer", branch: "karur_test", pin: "1212"},
+    // Account approval: waiting and rejected sign-ups.
+    {phone: "9000000013", first: "Waiting", last: "Erode", role: "carpenter", branch: "erode_main", pin: "1313",
+      approval: "pending"},
+    {phone: "9000000014", first: "Waiting", last: "Karur", role: "architect", branch: "karur_test", pin: "1414",
+      approval: "pending"},
+    {phone: "9000000015", first: "Rejected", last: "Karur", role: "carpenter", branch: "karur_test", pin: "1515",
+      approval: "rejected"},
   ];
   for (const u of pinUsers) {
     await db.doc(`users/${u.phone}`).set({
@@ -71,6 +88,13 @@ async function main() {
       branchId: u.branch, status: "verified", totalPoints: 0, tier: "Bronze",
       profileImage: "https://example.com/test.png", fcmToken: `test-token-${u.phone}`,
       createdAt: now, ...pinFields(u.pin),
+      // Members are approved unless the seed says otherwise.
+      ...(u.role === "admin" ? {} : {
+        profile_verified: !u.approval,
+        approvalStatus: u.approval || "approved",
+        approvalNotifiedAt: now,
+        ...(u.approval === "rejected" ? {rejectReason: "Wrong branch"} : {}),
+      }),
     });
     if (u.role !== "admin") {
       await db.doc(`user_points/${u.phone}`).set({

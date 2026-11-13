@@ -96,6 +96,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           _ => '/',
         };
         context.go(destination);
+      } else if (state is AuthPendingApproval) {
+        context.go('/account-status', extra: state);
       } else if (state is AuthProfileCompletionRequired) {
         context.go(
           '/complete-registration',

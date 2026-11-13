@@ -158,7 +158,13 @@ void main() {
       'lib/presentation/screens/admin/export_users_before_cleanup.dart',
     ]) {
       final source = File(path).readAsStringSync();
-      expect(source, contains('AppConstants.isMemberRole(role)'), reason: path);
+      // All four roles; most screens now also require an approved account.
+      expect(
+        source.contains('AppConstants.isMemberRole(role)') ||
+            source.contains('MemberFilter.isActiveMember('),
+        isTrue,
+        reason: path,
+      );
       expect(
         source,
         isNot(contains("role.isEmpty || role == 'carpenter'")),

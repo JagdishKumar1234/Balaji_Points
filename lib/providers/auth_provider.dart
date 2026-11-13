@@ -13,6 +13,7 @@ import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/user/user_migration_service.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/services/auth/account_approval_service.dart';
 import 'package:balaji_points/providers/home_provider.dart';
 import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/core/logger.dart';
@@ -28,6 +29,9 @@ final sessionServiceProvider = Provider<SessionService>(
 final fcmServiceProvider = Provider<FCMService>((_) => FCMService());
 final userMigrationServiceProvider = Provider<UserMigrationService>(
   (_) => UserMigrationService(),
+);
+final accountApprovalServiceProvider = Provider<AccountApprovalService>(
+  (_) => AccountApprovalService(),
 );
 
 // ─── Auth state ───────────────────────────────────────────────────────────────
@@ -89,6 +93,22 @@ class AuthProfileCompletionRequired extends AuthState {
   });
 }
 
+/// A member account that may not sign in yet: waiting for the branch admin,
+/// or rejected. Nothing is saved on the phone and Firebase is signed out.
+class AuthPendingApproval extends AuthState {
+  final AccountGate gate;
+
+  /// True right after sign-up ("Request sent").
+  final bool justRegistered;
+  const AuthPendingApproval(this.gate, {this.justRegistered = false});
+}
+
+/// Sign-up stopped because this phone number already has an account.
+class AuthPhoneTaken extends AuthState {
+  final PhoneSignupResult result;
+  const AuthPhoneTaken(this.result);
+}
+
 class PinSetupLoading extends AuthState {
   const PinSetupLoading();
 }
@@ -133,6 +153,24 @@ class AuthNotifier extends Notifier<AuthState> {
   SessionService get _session => ref.read(sessionServiceProvider);
   FCMService get _fcm => ref.read(fcmServiceProvider);
   UserMigrationService get _migration => ref.read(userMigrationServiceProvider);
+  AccountApprovalService get _approval =>
+      ref.read(accountApprovalServiceProvider);
+
+  /// Signs out completely and shows why this member cannot sign in yet.
+  Future<void> _blockUnapproved(
+    AccountGate gate, {
+    bool justRegistered = false,
+  }) async {
+    try {
+      await _firebaseAuth.signOut();
+    } catch (_) {}
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {}
+    await _session.clearSession();
+    AppLogger.auth('Sign-in blocked: account ${gate.status}');
+    state = AuthPendingApproval(gate, justRegistered: justRegistered);
+  }
 
   // ── Check session on app start ──────────────────────────────────────────────
 
@@ -321,15 +359,14 @@ class AuthNotifier extends Notifier<AuthState> {
         return;
       }
 
-      final duplicatePhone = await _firestore
-          .collection('users')
-          .where('phone', isEqualTo: normalizedPhone)
-          .limit(2)
-          .get();
-      if (duplicatePhone.docs.any((doc) => doc.id != firebaseUser.uid)) {
-        state = const AuthError(
-          'This mobile number is already registered. Contact your branch administrator.',
-        );
+      // One account per phone number (checked before anything is saved).
+      final phoneCheck = await _approval.checkPhoneForSignup(
+        normalizedPhone,
+        branchId: branchId,
+        selfId: firebaseUser.uid,
+      );
+      if (!phoneCheck.isFree) {
+        state = AuthPhoneTaken(phoneCheck);
         return;
       }
 
@@ -359,6 +396,8 @@ class AuthNotifier extends Notifier<AuthState> {
       } else {
         await userRef.set({
           ...completionFields,
+          // Waits for the branch admin's approval before sign-in.
+          ...AccountApprovalService.pendingFields(),
           'uid': firebaseUser.uid,
           'userId': firebaseUser.uid,
           'email': firebaseUser.email!.trim(),
@@ -387,35 +426,25 @@ class AuthNotifier extends Notifier<AuthState> {
       }
 
       await firebaseUser.updateDisplayName(fullName);
-      await _session.saveSession(
-        phoneNumber: normalizedPhone,
-        userId: firebaseUser.uid,
-        role: role,
-        email: firebaseUser.email!.trim(),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        profileImage: firebaseUser.photoURL,
-        branchId: branchId,
-      );
-
-      final user = User(
-        id: firebaseUser.uid,
-        email: firebaseUser.email!.trim(),
-        phoneNumber: normalizedPhone,
-        displayName: fullName,
-        photoUrl: firebaseUser.photoURL,
-        role: role,
-        branchId: branchId,
-        isEmailVerified: true,
-        createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
-      );
+      // Saved now so the "approved" push can reach this phone later.
+      try {
+        await _fcm.refreshTokenAfterLogin(
+          uid: firebaseUser.uid,
+          phone: normalizedPhone,
+        );
+      } catch (e) {
+        AppLogger.warning('FCM refresh after registration failed: $e');
+      }
       Telemetry.signUp(method: 'google');
-      Telemetry.identify(
-        userId: user.id,
-        role: user.role,
-        branchId: user.branchId,
+      // Not signed in: the branch admin approves the account first.
+      await _blockUnapproved(
+        AccountGate(
+          status: 'pending',
+          branchName: branchName,
+          branchPhone: (branchData['phone'] as String? ?? '').trim(),
+        ),
+        justRegistered: true,
       );
-      state = AuthAuthenticated(user, role: role);
     } on firebase_auth.FirebaseAuthException catch (e) {
       AppLogger.error('Google profile completion failed', e);
       state = AuthError(_messageFromFirebaseError(e));
@@ -478,6 +507,13 @@ class AuthNotifier extends Notifier<AuthState> {
         );
         return;
       }
+    }
+
+    // New member accounts wait for the branch admin's approval.
+    final gate = await _approval.gateFor(profile);
+    if (gate != null) {
+      await _blockUnapproved(gate);
+      return;
     }
 
     final firstName =
@@ -607,6 +643,16 @@ class AuthNotifier extends Notifier<AuthState> {
       final branchName = branchData['name'] as String? ?? branchId;
       final branchShortName = branchData['shortName'] as String? ?? branchName;
 
+      // One account per phone number (checked before anything is created).
+      final phoneCheck = await _approval.checkPhoneForSignup(
+        normalizedPhone,
+        branchId: branchId,
+      );
+      if (!phoneCheck.isFree) {
+        state = AuthPhoneTaken(phoneCheck);
+        return;
+      }
+
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
@@ -645,6 +691,8 @@ class AuthNotifier extends Notifier<AuthState> {
         'branchName': branchName,
         'branchShortName': branchShortName,
         'status': 'verified',
+        // Waits for the branch admin's approval before sign-in.
+        ...AccountApprovalService.pendingFields(),
         'totalPoints': 0,
         'tier': 'Bronze',
         'createdAt': FieldValue.serverTimestamp(),
@@ -666,16 +714,7 @@ class AuthNotifier extends Notifier<AuthState> {
       });
       await batch.commit();
 
-      await _session.saveSession(
-        phoneNumber: normalizedPhone,
-        userId: registeredUser.uid,
-        role: role,
-        email: email.trim(),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        branchId: branchId,
-      );
-
+      // Saved now so the "approved" push can reach this phone later.
       try {
         await _fcm.refreshTokenAfterLogin(
           uid: registeredUser.uid,
@@ -684,24 +723,17 @@ class AuthNotifier extends Notifier<AuthState> {
       } catch (e) {
         AppLogger.warning('FCM refresh after registration failed: $e');
       }
-
-      final user = User(
-        id: registeredUser.uid,
-        email: email.trim(),
-        phoneNumber: normalizedPhone,
-        displayName: fullName,
-        role: role,
-        branchId: branchId,
-        isEmailVerified: registeredUser.emailVerified,
-        createdAt: registeredUser.metadata.creationTime ?? DateTime.now(),
-      );
       Telemetry.signUp(method: 'email');
-      Telemetry.identify(
-        userId: user.id,
-        role: user.role,
-        branchId: user.branchId,
+      // Not signed in: the branch admin approves the account first.
+      createdUser = null; // the account is kept
+      await _blockUnapproved(
+        AccountGate(
+          status: 'pending',
+          branchName: branchName,
+          branchPhone: (branchData['phone'] as String? ?? '').trim(),
+        ),
+        justRegistered: true,
       );
-      state = AuthAuthenticated(user, role: role);
     } on firebase_auth.FirebaseAuthException catch (e) {
       AppLogger.error('Email registration failed', e);
       final incompleteUser = createdUser;
@@ -778,6 +810,13 @@ class AuthNotifier extends Notifier<AuthState> {
       final userData = await _pin.verifyPin(phone: phoneNumber, pin: pin);
       if (userData == null) {
         state = const AuthError('Invalid PIN');
+        return;
+      }
+
+      // New member accounts wait for the branch admin's approval.
+      final gate = await _approval.gateFor(userData);
+      if (gate != null) {
+        await _blockUnapproved(gate);
         return;
       }
 
