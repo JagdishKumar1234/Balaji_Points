@@ -1,6 +1,7 @@
 import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -337,9 +338,9 @@ class _SearchHeaderState extends State<SearchHeader> {
                       ? SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                          child: AppLoader(
                             color: context.themeContentColor,
+                            strokeWidth: 2,
                           ),
                         )
                       : Icon(

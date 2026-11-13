@@ -2,6 +2,7 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../providers/loading_provider.dart';
@@ -31,17 +32,12 @@ class LoadingOverlay extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    width: 44,
-                    height: 44,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 4,
-                      color: context.themeSecondary,
-                    ),
-                  ),
+                  // The app's one loader widget, here at its large size.
+                  const AppLoader(size: 40, strokeWidth: 3),
                   const SizedBox(height: 16),
                   AppText.body(
-                    AppLocalizations.of(context)!.loading,
+                    ref.watch(loadingMessageProvider) ??
+                        AppLocalizations.of(context)!.loading,
                     color: context.themeTextPrimary,
                   ),
                 ],

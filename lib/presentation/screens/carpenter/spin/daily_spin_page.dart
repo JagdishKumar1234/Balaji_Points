@@ -3,6 +3,7 @@ import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -313,7 +314,7 @@ class _DailySpinPageState extends ConsumerState<DailySpinPage>
                       ),
                     )
                   else
-                    const CircularProgressIndicator(),
+                    const AppLoader(),
 
                   const SizedBox(height: 30),
 

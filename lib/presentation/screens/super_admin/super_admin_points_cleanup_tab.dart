@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_section_header.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -300,7 +301,7 @@ class SuperAdminPointsCleanupTabState
                           ? const SizedBox(
                               width: 18,
                               height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: AppLoader(strokeWidth: 2),
                             )
                           : const Icon(Icons.preview_outlined),
                       label: Text(
@@ -394,7 +395,7 @@ class SuperAdminPointsCleanupTabState
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(
+                        child: AppLoader(
                           color: AppColors.primary,
                           strokeWidth: 2,
                         ),

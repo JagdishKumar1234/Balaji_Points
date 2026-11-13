@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -286,9 +287,9 @@ Copy the JSON data below to save as backup file
                     ? SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
+                        child: AppLoader(
                           color: context.themeContentColor,
+                          strokeWidth: 2,
                         ),
                       )
                     : const Icon(Icons.backup_rounded, size: 24),

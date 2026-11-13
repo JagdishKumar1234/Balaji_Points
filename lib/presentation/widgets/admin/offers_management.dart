@@ -5,6 +5,9 @@ import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
+import 'package:balaji_points/presentation/widgets/shared/admin_form_footer.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,7 +24,7 @@ class OffersManagement extends StatefulWidget {
 }
 
 class _OffersManagementState extends State<OffersManagement> {
-  final OfferService _offerService = OfferService();
+  late final OfferService _offerService = OfferService();
 
   void _navigateToCreateOfferPage() {
     Navigator.of(
@@ -132,22 +135,25 @@ class _OffersManagementState extends State<OffersManagement> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: context.themeContentColor,
-              ),
-            );
+            return Center(child: AppLoader(color: context.themeContentColor));
           }
 
-          // Only this admin's branch's offers.
-          final offers = (snapshot.data?.docs ?? [])
-              .where(
-                (doc) => OfferVisibility.adminCanSee(
-                  doc.data() as Map<String, dynamic>?,
-                  CurrentBranchService.adminBranchId,
-                ),
-              )
-              .toList();
+          // Only this admin's branch's offers, in the order members see.
+          final offers =
+              (snapshot.data?.docs ?? [])
+                  .where(
+                    (doc) => OfferVisibility.adminCanSee(
+                      doc.data() as Map<String, dynamic>?,
+                      CurrentBranchService.adminBranchId,
+                    ),
+                  )
+                  .toList()
+                ..sort(
+                  (a, b) => OfferVisibility.compare(
+                    a.data() as Map<String, dynamic>,
+                    b.data() as Map<String, dynamic>,
+                  ),
+                );
 
           if (offers.isEmpty) {
             return Center(
@@ -176,8 +182,36 @@ class _OffersManagementState extends State<OffersManagement> {
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: offers.length,
-            itemBuilder: (context, index) {
+            // First row: "Arrange order" when there is more than one offer.
+            itemCount: offers.length + (offers.length > 1 ? 1 : 0),
+            itemBuilder: (context, rowIndex) {
+              if (offers.length > 1 && rowIndex == 0) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.swap_vert_rounded),
+                      label: Text(l10n.offersArrange),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ArrangeOffersPage(
+                            offers: [
+                              for (final d in offers)
+                                (
+                                  id: d.id,
+                                  data: d.data() as Map<String, dynamic>,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
+              final index = offers.length > 1 ? rowIndex - 1 : rowIndex;
               final offer = offers[index].data() as Map<String, dynamic>;
               final offerId = offers[index].id;
 
@@ -439,39 +473,18 @@ class CreateOfferPage extends StatelessWidget {
   const CreateOfferPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n.createNewOffer,
-          style: AppTypography.labelLarge().copyWith(fontSize: 20),
-        ),
-        titleTextStyle: AppTypography.labelLarge().copyWith(
-          fontSize: 20,
-          color: AppColors.white,
-        ),
-        backgroundColor: context.themeContentColor,
-        iconTheme: const IconThemeData(color: AppColors.white),
-      ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            child: CreateOfferForm(),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const CreateOfferForm(asPage: true);
 }
 
 // Create/Edit Offer Form
 class CreateOfferForm extends StatefulWidget {
   final Map<String, dynamic>? offer;
 
-  const CreateOfferForm({super.key, this.offer});
+  /// Full-screen page (own app bar and fixed Save footer) instead of the
+  /// card used in the Edit dialog.
+  final bool asPage;
+
+  const CreateOfferForm({super.key, this.offer, this.asPage = false});
 
   @override
   State<CreateOfferForm> createState() => _CreateOfferFormState();
@@ -483,7 +496,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   final _descriptionController = TextEditingController();
   final _pointsController = TextEditingController();
 
-  final OfferService _offerService = OfferService();
+  late final OfferService _offerService = OfferService();
 
   Uint8List? _bannerBytes;
   String? _existingBannerUrl;
@@ -692,377 +705,453 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final title = isEditMode ? l10n.editOffer : l10n.createNewOffer;
 
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
-      decoration: BoxDecoration(
-        borderRadius: AppRadius.all16,
-        color: context.themeSurface,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: context.themeContentColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
+    if (widget.asPage) {
+      // One app bar, fields in one scroll, Save fixed at the bottom (above
+      // Android's navigation bar and the keyboard).
+      return Scaffold(
+        backgroundColor: context.themeBackground,
+        appBar: AppBar(title: Text(title)),
+        body: SafeArea(
+          bottom: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: _fields(context),
               ),
             ),
+          ),
+        ),
+        bottomNavigationBar: AdminFormFooter(child: _saveButton(context)),
+      );
+    }
+
+    // Edit dialog: compact header, scrolling fields, Save pinned below.
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 520, maxHeight: 720),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 8, 4),
             child: Row(
               children: [
-                const Icon(
-                  Icons.local_offer_rounded,
-                  color: AppColors.white,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
+                Icon(Icons.local_offer_rounded, color: context.themePrimary),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    isEditMode ? l10n.editOffer : l10n.createNewOffer,
-                    style: AppTypography.labelLarge().copyWith(
-                      fontSize: 20,
-                      color: AppColors.white,
-                    ),
+                    title,
+                    style: AppTypography.h5(color: context.themeTextPrimary),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, color: AppColors.white),
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                  icon: const Icon(Icons.close_rounded),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             ),
           ),
-
-          // Form Content
-          Expanded(
+          Divider(height: 1, color: context.themeBorder),
+          Flexible(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              child: _fields(context),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: context.themeBorder)),
+            ),
+            child: _saveButton(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  InputDecoration _input(
+    BuildContext context, {
+    required String label,
+    String? hint,
+    IconData? icon,
+  }) => InputDecoration(
+    labelText: label,
+    hintText: hint,
+    prefixIcon: icon == null ? null : Icon(icon, size: 20),
+    filled: true,
+    fillColor: context.themeCard,
+    border: OutlineInputBorder(borderRadius: AppRadius.md12),
+  );
+
+  Widget _fields(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final hasBanner = _bannerBytes != null || _existingBannerUrl != null;
+    const gap = SizedBox(height: 16);
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Banner in banner proportions; tap to pick or change.
+          Material(
+            color: context.themeSoftSurface,
+            borderRadius: AppRadius.md12,
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: _isUploadingBanner ? null : _pickBanner,
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    // Banner Image Picker
-                    GestureDetector(
-                      onTap: _pickBanner,
-                      child: Container(
-                        height: 160,
+                    if (_bannerBytes != null)
+                      Image.memory(_bannerBytes!, fit: BoxFit.cover)
+                    else if (_existingBannerUrl != null)
+                      Image.network(
+                        _existingBannerUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                      )
+                    else
+                      DecoratedBox(
                         decoration: BoxDecoration(
-                          color: context.themeSoftSurface,
                           borderRadius: AppRadius.md12,
                           border: Border.all(color: context.themeBorder),
                         ),
-                        child: _bannerBytes != null
-                            ? ClipRRect(
-                                borderRadius: AppRadius.md12,
-                                child: Image.memory(
-                                  _bannerBytes!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
-                              )
-                            : _existingBannerUrl != null
-                            ? ClipRRect(
-                                borderRadius: AppRadius.md12,
-                                child: Image.network(
-                                  _existingBannerUrl!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
-                              )
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_photo_alternate_rounded,
-                                    size: 48,
-                                    color: context.themeTextMuted,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    l10n.tapToUploadBanner,
-                                    style: AppTypography.bodySmall().copyWith(
-                                      fontSize: 14,
-                                      color: context.themeTextSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Title
-                    TextFormField(
-                      controller: _titleController,
-                      style: AppTypography.bodyMedium().copyWith(fontSize: 16),
-                      decoration: InputDecoration(
-                        labelText: l10n.offerTitleLabel,
-                        labelStyle: AppTypography.bodySmall().copyWith(
-                          color: context.themeContentColor,
-                        ),
-                        hintText: l10n.offerTitleHint,
-                        border: OutlineInputBorder(
-                          borderRadius: AppRadius.md12,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: AppRadius.md12,
-                          borderSide: BorderSide(
-                            color: context.themeContentColor,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return l10n.enterOfferTitle;
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Description
-                    TextFormField(
-                      controller: _descriptionController,
-                      style: AppTypography.bodyMedium().copyWith(fontSize: 16),
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        labelText: l10n.descriptionLabel,
-                        labelStyle: AppTypography.bodySmall().copyWith(
-                          color: context.themeContentColor,
-                        ),
-                        hintText: l10n.descriptionHint,
-                        border: OutlineInputBorder(
-                          borderRadius: AppRadius.md12,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: AppRadius.md12,
-                          borderSide: BorderSide(
-                            color: context.themeContentColor,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Points (Optional)
-                    TextFormField(
-                      controller: _pointsController,
-                      style: AppTypography.bodyMedium().copyWith(fontSize: 16),
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: l10n.pointsRequiredLabel
-                            .replaceAll('*', '')
-                            .trim(),
-                        labelStyle: AppTypography.bodySmall().copyWith(
-                          color: context.themeContentColor,
-                        ),
-                        hintText: l10n.pointsHint,
-                        prefixIcon: Icon(
-                          Icons.stars_rounded,
-                          color: context.themeContentColor,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: AppRadius.md12,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: AppRadius.md12,
-                          borderSide: BorderSide(
-                            color: context.themeContentColor,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        // Points is optional, but if provided, must be a valid number
-                        if (value != null && value.trim().isNotEmpty) {
-                          if (int.tryParse(value) == null) {
-                            return l10n.enterValidNumber;
-                          }
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Valid Until Date
-                    InkWell(
-                      onTap: _selectValidUntilDate,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: context.themeTextMuted),
-                          borderRadius: AppRadius.md12,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.event_rounded,
-                              color: context.themeContentColor,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _validUntil != null
-                                    ? l10n.validUntilDisplay(
-                                        DateFormat(
-                                          'dd MMM yyyy',
-                                        ).format(_validUntil!),
-                                      )
-                                    : l10n.setValidUntilDate,
-                                style: AppTypography.bodyMedium().copyWith(
-                                  fontSize: 16,
-                                  color: _validUntil != null
-                                      ? context.themePrimary
-                                      : context.themeTextSecondary,
-                                ),
-                              ),
-                            ),
-                            if (_validUntil != null)
-                              IconButton(
-                                icon: Icon(
-                                  Icons.clear_rounded,
-                                  size: 20,
-                                  color: context.themeTextSecondary,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _validUntil = null;
-                                  });
-                                },
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Active Status Toggle
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: context.themeSoftSurface,
-                        borderRadius: AppRadius.md12,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.visibility_rounded,
-                            color: context.themeContentColor,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              l10n.offerStatus,
-                              style: AppTypography.bodySmall().copyWith(
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          Switch(
-                            value: _isActive,
-                            onChanged: (value) {
-                              setState(() {
-                                _isActive = value;
-                              });
-                            },
-                            activeTrackColor: context.themeSecondary,
-                            activeThumbColor: AppColors.white,
-                          ),
-                          Text(
-                            _isActive ? l10n.active : l10n.inactive,
-                            style: AppTypography.labelLarge().copyWith(
-                              fontSize: 14,
-                              color: _isActive
-                                  ? AppColors.success
-                                  : context.themeTextSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Upload Status
-                    if (_isUploadingBanner)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Row(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  context.themePrimary,
-                                ),
+                            Icon(
+                              Icons.add_photo_alternate_rounded,
+                              size: 40,
+                              color: context.themeTextMuted,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.tapToUploadBanner,
+                              style: AppTypography.bodySmall(
+                                color: context.themeTextSecondary,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            AppText.bodySmall(l10n.uploadingBanner),
                           ],
                         ),
                       ),
-
-                    // Save Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: (_isSaving || _isUploadingBanner)
-                            ? null
-                            : _saveOffer,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.themeSecondary,
-                          foregroundColor: context.themeOnSecondary,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppRadius.md12,
+                    if (hasBanner)
+                      Positioned(
+                        right: 10,
+                        bottom: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
                           ),
-                        ),
-                        child: _isSaving
-                            ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    context.themeOnSecondary,
-                                  ),
-                                ),
-                              )
-                            : Text(
-                                isEditMode
-                                    ? l10n.updateOffer
-                                    : l10n.createOffer,
-                                style: AppTypography.labelLarge().copyWith(
-                                  fontSize: 16,
-                                  color: context.themeOnSecondary,
+                          decoration: BoxDecoration(
+                            color: AppColors.black.withValues(alpha: 0.6),
+                            borderRadius: AppRadius.pill,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.edit_rounded,
+                                size: 14,
+                                color: AppColors.white,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                l10n.offerBannerChange,
+                                style: AppTypography.labelSmall(
+                                  color: AppColors.white,
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    if (_isUploadingBanner)
+                      ColoredBox(
+                        color: AppColors.black.withValues(alpha: 0.35),
+                        child: const Center(child: AppLoader()),
+                      ),
                   ],
                 ),
               ),
             ),
           ),
+          gap,
+          TextFormField(
+            controller: _titleController,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: _input(
+              context,
+              label: l10n.offerTitleLabel,
+              hint: l10n.offerTitleHint,
+            ),
+            validator: (value) => value == null || value.trim().isEmpty
+                ? l10n.enterOfferTitle
+                : null,
+          ),
+          gap,
+          TextFormField(
+            controller: _descriptionController,
+            textCapitalization: TextCapitalization.sentences,
+            minLines: 3,
+            maxLines: 5,
+            decoration: _input(
+              context,
+              label: l10n.descriptionLabel,
+              hint: l10n.descriptionHint,
+            ).copyWith(alignLabelWithHint: true),
+          ),
+          gap,
+          TextFormField(
+            controller: _pointsController,
+            keyboardType: TextInputType.number,
+            decoration: _input(
+              context,
+              label: l10n.pointsRequiredLabel.replaceAll('*', '').trim(),
+              hint: l10n.pointsHint,
+              icon: Icons.stars_rounded,
+            ),
+            validator: (value) {
+              // Points is optional, but if provided, must be a valid number.
+              if (value != null && value.trim().isNotEmpty) {
+                if (int.tryParse(value) == null) return l10n.enterValidNumber;
+              }
+              return null;
+            },
+          ),
+          gap,
+          // Same look as the text fields above.
+          InkWell(
+            onTap: _selectValidUntilDate,
+            borderRadius: AppRadius.md12,
+            child: InputDecorator(
+              decoration:
+                  _input(
+                    context,
+                    label: l10n.setValidUntilDate,
+                    icon: Icons.event_rounded,
+                  ).copyWith(
+                    suffixIcon: _validUntil == null
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.clear_rounded, size: 20),
+                            onPressed: () => setState(() => _validUntil = null),
+                          ),
+                  ),
+              isEmpty: _validUntil == null,
+              child: _validUntil == null
+                  ? null
+                  : Text(
+                      DateFormat('dd MMM yyyy').format(_validUntil!),
+                      style: AppTypography.bodyMedium(
+                        color: context.themeTextPrimary,
+                      ),
+                    ),
+            ),
+          ),
+          gap,
+          // Status: label and state on the left, switch on the right.
+          Container(
+            padding: const EdgeInsets.fromLTRB(14, 6, 6, 6),
+            decoration: BoxDecoration(
+              color: context.themeCard,
+              borderRadius: AppRadius.md12,
+              border: Border.all(color: context.themeBorder),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  _isActive
+                      ? Icons.visibility_rounded
+                      : Icons.visibility_off_rounded,
+                  size: 20,
+                  color: context.themeTextSecondary,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.offerStatus,
+                        style: AppTypography.labelLarge(
+                          color: context.themeTextPrimary,
+                        ),
+                      ),
+                      Text(
+                        _isActive ? l10n.active : l10n.inactive,
+                        style: AppTypography.caption(
+                          color: _isActive
+                              ? AppColors.success
+                              : context.themeTextSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: _isActive,
+                  onChanged: (value) => setState(() => _isActive = value),
+                ),
+              ],
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _saveButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AppButton.primary(
+      label: isEditMode ? l10n.updateOffer : l10n.createOffer,
+      icon: isEditMode ? Icons.check_rounded : Icons.add_rounded,
+      isLoading: _isSaving,
+      onPressed: (_isSaving || _isUploadingBanner) ? null : _saveOffer,
+    );
+  }
+}
+
+/// Drag offers into the order members see them (top = first), then Save.
+/// Saves `sortOrder` 1, 2, 3... for this branch's offers.
+class ArrangeOffersPage extends StatefulWidget {
+  const ArrangeOffersPage({super.key, required this.offers, this.service});
+
+  final List<({String id, Map<String, dynamic> data})> offers;
+
+  /// Tests pass a service on a fake database.
+  final OfferService? service;
+
+  @override
+  State<ArrangeOffersPage> createState() => _ArrangeOffersPageState();
+}
+
+class _ArrangeOffersPageState extends State<ArrangeOffersPage> {
+  late final List<({String id, Map<String, dynamic> data})> _items = [
+    ...widget.offers,
+  ];
+  bool _saving = false;
+
+  Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final errorColor = context.themeError;
+    setState(() => _saving = true);
+    final ok = await (widget.service ?? OfferService()).saveOrder([
+      for (final o in _items) o.id,
+    ]);
+    if (!mounted) return;
+    setState(() => _saving = false);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(ok ? l10n.offersOrderSaved : l10n.offersOrderFailed),
+        backgroundColor: ok ? null : errorColor,
+      ),
+    );
+    if (ok) Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      backgroundColor: context.themeBackground,
+      appBar: AppBar(title: Text(l10n.offersArrange)),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Text(
+              l10n.offersArrangeHint,
+              style: AppTypography.bodySmall().copyWith(
+                color: context.themeTextSecondary,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ReorderableListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              itemCount: _items.length,
+              onReorder: (from, to) => setState(() {
+                if (to > from) to -= 1;
+                _items.insert(to, _items.removeAt(from));
+              }),
+              itemBuilder: (context, i) {
+                final o = _items[i];
+                final banner = (o.data['bannerUrl'] as String? ?? '');
+                return Card(
+                  key: ValueKey(o.id),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: context.themePrimary,
+                      foregroundColor: AppColors.white,
+                      child: Text('${i + 1}'),
+                    ),
+                    title: Text(
+                      (o.data['title'] as String?) ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      l10n.pts3('${o.data['points'] ?? 0}'),
+                      style: AppTypography.caption(),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (banner.isNotEmpty)
+                          ClipRRect(
+                            borderRadius: AppRadius.sm8,
+                            child: Image.network(
+                              banner,
+                              width: 44,
+                              height: 44,
+                              fit: BoxFit.cover,
+                              cacheWidth: 132,
+                              errorBuilder: (_, __, ___) =>
+                                  const SizedBox(width: 44),
+                            ),
+                          ),
+                        const SizedBox(width: 8),
+                        ReorderableDragStartListener(
+                          index: i,
+                          child: const Icon(Icons.drag_handle_rounded),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: FilledButton.icon(
+            onPressed: _saving ? null : _save,
+            icon: _saving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: AppLoader(strokeWidth: 2),
+                  )
+                : const Icon(Icons.check_rounded),
+            label: Text(l10n.save),
+          ),
+        ),
       ),
     );
   }

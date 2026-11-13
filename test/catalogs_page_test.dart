@@ -75,11 +75,32 @@ void main() {
     }
   }
 
-  testWidgets('shows every catalog under category headings', (tester) async {
+  testWidgets('categories first, All last; opens on the first category', (
+    tester,
+  ) async {
     await pump(tester);
     expect(find.text('All  3'), findsOneWidget);
     expect(find.text('Laminates  2'), findsOneWidget);
     expect(find.text('Doors  1'), findsOneWidget);
+    // Chip order: Laminates, Doors, then All at the end.
+    final x = [
+      'Laminates  2',
+      'Doors  1',
+      'All  3',
+    ].map((t) => tester.getTopLeft(find.text(t)).dx).toList();
+    expect(x[0] < x[1] && x[1] < x[2], isTrue);
+    // Opens on Laminates only.
+    expect(find.text('Virgo ABCO'), findsOneWidget);
+    expect(find.text('Blinco'), findsOneWidget);
+    expect(find.text('Kan-B E3 Pro'), findsNothing);
+  });
+
+  testWidgets('All shows every catalog under category headings', (
+    tester,
+  ) async {
+    await pump(tester);
+    await tester.tap(find.text('All  3'));
+    await tester.pump();
     expect(find.text('Virgo ABCO'), findsOneWidget);
     expect(find.text('Blinco'), findsOneWidget);
     expect(find.text('Kan-B E3 Pro'), findsOneWidget);
@@ -95,6 +116,8 @@ void main() {
 
   testWidgets('one tap on a cover opens the reader', (tester) async {
     await pump(tester);
+    await tester.tap(find.text('Doors  1'));
+    await tester.pump();
     await tester.ensureVisible(find.text('Kan-B E3 Pro'));
     await tester.pump();
     await tester.tap(find.text('Kan-B E3 Pro'));

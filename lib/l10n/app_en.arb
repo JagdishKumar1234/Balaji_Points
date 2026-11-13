@@ -2795,5 +2795,13 @@
   "guestStatCategories": "Categories",
   "enquiryBranchOptional": "Branch (optional)",
   "enquiryBranchAny": "Any branch — Balaji Points team",
-  "guestTabGuest": "Guest"
+  "guestTabGuest": "Guest",
+  "offersArrange": "Arrange order",
+  "offersArrangeHint": "Drag offers into the order members should see them.",
+  "offersOrderSaved": "Offer order saved",
+  "offersOrderFailed": "Could not save the order. Try again.",
+  "drawerSectionExplore": "Explore",
+  "drawerSectionSupport": "Help & support",
+  "offerBannerChange": "Change",
+  "loggingOut": "Logging out…"
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
@@ -192,11 +193,10 @@ class SplashView extends StatelessWidget {
                                 entrance(
                                   SizedBox.square(
                                     dimension: 22,
-                                    child: CircularProgressIndicator(
+                                    child: AppLoader(
                                       key: const ValueKey('splash-loader'),
-                                      strokeWidth: 2.5,
-                                      strokeCap: StrokeCap.round,
                                       color: context.themeGold,
+                                      strokeWidth: 2.5,
                                     ),
                                   ),
                                   4,

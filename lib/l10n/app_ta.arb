@@ -1693,5 +1693,13 @@
   "guestStatCategories": "வகைகள்",
   "enquiryBranchOptional": "கிளை (விருப்பம்)",
   "enquiryBranchAny": "எந்தக் கிளையும் — பாலாஜி பாயின்ட்ஸ் குழு",
-  "guestTabGuest": "விருந்தினர்"
+  "guestTabGuest": "விருந்தினர்",
+  "offersArrange": "வரிசையை மாற்று",
+  "offersArrangeHint": "உறுப்பினர்கள் பார்க்க வேண்டிய வரிசையில் சலுகைகளை இழுக்கவும்.",
+  "offersOrderSaved": "சலுகை வரிசை சேமிக்கப்பட்டது",
+  "offersOrderFailed": "வரிசையைச் சேமிக்க முடியவில்லை. மீண்டும் முயலவும்.",
+  "drawerSectionExplore": "ஆராயுங்கள்",
+  "drawerSectionSupport": "உதவி & ஆதரவு",
+  "offerBannerChange": "மாற்று",
+  "loggingOut": "வெளியேறுகிறது…"
 }

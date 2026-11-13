@@ -2,6 +2,7 @@ import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import 'package:balaji_points/presentation/widgets/admin/bill_dates.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -761,9 +762,9 @@ class _BillHistoryListState extends State<BillHistoryList> {
                           ? SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
+                              child: AppLoader(
                                 color: context.themeContentColor,
+                                strokeWidth: 2,
                               ),
                             )
                           : Icon(
@@ -1056,9 +1057,7 @@ class _BillHistoryListState extends State<BillHistoryList> {
 
               if (!snap.hasData) {
                 return Center(
-                  child: CircularProgressIndicator(
-                    color: context.themeContentColor,
-                  ),
+                  child: AppLoader(color: context.themeContentColor),
                 );
               }
 

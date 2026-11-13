@@ -1,5 +1,6 @@
 import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -323,7 +324,7 @@ class _RoleCard extends StatelessWidget {
             padding: EdgeInsets.all(14),
             child: SizedBox.square(
               dimension: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: AppLoader(strokeWidth: 2),
             ),
           )
         : PopupMenuButton<String>(
@@ -695,7 +696,7 @@ class _AddRoleDialogState extends State<_AddRoleDialog> {
           icon: _saving
               ? const SizedBox.square(
                   dimension: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: AppLoader(strokeWidth: 2),
                 )
               : const Icon(Icons.check_rounded),
           label: Text(_saving ? l10n.saving : l10n.saveRole),

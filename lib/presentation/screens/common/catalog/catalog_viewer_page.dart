@@ -222,10 +222,7 @@ class _CatalogViewerPageState extends ConsumerState<CatalogViewerPage> {
               child: SizedBox(
                 width: 28,
                 height: 28,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  color: ctx.themePrimary,
-                ),
+                child: AppLoader(color: ctx.themePrimary, strokeWidth: 2.5),
               ),
             )
           : _LoadingBanner(done: done, total: total ?? c.sizeBytes),

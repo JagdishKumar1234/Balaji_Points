@@ -1,5 +1,6 @@
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -30,11 +31,7 @@ class UsersListView extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(context.themePrimary),
-            ),
-          );
+          return Center(child: AppLoader(color: context.themePrimary));
         }
 
         if (snapshot.hasError) {

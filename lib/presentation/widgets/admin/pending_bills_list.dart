@@ -4,6 +4,7 @@ import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import 'package:balaji_points/presentation/widgets/admin/bill_dates.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -261,9 +262,8 @@ class _PendingBillsListState extends State<PendingBillsList> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => Center(
-        child: CircularProgressIndicator(color: context.themeContentColor),
-      ),
+      builder: (_) =>
+          Center(child: AppLoader(color: context.themeContentColor)),
     );
   }
 
@@ -1069,9 +1069,7 @@ class _PendingBillsListState extends State<PendingBillsList> {
 
                   if (!snap.hasData) {
                     return Center(
-                      child: CircularProgressIndicator(
-                        color: context.themeContentColor,
-                      ),
+                      child: AppLoader(color: context.themeContentColor),
                     );
                   }
 
@@ -1421,11 +1419,9 @@ class _PendingBillsListState extends State<PendingBillsList> {
                                                 padding: const EdgeInsets.all(
                                                   12,
                                                 ),
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      color:
-                                                          context.themePrimary,
-                                                    ),
+                                                child: AppLoader(
+                                                  color: context.themePrimary,
+                                                ),
                                               );
                                             }
 

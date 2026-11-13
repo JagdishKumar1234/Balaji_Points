@@ -114,16 +114,13 @@ class _SuperAdminPageState extends ConsumerState<SuperAdminPage>
       ),
     );
     if (confirmed != true || !mounted) return;
-    ref.read(loadingProvider.notifier).start();
-    try {
+    final router = GoRouter.of(context);
+    // The loader always stops, even though this page is gone after go().
+    await ref.withLoader(() async {
       await FirebaseAuth.instance.signOut();
       await SessionService().clearSession();
-      if (mounted) context.go('/login');
-    } finally {
-      if (mounted) {
-        ref.read(loadingProvider.notifier).stop();
-      }
-    }
+      router.go('/login');
+    }, message: l10n.loggingOut);
   }
 
   @override

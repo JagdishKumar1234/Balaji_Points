@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -287,11 +288,9 @@ class _UserScanCard extends StatelessWidget {
                               child: SizedBox(
                                 width: 32,
                                 height: 32,
-                                child: CircularProgressIndicator(
+                                child: AppLoader(
+                                  color: context.themePrimary,
                                   strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    context.themePrimary,
-                                  ),
                                 ),
                               ),
                             )
@@ -315,12 +314,9 @@ class _UserScanCard extends StatelessWidget {
                                       child: SizedBox(
                                         width: 28,
                                         height: 28,
-                                        child: CircularProgressIndicator(
+                                        child: AppLoader(
+                                          color: context.themePrimary,
                                           strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                context.themePrimary,
-                                              ),
                                         ),
                                       ),
                                     ),

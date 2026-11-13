@@ -8,8 +8,13 @@ import '../auth/session_service.dart';
 import '../notifications/notification_service.dart';
 
 class OfferService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  OfferService({FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
+
+  final FirebaseFirestore _firestore;
+
+  /// Only needed for banner uploads, so it is created on first use.
+  late final FirebaseStorage _storage = FirebaseStorage.instance;
   final SessionService _sessionService = SessionService();
 
   /// Upload offer banner to Firebase Storage
@@ -103,8 +108,20 @@ class OfferService {
         return false;
       }
 
+      // New offers go to the end of the branch's arranged order.
+      var nextOrder = 1;
+      try {
+        final existing = await _firestore.collection('offers').get();
+        for (final d in existing.docs) {
+          if ((d.data()['branchId'] ?? '') != (branchId ?? '')) continue;
+          final o = (d.data()['sortOrder'] as num?)?.toInt() ?? 0;
+          if (o >= nextOrder) nextOrder = o + 1;
+        }
+      } catch (_) {}
+
       await offerRef.set({
         'offerId': offerId, // Add offerId field for consistency
+        'sortOrder': nextOrder,
         'title': title,
         'description': description ?? '',
         'points': points,
@@ -448,6 +465,25 @@ class OfferService {
       return 'Silver';
     } else {
       return 'Bronze';
+    }
+  }
+
+  /// Saves the order an admin arranged: [offerIds] first to last get
+  /// `sortOrder` 1, 2, 3...; members see offers in this order.
+  Future<bool> saveOrder(List<String> offerIds) async {
+    try {
+      final batch = _firestore.batch();
+      for (var i = 0; i < offerIds.length; i++) {
+        batch.update(_firestore.collection('offers').doc(offerIds[i]), {
+          'sortOrder': i + 1,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+      await batch.commit();
+      return true;
+    } catch (e) {
+      AppLogger.error('Saving offer order failed', e);
+      return false;
     }
   }
 }

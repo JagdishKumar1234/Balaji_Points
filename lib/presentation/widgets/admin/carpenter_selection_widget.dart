@@ -2,6 +2,7 @@ import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
@@ -149,9 +150,7 @@ class _CarpenterSelectionWidgetState extends State<CarpenterSelectionWidget> {
 
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
-                          child: CircularProgressIndicator(
-                            color: context.themeContentColor,
-                          ),
+                          child: AppLoader(color: context.themeContentColor),
                         );
                       }
 

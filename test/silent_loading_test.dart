@@ -217,13 +217,15 @@ void main() {
     });
 
     test('logout closes the kept bill list on both logout paths', () {
-      for (final page in ['home/home_page', 'profile/profile_page']) {
-        expect(
-          _source('$_screens/$page.dart'),
-          contains('ref.invalidate(walletBillsProvider);'),
-          reason: page,
-        );
-      }
+      // One shared member logout clears it; Profile uses the same one.
+      expect(
+        _source('$_screens/home/home_page.dart'),
+        contains('ref.invalidate(walletBillsProvider);'),
+      );
+      expect(
+        _source('$_screens/profile/profile_page.dart'),
+        contains('memberLogout(context, ref)'),
+      );
     });
 
     test('profile opens from what the app already has', () {

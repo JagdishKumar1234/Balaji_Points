@@ -281,26 +281,9 @@ class HomeNotifier extends Notifier<HomeState> {
   String? _myBranchId;
 
   void _applyOffers(QuerySnapshot<Map<String, dynamic>> snap) {
-    // Offers with a `sortOrder` come first, lowest first (e.g. by points
-    // target); the rest follow newest first. Sorted in memory, so no
-    // Firestore index is needed.
-    num? orderOf(Map<String, dynamic> d) => d['sortOrder'] as num?;
+    // The order the branch admin arranged (same rule as the admin list).
     final sorted = snap.docs.toList()
-      ..sort((a, b) {
-        final ao = orderOf(a.data());
-        final bo = orderOf(b.data());
-        if (ao != null || bo != null) {
-          if (ao == null) return 1;
-          if (bo == null) return -1;
-          if (ao != bo) return ao.compareTo(bo);
-        }
-        final at = a.data()['createdAt'];
-        final bt = b.data()['createdAt'];
-        if (at == null && bt == null) return 0;
-        if (at == null) return 1;
-        if (bt == null) return -1;
-        return (bt as dynamic).compareTo(at as dynamic);
-      });
+      ..sort((a, b) => OfferVisibility.compare(a.data(), b.data()));
 
     // This member's branch's offers, plus the super admin's all-branch ones.
     final offers = sorted

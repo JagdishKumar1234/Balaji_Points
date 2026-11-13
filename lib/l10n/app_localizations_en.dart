@@ -119,7 +119,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithPin => 'Continue with PIN';
 
   @override
-  String get loginInfo => 'Login using your registered phone number. You will receive an OTP to verify.';
+  String get loginInfo =>
+      'Login using your registered phone number. You will receive an OTP to verify.';
 
   @override
   String get poweredBy => 'Powered by';
@@ -188,31 +189,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPinTitle => 'Reset PIN';
 
   @override
-  String get resetPinSubtitle => 'Enter your registered mobile number to reset your PIN.';
+  String get resetPinSubtitle =>
+      'Enter your registered mobile number to reset your PIN.';
 
   @override
-  String get mustBeLoggedInToResetPin => 'You must be logged in to reset your PIN. Please login first.';
+  String get mustBeLoggedInToResetPin =>
+      'You must be logged in to reset your PIN. Please login first.';
 
   @override
-  String get canOnlyResetOwnPin => 'You can only reset your own PIN. Phone number must match your logged-in account.';
+  String get canOnlyResetOwnPin =>
+      'You can only reset your own PIN. Phone number must match your logged-in account.';
 
   @override
-  String get enterCurrentPin => 'Please enter your current PIN to verify ownership.';
+  String get enterCurrentPin =>
+      'Please enter your current PIN to verify ownership.';
 
   @override
   String get currentPinLabel => 'Current PIN';
 
   @override
-  String get newPinMustBeDifferent => 'New PIN must be different from your current PIN.';
+  String get newPinMustBeDifferent =>
+      'New PIN must be different from your current PIN.';
 
   @override
-  String get contactAdminForPinReset => 'You must be logged in to reset your PIN. If you forgot your PIN, please contact admin for assistance.';
+  String get contactAdminForPinReset =>
+      'You must be logged in to reset your PIN. If you forgot your PIN, please contact admin for assistance.';
 
   @override
   String get forgotCurrentPin => 'Forgot your current PIN?';
 
   @override
-  String get forgotPinHelp => 'If you don\'t remember your current PIN, please contact our support team for assistance.';
+  String get forgotPinHelp =>
+      'If you don\'t remember your current PIN, please contact our support team for assistance.';
 
   @override
   String get adminSupportInfo => 'Admin Support';
@@ -229,7 +237,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get adminResetPinSubtitle => 'Enter a new 4-digit PIN for this carpenter.';
+  String get adminResetPinSubtitle =>
+      'Enter a new 4-digit PIN for this carpenter.';
 
   @override
   String adminResetPinConfirm(String carpenterName) {
@@ -245,7 +254,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminResetPinFailed => 'Failed to reset PIN. Please try again.';
 
   @override
-  String get adminNotAuthorized => 'You are not authorized to perform this action.';
+  String get adminNotAuthorized =>
+      'You are not authorized to perform this action.';
 
   @override
   String get enterNewPinForCarpenter => 'Enter new 4-digit PIN';
@@ -299,7 +309,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rememberMe => 'Remember Me';
 
   @override
-  String get accountExistsUseReset => 'Account already exists. Please use Reset PIN to change your PIN.';
+  String get accountExistsUseReset =>
+      'Account already exists. Please use Reset PIN to change your PIN.';
 
   @override
   String get home => 'Home';
@@ -338,7 +349,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeRankingsSectionTitle => 'Rankings & daily winner';
 
   @override
-  String get homeRankingsSectionSubtitle => 'Leaderboard, your rank, and today’s prize';
+  String get homeRankingsSectionSubtitle =>
+      'Leaderboard, your rank, and today’s prize';
 
   @override
   String get drawerProductsTitle => 'Products';
@@ -374,7 +386,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get routeErrorTitle => 'Page not found';
 
   @override
-  String get routeErrorNotFound => 'This link is invalid or the page was removed.';
+  String get routeErrorNotFound =>
+      'This link is invalid or the page was removed.';
 
   @override
   String get routeErrorGoHome => 'Go home';
@@ -428,10 +441,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileIncomplete => 'Profile Incomplete';
 
   @override
-  String get completeProfileMessage => 'Please complete your profile to start adding bills and earning points';
+  String get completeProfileMessage =>
+      'Please complete your profile to start adding bills and earning points';
 
   @override
-  String get completeProfileDetails => 'Add your first name, last name, and profile picture to continue';
+  String get completeProfileDetails =>
+      'Add your first name, last name, and profile picture to continue';
 
   @override
   String get completeNow => 'Complete Now';
@@ -479,7 +494,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get needHelp => 'Need Help?';
 
   @override
-  String get contactSupport => 'Contact our support team for any queries or issues.';
+  String get contactSupport =>
+      'Contact our support team for any queries or issues.';
 
   @override
   String get callNow => 'Call Now';
@@ -614,7 +630,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailySpinCompleted => 'You have already spun today';
 
   @override
-  String get comeBackTomorrow => 'Come back tomorrow for another chance to win!';
+  String get comeBackTomorrow =>
+      'Come back tomorrow for another chance to win!';
 
   @override
   String nextSpinIn(int hours, int minutes) {
@@ -707,7 +724,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorOccurred => 'An error occurred';
 
   @override
-  String get networkError => 'Network error. Please check your internet connection.';
+  String get networkError =>
+      'Network error. Please check your internet connection.';
 
   @override
   String get permissionDenied => 'Permission denied';
@@ -728,19 +746,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configError => 'Configuration error';
 
   @override
-  String get missingClientId => 'SHA-1 fingerprint missing in Firebase. Please run: scripts/get_sha1.sh';
+  String get missingClientId =>
+      'SHA-1 fingerprint missing in Firebase. Please run: scripts/get_sha1.sh';
 
   @override
   String get tooManyRequests => 'Too many requests. Please wait a few minutes.';
 
   @override
-  String get invalidVerificationCode => 'Invalid OTP code. Please check and try again.';
+  String get invalidVerificationCode =>
+      'Invalid OTP code. Please check and try again.';
 
   @override
-  String get verificationExpired => 'Verification expired. Please request a new OTP.';
+  String get verificationExpired =>
+      'Verification expired. Please request a new OTP.';
 
   @override
-  String get userDisabled => 'This account has been disabled. Please contact support.';
+  String get userDisabled =>
+      'This account has been disabled. Please contact support.';
 
   @override
   String get fieldRequired => 'This field is required';
@@ -901,7 +923,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rejectBill => 'Reject Bill';
 
   @override
-  String get rejectBillConfirmation => 'Are you sure you want to reject this bill?';
+  String get rejectBillConfirmation =>
+      'Are you sure you want to reject this bill?';
 
   @override
   String get billRejectedSuccess => 'Bill Rejected';
@@ -931,7 +954,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteOffer => 'Delete Offer';
 
   @override
-  String get deleteOfferConfirmation => 'Are you sure you want to delete this offer? This action cannot be undone.';
+  String get deleteOfferConfirmation =>
+      'Are you sure you want to delete this offer? This action cannot be undone.';
 
   @override
   String get offerDeletedSuccess => 'Offer deleted successfully';
@@ -946,7 +970,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noOffersCreated => 'No Offers Created';
 
   @override
-  String get createFirstOffer => 'Create your first offer with points and banner';
+  String get createFirstOffer =>
+      'Create your first offer with points and banner';
 
   @override
   String get active => 'Active';
@@ -1067,10 +1092,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteCarpenter => 'Delete Carpenter';
 
   @override
-  String get deleteCarpenterConfirmation => 'Are you sure you want to delete this carpenter? This will permanently delete:\n\n• User account\n• All points and transaction history\n• All submitted bills\n• All offer redemptions\n\nThis action cannot be undone.';
+  String get deleteCarpenterConfirmation =>
+      'Are you sure you want to delete this carpenter? This will permanently delete:\n\n• User account\n• All points and transaction history\n• All submitted bills\n• All offer redemptions\n\nThis action cannot be undone.';
 
   @override
-  String get deleteCarpenterWarning => 'Deleting a carpenter will permanently remove all their data from the system. This action cannot be undone.';
+  String get deleteCarpenterWarning =>
+      'Deleting a carpenter will permanently remove all their data from the system. This action cannot be undone.';
 
   @override
   String get carpenterDeletedSuccess => 'Carpenter deleted successfully';
@@ -1094,13 +1121,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifyAndCreate => 'Verify & Create';
 
   @override
-  String get adminSignOutNote => 'Note: The app will sign in as the verified carpenter temporarily during OTP verification and then sign out. The admin must sign in again.';
+  String get adminSignOutNote =>
+      'Note: The app will sign in as the verified carpenter temporarily during OTP verification and then sign out. The admin must sign in again.';
 
   @override
   String get carpenterCreated => 'Carpenter created';
 
   @override
-  String get carpenterCreatedMessage => 'Carpenter account created successfully. The app has signed in as that carpenter during verification and has now signed out. You will need to sign in again as admin.';
+  String get carpenterCreatedMessage =>
+      'Carpenter account created successfully. The app has signed in as that carpenter during verification and has now signed out. You will need to sign in again as admin.';
 
   @override
   String get enterValidPhone => 'Enter a valid phone number';
@@ -1228,7 +1257,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discardChanges => 'Discard Changes?';
 
   @override
-  String get discardChangesMessage => 'You have unsaved changes. Do you want to discard them?';
+  String get discardChangesMessage =>
+      'You have unsaved changes. Do you want to discard them?';
 
   @override
   String get discard => 'Discard';
@@ -1246,7 +1276,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discardBill => 'Discard Bill?';
 
   @override
-  String get discardBillMessage => 'You have unsaved bill data. Do you want to discard it?';
+  String get discardBillMessage =>
+      'You have unsaved bill data. Do you want to discard it?';
 
   @override
   String get pleaseCompleteProfile => 'Please complete your profile';
@@ -1276,10 +1307,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectBillDateOptional => 'Select bill date (optional)';
 
   @override
-  String get enterStoreOrVendorNameOptional => 'Enter store or vendor name (optional)';
+  String get enterStoreOrVendorNameOptional =>
+      'Enter store or vendor name (optional)';
 
   @override
-  String get enterBillOrInvoiceNumberOptional => 'Enter bill or invoice number (optional)';
+  String get enterBillOrInvoiceNumberOptional =>
+      'Enter bill or invoice number (optional)';
 
   @override
   String get addAnyAdditionalNotes => 'Add any additional notes...';
@@ -1294,13 +1327,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withdrawBill => 'Withdraw Bill';
 
   @override
-  String get withdrawBillConfirmation => 'Are you sure you want to withdraw this approved bill? This will reverse the points awarded to the carpenter.';
+  String get withdrawBillConfirmation =>
+      'Are you sure you want to withdraw this approved bill? This will reverse the points awarded to the carpenter.';
 
   @override
   String get withdraw => 'Withdraw';
 
   @override
-  String get billWithdrawnSuccess => 'Bill withdrawn successfully. Points have been reversed.';
+  String get billWithdrawnSuccess =>
+      'Bill withdrawn successfully. Points have been reversed.';
 
   @override
   String get failedToWithdrawBill => 'Failed to withdraw bill';
@@ -1390,34 +1425,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutUsOverviewTitle => 'What is Balaji Points?';
 
   @override
-  String get aboutUsOverviewBody => 'Balaji Points is a digital loyalty platform for carpenters and hardware stores. It helps you turn eligible material purchases into points, rewards, and recognition. You use the app to submit bills; the hardware store you are enrolled with reviews and approves them; your wallet and history update automatically so you always know where you stand.';
+  String get aboutUsOverviewBody =>
+      'Balaji Points is a digital loyalty platform for carpenters and hardware stores. It helps you turn eligible material purchases into points, rewards, and recognition. You use the app to submit bills; the hardware store you are enrolled with reviews and approves them; your wallet and history update automatically so you always know where you stand.';
 
   @override
   String get aboutUsEarningTitle => 'How you earn points';
 
   @override
-  String get aboutUsEarningBody => 'Upload purchase bills with clear photos, correct amounts, and any details your store asks for. Store admins review submissions to keep the program fair and prevent errors or misuse. After approval, points are credited using that store’s rules (for example, how rupees convert to points). You can track your balance, transaction history, and tier progress anytime in the app.';
+  String get aboutUsEarningBody =>
+      'Upload purchase bills with clear photos, correct amounts, and any details your store asks for. Store admins review submissions to keep the program fair and prevent errors or misuse. After approval, points are credited using that store’s rules (for example, how rupees convert to points). You can track your balance, transaction history, and tier progress anytime in the app.';
 
   @override
   String get aboutUsOffersTitle => 'Leaderboards, offers, and updates';
 
   @override
-  String get aboutUsOffersBody => 'Many stores run a leaderboard so you can see how you rank among carpenters in their program. You will also see offers, banners, and announcements—seasonal deals, bonus point events, or special promotions—so you do not miss opportunities that your store enables for you.';
+  String get aboutUsOffersBody =>
+      'Many stores run a leaderboard so you can see how you rank among carpenters in their program. You will also see offers, banners, and announcements—seasonal deals, bonus point events, or special promotions—so you do not miss opportunities that your store enables for you.';
 
   @override
   String get aboutUsFairnessTitle => 'Approvals, transparency, and support';
 
   @override
-  String get aboutUsFairnessBody => 'Reviews can take a short time because each bill is checked carefully. If something is rejected, you should see a reason or get guidance from your store’s team. For login, PIN, profile, or notification issues, use the options inside the app and contact your store when needed. We focus on clear rules and visible status for pending, approved, and rejected bills.';
+  String get aboutUsFairnessBody =>
+      'Reviews can take a short time because each bill is checked carefully. If something is rejected, you should see a reason or get guidance from your store’s team. For login, PIN, profile, or notification issues, use the options inside the app and contact your store when needed. We focus on clear rules and visible status for pending, approved, and rejected bills.';
 
   @override
   String get aboutUsStoresTitle => 'Your store, your program';
 
   @override
-  String get aboutUsStoresBody => 'Points, tiers, and offers are tied to the hardware store you joined in this app. Different stores may use different rules, conversion rates, and benefits. If you buy from more than one participating store, each relationship is usually separate unless the stores tell you otherwise—always confirm details with the store that enrolled you.';
+  String get aboutUsStoresBody =>
+      'Points, tiers, and offers are tied to the hardware store you joined in this app. Different stores may use different rules, conversion rates, and benefits. If you buy from more than one participating store, each relationship is usually separate unless the stores tell you otherwise—always confirm details with the store that enrolled you.';
 
   @override
-  String get aboutUsClosing => 'Thank you for using Balaji Points—we are proud to support carpenters and the stores that partner with you.';
+  String get aboutUsClosing =>
+      'Thank you for using Balaji Points—we are proud to support carpenters and the stores that partner with you.';
 
   @override
   String get aboutUsCreditsHeading => 'Designed and developed by';
@@ -1435,19 +1476,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSlide1Title => 'Submit bills, earn points';
 
   @override
-  String get onboardingSlide1Body => 'Upload your hardware purchase bills. When your store approves them, points are added to your wallet.';
+  String get onboardingSlide1Body =>
+      'Upload your hardware purchase bills. When your store approves them, points are added to your wallet.';
 
   @override
   String get onboardingSlide2Title => 'Track your rewards';
 
   @override
-  String get onboardingSlide2Body => 'See your balance, tier, and leaderboard rank. Browse offers made for carpenters like you.';
+  String get onboardingSlide2Body =>
+      'See your balance, tier, and leaderboard rank. Browse offers made for carpenters like you.';
 
   @override
   String get onboardingSlide3Title => 'Stay in the loop';
 
   @override
-  String get onboardingSlide3Body => 'Get notified when bills are approved or rejected. Manage your profile and preferences anytime.';
+  String get onboardingSlide3Body =>
+      'Get notified when bills are approved or rejected. Manage your profile and preferences anytime.';
 
   @override
   String errorWithDetails(String details) {
@@ -1464,7 +1508,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicateBillDetected => 'Duplicate bill detected';
 
   @override
-  String get duplicateBillIntro => 'A bill with the same site, amount and date already exists:';
+  String get duplicateBillIntro =>
+      'A bill with the same site, amount and date already exists:';
 
   @override
   String get siteNameLabel => 'Site name';
@@ -1484,7 +1529,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get duplicateBillVerify => 'This might be a duplicate entry. Please check before adding.';
+  String get duplicateBillVerify =>
+      'This might be a duplicate entry. Please check before adding.';
 
   @override
   String get addBillAnywayQuestion => 'Do you want to add this bill anyway?';
@@ -1493,7 +1539,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addAnyway => 'Add anyway';
 
   @override
-  String get billsPausedDiwali => 'Bill submissions are paused for the Diwali celebration.';
+  String get billsPausedDiwali =>
+      'Bill submissions are paused for the Diwali celebration.';
 
   @override
   String earnPointsWhenApproved(String points) {
@@ -1573,7 +1620,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showLess => 'Show less';
 
   @override
-  String get diwaliPrizeLoadFailed => 'Could not load the Diwali prize list. Please try again.';
+  String get diwaliPrizeLoadFailed =>
+      'Could not load the Diwali prize list. Please try again.';
 
   @override
   String get featureEarnMore => 'EARN MORE';
@@ -1639,7 +1687,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAllNotifications => 'Delete all notifications';
 
   @override
-  String get deleteAllNotificationsConfirm => 'Are you sure you want to delete all notifications? This cannot be undone.';
+  String get deleteAllNotificationsConfirm =>
+      'Are you sure you want to delete all notifications? This cannot be undone.';
 
   @override
   String get deleteAll => 'Delete all';
@@ -1665,7 +1714,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteNotification => 'Delete notification';
 
   @override
-  String get deleteNotificationConfirm => 'Are you sure you want to delete this notification?';
+  String get deleteNotificationConfirm =>
+      'Are you sure you want to delete this notification?';
 
   @override
   String get addProfilePhoto => 'Please add a profile photo';
@@ -1686,7 +1736,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploadingImage => 'Uploading image...';
 
   @override
-  String get completeProfileToContinue => 'You need to complete your profile to continue';
+  String get completeProfileToContinue =>
+      'You need to complete your profile to continue';
 
   @override
   String get couldNotMakeCall => 'Could not make call';
@@ -1718,10 +1769,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spinAndWin => 'Spin & win points!';
 
   @override
-  String get spinAndWinSubtitle => 'Get your daily spin and win exciting points';
+  String get spinAndWinSubtitle =>
+      'Get your daily spin and win exciting points';
 
   @override
-  String get alreadySpunToday => 'You\'ve already spun today!\nCome back tomorrow for another chance.';
+  String get alreadySpunToday =>
+      'You\'ve already spun today!\nCome back tomorrow for another chance.';
 
   @override
   String nextTierLabel(String tier) {
@@ -1757,7 +1810,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToSignIn => 'Back to sign in';
 
   @override
-  String get noPinAccount => 'No PIN account was found for this number. Sign in with email and password or Google.';
+  String get noPinAccount =>
+      'No PIN account was found for this number. Sign in with email and password or Google.';
 
   @override
   String get signInWithMobile => 'Sign in with mobile number';
@@ -1769,13 +1823,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToOtherSignIn => 'Back to other sign-in options';
 
   @override
-  String get branchHasAdminDefaulted => 'Selected branch already has an Admin. Role set to Carpenter.';
+  String get branchHasAdminDefaulted =>
+      'Selected branch already has an Admin. Role set to Carpenter.';
 
   @override
   String get selectBranchToContinue => 'Please select a branch to continue.';
 
   @override
-  String get oneAdminPerBranch => 'This branch already has an Admin. Only one Admin is allowed per branch.';
+  String get oneAdminPerBranch =>
+      'This branch already has an Admin. Only one Admin is allowed per branch.';
 
   @override
   String get branchRequired => 'Branch *';
@@ -1805,10 +1861,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmPasswordLabel => 'Confirm password';
 
   @override
-  String get noActiveRoles => 'No active roles are available. Contact the Super Admin.';
+  String get noActiveRoles =>
+      'No active roles are available. Contact the Super Admin.';
 
   @override
-  String get noActiveBranches => 'No active branches are available. Contact your administrator.';
+  String get noActiveBranches =>
+      'No active branches are available. Contact your administrator.';
 
   @override
   String get cancelReturnToSignIn => 'Cancel and return to sign in';
@@ -1820,7 +1878,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previousPage => 'Previous';
 
   @override
-  String tablePageInfo(String page, String pages, String from, String to, String total) {
+  String tablePageInfo(
+    String page,
+    String pages,
+    String from,
+    String to,
+    String total,
+  ) {
     return 'Page $page of $pages · $from–$to of $total';
   }
 
@@ -1840,7 +1904,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get installedLabel => 'Installed';
 
   @override
-  String get updateMandatory => 'This update is required to keep using the app.';
+  String get updateMandatory =>
+      'This update is required to keep using the app.';
 
   @override
   String get signOut => 'Sign out';
@@ -1849,7 +1914,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get billsAppearHere => 'Bills you submit will appear here.';
 
   @override
-  String get pendingBillsAppearHere => 'New bills from carpenters will appear here for approval.';
+  String get pendingBillsAppearHere =>
+      'New bills from carpenters will appear here for approval.';
 
   @override
   String get tryChangingFilters => 'Try changing or clearing the filters.';
@@ -1909,7 +1975,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spinNow2 => 'Spin Now!';
 
   @override
-  String get pleaseCompleteYourProfileFirstName => 'Please complete your profile (first name, last name, and profile picture) to add bills and earn points.';
+  String get pleaseCompleteYourProfileFirstName =>
+      'Please complete your profile (first name, last name, and profile picture) to add bills and earn points.';
 
   @override
   String get goBack => 'Go Back';
@@ -1924,10 +1991,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseLoginToSubmitBills => 'Please login to submit bills';
 
   @override
-  String get billSubmittedSuccessfullyAdminWillReview => 'Bill submitted successfully! Admin will review it.';
+  String get billSubmittedSuccessfullyAdminWillReview =>
+      'Bill submitted successfully! Admin will review it.';
 
   @override
-  String get failedToSubmitBillPleaseTry => 'Failed to submit bill. Please try again.';
+  String get failedToSubmitBillPleaseTry =>
+      'Failed to submit bill. Please try again.';
 
   @override
   String get pleaseEnterBillAmount => 'Please enter bill amount';
@@ -1954,16 +2023,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noUserLoggedIn => 'No user logged in';
 
   @override
-  String get firstNameMustBeAtLeast => 'First name must be at least 2 characters';
+  String get firstNameMustBeAtLeast =>
+      'First name must be at least 2 characters';
 
   @override
-  String get firstNameIsTooLongMax => 'First name is too long (max 50 characters)';
+  String get firstNameIsTooLongMax =>
+      'First name is too long (max 50 characters)';
 
   @override
   String get lastNameMustBeAtLeast => 'Last name must be at least 2 characters';
 
   @override
-  String get lastNameIsTooLongMax => 'Last name is too long (max 50 characters)';
+  String get lastNameIsTooLongMax =>
+      'Last name is too long (max 50 characters)';
 
   @override
   String get failedToUploadProfileImage => 'Failed to upload profile image';
@@ -1992,7 +2064,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
-  String get trackYourPointsAndManageYour => 'Track your points and manage your bills';
+  String get trackYourPointsAndManageYour =>
+      'Track your points and manage your bills';
 
   @override
   String mAgo(String inMinutes) {
@@ -2013,7 +2086,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notification => 'Notification';
 
   @override
-  String get noCarpenterAccountsAreListedFor => 'No member accounts are listed for this branch yet.';
+  String get noCarpenterAccountsAreListedFor =>
+      'No member accounts are listed for this branch yet.';
 
   @override
   String get continueToHome => 'Continue to Home';
@@ -2070,7 +2144,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalBonus => 'Total bonus';
 
   @override
-  String carpentersPointsRewardBonus(String entries, String totalPoints, String totalReward, String totalBonus) {
+  String carpentersPointsRewardBonus(
+    String entries,
+    String totalPoints,
+    String totalReward,
+    String totalBonus,
+  ) {
     return '$entries carpenters  ·  $totalPoints points  ·  $totalReward reward  ·  $totalBonus bonus';
   }
 
@@ -2107,10 +2186,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remarks => 'Remarks';
 
   @override
-  String get verifyYourIdentityToOpenBalaji => 'Verify your identity to open Balaji Points';
+  String get verifyYourIdentityToOpenBalaji =>
+      'Verify your identity to open Balaji Points';
 
   @override
-  String get passwordResetLinksAreSentSecurely => 'Password reset links are sent securely by Firebase.';
+  String get passwordResetLinksAreSentSecurely =>
+      'Password reset links are sent securely by Firebase.';
 
   @override
   String get checkYourEmail => 'Check your email';
@@ -2119,10 +2200,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPassword => 'Forgot password?';
 
   @override
-  String get ifAnAccountExistsForThis => 'If an account exists for this address, Firebase has sent password reset instructions. Check your inbox and spam folder.';
+  String get ifAnAccountExistsForThis =>
+      'If an account exists for this address, Firebase has sent password reset instructions. Check your inbox and spam folder.';
 
   @override
-  String get enterTheEmailAddressLinkedTo => 'Enter the email address linked to your account. We’ll send you a secure link to choose a new password.';
+  String get enterTheEmailAddressLinkedTo =>
+      'Enter the email address linked to your account. We’ll send you a secure link to choose a new password.';
 
   @override
   String get enterAValidEmailAddress => 'Enter a valid email address';
@@ -2145,10 +2228,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signIn => 'Sign in';
 
   @override
-  String get useYourEmailAndPasswordOr => 'Use your email and password, or sign in with your PIN.';
+  String get useYourEmailAndPasswordOr =>
+      'Use your email and password, or sign in with your PIN.';
 
   @override
-  String get pleaseEnterAValidEmailAddress => 'Please enter a valid email address';
+  String get pleaseEnterAValidEmailAddress =>
+      'Please enter a valid email address';
 
   @override
   String get passwordMustBeAtLeast6 => 'Password must be at least 6 characters';
@@ -2189,7 +2274,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userAlreadyExists => 'User already exists';
 
   @override
-  String get permissionDeniedPleaseCheckFirebaseConfiguration => 'Permission denied. Please check Firebase configuration.';
+  String get permissionDeniedPleaseCheckFirebaseConfiguration =>
+      'Permission denied. Please check Firebase configuration.';
 
   @override
   String get branchAdminAlreadyAssigned => 'Branch Admin (Already Assigned)';
@@ -2204,22 +2290,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectARoleToContinue => 'Select a role to continue.';
 
   @override
-  String get selectAnActiveRoleToContinue => 'Select an active role to continue.';
+  String get selectAnActiveRoleToContinue =>
+      'Select an active role to continue.';
 
   @override
   String get yourInformationIsProtected => 'Your information is protected';
 
   @override
-  String get completeYourGoogleRegistration => 'Complete your Google registration';
+  String get completeYourGoogleRegistration =>
+      'Complete your Google registration';
 
   @override
   String get createYourAccount => 'Create your account';
 
   @override
-  String get addYourMobileNumberAndChoose => 'Add your mobile number and choose your branch and role to finish setting up your account.';
+  String get addYourMobileNumberAndChoose =>
+      'Add your mobile number and choose your branch and role to finish setting up your account.';
 
   @override
-  String get chooseYourRoleAndTheBranch => 'Choose your role and the branch you belong to.';
+  String get chooseYourRoleAndTheBranch =>
+      'Choose your role and the branch you belong to.';
 
   @override
   String get enterYourFullName => 'Enter your full name';
@@ -2237,10 +2327,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordsDoNotMatch => 'Passwords do not match';
 
   @override
-  String get yourAccountAlreadyHasAnAdmin => 'Your account already has an Admin role. Ask the Super Admin to assign your branch before continuing.';
+  String get yourAccountAlreadyHasAnAdmin =>
+      'Your account already has an Admin role. Ask the Super Admin to assign your branch before continuing.';
 
   @override
-  String get branchAdminAccessIsAssignedBy => 'Branch Admin access is assigned by a Super Admin.';
+  String get branchAdminAccessIsAssignedBy =>
+      'Branch Admin access is assigned by a Super Admin.';
 
   @override
   String get completeRegistration => 'Complete registration';
@@ -2294,19 +2386,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get newerVersionReady => 'A newer version is ready with improvements and fixes.';
+  String get newerVersionReady =>
+      'A newer version is ready with improvements and fixes.';
 
   @override
   String get pleaseSelectACarpenter => 'Please select a carpenter';
 
   @override
-  String get billSubmittedSuccessfullyItWillBe => 'Bill submitted successfully! It will be reviewed.';
+  String get billSubmittedSuccessfullyItWillBe =>
+      'Bill submitted successfully! It will be reviewed.';
 
   @override
   String get duplicateBill => 'Duplicate Bill';
 
   @override
-  String get aBillWithTheSameSite => 'A bill with the SAME site, amount, and date already exists for this carpenter:';
+  String get aBillWithTheSameSite =>
+      'A bill with the SAME site, amount, and date already exists for this carpenter:';
 
   @override
   String get site => 'Site';
@@ -2317,7 +2412,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pleaseVerifyThisIsNotA => 'Please verify this is not a duplicate entry.';
+  String get pleaseVerifyThisIsNotA =>
+      'Please verify this is not a duplicate entry.';
 
   @override
   String error2(String e) {
@@ -2469,13 +2565,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get time => 'Time';
 
   @override
-  String get noBillsToExportApplyFilters => 'No bills to export. Apply filters or wait for data.';
+  String get noBillsToExportApplyFilters =>
+      'No bills to export. Apply filters or wait for data.';
 
   @override
   String get preparingPdf => 'Preparing PDF...';
 
   @override
-  String get noBillsMatchCurrentFiltersFor => 'No bills match current filters for export.';
+  String get noBillsMatchCurrentFiltersFor =>
+      'No bills match current filters for export.';
 
   @override
   String exportFailed(String e) {
@@ -2500,7 +2598,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get billApprovedAndPointsAddedSuccessfully => 'Bill approved and points added successfully';
+  String get billApprovedAndPointsAddedSuccessfully =>
+      'Bill approved and points added successfully';
 
   @override
   String get failedToApproveBill2 => 'Failed to approve bill';
@@ -2597,7 +2696,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAllNotifications2 => 'Delete All Notifications';
 
   @override
-  String get areYouSureYouWantTo2 => 'Are you sure you want to delete all admin notifications?';
+  String get areYouSureYouWantTo2 =>
+      'Are you sure you want to delete all admin notifications?';
 
   @override
   String notificationSDeleted(String docs) {
@@ -2678,7 +2778,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get carpenterWillNeedToUseThis => 'Carpenter will need to use this new PIN to login. Make sure to communicate it securely.';
+  String get carpenterWillNeedToUseThis =>
+      'Carpenter will need to use this new PIN to login. Make sure to communicate it securely.';
 
   @override
   String get newPin46Digits => 'New PIN (4-6 digits)';
@@ -2711,7 +2812,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editCarpenter => 'Edit Carpenter';
 
   @override
-  String get changingPhoneNumberWillUpdateLogin => 'Changing phone number will update login credentials';
+  String get changingPhoneNumberWillUpdateLogin =>
+      'Changing phone number will update login credentials';
 
   @override
   String get branchId => 'Branch ID';
@@ -2796,10 +2898,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get preparingCarpenterListPdf => 'Preparing carpenter list PDF...';
 
   @override
-  String get noCarpentersToExportForCurrent => 'No carpenters to export for current filters.';
+  String get noCarpentersToExportForCurrent =>
+      'No carpenters to export for current filters.';
 
   @override
-  String get carpenterListExportedSuccessfully => 'Carpenter list exported successfully!';
+  String get carpenterListExportedSuccessfully =>
+      'Carpenter list exported successfully!';
 
   @override
   String errorExportingPdf(String e) {
@@ -2837,13 +2941,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAll2 => 'Delete All';
 
   @override
-  String get unableToLoadAdminNotifications => 'Unable to load admin notifications';
+  String get unableToLoadAdminNotifications =>
+      'Unable to load admin notifications';
 
   @override
   String get noNotifications => 'No Notifications';
 
   @override
-  String get youDonTHaveAnyAdmin => 'You don\'t have any admin notifications yet';
+  String get youDonTHaveAnyAdmin =>
+      'You don\'t have any admin notifications yet';
 
   @override
   String get deleteNotification2 => 'Delete Notification';
@@ -2923,7 +3029,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterAMessage => 'Please enter a message';
 
   @override
-  String get pleaseSelectAtLeastOneChannel => 'Please select at least one channel';
+  String get pleaseSelectAtLeastOneChannel =>
+      'Please select at least one channel';
 
   @override
   String get notAuthenticated => 'Not authenticated';
@@ -2977,7 +3084,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manualSendViaSmsApp => 'Manual send via SMS app';
 
   @override
-  String get noteWhatsappAndSmsUseDevice => 'Note: WhatsApp and SMS use device-assisted flow. Admin must confirm each message in the native app.';
+  String get noteWhatsappAndSmsUseDevice =>
+      'Note: WhatsApp and SMS use device-assisted flow. Admin must confirm each message in the native app.';
 
   @override
   String whatsappNotAvailableFor(String name) {
@@ -3006,7 +3114,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get tapSendInTheAppThen => 'Tap Send in the app, then tap OK here to continue.';
+  String get tapSendInTheAppThen =>
+      'Tap Send in the app, then tap OK here to continue.';
 
   @override
   String sentToAllCarpenters(String sentCount) {
@@ -3026,10 +3135,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendViaSms => 'Send via SMS';
 
   @override
-  String get pleaseWait24HoursFromThe => 'Please wait 24 hours from the last spin';
+  String get pleaseWait24HoursFromThe =>
+      'Please wait 24 hours from the last spin';
 
   @override
-  String get noCarpentersWithApprovedBillsToday => 'No carpenters with approved bills today';
+  String get noCarpentersWithApprovedBillsToday =>
+      'No carpenters with approved bills today';
 
   @override
   String get noEligibleCarpentersFound => 'No eligible carpenters found';
@@ -3080,7 +3191,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get pleaseEnterAValidNumberFor => 'Please enter a valid number for points';
+  String get pleaseEnterAValidNumberFor =>
+      'Please enter a valid number for points';
 
   @override
   String get pleaseUploadABannerImage => 'Please upload a banner image';
@@ -3098,7 +3210,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noEligibleCarpentersToday => 'No Eligible Carpenters Today';
 
   @override
-  String get noCarpentersHaveApprovedBillsToday => 'No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!';
+  String get noCarpentersHaveApprovedBillsToday =>
+      'No carpenters have approved bills today.\nApprove bills to make them eligible for the daily spin!';
 
   @override
   String get todaySEligibleCarpenters => 'Today\'s Eligible Carpenters';
@@ -3112,7 +3225,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get branchAdminAccounts => 'Branch admin accounts';
 
   @override
-  String get reviewEachAdminAndTheBranch => 'Review each admin and the branch they manage. Reset passwords or remove an account.';
+  String get reviewEachAdminAndTheBranch =>
+      'Review each admin and the branch they manage. Reset passwords or remove an account.';
 
   @override
   String get searchByNameEmailOrBranch => 'Search admins';
@@ -3201,13 +3315,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get branchesCouldNotBeLoaded => 'Branches could not be loaded.';
 
   @override
-  String get diwaliCelebrationEnabledAddBillIs => 'Diwali celebration enabled. Add Bill is hidden for this branch.';
+  String get diwaliCelebrationEnabledAddBillIs =>
+      'Diwali celebration enabled. Add Bill is hidden for this branch.';
 
   @override
-  String get diwaliCelebrationDisabledAddBillIs => 'Diwali celebration disabled. Add Bill is available for this branch.';
+  String get diwaliCelebrationDisabledAddBillIs =>
+      'Diwali celebration disabled. Add Bill is available for this branch.';
 
   @override
-  String get unableToUpdateTheBranchCelebration => 'Unable to update the branch celebration setting.';
+  String get unableToUpdateTheBranchCelebration =>
+      'Unable to update the branch celebration setting.';
 
   @override
   String codeId(String branchCode, String branchId) {
@@ -3218,10 +3335,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diwaliCelebrationOnHome => 'Diwali celebration on Home';
 
   @override
-  String get showsTheBranchPrizeListAnd => 'Shows the branch prize list and hides Add Bill.';
+  String get showsTheBranchPrizeListAnd =>
+      'Shows the branch prize list and hides Add Bill.';
 
   @override
-  String get offNoPopupAddBillRemains => 'Off: no popup; Add Bill remains available.';
+  String get offNoPopupAddBillRemains =>
+      'Off: no popup; Add Bill remains available.';
 
   @override
   String get branchDeactivated => 'Branch deactivated.';
@@ -3268,7 +3387,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get address => 'Address';
 
   @override
-  String get shareTheTemporaryPasswordSecurelyThe => 'Share the temporary password securely. The admin can change it after their first sign-in.';
+  String get shareTheTemporaryPasswordSecurelyThe =>
+      'Share the temporary password securely. The admin can change it after their first sign-in.';
 
   @override
   String adminCreatedForTheyCanSign(String email, String branchName) {
@@ -3294,7 +3414,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailAddress => 'Email address *';
 
   @override
-  String get temporaryPassword8CharactersMinimum => 'Temporary password * (8 characters minimum)';
+  String get temporaryPassword8CharactersMinimum =>
+      'Temporary password * (8 characters minimum)';
 
   @override
   String get confirmPassword => 'Confirm password *';
@@ -3306,7 +3427,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadingActiveBranches => 'Loading active branches…';
 
   @override
-  String get noActiveBranchesFoundCreateOr => 'No active branches found. Create or activate a branch before adding an admin.';
+  String get noActiveBranchesFoundCreateOr =>
+      'No active branches found. Create or activate a branch before adding an admin.';
 
   @override
   String get selectBranch => 'Select branch';
@@ -3327,7 +3449,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get superAdminConsole => 'Super Admin Console';
 
   @override
-  String get branchesAdministratorsAndPoints => 'Branches, administrators and points';
+  String get branchesAdministratorsAndPoints =>
+      'Branches, administrators and points';
 
   @override
   String get branches => 'Branches';
@@ -3348,21 +3471,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pointsReset => 'Points reset';
 
   @override
-  String get onlyPointsTiersAndPointsHistory => 'Only points, tiers and points history for carpenters, architects, engineers and interior designers are cleared. User accounts, login access, branch admins and bills stay unchanged.';
+  String get onlyPointsTiersAndPointsHistory =>
+      'Only points, tiers and points history for carpenters, architects, engineers and interior designers are cleared. User accounts, login access, branch admins and bills stay unchanged.';
 
   @override
-  String get afterPrizeDistributionStartAFresh => 'After prize distribution, start a fresh points season for one branch.';
+  String get afterPrizeDistributionStartAFresh =>
+      'After prize distribution, start a fresh points season for one branch.';
 
   @override
-  String resetUsersAndDeletedHistoryRecords(String branchName, String usersReset, String historyDocumentsDeleted) {
+  String resetUsersAndDeletedHistoryRecords(
+    String branchName,
+    String usersReset,
+    String historyDocumentsDeleted,
+  ) {
     return '$branchName: reset $usersReset users and deleted $historyDocumentsDeleted history records. Accounts and bills were kept.';
   }
 
   @override
-  String get thisPermanentlyClearsPointsAndPoints => 'This permanently clears points and points history for carpenters, architects, engineers and interior designers in this branch. User accounts, branch admins and bills are kept.';
+  String get thisPermanentlyClearsPointsAndPoints =>
+      'This permanently clears points and points history for carpenters, architects, engineers and interior designers in this branch. User accounts, branch admins and bills are kept.';
 
   @override
-  String hasEligibleUsersPointsAndHistory(String branchName, String eligibleUsers, String currentPoints, String historyDocuments) {
+  String hasEligibleUsersPointsAndHistory(
+    String branchName,
+    String eligibleUsers,
+    String currentPoints,
+    String historyDocuments,
+  ) {
     return '$branchName has $eligibleUsers eligible users, $currentPoints points and $historyDocuments history items.';
   }
 
@@ -3378,7 +3513,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPointsAndHistory => 'Reset points and history';
 
   @override
-  String get couldNotLoadBranchesForPoints => 'Could not load branches for points cleanup.';
+  String get couldNotLoadBranchesForPoints =>
+      'Could not load branches for points cleanup.';
 
   @override
   String get annualPointsReset => 'Annual points reset';
@@ -3393,7 +3529,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previewReset => 'Preview reset';
 
   @override
-  String get createABranchBeforeResettingPoints => 'Create a branch before resetting points.';
+  String get createABranchBeforeResettingPoints =>
+      'Create a branch before resetting points.';
 
   @override
   String cleanupPreview(String branchName) {
@@ -3418,7 +3555,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get roleIdsAreStoredWithUser => 'Role IDs are stored with user accounts. Deleting a role removes it from new registrations and preserves existing accounts.';
+  String get roleIdsAreStoredWithUser =>
+      'Role IDs are stored with user accounts. Deleting a role removes it from new registrations and preserves existing accounts.';
 
   @override
   String willBeRemovedFromNewRegistration(String name) {
@@ -3451,7 +3589,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountRoles => 'Account roles';
 
   @override
-  String get manageTheRolesShownInCreate => 'Manage the roles shown in create account.';
+  String get manageTheRolesShownInCreate =>
+      'Manage the roles shown in create account.';
 
   @override
   String get addRole => 'Add role';
@@ -3517,7 +3656,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noDuplicatesFound => 'No Duplicates Found!';
 
   @override
-  String get allCarpenterAccountsAreUnique => 'All carpenter accounts are unique.';
+  String get allCarpenterAccountsAreUnique =>
+      'All carpenter accounts are unique.';
 
   @override
   String get duplicateGroups => 'Duplicate Groups';
@@ -3602,7 +3742,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchingBillsFound => 'Matching Bills Found';
 
   @override
-  String get noPendingBillsFoundForThis => 'No pending bills found for this user!';
+  String get noPendingBillsFoundForThis =>
+      'No pending bills found for this user!';
 
   @override
   String get carpenterId => 'Carpenter ID';
@@ -3617,7 +3758,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createdAt => 'Created At';
 
   @override
-  String get thisBillWonTShowIn => 'This bill won\'t show in default admin view (not today)';
+  String get thisBillWonTShowIn =>
+      'This bill won\'t show in default admin view (not today)';
 
   @override
   String get totalAccounts => 'Total Accounts';
@@ -3660,7 +3802,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createUserBackup => 'Create User Backup';
 
   @override
-  String get exportAllCarpentersWithTheirPoints => 'Export all carpenters with their points and phone numbers before cleanup.';
+  String get exportAllCarpentersWithTheirPoints =>
+      'Export all carpenters with their points and phone numbers before cleanup.';
 
   @override
   String get exporting => 'Exporting...';
@@ -3672,7 +3815,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pdfWillInclude => 'PDF will include:';
 
   @override
-  String get carpenterNameAndPhoneNumberTotal => '• Carpenter name and phone number\n• Total points and earned points\n• Account creation date\n• Summary with total carpenters and gross points';
+  String get carpenterNameAndPhoneNumberTotal =>
+      '• Carpenter name and phone number\n• Total points and earned points\n• Account creation date\n• Summary with total carpenters and gross points';
 
   @override
   String get firebaseDuplicateCheck => 'Firebase Duplicate Check';
@@ -3742,13 +3886,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get databaseBackup => 'Database Backup';
 
   @override
-  String get createACompleteBackupOfAll => 'Create a complete backup of all users and bills data from Firebase Firestore.';
+  String get createACompleteBackupOfAll =>
+      'Create a complete backup of all users and bills data from Firebase Firestore.';
 
   @override
   String get whatWillBeBackedUp => 'What will be backed up:';
 
   @override
-  String get allUserAccountsCarpentersAdminsAll => '• All user accounts (carpenters & admins)\n• All bill records\n• Complete user data with timestamps\n• Firestore metadata';
+  String get allUserAccountsCarpentersAdminsAll =>
+      '• All user accounts (carpenters & admins)\n• All bill records\n• Complete user data with timestamps\n• Firestore metadata';
 
   @override
   String get backingUp => 'Backing up...';
@@ -3757,7 +3903,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startBackup => 'Start Backup';
 
   @override
-  String get backupIsStoredInFirebaseNo => 'Backup is stored in Firebase. No files are saved locally.';
+  String get backupIsStoredInFirebaseNo =>
+      'Backup is stored in Firebase. No files are saved locally.';
 
   @override
   String get repairDetails => 'Repair Details';
@@ -3766,7 +3913,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verificationComplete => 'Verification Complete';
 
   @override
-  String get noPointsLostAllUsersVerified => 'NO POINTS LOST\nAll users verified\nData consistent';
+  String get noPointsLostAllUsersVerified =>
+      'NO POINTS LOST\nAll users verified\nData consistent';
 
   @override
   String get userWiseRepairResults => 'User-wise Repair Results';
@@ -3799,7 +3947,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repairFailed => 'Repair failed';
 
   @override
-  String get thisToolScansUserPointsData => 'This tool scans user points data and fixes:\n• Duplicate history entries\n• Inconsistent totalPoints\n• Mismatched tiers';
+  String get thisToolScansUserPointsData =>
+      'This tool scans user points data and fixes:\n• Duplicate history entries\n• Inconsistent totalPoints\n• Mismatched tiers';
 
   @override
   String get pointsRepairTool => 'Points Repair Tool';
@@ -3841,7 +3990,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repairAllUsers => 'Repair All Users';
 
   @override
-  String get noIssuesFoundAllUserData => 'No issues found! All user data is consistent.';
+  String get noIssuesFoundAllUserData =>
+      'No issues found! All user data is consistent.';
 
   @override
   String scanFailed(String e) {
@@ -3910,10 +4060,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smartDuplicateCleanup => 'Smart Duplicate Cleanup';
 
   @override
-  String get allCarpentersHaveUniquePhoneNumbers => 'All carpenters have unique phone numbers.';
+  String get allCarpentersHaveUniquePhoneNumbers =>
+      'All carpenters have unique phone numbers.';
 
   @override
-  String get potentialDuplicateAccountsReviewRequired => 'Potential duplicate accounts — review required';
+  String get potentialDuplicateAccountsReviewRequired =>
+      'Potential duplicate accounts — review required';
 
   @override
   String foundDuplicateMobileNumbers(String duplicateGroups) {
@@ -3926,7 +4078,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get allRecordsAreRetainedTheHighest => 'All records are retained. The highest-points profile is only a suggested primary account.';
+  String get allRecordsAreRetainedTheHighest =>
+      'All records are retained. The highest-points profile is only a suggested primary account.';
 
   @override
   String potentialDuplicateGroups(String duplicateGroups) {
@@ -3944,10 +4097,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get suggestedPrimaryAccountHighestPoints => 'Suggested primary account (highest points)';
+  String get suggestedPrimaryAccountHighestPoints =>
+      'Suggested primary account (highest points)';
 
   @override
-  String get otherMatchingAccountsManualReviewRequired => 'Other matching accounts — manual review required';
+  String get otherMatchingAccountsManualReviewRequired =>
+      'Other matching accounts — manual review required';
 
   @override
   String repairConfirmBody(String count) {
@@ -4006,7 +4161,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get permissionDeniedSuperAdmin => 'Permission denied. Check that Firestore rules are published and the signed-in account is the configured super admin.';
+  String get permissionDeniedSuperAdmin =>
+      'Permission denied. Check that Firestore rules are published and the signed-in account is the configured super admin.';
 
   @override
   String get roleEngineer => 'Engineer';
@@ -4018,7 +4174,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleCustomBadge => 'Custom';
 
   @override
-  String get roleProtectedTooltip => 'Carpenter is the main role and can’t be deleted';
+  String get roleProtectedTooltip =>
+      'Carpenter is the main role and can’t be deleted';
 
   @override
   String rolesSummary(int active, int deleted) {
@@ -4036,25 +4193,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get rolesLiveSync => 'Changes sync instantly to registration on every device.';
+  String get rolesLiveSync =>
+      'Changes sync instantly to registration on every device.';
 
   @override
   String get roleIdHelp => 'Created from the name. It can’t be changed later.';
 
   @override
-  String get roleErrInvalidName => 'Use 2–40 characters with at least two English letters or numbers.';
+  String get roleErrInvalidName =>
+      'Use 2–40 characters with at least two English letters or numbers.';
 
   @override
-  String get roleErrReserved => 'This name is reserved for administrator accounts.';
+  String get roleErrReserved =>
+      'This name is reserved for administrator accounts.';
 
   @override
-  String get roleErrBuiltIn => 'This matches a built-in role. Restore it from the list instead.';
+  String get roleErrBuiltIn =>
+      'This matches a built-in role. Restore it from the list instead.';
 
   @override
   String get roleErrDuplicate => 'A role with this ID already exists.';
 
   @override
-  String get roleErrProtected => 'Carpenter is the main role and can’t be deleted.';
+  String get roleErrProtected =>
+      'Carpenter is the main role and can’t be deleted.';
 
   @override
   String get roleShowAll => 'All';
@@ -4074,7 +4236,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deactivateBranchBody => 'New users can’t pick this branch and its members can’t sign in until you activate it again. No data is deleted.';
+  String get deactivateBranchBody =>
+      'New users can’t pick this branch and its members can’t sign in until you activate it again. No data is deleted.';
 
   @override
   String activateBranchTitle(String name) {
@@ -4082,7 +4245,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get activateBranchBody => 'The branch will be available for registration and sign-in again.';
+  String get activateBranchBody =>
+      'The branch will be available for registration and sign-in again.';
 
   @override
   String get branchActions => 'Branch actions';
@@ -4100,7 +4264,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get celebrationOff => 'Off';
 
   @override
-  String get createAdminSubtitle => 'Add a branch admin who reviews bills and carpenters for one branch.';
+  String get createAdminSubtitle =>
+      'Add a branch admin who reviews bills and carpenters for one branch.';
 
   @override
   String get selectBranchRequired => 'Select a branch';
@@ -4135,7 +4300,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get branchUpdated => 'Branch updated';
 
   @override
-  String get branchCodeLocked => 'The code can’t change — existing members are registered with it.';
+  String get branchCodeLocked =>
+      'The code can’t change — existing members are registered with it.';
 
   @override
   String get editLabel => 'Edit';
@@ -4149,7 +4315,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get roleIdLocked => 'The role ID can’t change — it is stored with user accounts.';
+  String get roleIdLocked =>
+      'The role ID can’t change — it is stored with user accounts.';
 
   @override
   String get roleActions => 'Role actions';
@@ -4166,13 +4333,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get adminBranchChangeNote => 'Moving an admin to another branch removes their access to the current one. A branch can have only one admin.';
+  String get adminBranchChangeNote =>
+      'Moving an admin to another branch removes their access to the current one. A branch can have only one admin.';
 
   @override
-  String get editsSyncNote => 'Name changes are copied to every member’s profile automatically.';
+  String get editsSyncNote =>
+      'Name changes are copied to every member’s profile automatically.';
 
   @override
-  String get noBranchAssigned => 'Your account is not linked to a branch yet. Ask the super admin to assign your branch.';
+  String get noBranchAssigned =>
+      'Your account is not linked to a branch yet. Ask the super admin to assign your branch.';
 
   @override
   String get loadingBranch => 'Loading your branch…';
@@ -4229,7 +4399,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get legalAgreeSuffix => '.';
 
   @override
-  String get legalAcceptToContinue => 'Please accept the Terms & Conditions and Privacy Policy to continue.';
+  String get legalAcceptToContinue =>
+      'Please accept the Terms & Conditions and Privacy Policy to continue.';
 
   @override
   String get legalEnglishOnly => 'This document is provided in English.';
@@ -4262,7 +4433,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notAvailable => 'Not available';
 
   @override
-  String get supportHint => 'For bills, points and offers, contact your branch. For app problems, contact app support.';
+  String get supportHint =>
+      'For bills, points and offers, contact your branch. For app problems, contact app support.';
 
   @override
   String get directions => 'Directions';
@@ -4274,7 +4446,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileStatus => 'Profile status';
 
   @override
-  String get profileReadyForBills => 'Your profile is complete. You can submit bills.';
+  String get profileReadyForBills =>
+      'Your profile is complete. You can submit bills.';
 
   @override
   String get profileMissingForBills => 'Add the missing items to submit bills.';
@@ -4298,7 +4471,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePhoto => 'Profile photo';
 
   @override
-  String get addPhotoRequired => 'Add a profile photo. It is required to submit bills.';
+  String get addPhotoRequired =>
+      'Add a profile photo. It is required to submit bills.';
 
   @override
   String itemsMissing(String items) {
@@ -4380,13 +4554,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catalogsEmpty => 'No catalogs yet';
 
   @override
-  String get catalogsEmptyMessage => 'Catalogs will appear here once Balaji Points adds them.';
+  String get catalogsEmptyMessage =>
+      'Catalogs will appear here once Balaji Points adds them.';
 
   @override
-  String get catalogLoadError => 'Could not load catalogs. Check your internet and try again.';
+  String get catalogLoadError =>
+      'Could not load catalogs. Check your internet and try again.';
 
   @override
-  String get catalogOpenError => 'Could not open this catalog. Check your internet and try again.';
+  String get catalogOpenError =>
+      'Could not open this catalog. Check your internet and try again.';
 
   @override
   String catalogShareText(String title, String url) {
@@ -4394,7 +4571,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get catalogOnlineHint => 'Opens online. Nothing is saved on your phone unless you tap Download.';
+  String get catalogOnlineHint =>
+      'Opens online. Nothing is saved on your phone unless you tap Download.';
 
   @override
   String catalogPageOf(int page, int total) {
@@ -4444,7 +4622,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catalogAdminPickCover => 'Choose cover image';
 
   @override
-  String get catalogAdminCoverAuto => 'If you don\'t choose a cover, the first page of the PDF is used.';
+  String get catalogAdminCoverAuto =>
+      'If you don\'t choose a cover, the first page of the PDF is used.';
 
   @override
   String catalogAdminPdfTooLarge(String size) {
@@ -4482,10 +4661,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get catalogAdminCategoryNotEmpty => 'Delete or move the catalogs in this category first.';
+  String get catalogAdminCategoryNotEmpty =>
+      'Delete or move the catalogs in this category first.';
 
   @override
-  String get catalogAdminEmpty => 'No catalogs yet. Add a category, then upload a PDF.';
+  String get catalogAdminEmpty =>
+      'No catalogs yet. Add a category, then upload a PDF.';
 
   @override
   String get catalogAdminNeedCategory => 'Add a category first.';
@@ -4499,7 +4680,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get catalogAdminPermission => 'Only admins signed in with email can change catalogs.';
+  String get catalogAdminPermission =>
+      'Only admins signed in with email can change catalogs.';
 
   @override
   String get catalogAdminPdfRequired => 'Choose a PDF file.';
@@ -4526,7 +4708,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enquiryHeroTitle => 'How can we help?';
 
   @override
-  String get enquiryHeroSubtitle => 'Send your question. We usually reply within one working day.';
+  String get enquiryHeroSubtitle =>
+      'Send your question. We usually reply within one working day.';
 
   @override
   String enquiryGoesToBranch(String branch) {
@@ -4613,7 +4796,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get enquiryFailed => 'Could not send. Check your internet and try again.';
+  String get enquiryFailed =>
+      'Could not send. Check your internet and try again.';
 
   @override
   String get enquiryReachDirectly => 'Or reach us directly';
@@ -4643,7 +4827,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enquiryGuest => 'Guest';
 
   @override
-  String get enquiriesNoAccess => 'Sign in with your admin email to see enquiries.';
+  String get enquiriesNoAccess =>
+      'Sign in with your admin email to see enquiries.';
 
   @override
   String get contactYourBranch => 'Your branch';
@@ -4696,13 +4881,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guestHomeTitle => 'Welcome to Balaji Points';
 
   @override
-  String get guestHomeSubtitle => 'Browse catalogs, find a branch or talk to us.';
+  String get guestHomeSubtitle =>
+      'Browse catalogs, find a branch or talk to us.';
 
   @override
   String get guestJoinTitle => 'Join Balaji Points';
 
   @override
-  String get guestJoinBody => 'Carpenters, architects, engineers and interior designers earn points on every purchase and win rewards.';
+  String get guestJoinBody =>
+      'Carpenters, architects, engineers and interior designers earn points on every purchase and win rewards.';
 
   @override
   String get guestRegister => 'Register now';
@@ -4792,7 +4979,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get branchMapsLinkHint => 'Enter Google Maps link';
 
   @override
-  String get branchMapsLinkHelp => 'Open the store in Google Maps, tap Share, copy the link and paste it here.';
+  String get branchMapsLinkHelp =>
+      'Open the store in Google Maps, tap Share, copy the link and paste it here.';
 
   @override
   String get branchMapsLinkInvalid => 'Paste a link that starts with https://';
@@ -4816,10 +5004,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guestTagline => 'Your one-stop shop for interiors';
 
   @override
-  String get guestHeroTitle => 'Plywood, hardware & fittings — all under one roof';
+  String get guestHeroTitle =>
+      'Plywood, hardware & fittings — all under one roof';
 
   @override
-  String get guestHeroBody => 'Browse the latest catalogs, find your nearest branch and get expert help.';
+  String get guestHeroBody =>
+      'Browse the latest catalogs, find your nearest branch and get expert help.';
 
   @override
   String get guestExploreCatalogs => 'Explore catalogs';
@@ -4870,7 +5060,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guestGrowTitle => 'Grow your business with Balaji Points';
 
   @override
-  String get guestGrowBody => 'Own a store? Register your store or branch on Balaji Points and reward your customers.';
+  String get guestGrowBody =>
+      'Own a store? Register your store or branch on Balaji Points and reward your customers.';
 
   @override
   String get guestGrowPoint1 => 'Customized roles for your members';
@@ -4898,4 +5089,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guestTabGuest => 'Guest';
+
+  @override
+  String get offersArrange => 'Arrange order';
+
+  @override
+  String get offersArrangeHint =>
+      'Drag offers into the order members should see them.';
+
+  @override
+  String get offersOrderSaved => 'Offer order saved';
+
+  @override
+  String get offersOrderFailed => 'Could not save the order. Try again.';
+
+  @override
+  String get drawerSectionExplore => 'Explore';
+
+  @override
+  String get drawerSectionSupport => 'Help & support';
+
+  @override
+  String get offerBannerChange => 'Change';
+
+  @override
+  String get loggingOut => 'Logging out…';
 }

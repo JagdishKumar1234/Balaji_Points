@@ -2,6 +2,7 @@ import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -530,7 +531,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                     shape: BoxShape.circle,
                     color: context.themeTextSecondary,
                   ),
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: const Center(child: AppLoader()),
                 ),
 
               const SizedBox(height: 32),
@@ -694,11 +695,9 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                               SizedBox(
                                 width: 24,
                                 height: 24,
-                                child: CircularProgressIndicator(
+                                child: AppLoader(
+                                  color: context.themeTextSecondary,
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    context.themeTextSecondary,
-                                  ),
                                 ),
                               )
                             else
@@ -819,7 +818,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
+                    child: AppLoader(),
                   ),
                 );
               }
@@ -993,7 +992,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
+                    child: AppLoader(),
                   ),
                 );
               }

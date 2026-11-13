@@ -55,9 +55,6 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage>
     with WidgetsBindingObserver, AutomaticKeepAliveClientMixin<HomePage> {
-  final _fcmService = FCMService();
-  final _sessionService = SessionService();
-
   String _appVersion = '';
   String? _confettiPlayedKey;
   String? _dismissedGreetingId;
@@ -150,96 +147,8 @@ class _HomePageState extends ConsumerState<HomePage>
     super.dispose();
   }
 
-  Future<void> _handleLogout(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.all24),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
-        backgroundColor: Theme.of(ctx).colorScheme.surface,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(32, 32, 32, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: context.themeError.withValues(alpha: 0.08),
-                ),
-                child: Icon(
-                  Icons.logout_rounded,
-                  color: context.themeError,
-                  size: 26,
-                ),
-              ),
-              const SizedBox(height: 20),
-              AppText.h4(l10n.logout),
-              const SizedBox(height: AppSpacing.sm),
-              AppText.body(
-                l10n.logoutConfirmation,
-                textAlign: TextAlign.center,
-                color: context.themeTextPrimary.withValues(alpha: 0.75),
-              ),
-              const SizedBox(height: AppSpacing.sectionGap),
-              Row(
-                children: [
-                  Expanded(
-                    child: AppButton.outline(
-                      label: l10n.no,
-                      onPressed: () => Navigator.of(ctx).pop(false),
-                      verticalPadding: 12,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: AppButton(
-                      label: l10n.yes,
-                      onPressed: () => Navigator.of(ctx).pop(true),
-                      variant: AppButtonVariant.danger,
-                      verticalPadding: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    if (shouldLogout == true && context.mounted) {
-      ref.read(loadingProvider.notifier).start();
-      try {
-        await _fcmService.deleteToken();
-        ref.read(carpenterPointsProvider.notifier).resetForLogout();
-        // The next person to log in on this phone may be in another branch.
-        ref.invalidate(branchCelebrationEnabledProvider);
-        ref.invalidate(celebrationPopupShownProvider);
-        ref.invalidate(homeProvider);
-        ref.invalidate(walletProvider);
-        ref.invalidate(walletBillsProvider);
-        await _sessionService.clearSession();
-        if (context.mounted) context.go('/login');
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${l10n.logoutFailed}: $e'),
-              backgroundColor: context.themeError,
-            ),
-          );
-        }
-      } finally {
-        if (context.mounted) {
-          ref.read(loadingProvider.notifier).stop();
-        }
-      }
-    }
-  }
+  Future<void> _handleLogout(BuildContext context) =>
+      memberLogout(context, ref);
 
   @override
   Widget build(BuildContext context) {
@@ -312,23 +221,29 @@ class _HomePageState extends ConsumerState<HomePage>
 
     return Scaffold(
       backgroundColor: canvas,
-      drawer: HomeDrawer(
-        homeState: homeState,
-        appVersion: _appVersion,
-        onLogout: _handleLogout,
-      ),
+      // Wide screens (web, tablet) have the side rail as their only menu;
+      // a second, drawer menu there showed two side panels.
+      drawer: context.isWideScreen
+          ? null
+          : HomeDrawer(
+              homeState: homeState,
+              appVersion: _appVersion,
+              onLogout: _handleLogout,
+            ),
       appBar: CarpenterTopNavBar(
         topInset: CarpenterShellLayout.topInset(mq),
         title: AppLocalizations.of(context)!.appName,
         backgroundColor: bg,
         foregroundColor: fg,
-        leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: Icon(Icons.menu_rounded, color: fg),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-            tooltip: AppLocalizations.of(context)!.menu,
-          ),
-        ),
+        leading: context.isWideScreen
+            ? null
+            : Builder(
+                builder: (ctx) => IconButton(
+                  icon: Icon(Icons.menu_rounded, color: fg),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                  tooltip: AppLocalizations.of(context)!.menu,
+                ),
+              ),
         center: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -619,4 +534,96 @@ class _ProfileAvatarButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Asks to confirm, then logs the member out (push token, points, cached
+/// screens, session) and goes to login. Used by the phone side menu and the
+/// wide-screen side rail.
+Future<void> memberLogout(BuildContext context, WidgetRef ref) async {
+  final l10n = AppLocalizations.of(context)!;
+  final shouldLogout = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => Dialog(
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.all24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
+      backgroundColor: Theme.of(ctx).colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(32, 32, 32, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: context.themeError.withValues(alpha: 0.08),
+              ),
+              child: Icon(
+                Icons.logout_rounded,
+                color: context.themeError,
+                size: 26,
+              ),
+            ),
+            const SizedBox(height: 20),
+            AppText.h4(l10n.logout),
+            const SizedBox(height: AppSpacing.sm),
+            AppText.body(
+              l10n.logoutConfirmation,
+              textAlign: TextAlign.center,
+              color: context.themeTextPrimary.withValues(alpha: 0.75),
+            ),
+            const SizedBox(height: AppSpacing.sectionGap),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton.outline(
+                    label: l10n.no,
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                    verticalPadding: 12,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppButton(
+                    label: l10n.yes,
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                    variant: AppButtonVariant.danger,
+                    verticalPadding: 12,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  if (shouldLogout != true || !context.mounted) return;
+  final l10n2 = AppLocalizations.of(context)!;
+  final messenger = ScaffoldMessenger.of(context);
+  final errorColor = context.themeError;
+  final router = GoRouter.of(context);
+  await ref.withLoader(() async {
+    try {
+      await FCMService().deleteToken();
+      ref.read(carpenterPointsProvider.notifier).resetForLogout();
+      // The next person to log in on this phone may be in another branch.
+      ref.invalidate(branchCelebrationEnabledProvider);
+      ref.invalidate(celebrationPopupShownProvider);
+      ref.invalidate(homeProvider);
+      ref.invalidate(walletProvider);
+      ref.invalidate(walletBillsProvider);
+      await SessionService().clearSession();
+      router.go('/login');
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('${l10n2.logoutFailed}: $e'),
+          backgroundColor: errorColor,
+        ),
+      );
+    }
+  }, message: l10n2.loggingOut);
 }

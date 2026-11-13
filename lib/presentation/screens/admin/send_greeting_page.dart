@@ -6,6 +6,7 @@ import 'package:balaji_points/core/models/greeting_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/platform/image_compress_service.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -425,7 +426,7 @@ class _SendGreetingPageState extends State<SendGreetingPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(),
+                  const AppLoader(),
                   const SizedBox(height: 16),
                   Text(AppLocalizations.of(context)!.sendingGreeting),
                 ],

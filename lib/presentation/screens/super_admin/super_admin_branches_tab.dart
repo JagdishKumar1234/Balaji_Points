@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_branch_card.dart';
 import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_section_header.dart';
@@ -443,10 +444,7 @@ class _CreateBranchDialogState extends State<_CreateBranchDialog> {
               ? const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(
-                    color: AppColors.primary,
-                    strokeWidth: 2,
-                  ),
+                  child: AppLoader(color: AppColors.primary, strokeWidth: 2),
                 )
               : Text(
                   _editing

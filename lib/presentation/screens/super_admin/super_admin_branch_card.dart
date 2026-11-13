@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:flutter/services.dart';
 
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -267,7 +268,7 @@ class SuperAdminBranchCard extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: SizedBox.square(
                         dimension: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: AppLoader(strokeWidth: 2),
                       ),
                     )
                   else

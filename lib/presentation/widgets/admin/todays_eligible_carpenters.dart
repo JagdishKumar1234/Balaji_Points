@@ -1,6 +1,7 @@
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -160,9 +161,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(context.themeSecondary),
-          ),
+          AppLoader(color: context.themeSecondary),
           const SizedBox(height: 16),
           AppText.body(
             AppLocalizations.of(context)!.loadingEligibleCarpenters,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
@@ -92,11 +93,9 @@ class UserListItem extends StatelessWidget {
                                   alpha: 0.1,
                                 ),
                                 child: Center(
-                                  child: CircularProgressIndicator(
+                                  child: AppLoader(
+                                    color: context.themePrimary,
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      context.themePrimary,
-                                    ),
                                   ),
                                 ),
                               );

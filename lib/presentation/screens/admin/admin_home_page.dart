@@ -3,6 +3,7 @@ import 'package:balaji_points/presentation/widgets/admin/enquiries_management.da
 import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/providers/loading_provider.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/design/app_typography.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_loading_view.dart';
@@ -152,32 +153,28 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       ),
     );
 
-    if (shouldLogout == true && mounted) {
+    if (shouldLogout != true || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final errorColor = context.themeError;
+    final router = GoRouter.of(context);
+    await ref.withLoader(() async {
       try {
         // Delete FCM token before signing out
         await FCMService().deleteToken();
-
         // Sign out from Firebase
         await FirebaseAuth.instance.signOut();
-
         // Clear secure session so splash redirects correctly by role.
         await SessionService().clearSession();
-
-        if (mounted) {
-          context.go('/login');
-        }
+        router.go('/login');
       } catch (e) {
-        if (mounted) {
-          final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${l10n.logoutFailed}: ${e.toString()}'),
-              backgroundColor: context.themeError,
-            ),
-          );
-        }
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('${l10n.logoutFailed}: $e'),
+            backgroundColor: errorColor,
+          ),
+        );
       }
-    }
+    }, message: l10n.loggingOut);
   }
 
   Future<void> _deleteAllAdminNotifications() async {

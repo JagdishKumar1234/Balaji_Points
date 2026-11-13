@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 
 import 'package:balaji_points/core/design/app_spacing.dart';
 
@@ -21,7 +22,7 @@ class SuperAdminLoadingView extends StatelessWidget {
         children: [
           const SizedBox.square(
             dimension: 20,
-            child: CircularProgressIndicator(strokeWidth: 2.4),
+            child: AppLoader(strokeWidth: 2.4),
           ),
           const SizedBox(width: AppSpacing.sm),
           Flexible(
@@ -36,7 +37,7 @@ class SuperAdminLoadingView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(strokeWidth: 3),
+            const AppLoader(strokeWidth: 3),
             const SizedBox(height: AppSpacing.md),
             Text(label, textAlign: TextAlign.center),
           ],

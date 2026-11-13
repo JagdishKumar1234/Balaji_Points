@@ -13,6 +13,7 @@ import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -230,9 +231,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
       backgroundColor: context.themeBackground,
       appBar: AppBar(title: Text(l10n.billDetails), centerTitle: false),
       body: _loading
-          ? Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
-            )
+          ? Center(child: AppLoader(color: context.themePrimary))
           : bill == null
           ? Center(
               child: Text(
@@ -783,9 +782,9 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                          child: AppLoader(
                             color: AppColors.white,
+                            strokeWidth: 2,
                           ),
                         )
                       : const Icon(Icons.check_rounded),

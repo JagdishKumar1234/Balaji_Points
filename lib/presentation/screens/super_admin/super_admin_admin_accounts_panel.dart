@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/screens/super_admin/super_admin_create_admin_tab.dart';
 import 'package:balaji_points/presentation/widgets/shared/empty_state.dart';
 import 'package:balaji_points/core/firebase/app_firestore.dart';
@@ -437,7 +438,7 @@ class _AdminAccountCardState extends State<_AdminAccountCard> {
                 padding: EdgeInsets.all(14),
                 child: SizedBox.square(
                   dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: AppLoader(strokeWidth: 2),
                 ),
               )
             else

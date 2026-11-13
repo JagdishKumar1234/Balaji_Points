@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/screens/carpenter/home/home_page.dart';
+import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -111,6 +113,25 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         icon: Icons.person_outline_rounded,
         selectedIcon: Icons.person_rounded,
       ),
+      // Wide screens: the rail is the only menu, so it also carries what
+      // the phone side menu has (catalogs, about, contact).
+      if (context.isWideScreen) ...[
+        RoleNavigationItem(
+          label: AppLocalizations.of(context)!.catalogs,
+          icon: Icons.menu_book_outlined,
+          selectedIcon: Icons.menu_book_rounded,
+        ),
+        RoleNavigationItem(
+          label: AppLocalizations.of(context)!.aboutUs,
+          icon: Icons.info_outline_rounded,
+          selectedIcon: Icons.info_rounded,
+        ),
+        RoleNavigationItem(
+          label: AppLocalizations.of(context)!.contactUs,
+          icon: Icons.support_agent_outlined,
+          selectedIcon: Icons.support_agent_rounded,
+        ),
+      ],
     ];
     final navPaths = <String>[
       '/',
@@ -118,6 +139,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       if (showAddBill) '/add-bill',
       '/notifications',
       '/profile',
+      if (context.isWideScreen) ...['/catalogs', '/about-us', '/contact-us'],
     ];
     final selectedPath = switch (path) {
       final value when value.startsWith('/wallet') => '/wallet',
@@ -125,6 +147,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         '/add-bill',
       final value when value.startsWith('/notifications') => '/notifications',
       final value when value.startsWith('/profile') => '/profile',
+      final value when value.startsWith('/about-us') && context.isWideScreen =>
+        '/about-us',
       _ => '/',
     };
 
@@ -149,9 +173,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             child: Scaffold(
               backgroundColor: t.scaffoldBackgroundColor,
               body: ResponsiveRoleNavigation(
-                roleLabel:
-                    role?.replaceAll('_', ' ') ??
-                    AppLocalizations.of(context)!.member,
+                // "Carpenter", "Interior designer"..., not the raw id.
+                roleLabel: role == null || role.isEmpty
+                    ? AppLocalizations.of(context)!.member
+                    : roleLabelForId(context, role),
+                // Wide screens have no side menu, so Logout lives here.
+                onLogout: isAdmin ? null : () => memberLogout(context, ref),
                 selectedIndex: navPaths.indexOf(selectedPath),
                 items: navItems,
                 onSelected: (index) => GoRouter.of(context).go(navPaths[index]),

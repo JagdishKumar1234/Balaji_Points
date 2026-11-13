@@ -9,6 +9,7 @@ import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:balaji_points/core/firebase/app_firestore.dart';
@@ -331,7 +332,7 @@ class _CarpenterProfileDetailScreenState
             appBar: AppBar(title: Text(l10n.memberDetailsTitle)),
             body: Center(
               child: loading
-                  ? CircularProgressIndicator(color: context.themePrimary)
+                  ? AppLoader(color: context.themePrimary)
                   : AppText.body(l10n.carpenterNotFound),
             ),
           );
@@ -647,9 +648,7 @@ class _CarpenterProfileDetailScreenState
       return [
         Padding(
           padding: const EdgeInsets.all(24),
-          child: Center(
-            child: CircularProgressIndicator(color: context.themePrimary),
-          ),
+          child: Center(child: AppLoader(color: context.themePrimary)),
         ),
       ];
     }
@@ -1032,8 +1031,7 @@ class _CarpenterProfileDetailScreenState
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) =>
-          Center(child: CircularProgressIndicator(color: context.themePrimary)),
+      builder: (_) => Center(child: AppLoader(color: context.themePrimary)),
     );
   }
 }

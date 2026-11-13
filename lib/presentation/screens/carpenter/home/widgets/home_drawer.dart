@@ -27,9 +27,10 @@ class HomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final footerBottom =
-        CarpenterShellLayout.chromeHeight(MediaQuery.of(context)) +
-        AppSpacing.sm;
+    // The page (and this menu) already stops above the tab bar, except for
+    // the bar's raised strip. Clear only that strip, so Logout sits at the
+    // bottom of the menu; adding the whole bar height floated it mid-way.
+    const footerBottom = CarpenterShellLayout.navBarRaise + AppSpacing.sm;
 
     void open(void Function() navigate) {
       Navigator.of(context).pop();
@@ -47,6 +48,9 @@ class HomeDrawer extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
               children: [
+                // The member's main places, in this order (user, 1.1.3):
+                // Home, Wallet, Notifications, Profile, Catalogs, About Us,
+                // Contact Us.
                 _SectionLabel(l10n.drawerSectionMainNav),
                 _NavTile(
                   // This menu only opens from Home.
@@ -57,7 +61,7 @@ class HomeDrawer extends StatelessWidget {
                 ),
                 _NavTile(
                   icon: Icons.account_balance_wallet_rounded,
-                  label: l10n.earn,
+                  label: l10n.wallet,
                   onTap: () => open(() => context.go('/wallet')),
                 ),
                 _NavTile(
@@ -70,13 +74,23 @@ class HomeDrawer extends StatelessWidget {
                   label: l10n.profile,
                   onTap: () => open(() => context.go('/profile')),
                 ),
+                _NavTile(
+                  icon: Icons.menu_book_rounded,
+                  label: l10n.catalogs,
+                  onTap: () => open(() => context.push('/catalogs')),
+                ),
                 const SizedBox(height: 8),
-                _SectionLabel(l10n.drawerSectionMore),
+                _SectionLabel(l10n.drawerSectionSupport),
                 _NavTile(
                   icon: Icons.info_rounded,
                   label: l10n.aboutUs,
                   subtitle: l10n.aboutUsMenuSubtitle,
                   onTap: () => open(() => context.push('/about-us')),
+                ),
+                _NavTile(
+                  icon: Icons.support_agent_rounded,
+                  label: l10n.contactUs,
+                  onTap: () => open(() => context.push('/contact-us')),
                 ),
               ],
             ),

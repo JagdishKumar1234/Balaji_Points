@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,9 +94,7 @@ class _DuplicateAccountsScreenState extends State<DuplicateAccountsScreen> {
         future: _duplicatesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: context.themePrimary),
-            );
+            return Center(child: AppLoader(color: context.themePrimary));
           }
 
           if (snapshot.hasError) {

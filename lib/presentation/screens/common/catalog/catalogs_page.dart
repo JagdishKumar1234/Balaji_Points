@@ -28,6 +28,9 @@ class CatalogsPage extends ConsumerStatefulWidget {
   ConsumerState<CatalogsPage> createState() => _CatalogsPageState();
 }
 
+/// The "All" chip's value (no category filter).
+const _kAll = '__all__';
+
 class _CatalogsPageState extends ConsumerState<CatalogsPage> {
   /// Null = All.
   String? _selected;
@@ -107,7 +110,14 @@ class _CatalogsPageState extends ConsumerState<CatalogsPage> {
     final shown = categories
         .where((c) => byCategory.containsKey(c.id))
         .toList();
-    final selected = byCategory.containsKey(_selected) ? _selected : null;
+    // Opens on the first category; "All" (the last chip) shows every one.
+    final selected = _selected == _kAll
+        ? null
+        : byCategory.containsKey(_selected)
+        ? _selected
+        : shown.isEmpty
+        ? null
+        : shown.first.id;
 
     if (shown.isEmpty) {
       return RefreshIndicator(
@@ -142,12 +152,7 @@ class _CatalogsPageState extends ConsumerState<CatalogsPage> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
               children: [
-                _Chip(
-                  label: l10n.all,
-                  count: total,
-                  selected: selected == null,
-                  onTap: () => setState(() => _selected = null),
-                ),
+                // Categories first, "All" last.
                 for (final c in shown)
                   _Chip(
                     label: c.name,
@@ -155,6 +160,12 @@ class _CatalogsPageState extends ConsumerState<CatalogsPage> {
                     selected: selected == c.id,
                     onTap: () => setState(() => _selected = c.id),
                   ),
+                _Chip(
+                  label: l10n.all,
+                  count: total,
+                  selected: selected == null,
+                  onTap: () => setState(() => _selected = _kAll),
+                ),
               ],
             ),
           ),

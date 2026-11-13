@@ -119,7 +119,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get continueWithPin => 'PIN के साथ जारी रखें';
 
   @override
-  String get loginInfo => 'अपने पंजीकृत फोन नंबर का उपयोग करके लॉगिन करें। सत्यापन के लिए आपको एक OTP प्राप्त होगा।';
+  String get loginInfo =>
+      'अपने पंजीकृत फोन नंबर का उपयोग करके लॉगिन करें। सत्यापन के लिए आपको एक OTP प्राप्त होगा।';
 
   @override
   String get poweredBy => 'द्वारा संचालित';
@@ -188,31 +189,38 @@ class AppLocalizationsHi extends AppLocalizations {
   String get resetPinTitle => 'PIN रीसेट करें';
 
   @override
-  String get resetPinSubtitle => 'अपना PIN रीसेट करने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें।';
+  String get resetPinSubtitle =>
+      'अपना PIN रीसेट करने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें।';
 
   @override
-  String get mustBeLoggedInToResetPin => 'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। कृपया पहले लॉगिन करें।';
+  String get mustBeLoggedInToResetPin =>
+      'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। कृपया पहले लॉगिन करें।';
 
   @override
-  String get canOnlyResetOwnPin => 'आप केवल अपना PIN रीसेट कर सकते हैं। फोन नंबर आपके लॉग इन खाते से मेल खाना चाहिए।';
+  String get canOnlyResetOwnPin =>
+      'आप केवल अपना PIN रीसेट कर सकते हैं। फोन नंबर आपके लॉग इन खाते से मेल खाना चाहिए।';
 
   @override
-  String get enterCurrentPin => 'कृपया स्वामित्व सत्यापित करने के लिए अपना वर्तमान PIN दर्ज करें।';
+  String get enterCurrentPin =>
+      'कृपया स्वामित्व सत्यापित करने के लिए अपना वर्तमान PIN दर्ज करें।';
 
   @override
   String get currentPinLabel => 'वर्तमान PIN';
 
   @override
-  String get newPinMustBeDifferent => 'नया PIN आपके वर्तमान PIN से अलग होना चाहिए।';
+  String get newPinMustBeDifferent =>
+      'नया PIN आपके वर्तमान PIN से अलग होना चाहिए।';
 
   @override
-  String get contactAdminForPinReset => 'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। यदि आप अपना PIN भूल गए हैं, तो कृपया सहायता के लिए व्यवस्थापक से संपर्क करें।';
+  String get contactAdminForPinReset =>
+      'आपको अपना PIN रीसेट करने के लिए लॉग इन होना चाहिए। यदि आप अपना PIN भूल गए हैं, तो कृपया सहायता के लिए व्यवस्थापक से संपर्क करें।';
 
   @override
   String get forgotCurrentPin => 'अपना वर्तमान PIN भूल गए?';
 
   @override
-  String get forgotPinHelp => 'यदि आपको अपना वर्तमान PIN याद नहीं है, तो कृपया सहायता के लिए हमारी सहायता टीम से संपर्क करें।';
+  String get forgotPinHelp =>
+      'यदि आपको अपना वर्तमान PIN याद नहीं है, तो कृपया सहायता के लिए हमारी सहायता टीम से संपर्क करें।';
 
   @override
   String get adminSupportInfo => 'व्यवस्थापक सहायता';
@@ -229,7 +237,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get adminResetPinSubtitle => 'इस बढ़ई के लिए एक नया 4 अंकों का PIN दर्ज करें।';
+  String get adminResetPinSubtitle =>
+      'इस बढ़ई के लिए एक नया 4 अंकों का PIN दर्ज करें।';
 
   @override
   String adminResetPinConfirm(String carpenterName) {
@@ -242,10 +251,12 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get adminResetPinFailed => 'PIN रीसेट करने में विफल। कृपया पुनः प्रयास करें।';
+  String get adminResetPinFailed =>
+      'PIN रीसेट करने में विफल। कृपया पुनः प्रयास करें।';
 
   @override
-  String get adminNotAuthorized => 'आप इस क्रिया को करने के लिए अधिकृत नहीं हैं।';
+  String get adminNotAuthorized =>
+      'आप इस क्रिया को करने के लिए अधिकृत नहीं हैं।';
 
   @override
   String get enterNewPinForCarpenter => 'नया 4 अंकों का PIN दर्ज करें';
@@ -269,7 +280,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get noAccountFound => 'इस नंबर के लिए कोई खाता नहीं मिला';
 
   @override
-  String get pinResetSuccess => 'PIN सफलतापूर्वक रीसेट किया गया। कृपया फिर से लॉगिन करें।';
+  String get pinResetSuccess =>
+      'PIN सफलतापूर्वक रीसेट किया गया। कृपया फिर से लॉगिन करें।';
 
   @override
   String get failedToResetPin => 'PIN रीसेट करने में विफल। पुनः प्रयास करें।';
@@ -299,7 +311,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get rememberMe => 'मुझे याद रखें';
 
   @override
-  String get accountExistsUseReset => 'खाता पहले से मौजूद है। कृपया अपना PIN बदलने के लिए Reset PIN का उपयोग करें।';
+  String get accountExistsUseReset =>
+      'खाता पहले से मौजूद है। कृपया अपना PIN बदलने के लिए Reset PIN का उपयोग करें।';
 
   @override
   String get home => 'होम';
@@ -338,7 +351,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get homeRankingsSectionTitle => 'रैंकिंग और आज का विजेता';
 
   @override
-  String get homeRankingsSectionSubtitle => 'लीडरबोर्ड, आपकी रैंक और आज का इनाम';
+  String get homeRankingsSectionSubtitle =>
+      'लीडरबोर्ड, आपकी रैंक और आज का इनाम';
 
   @override
   String get drawerProductsTitle => 'उत्पाद';
@@ -428,10 +442,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileIncomplete => 'प्रोफाइल अधूरा';
 
   @override
-  String get completeProfileMessage => 'बिल जोड़ना और पॉइंट्स अर्जित करना शुरू करने के लिए कृपया अपना प्रोफाइल पूरा करें';
+  String get completeProfileMessage =>
+      'बिल जोड़ना और पॉइंट्स अर्जित करना शुरू करने के लिए कृपया अपना प्रोफाइल पूरा करें';
 
   @override
-  String get completeProfileDetails => 'जारी रखने के लिए अपना पहला नाम, अंतिम नाम और प्रोफाइल फोटो जोड़ें';
+  String get completeProfileDetails =>
+      'जारी रखने के लिए अपना पहला नाम, अंतिम नाम और प्रोफाइल फोटो जोड़ें';
 
   @override
   String get completeNow => 'अभी पूरा करें';
@@ -479,7 +495,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get needHelp => 'मदद चाहिए?';
 
   @override
-  String get contactSupport => 'किसी भी प्रश्न या समस्या के लिए हमारी सहायता टीम से संपर्क करें।';
+  String get contactSupport =>
+      'किसी भी प्रश्न या समस्या के लिए हमारी सहायता टीम से संपर्क करें।';
 
   @override
   String get callNow => 'अभी कॉल करें';
@@ -635,7 +652,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get adminPanel => 'व्यवस्थापक पैनल';
 
   @override
-  String get adminSubtitle => 'बिल, ऑफर्स, उपयोगकर्ता और दैनिक स्पिन प्रबंधित करें';
+  String get adminSubtitle =>
+      'बिल, ऑफर्स, उपयोगकर्ता और दैनिक स्पिन प्रबंधित करें';
 
   @override
   String get dashboard => 'डैशबोर्ड';
@@ -707,7 +725,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get errorOccurred => 'एक त्रुटि हुई';
 
   @override
-  String get networkError => 'नेटवर्क त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।';
+  String get networkError =>
+      'नेटवर्क त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।';
 
   @override
   String get permissionDenied => 'अनुमति अस्वीकृत';
@@ -728,19 +747,24 @@ class AppLocalizationsHi extends AppLocalizations {
   String get configError => 'कॉन्फ़िगरेशन त्रुटि';
 
   @override
-  String get missingClientId => 'Firebase में SHA-1 फ़िंगरप्रिंट गुम है। कृपया चलाएं: scripts/get_sha1.sh';
+  String get missingClientId =>
+      'Firebase में SHA-1 फ़िंगरप्रिंट गुम है। कृपया चलाएं: scripts/get_sha1.sh';
 
   @override
-  String get tooManyRequests => 'बहुत सारे अनुरोध। कृपया कुछ मिनट प्रतीक्षा करें।';
+  String get tooManyRequests =>
+      'बहुत सारे अनुरोध। कृपया कुछ मिनट प्रतीक्षा करें।';
 
   @override
-  String get invalidVerificationCode => 'अमान्य OTP कोड। कृपया जांचें और पुनः प्रयास करें।';
+  String get invalidVerificationCode =>
+      'अमान्य OTP कोड। कृपया जांचें और पुनः प्रयास करें।';
 
   @override
-  String get verificationExpired => 'सत्यापन समाप्त। कृपया नया OTP अनुरोध करें।';
+  String get verificationExpired =>
+      'सत्यापन समाप्त। कृपया नया OTP अनुरोध करें।';
 
   @override
-  String get userDisabled => 'यह खाता अक्षम कर दिया गया है। कृपया समर्थन से संपर्क करें।';
+  String get userDisabled =>
+      'यह खाता अक्षम कर दिया गया है। कृपया समर्थन से संपर्क करें।';
 
   @override
   String get fieldRequired => 'यह फ़ील्ड आवश्यक है';
@@ -895,13 +919,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get billApprovedSuccess => 'बिल स्वीकृत हो गया!';
 
   @override
-  String get failedToApproveBill => 'बिल स्वीकृत करने में विफल। पुनः प्रयास करें।';
+  String get failedToApproveBill =>
+      'बिल स्वीकृत करने में विफल। पुनः प्रयास करें।';
 
   @override
   String get rejectBill => 'बिल अस्वीकार करें';
 
   @override
-  String get rejectBillConfirmation => 'क्या आप वाकई इस बिल को अस्वीकार करना चाहते हैं?';
+  String get rejectBillConfirmation =>
+      'क्या आप वाकई इस बिल को अस्वीकार करना चाहते हैं?';
 
   @override
   String get billRejectedSuccess => 'बिल अस्वीकृत';
@@ -931,7 +957,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteOffer => 'ऑफर मिटाएं';
 
   @override
-  String get deleteOfferConfirmation => 'क्या आप वाकई इस ऑफर को मिटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।';
+  String get deleteOfferConfirmation =>
+      'क्या आप वाकई इस ऑफर को मिटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।';
 
   @override
   String get offerDeletedSuccess => 'ऑफर सफलतापूर्वक मिटाया गया';
@@ -1067,10 +1094,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteCarpenter => 'बढ़ई हटाएं';
 
   @override
-  String get deleteCarpenterConfirmation => 'क्या आप वाकई इस बढ़ई को हटाना चाहते हैं? यह स्थायी रूप से हटा देगा:\n\n• उपयोगकर्ता खाता\n• सभी पॉइंट्स और लेनदेन इतिहास\n• सभी जमा किए गए बिल\n• सभी ऑफर रिडेम्प्शन\n\nइस क्रिया को पूर्ववत नहीं किया जा सकता।';
+  String get deleteCarpenterConfirmation =>
+      'क्या आप वाकई इस बढ़ई को हटाना चाहते हैं? यह स्थायी रूप से हटा देगा:\n\n• उपयोगकर्ता खाता\n• सभी पॉइंट्स और लेनदेन इतिहास\n• सभी जमा किए गए बिल\n• सभी ऑफर रिडेम्प्शन\n\nइस क्रिया को पूर्ववत नहीं किया जा सकता।';
 
   @override
-  String get deleteCarpenterWarning => 'बढ़ई को हटाना सिस्टम से उनके सभी डेटा को स्थायी रूप से हटा देगा। इस क्रिया को पूर्ववत नहीं किया जा सकता।';
+  String get deleteCarpenterWarning =>
+      'बढ़ई को हटाना सिस्टम से उनके सभी डेटा को स्थायी रूप से हटा देगा। इस क्रिया को पूर्ववत नहीं किया जा सकता।';
 
   @override
   String get carpenterDeletedSuccess => 'बढ़ई सफलतापूर्वक हटाया गया';
@@ -1094,13 +1123,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get verifyAndCreate => 'सत्यापित करें और बनाएं';
 
   @override
-  String get adminSignOutNote => 'नोट: OTP सत्यापन के दौरान ऐप अस्थायी रूप से सत्यापित बढ़ई के रूप में साइन इन करेगा और फिर साइन आउट करेगा। व्यवस्थापक को फिर से साइन इन करना होगा।';
+  String get adminSignOutNote =>
+      'नोट: OTP सत्यापन के दौरान ऐप अस्थायी रूप से सत्यापित बढ़ई के रूप में साइन इन करेगा और फिर साइन आउट करेगा। व्यवस्थापक को फिर से साइन इन करना होगा।';
 
   @override
   String get carpenterCreated => 'बढ़ई बनाया गया';
 
   @override
-  String get carpenterCreatedMessage => 'बढ़ई खाता सफलतापूर्वक बनाया गया। सत्यापन के दौरान ऐप उस बढ़ई के रूप में साइन इन हो गया है और अब साइन आउट हो गया है। आपको व्यवस्थापक के रूप में फिर से साइन इन करना होगा।';
+  String get carpenterCreatedMessage =>
+      'बढ़ई खाता सफलतापूर्वक बनाया गया। सत्यापन के दौरान ऐप उस बढ़ई के रूप में साइन इन हो गया है और अब साइन आउट हो गया है। आपको व्यवस्थापक के रूप में फिर से साइन इन करना होगा।';
 
   @override
   String get enterValidPhone => 'एक वैध फोन नंबर दर्ज करें';
@@ -1171,7 +1202,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get noBillsYet => 'अभी तक कोई बिल नहीं';
 
   @override
-  String get submitFirstBill => 'पॉइंट्स अर्जित करने के लिए अपना पहला बिल जमा करें';
+  String get submitFirstBill =>
+      'पॉइंट्स अर्जित करने के लिए अपना पहला बिल जमा करें';
 
   @override
   String get justNow => 'अभी-अभी';
@@ -1228,7 +1260,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get discardChanges => 'परिवर्तन छोड़ें?';
 
   @override
-  String get discardChangesMessage => 'आपके पास असहेजित परिवर्तन हैं। क्या आप उन्हें छोड़ना चाहते हैं?';
+  String get discardChangesMessage =>
+      'आपके पास असहेजित परिवर्तन हैं। क्या आप उन्हें छोड़ना चाहते हैं?';
 
   @override
   String get discard => 'छोड़ें';
@@ -1246,7 +1279,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get discardBill => 'बिल छोड़ें?';
 
   @override
-  String get discardBillMessage => 'आपके पास असहेजित बिल डेटा है। क्या आप इसे छोड़ना चाहते हैं?';
+  String get discardBillMessage =>
+      'आपके पास असहेजित बिल डेटा है। क्या आप इसे छोड़ना चाहते हैं?';
 
   @override
   String get pleaseCompleteProfile => 'कृपया अपना प्रोफाइल पूरा करें';
@@ -1276,10 +1310,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get selectBillDateOptional => 'बिल तारीख चुनें (वैकल्पिक)';
 
   @override
-  String get enterStoreOrVendorNameOptional => 'स्टोर या विक्रेता नाम दर्ज करें (वैकल्पिक)';
+  String get enterStoreOrVendorNameOptional =>
+      'स्टोर या विक्रेता नाम दर्ज करें (वैकल्पिक)';
 
   @override
-  String get enterBillOrInvoiceNumberOptional => 'बिल या चालान नंबर दर्ज करें (वैकल्पिक)';
+  String get enterBillOrInvoiceNumberOptional =>
+      'बिल या चालान नंबर दर्ज करें (वैकल्पिक)';
 
   @override
   String get addAnyAdditionalNotes => 'कोई अतिरिक्त नोट्स जोड़ें...';
@@ -1294,13 +1330,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get withdrawBill => 'बिल वापस लें';
 
   @override
-  String get withdrawBillConfirmation => 'क्या आप वाकई इस स्वीकृत बिल को वापस लेना चाहते हैं? इससे बढ़ई को दिए गए अंक वापस हो जाएंगे।';
+  String get withdrawBillConfirmation =>
+      'क्या आप वाकई इस स्वीकृत बिल को वापस लेना चाहते हैं? इससे बढ़ई को दिए गए अंक वापस हो जाएंगे।';
 
   @override
   String get withdraw => 'वापस लें';
 
   @override
-  String get billWithdrawnSuccess => 'बिल सफलतापूर्वक वापस लिया गया। अंक वापस कर दिए गए हैं।';
+  String get billWithdrawnSuccess =>
+      'बिल सफलतापूर्वक वापस लिया गया। अंक वापस कर दिए गए हैं।';
 
   @override
   String get failedToWithdrawBill => 'बिल वापस लेने में विफल';
@@ -1309,13 +1347,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get withdrawApproval => 'स्वीकृति वापस लें';
 
   @override
-  String get reversePointsAndUndoApproval => 'अंक वापस करें और स्वीकृति रद्द करें';
+  String get reversePointsAndUndoApproval =>
+      'अंक वापस करें और स्वीकृति रद्द करें';
 
   @override
   String get approveBillAction => 'बिल स्वीकृत करें';
 
   @override
-  String get awardPointsAndMarkAsApproved => 'अंक दें और स्वीकृत के रूप में चिह्नित करें';
+  String get awardPointsAndMarkAsApproved =>
+      'अंक दें और स्वीकृत के रूप में चिह्नित करें';
 
   @override
   String get selectCarpenter => 'बढ़ई चुनें';
@@ -1348,7 +1388,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get errorLoadingBillHistory => 'बिल लोड करने में त्रुटि';
 
   @override
-  String get noBillsFoundMatchingFilters => 'फ़िल्टर से मेल खाने वाले कोई बिल नहीं मिले';
+  String get noBillsFoundMatchingFilters =>
+      'फ़िल्टर से मेल खाने वाले कोई बिल नहीं मिले';
 
   @override
   String get noBillsFoundHistory => 'कोई बिल नहीं मिला';
@@ -1390,34 +1431,40 @@ class AppLocalizationsHi extends AppLocalizations {
   String get aboutUsOverviewTitle => 'बालाजी पॉइंट्स क्या है?';
 
   @override
-  String get aboutUsOverviewBody => 'बालाजी पॉइंट्स बढ़ई और हार्डवेयर स्टोर्स के लिए एक डिजिटल लॉयल्टी प्लेटफ़ॉर्म है। यह योग्य सामग्री खरीद को अंक, पुरस्कार और पहचान में बदलने में मदद करता है। आप ऐप से बिल जमा करते हैं; जिस स्टोर में आप जुड़े हैं वह उन्हें जाँचकर स्वीकार करता है; आपका वॉलेट और इतिहास अपडेट होता रहता है ताकि आप हमेशा अपनी स्थिति जान सकें।';
+  String get aboutUsOverviewBody =>
+      'बालाजी पॉइंट्स बढ़ई और हार्डवेयर स्टोर्स के लिए एक डिजिटल लॉयल्टी प्लेटफ़ॉर्म है। यह योग्य सामग्री खरीद को अंक, पुरस्कार और पहचान में बदलने में मदद करता है। आप ऐप से बिल जमा करते हैं; जिस स्टोर में आप जुड़े हैं वह उन्हें जाँचकर स्वीकार करता है; आपका वॉलेट और इतिहास अपडेट होता रहता है ताकि आप हमेशा अपनी स्थिति जान सकें।';
 
   @override
   String get aboutUsEarningTitle => 'अंक कैसे कमाएँ';
 
   @override
-  String get aboutUsEarningBody => 'साफ़ फ़ोटो, सही राशि और जो विवरण स्टोर माँगे उसके साथ खरीद के बिल अपलोड करें। स्टोर एडमिन जमा की जाँच करता है ताकि प्रोग्राम निष्पक्ष रहे और गलती या दुरुपयोग कम हो। स्वीकृति के बाद अंक उसी स्टोर के नियमों से जुड़ते हैं (जैसे रुपये से अंक)। ऐप में कभी भी बैलेंस, लेन-देन इतिहास और टियर प्रगति देख सकते हैं।';
+  String get aboutUsEarningBody =>
+      'साफ़ फ़ोटो, सही राशि और जो विवरण स्टोर माँगे उसके साथ खरीद के बिल अपलोड करें। स्टोर एडमिन जमा की जाँच करता है ताकि प्रोग्राम निष्पक्ष रहे और गलती या दुरुपयोग कम हो। स्वीकृति के बाद अंक उसी स्टोर के नियमों से जुड़ते हैं (जैसे रुपये से अंक)। ऐप में कभी भी बैलेंस, लेन-देन इतिहास और टियर प्रगति देख सकते हैं।';
 
   @override
   String get aboutUsOffersTitle => 'लीडरबोर्ड, ऑफ़र और अपडेट';
 
   @override
-  String get aboutUsOffersBody => 'कई स्टोर लीडरबोर्ड चलाते हैं ताकि आप अपने प्रोग्राम में दूसरे बढ़ई के बीच अपनी रैंक देख सकें। आपको बैनर, ऑफ़र और घोषणाएँ भी मिलेंगी—मौसमी डील, बोनस अंक या विशेष प्रचार—ताकि स्टोर जो सुविधाएँ देता है वे छूटें नहीं।';
+  String get aboutUsOffersBody =>
+      'कई स्टोर लीडरबोर्ड चलाते हैं ताकि आप अपने प्रोग्राम में दूसरे बढ़ई के बीच अपनी रैंक देख सकें। आपको बैनर, ऑफ़र और घोषणाएँ भी मिलेंगी—मौसमी डील, बोनस अंक या विशेष प्रचार—ताकि स्टोर जो सुविधाएँ देता है वे छूटें नहीं।';
 
   @override
   String get aboutUsFairnessTitle => 'स्वीकृति, पारदर्शिता और सहायता';
 
   @override
-  String get aboutUsFairnessBody => 'हर बिल की जाँच होती है इसलिए समय लग सकता है। अस्वीकृति पर ऐप में कारण दिखना चाहिए या स्टोर टीम मार्गदर्शन देगी। लॉगिन, पिन, प्रोफ़ाइल या सूचना की समस्या हो तो ऐप के विकल्प और ज़रूरत पड़ने पर स्टोर से संपर्क करें। हम स्पष्ट नियम और लंबित, स्वीकृत व अस्वीकृत बिलों की स्पष्ट स्थिति पर ध्यान देते हैं।';
+  String get aboutUsFairnessBody =>
+      'हर बिल की जाँच होती है इसलिए समय लग सकता है। अस्वीकृति पर ऐप में कारण दिखना चाहिए या स्टोर टीम मार्गदर्शन देगी। लॉगिन, पिन, प्रोफ़ाइल या सूचना की समस्या हो तो ऐप के विकल्प और ज़रूरत पड़ने पर स्टोर से संपर्क करें। हम स्पष्ट नियम और लंबित, स्वीकृत व अस्वीकृत बिलों की स्पष्ट स्थिति पर ध्यान देते हैं।';
 
   @override
   String get aboutUsStoresTitle => 'आपका स्टोर, आपका प्रोग्राम';
 
   @override
-  String get aboutUsStoresBody => 'अंक, टियर और ऑफ़र उस हार्डवेयर स्टोर से जुड़े होते हैं जिसमें आप इस ऐप से जुड़े हैं। अलग-अलग स्टोर अलग नियम, रूपांतरण दर और लाभ रख सकते हैं। यदि आप एक से ज़्यादा स्टोर से खरीदते हैं तो हर संबंध आमतौर पर अलग होता है जब तक स्टोर अन्यथा न बताए—विवरण के लिए जिस स्टोर ने आपको जोड़ा है उससे पुष्टि करें।';
+  String get aboutUsStoresBody =>
+      'अंक, टियर और ऑफ़र उस हार्डवेयर स्टोर से जुड़े होते हैं जिसमें आप इस ऐप से जुड़े हैं। अलग-अलग स्टोर अलग नियम, रूपांतरण दर और लाभ रख सकते हैं। यदि आप एक से ज़्यादा स्टोर से खरीदते हैं तो हर संबंध आमतौर पर अलग होता है जब तक स्टोर अन्यथा न बताए—विवरण के लिए जिस स्टोर ने आपको जोड़ा है उससे पुष्टि करें।';
 
   @override
-  String get aboutUsClosing => 'बालाजी पॉइंट्स उपयोग करने के लिए धन्यवाद—हमें बढ़ई और उन स्टोर्स का साथ देने पर गर्व है जो आपके साथ भागीदार हैं।';
+  String get aboutUsClosing =>
+      'बालाजी पॉइंट्स उपयोग करने के लिए धन्यवाद—हमें बढ़ई और उन स्टोर्स का साथ देने पर गर्व है जो आपके साथ भागीदार हैं।';
 
   @override
   String get aboutUsCreditsHeading => 'डिज़ाइन और विकास';
@@ -1435,19 +1482,22 @@ class AppLocalizationsHi extends AppLocalizations {
   String get onboardingSlide1Title => 'बिल जमा करें, अंक कमाएँ';
 
   @override
-  String get onboardingSlide1Body => 'अपने हार्डवेयर खरीद के बिल अपलोड करें। जब आपका स्टोर उन्हें स्वीकार करता है, अंक आपके वॉलेट में जुड़ जाते हैं।';
+  String get onboardingSlide1Body =>
+      'अपने हार्डवेयर खरीद के बिल अपलोड करें। जब आपका स्टोर उन्हें स्वीकार करता है, अंक आपके वॉलेट में जुड़ जाते हैं।';
 
   @override
   String get onboardingSlide2Title => 'अपने पुरस्कार देखें';
 
   @override
-  String get onboardingSlide2Body => 'अपना बैलेंस, टियर और लीडरबोर्ड रैंक देखें। आप जैसे बढ़ई के लिए बनाए गए ऑफ़र देखें।';
+  String get onboardingSlide2Body =>
+      'अपना बैलेंस, टियर और लीडरबोर्ड रैंक देखें। आप जैसे बढ़ई के लिए बनाए गए ऑफ़र देखें।';
 
   @override
   String get onboardingSlide3Title => 'अपडेट रहें';
 
   @override
-  String get onboardingSlide3Body => 'बिल स्वीकृत या अस्वीकृत होने पर सूचना पाएं। कभी भी प्रोफ़ाइल और पसंद प्रबंधित करें।';
+  String get onboardingSlide3Body =>
+      'बिल स्वीकृत या अस्वीकृत होने पर सूचना पाएं। कभी भी प्रोफ़ाइल और पसंद प्रबंधित करें।';
 
   @override
   String errorWithDetails(String details) {
@@ -1464,7 +1514,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get duplicateBillDetected => 'डुप्लिकेट बिल मिला';
 
   @override
-  String get duplicateBillIntro => 'इसी साइट, राशि और तारीख वाला बिल पहले से मौजूद है:';
+  String get duplicateBillIntro =>
+      'इसी साइट, राशि और तारीख वाला बिल पहले से मौजूद है:';
 
   @override
   String get siteNameLabel => 'साइट का नाम';
@@ -1484,7 +1535,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get duplicateBillVerify => 'यह डुप्लिकेट एंट्री हो सकती है। जोड़ने से पहले जाँच लें।';
+  String get duplicateBillVerify =>
+      'यह डुप्लिकेट एंट्री हो सकती है। जोड़ने से पहले जाँच लें।';
 
   @override
   String get addBillAnywayQuestion => 'क्या आप फिर भी यह बिल जोड़ना चाहते हैं?';
@@ -1493,7 +1545,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get addAnyway => 'फिर भी जोड़ें';
 
   @override
-  String get billsPausedDiwali => 'दिवाली उत्सव के लिए बिल जमा करना अभी रोका गया है।';
+  String get billsPausedDiwali =>
+      'दिवाली उत्सव के लिए बिल जमा करना अभी रोका गया है।';
 
   @override
   String earnPointsWhenApproved(String points) {
@@ -1573,7 +1626,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get showLess => 'कम दिखाएं';
 
   @override
-  String get diwaliPrizeLoadFailed => 'दिवाली इनाम सूची लोड नहीं हो सकी। कृपया फिर से कोशिश करें।';
+  String get diwaliPrizeLoadFailed =>
+      'दिवाली इनाम सूची लोड नहीं हो सकी। कृपया फिर से कोशिश करें।';
 
   @override
   String get featureEarnMore => 'ज़्यादा कमाएँ';
@@ -1639,7 +1693,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteAllNotifications => 'सभी सूचनाएँ हटाएँ';
 
   @override
-  String get deleteAllNotificationsConfirm => 'क्या आप सभी सूचनाएँ हटाना चाहते हैं? इसे वापस नहीं किया जा सकता।';
+  String get deleteAllNotificationsConfirm =>
+      'क्या आप सभी सूचनाएँ हटाना चाहते हैं? इसे वापस नहीं किया जा सकता।';
 
   @override
   String get deleteAll => 'सभी हटाएँ';
@@ -1686,7 +1741,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get uploadingImage => 'फ़ोटो अपलोड हो रही है...';
 
   @override
-  String get completeProfileToContinue => 'आगे बढ़ने के लिए अपनी प्रोफ़ाइल पूरी करें';
+  String get completeProfileToContinue =>
+      'आगे बढ़ने के लिए अपनी प्रोफ़ाइल पूरी करें';
 
   @override
   String get couldNotMakeCall => 'कॉल नहीं हो सकी';
@@ -1721,7 +1777,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get spinAndWinSubtitle => 'रोज़ स्पिन करें और शानदार पॉइंट्स जीतें';
 
   @override
-  String get alreadySpunToday => 'आज आप स्पिन कर चुके हैं!\nकल फिर मौका मिलेगा।';
+  String get alreadySpunToday =>
+      'आज आप स्पिन कर चुके हैं!\nकल फिर मौका मिलेगा।';
 
   @override
   String nextTierLabel(String tier) {
@@ -1757,7 +1814,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get backToSignIn => 'साइन इन पर वापस जाएँ';
 
   @override
-  String get noPinAccount => 'इस नंबर के लिए कोई PIN खाता नहीं मिला। ईमेल और पासवर्ड या Google से साइन इन करें।';
+  String get noPinAccount =>
+      'इस नंबर के लिए कोई PIN खाता नहीं मिला। ईमेल और पासवर्ड या Google से साइन इन करें।';
 
   @override
   String get signInWithMobile => 'मोबाइल नंबर से साइन इन करें';
@@ -1769,13 +1827,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get backToOtherSignIn => 'दूसरे साइन-इन विकल्पों पर वापस';
 
   @override
-  String get branchHasAdminDefaulted => 'चुनी गई शाखा में पहले से एडमिन है। भूमिका कारपेंटर रखी गई है।';
+  String get branchHasAdminDefaulted =>
+      'चुनी गई शाखा में पहले से एडमिन है। भूमिका कारपेंटर रखी गई है।';
 
   @override
   String get selectBranchToContinue => 'आगे बढ़ने के लिए शाखा चुनें।';
 
   @override
-  String get oneAdminPerBranch => 'इस शाखा में पहले से एडमिन है। हर शाखा में एक ही एडमिन हो सकता है।';
+  String get oneAdminPerBranch =>
+      'इस शाखा में पहले से एडमिन है। हर शाखा में एक ही एडमिन हो सकता है।';
 
   @override
   String get branchRequired => 'शाखा *';
@@ -1805,10 +1865,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get confirmPasswordLabel => 'पासवर्ड दोबारा डालें';
 
   @override
-  String get noActiveRoles => 'कोई सक्रिय भूमिका उपलब्ध नहीं है। सुपर एडमिन से संपर्क करें।';
+  String get noActiveRoles =>
+      'कोई सक्रिय भूमिका उपलब्ध नहीं है। सुपर एडमिन से संपर्क करें।';
 
   @override
-  String get noActiveBranches => 'कोई सक्रिय शाखा उपलब्ध नहीं है। अपने एडमिन से संपर्क करें।';
+  String get noActiveBranches =>
+      'कोई सक्रिय शाखा उपलब्ध नहीं है। अपने एडमिन से संपर्क करें।';
 
   @override
   String get cancelReturnToSignIn => 'रद्द करें और साइन इन पर लौटें';
@@ -1820,7 +1882,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get previousPage => 'पिछला';
 
   @override
-  String tablePageInfo(String page, String pages, String from, String to, String total) {
+  String tablePageInfo(
+    String page,
+    String pages,
+    String from,
+    String to,
+    String total,
+  ) {
     return 'पेज $page/$pages · $total में से $from–$to';
   }
 
@@ -1840,7 +1908,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get installedLabel => 'इंस्टॉल है';
 
   @override
-  String get updateMandatory => 'ऐप इस्तेमाल करते रहने के लिए यह अपडेट ज़रूरी है।';
+  String get updateMandatory =>
+      'ऐप इस्तेमाल करते रहने के लिए यह अपडेट ज़रूरी है।';
 
   @override
   String get signOut => 'साइन आउट';
@@ -1849,7 +1918,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get billsAppearHere => 'आपके जमा किए गए बिल यहाँ दिखेंगे।';
 
   @override
-  String get pendingBillsAppearHere => 'कारपेंटर के नए बिल मंज़ूरी के लिए यहाँ दिखेंगे।';
+  String get pendingBillsAppearHere =>
+      'कारपेंटर के नए बिल मंज़ूरी के लिए यहाँ दिखेंगे।';
 
   @override
   String get tryChangingFilters => 'फ़िल्टर बदलें या हटाकर देखें।';
@@ -1909,7 +1979,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get spinNow2 => 'अभी स्पिन करें!';
 
   @override
-  String get pleaseCompleteYourProfileFirstName => 'बिल जोड़ने और पॉइंट्स कमाने के लिए अपनी प्रोफ़ाइल (पहला नाम, उपनाम और प्रोफ़ाइल फ़ोटो) पूरी करें।';
+  String get pleaseCompleteYourProfileFirstName =>
+      'बिल जोड़ने और पॉइंट्स कमाने के लिए अपनी प्रोफ़ाइल (पहला नाम, उपनाम और प्रोफ़ाइल फ़ोटो) पूरी करें।';
 
   @override
   String get goBack => 'वापस जाएँ';
@@ -1924,10 +1995,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get pleaseLoginToSubmitBills => 'बिल जमा करने के लिए लॉगिन करें';
 
   @override
-  String get billSubmittedSuccessfullyAdminWillReview => 'बिल जमा हो गया! एडमिन इसकी जाँच करेंगे।';
+  String get billSubmittedSuccessfullyAdminWillReview =>
+      'बिल जमा हो गया! एडमिन इसकी जाँच करेंगे।';
 
   @override
-  String get failedToSubmitBillPleaseTry => 'बिल जमा नहीं हो सका। कृपया फिर से कोशिश करें।';
+  String get failedToSubmitBillPleaseTry =>
+      'बिल जमा नहीं हो सका। कृपया फिर से कोशिश करें।';
 
   @override
   String get pleaseEnterBillAmount => 'कृपया बिल की राशि डालें';
@@ -1992,7 +2065,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get language => 'भाषा';
 
   @override
-  String get trackYourPointsAndManageYour => 'अपने पॉइंट्स देखें और बिल संभालें';
+  String get trackYourPointsAndManageYour =>
+      'अपने पॉइंट्स देखें और बिल संभालें';
 
   @override
   String mAgo(String inMinutes) {
@@ -2013,7 +2087,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get notification => 'सूचना';
 
   @override
-  String get noCarpenterAccountsAreListedFor => 'इस शाखा में अभी कोई सदस्य खाता नहीं है।';
+  String get noCarpenterAccountsAreListedFor =>
+      'इस शाखा में अभी कोई सदस्य खाता नहीं है।';
 
   @override
   String get continueToHome => 'होम पर जाएँ';
@@ -2070,7 +2145,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get totalBonus => 'कुल बोनस';
 
   @override
-  String carpentersPointsRewardBonus(String entries, String totalPoints, String totalReward, String totalBonus) {
+  String carpentersPointsRewardBonus(
+    String entries,
+    String totalPoints,
+    String totalReward,
+    String totalBonus,
+  ) {
     return '$entries कारपेंटर  ·  $totalPoints पॉइंट्स  ·  $totalReward इनाम  ·  $totalBonus बोनस';
   }
 
@@ -2107,10 +2187,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get remarks => 'टिप्पणी';
 
   @override
-  String get verifyYourIdentityToOpenBalaji => 'Balaji Points खोलने के लिए अपनी पहचान सत्यापित करें';
+  String get verifyYourIdentityToOpenBalaji =>
+      'Balaji Points खोलने के लिए अपनी पहचान सत्यापित करें';
 
   @override
-  String get passwordResetLinksAreSentSecurely => 'पासवर्ड रीसेट लिंक सुरक्षित रूप से भेजे जाते हैं।';
+  String get passwordResetLinksAreSentSecurely =>
+      'पासवर्ड रीसेट लिंक सुरक्षित रूप से भेजे जाते हैं।';
 
   @override
   String get checkYourEmail => 'अपना ईमेल देखें';
@@ -2119,10 +2201,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get forgotPassword => 'पासवर्ड भूल गए?';
 
   @override
-  String get ifAnAccountExistsForThis => 'अगर इस पते का खाता है, तो पासवर्ड रीसेट निर्देश भेज दिए गए हैं। इनबॉक्स और स्पैम फ़ोल्डर देखें।';
+  String get ifAnAccountExistsForThis =>
+      'अगर इस पते का खाता है, तो पासवर्ड रीसेट निर्देश भेज दिए गए हैं। इनबॉक्स और स्पैम फ़ोल्डर देखें।';
 
   @override
-  String get enterTheEmailAddressLinkedTo => 'अपने खाते से जुड़ा ईमेल डालें। नया पासवर्ड चुनने के लिए हम सुरक्षित लिंक भेजेंगे।';
+  String get enterTheEmailAddressLinkedTo =>
+      'अपने खाते से जुड़ा ईमेल डालें। नया पासवर्ड चुनने के लिए हम सुरक्षित लिंक भेजेंगे।';
 
   @override
   String get enterAValidEmailAddress => 'सही ईमेल पता डालें';
@@ -2145,7 +2229,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get signIn => 'साइन इन';
 
   @override
-  String get useYourEmailAndPasswordOr => 'ईमेल और पासवर्ड से या अपने PIN से साइन इन करें।';
+  String get useYourEmailAndPasswordOr =>
+      'ईमेल और पासवर्ड से या अपने PIN से साइन इन करें।';
 
   @override
   String get pleaseEnterAValidEmailAddress => 'कृपया सही ईमेल पता डालें';
@@ -2189,7 +2274,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get userAlreadyExists => 'उपयोगकर्ता पहले से मौजूद है';
 
   @override
-  String get permissionDeniedPleaseCheckFirebaseConfiguration => 'अनुमति नहीं मिली। कृपया एडमिन से संपर्क करें।';
+  String get permissionDeniedPleaseCheckFirebaseConfiguration =>
+      'अनुमति नहीं मिली। कृपया एडमिन से संपर्क करें।';
 
   @override
   String get branchAdminAlreadyAssigned => 'शाखा एडमिन (पहले से तय)';
@@ -2204,7 +2290,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get selectARoleToContinue => 'आगे बढ़ने के लिए भूमिका चुनें।';
 
   @override
-  String get selectAnActiveRoleToContinue => 'आगे बढ़ने के लिए सक्रिय भूमिका चुनें।';
+  String get selectAnActiveRoleToContinue =>
+      'आगे बढ़ने के लिए सक्रिय भूमिका चुनें।';
 
   @override
   String get yourInformationIsProtected => 'आपकी जानकारी सुरक्षित है';
@@ -2216,7 +2303,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get createYourAccount => 'अपना खाता बनाएँ';
 
   @override
-  String get addYourMobileNumberAndChoose => 'खाता सेटअप पूरा करने के लिए मोबाइल नंबर डालें और अपनी शाखा व भूमिका चुनें।';
+  String get addYourMobileNumberAndChoose =>
+      'खाता सेटअप पूरा करने के लिए मोबाइल नंबर डालें और अपनी शाखा व भूमिका चुनें।';
 
   @override
   String get chooseYourRoleAndTheBranch => 'अपनी भूमिका और शाखा चुनें।';
@@ -2237,10 +2325,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get passwordsDoNotMatch => 'पासवर्ड मेल नहीं खाते';
 
   @override
-  String get yourAccountAlreadyHasAnAdmin => 'आपके खाते में पहले से एडमिन भूमिका है। आगे बढ़ने से पहले सुपर एडमिन से अपनी शाखा तय करवाएँ।';
+  String get yourAccountAlreadyHasAnAdmin =>
+      'आपके खाते में पहले से एडमिन भूमिका है। आगे बढ़ने से पहले सुपर एडमिन से अपनी शाखा तय करवाएँ।';
 
   @override
-  String get branchAdminAccessIsAssignedBy => 'शाखा एडमिन की अनुमति सुपर एडमिन देते हैं।';
+  String get branchAdminAccessIsAssignedBy =>
+      'शाखा एडमिन की अनुमति सुपर एडमिन देते हैं।';
 
   @override
   String get completeRegistration => 'पंजीकरण पूरा करें';
@@ -2294,19 +2384,22 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get newerVersionReady => 'सुधार और बेहतरियों के साथ नया संस्करण तैयार है।';
+  String get newerVersionReady =>
+      'सुधार और बेहतरियों के साथ नया संस्करण तैयार है।';
 
   @override
   String get pleaseSelectACarpenter => 'कृपया कारपेंटर चुनें';
 
   @override
-  String get billSubmittedSuccessfullyItWillBe => 'बिल जमा हो गया! इसकी जाँच की जाएगी।';
+  String get billSubmittedSuccessfullyItWillBe =>
+      'बिल जमा हो गया! इसकी जाँच की जाएगी।';
 
   @override
   String get duplicateBill => 'डुप्लिकेट बिल';
 
   @override
-  String get aBillWithTheSameSite => 'इस कारपेंटर के लिए इसी साइट, राशि और तारीख वाला बिल पहले से है:';
+  String get aBillWithTheSameSite =>
+      'इस कारपेंटर के लिए इसी साइट, राशि और तारीख वाला बिल पहले से है:';
 
   @override
   String get site => 'साइट';
@@ -2317,7 +2410,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get pleaseVerifyThisIsNotA => 'कृपया जाँच लें कि यह डुप्लिकेट एंट्री नहीं है।';
+  String get pleaseVerifyThisIsNotA =>
+      'कृपया जाँच लें कि यह डुप्लिकेट एंट्री नहीं है।';
 
   @override
   String error2(String e) {
@@ -2469,13 +2563,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get time => 'समय';
 
   @override
-  String get noBillsToExportApplyFilters => 'निर्यात के लिए कोई बिल नहीं। फ़िल्टर लगाएँ या डेटा का इंतज़ार करें।';
+  String get noBillsToExportApplyFilters =>
+      'निर्यात के लिए कोई बिल नहीं। फ़िल्टर लगाएँ या डेटा का इंतज़ार करें।';
 
   @override
   String get preparingPdf => 'PDF तैयार हो रहा है...';
 
   @override
-  String get noBillsMatchCurrentFiltersFor => 'मौजूदा फ़िल्टर से कोई बिल मेल नहीं खाता।';
+  String get noBillsMatchCurrentFiltersFor =>
+      'मौजूदा फ़िल्टर से कोई बिल मेल नहीं खाता।';
 
   @override
   String exportFailed(String e) {
@@ -2500,7 +2596,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get billApprovedAndPointsAddedSuccessfully => 'बिल मंज़ूर हुआ और पॉइंट्स जोड़ दिए गए';
+  String get billApprovedAndPointsAddedSuccessfully =>
+      'बिल मंज़ूर हुआ और पॉइंट्स जोड़ दिए गए';
 
   @override
   String get failedToApproveBill2 => 'बिल मंज़ूर नहीं हो सका';
@@ -2597,7 +2694,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteAllNotifications2 => 'सभी सूचनाएँ हटाएँ';
 
   @override
-  String get areYouSureYouWantTo2 => 'क्या आप सभी एडमिन सूचनाएँ हटाना चाहते हैं?';
+  String get areYouSureYouWantTo2 =>
+      'क्या आप सभी एडमिन सूचनाएँ हटाना चाहते हैं?';
 
   @override
   String notificationSDeleted(String docs) {
@@ -2678,7 +2776,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get carpenterWillNeedToUseThis => 'कारपेंटर को इस नए PIN से लॉगिन करना होगा। इसे सुरक्षित तरीके से बताएँ।';
+  String get carpenterWillNeedToUseThis =>
+      'कारपेंटर को इस नए PIN से लॉगिन करना होगा। इसे सुरक्षित तरीके से बताएँ।';
 
   @override
   String get newPin46Digits => 'नया PIN (4-6 अंक)';
@@ -2711,7 +2810,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get editCarpenter => 'कारपेंटर बदलें';
 
   @override
-  String get changingPhoneNumberWillUpdateLogin => 'फ़ोन नंबर बदलने से लॉगिन जानकारी बदल जाएगी';
+  String get changingPhoneNumberWillUpdateLogin =>
+      'फ़ोन नंबर बदलने से लॉगिन जानकारी बदल जाएगी';
 
   @override
   String get branchId => 'शाखा आईडी';
@@ -2793,13 +2893,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get create => 'बनाएँ';
 
   @override
-  String get preparingCarpenterListPdf => 'कारपेंटर सूची PDF तैयार हो रही है...';
+  String get preparingCarpenterListPdf =>
+      'कारपेंटर सूची PDF तैयार हो रही है...';
 
   @override
-  String get noCarpentersToExportForCurrent => 'मौजूदा फ़िल्टर में निर्यात के लिए कोई कारपेंटर नहीं।';
+  String get noCarpentersToExportForCurrent =>
+      'मौजूदा फ़िल्टर में निर्यात के लिए कोई कारपेंटर नहीं।';
 
   @override
-  String get carpenterListExportedSuccessfully => 'कारपेंटर सूची निर्यात हो गई!';
+  String get carpenterListExportedSuccessfully =>
+      'कारपेंटर सूची निर्यात हो गई!';
 
   @override
   String errorExportingPdf(String e) {
@@ -2977,7 +3080,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get manualSendViaSmsApp => 'SMS ऐप से खुद भेजें';
 
   @override
-  String get noteWhatsappAndSmsUseDevice => 'नोट: WhatsApp और SMS फ़ोन के ऐप से भेजे जाते हैं। एडमिन को हर संदेश उस ऐप में पुष्टि करना होगा।';
+  String get noteWhatsappAndSmsUseDevice =>
+      'नोट: WhatsApp और SMS फ़ोन के ऐप से भेजे जाते हैं। एडमिन को हर संदेश उस ऐप में पुष्टि करना होगा।';
 
   @override
   String whatsappNotAvailableFor(String name) {
@@ -3006,7 +3110,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get tapSendInTheAppThen => 'ऐप में भेजें दबाएँ, फिर आगे बढ़ने के लिए यहाँ OK दबाएँ।';
+  String get tapSendInTheAppThen =>
+      'ऐप में भेजें दबाएँ, फिर आगे बढ़ने के लिए यहाँ OK दबाएँ।';
 
   @override
   String sentToAllCarpenters(String sentCount) {
@@ -3026,10 +3131,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sendViaSms => 'SMS से भेजें';
 
   @override
-  String get pleaseWait24HoursFromThe => 'पिछले स्पिन के बाद 24 घंटे इंतज़ार करें';
+  String get pleaseWait24HoursFromThe =>
+      'पिछले स्पिन के बाद 24 घंटे इंतज़ार करें';
 
   @override
-  String get noCarpentersWithApprovedBillsToday => 'आज किसी कारपेंटर का बिल मंज़ूर नहीं हुआ';
+  String get noCarpentersWithApprovedBillsToday =>
+      'आज किसी कारपेंटर का बिल मंज़ूर नहीं हुआ';
 
   @override
   String get noEligibleCarpentersFound => 'कोई योग्य कारपेंटर नहीं मिला';
@@ -3098,7 +3205,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get noEligibleCarpentersToday => 'आज कोई योग्य कारपेंटर नहीं';
 
   @override
-  String get noCarpentersHaveApprovedBillsToday => 'आज किसी कारपेंटर का बिल मंज़ूर नहीं हुआ।\nडेली स्पिन के लिए बिल मंज़ूर करें!';
+  String get noCarpentersHaveApprovedBillsToday =>
+      'आज किसी कारपेंटर का बिल मंज़ूर नहीं हुआ।\nडेली स्पिन के लिए बिल मंज़ूर करें!';
 
   @override
   String get todaySEligibleCarpenters => 'आज के योग्य कारपेंटर';
@@ -3112,7 +3220,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get branchAdminAccounts => 'शाखा एडमिन खाते';
 
   @override
-  String get reviewEachAdminAndTheBranch => 'हर एडमिन और उनकी शाखा देखें। पासवर्ड बदलें या खाता हटाएँ।';
+  String get reviewEachAdminAndTheBranch =>
+      'हर एडमिन और उनकी शाखा देखें। पासवर्ड बदलें या खाता हटाएँ।';
 
   @override
   String get searchByNameEmailOrBranch => 'एडमिन खोजें';
@@ -3201,13 +3310,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get branchesCouldNotBeLoaded => 'शाखाएँ लोड नहीं हो सकीं।';
 
   @override
-  String get diwaliCelebrationEnabledAddBillIs => 'दिवाली उत्सव चालू। इस शाखा में बिल जोड़ना छिपा है।';
+  String get diwaliCelebrationEnabledAddBillIs =>
+      'दिवाली उत्सव चालू। इस शाखा में बिल जोड़ना छिपा है।';
 
   @override
-  String get diwaliCelebrationDisabledAddBillIs => 'दिवाली उत्सव बंद। इस शाखा में बिल जोड़ना उपलब्ध है।';
+  String get diwaliCelebrationDisabledAddBillIs =>
+      'दिवाली उत्सव बंद। इस शाखा में बिल जोड़ना उपलब्ध है।';
 
   @override
-  String get unableToUpdateTheBranchCelebration => 'शाखा उत्सव सेटिंग अपडेट नहीं हो सकी।';
+  String get unableToUpdateTheBranchCelebration =>
+      'शाखा उत्सव सेटिंग अपडेट नहीं हो सकी।';
 
   @override
   String codeId(String branchCode, String branchId) {
@@ -3218,10 +3330,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get diwaliCelebrationOnHome => 'होम पर दिवाली उत्सव';
 
   @override
-  String get showsTheBranchPrizeListAnd => 'शाखा की इनाम सूची दिखाता है और बिल जोड़ना छिपाता है।';
+  String get showsTheBranchPrizeListAnd =>
+      'शाखा की इनाम सूची दिखाता है और बिल जोड़ना छिपाता है।';
 
   @override
-  String get offNoPopupAddBillRemains => 'बंद: कोई पॉपअप नहीं; बिल जोड़ना उपलब्ध रहेगा।';
+  String get offNoPopupAddBillRemains =>
+      'बंद: कोई पॉपअप नहीं; बिल जोड़ना उपलब्ध रहेगा।';
 
   @override
   String get branchDeactivated => 'शाखा निष्क्रिय की गई।';
@@ -3268,7 +3382,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get address => 'पता';
 
   @override
-  String get shareTheTemporaryPasswordSecurelyThe => 'अस्थायी पासवर्ड सुरक्षित तरीके से बताएँ। एडमिन पहली बार साइन इन के बाद इसे बदल सकते हैं।';
+  String get shareTheTemporaryPasswordSecurelyThe =>
+      'अस्थायी पासवर्ड सुरक्षित तरीके से बताएँ। एडमिन पहली बार साइन इन के बाद इसे बदल सकते हैं।';
 
   @override
   String adminCreatedForTheyCanSign(String email, String branchName) {
@@ -3294,7 +3409,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get emailAddress => 'ईमेल पता *';
 
   @override
-  String get temporaryPassword8CharactersMinimum => 'अस्थायी पासवर्ड * (कम से कम 8 अक्षर)';
+  String get temporaryPassword8CharactersMinimum =>
+      'अस्थायी पासवर्ड * (कम से कम 8 अक्षर)';
 
   @override
   String get confirmPassword => 'पासवर्ड दोबारा डालें *';
@@ -3306,7 +3422,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get loadingActiveBranches => 'सक्रिय शाखाएँ लोड हो रही हैं…';
 
   @override
-  String get noActiveBranchesFoundCreateOr => 'कोई सक्रिय शाखा नहीं। एडमिन जोड़ने से पहले शाखा बनाएँ या सक्रिय करें।';
+  String get noActiveBranchesFoundCreateOr =>
+      'कोई सक्रिय शाखा नहीं। एडमिन जोड़ने से पहले शाखा बनाएँ या सक्रिय करें।';
 
   @override
   String get selectBranch => 'शाखा चुनें';
@@ -3348,21 +3465,33 @@ class AppLocalizationsHi extends AppLocalizations {
   String get pointsReset => 'पॉइंट्स रीसेट';
 
   @override
-  String get onlyPointsTiersAndPointsHistory => 'सिर्फ़ कारपेंटर, आर्किटेक्ट, इंजीनियर और इंटीरियर डिज़ाइनर के पॉइंट्स, टियर और इतिहास मिटेंगे। खाते, लॉगिन, शाखा एडमिन और बिल वैसे ही रहेंगे।';
+  String get onlyPointsTiersAndPointsHistory =>
+      'सिर्फ़ कारपेंटर, आर्किटेक्ट, इंजीनियर और इंटीरियर डिज़ाइनर के पॉइंट्स, टियर और इतिहास मिटेंगे। खाते, लॉगिन, शाखा एडमिन और बिल वैसे ही रहेंगे।';
 
   @override
-  String get afterPrizeDistributionStartAFresh => 'इनाम बाँटने के बाद एक शाखा के लिए नया पॉइंट्स सीज़न शुरू करें।';
+  String get afterPrizeDistributionStartAFresh =>
+      'इनाम बाँटने के बाद एक शाखा के लिए नया पॉइंट्स सीज़न शुरू करें।';
 
   @override
-  String resetUsersAndDeletedHistoryRecords(String branchName, String usersReset, String historyDocumentsDeleted) {
+  String resetUsersAndDeletedHistoryRecords(
+    String branchName,
+    String usersReset,
+    String historyDocumentsDeleted,
+  ) {
     return '$branchName: $usersReset उपयोगकर्ता रीसेट हुए और $historyDocumentsDeleted इतिहास रिकॉर्ड हटाए गए। खाते और बिल बने रहे।';
   }
 
   @override
-  String get thisPermanentlyClearsPointsAndPoints => 'इससे इस शाखा के कारपेंटर, आर्किटेक्ट, इंजीनियर और इंटीरियर डिज़ाइनर के पॉइंट्स और इतिहास हमेशा के लिए मिट जाएँगे। उपयोगकर्ता खाते, शाखा एडमिन और बिल बने रहेंगे।';
+  String get thisPermanentlyClearsPointsAndPoints =>
+      'इससे इस शाखा के कारपेंटर, आर्किटेक्ट, इंजीनियर और इंटीरियर डिज़ाइनर के पॉइंट्स और इतिहास हमेशा के लिए मिट जाएँगे। उपयोगकर्ता खाते, शाखा एडमिन और बिल बने रहेंगे।';
 
   @override
-  String hasEligibleUsersPointsAndHistory(String branchName, String eligibleUsers, String currentPoints, String historyDocuments) {
+  String hasEligibleUsersPointsAndHistory(
+    String branchName,
+    String eligibleUsers,
+    String currentPoints,
+    String historyDocuments,
+  ) {
     return '$branchName में $eligibleUsers योग्य उपयोगकर्ता, $currentPoints पॉइंट्स और $historyDocuments इतिहास रिकॉर्ड हैं।';
   }
 
@@ -3378,7 +3507,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get resetPointsAndHistory => 'पॉइंट्स और इतिहास रीसेट करें';
 
   @override
-  String get couldNotLoadBranchesForPoints => 'पॉइंट्स सफ़ाई के लिए शाखाएँ लोड नहीं हो सकीं।';
+  String get couldNotLoadBranchesForPoints =>
+      'पॉइंट्स सफ़ाई के लिए शाखाएँ लोड नहीं हो सकीं।';
 
   @override
   String get annualPointsReset => 'सालाना पॉइंट्स रीसेट';
@@ -3393,7 +3523,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get previewReset => 'रीसेट का पूर्वावलोकन';
 
   @override
-  String get createABranchBeforeResettingPoints => 'पॉइंट्स रीसेट से पहले शाखा बनाएँ।';
+  String get createABranchBeforeResettingPoints =>
+      'पॉइंट्स रीसेट से पहले शाखा बनाएँ।';
 
   @override
   String cleanupPreview(String branchName) {
@@ -3418,7 +3549,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get roleIdsAreStoredWithUser => 'भूमिका आईडी उपयोगकर्ता खातों के साथ सहेजी जाती है। भूमिका हटाने पर वह नए पंजीकरण से हटती है, मौजूदा खाते बने रहते हैं।';
+  String get roleIdsAreStoredWithUser =>
+      'भूमिका आईडी उपयोगकर्ता खातों के साथ सहेजी जाती है। भूमिका हटाने पर वह नए पंजीकरण से हटती है, मौजूदा खाते बने रहते हैं।';
 
   @override
   String willBeRemovedFromNewRegistration(String name) {
@@ -3451,7 +3583,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get accountRoles => 'खाता भूमिकाएँ';
 
   @override
-  String get manageTheRolesShownInCreate => 'खाता बनाते समय दिखने वाली भूमिकाएँ संभालें।';
+  String get manageTheRolesShownInCreate =>
+      'खाता बनाते समय दिखने वाली भूमिकाएँ संभालें।';
 
   @override
   String get addRole => 'भूमिका जोड़ें';
@@ -3587,7 +3720,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get billsCollectionStatus => 'बिल रिकॉर्ड स्थिति';
 
   @override
-  String get phoneFormatMismatchInBills => 'बिलों में फ़ोन फ़ॉर्मेट मेल नहीं खाता!';
+  String get phoneFormatMismatchInBills =>
+      'बिलों में फ़ोन फ़ॉर्मेट मेल नहीं खाता!';
 
   @override
   String get phoneFormatConsistent => 'फ़ोन फ़ॉर्मेट सही है';
@@ -3602,7 +3736,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get matchingBillsFound => 'मेल खाते बिल';
 
   @override
-  String get noPendingBillsFoundForThis => 'इस उपयोगकर्ता का कोई बाकी बिल नहीं!';
+  String get noPendingBillsFoundForThis =>
+      'इस उपयोगकर्ता का कोई बाकी बिल नहीं!';
 
   @override
   String get carpenterId => 'कारपेंटर आईडी';
@@ -3617,7 +3752,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get createdAt => 'बनाया गया';
 
   @override
-  String get thisBillWonTShowIn => 'यह बिल सामान्य एडमिन दृश्य में नहीं दिखेगा (आज का नहीं)';
+  String get thisBillWonTShowIn =>
+      'यह बिल सामान्य एडमिन दृश्य में नहीं दिखेगा (आज का नहीं)';
 
   @override
   String get totalAccounts => 'कुल खाते';
@@ -3643,7 +3779,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get review => 'जाँचें';
 
   @override
-  String get preparingUserBackupPdf => 'उपयोगकर्ता बैकअप PDF तैयार हो रही है...';
+  String get preparingUserBackupPdf =>
+      'उपयोगकर्ता बैकअप PDF तैयार हो रही है...';
 
   @override
   String get noCarpentersFound2 => 'कोई कारपेंटर नहीं मिला।';
@@ -3660,7 +3797,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get createUserBackup => 'उपयोगकर्ता बैकअप बनाएँ';
 
   @override
-  String get exportAllCarpentersWithTheirPoints => 'सफ़ाई से पहले सभी कारपेंटर को उनके पॉइंट्स और फ़ोन नंबर के साथ निर्यात करें।';
+  String get exportAllCarpentersWithTheirPoints =>
+      'सफ़ाई से पहले सभी कारपेंटर को उनके पॉइंट्स और फ़ोन नंबर के साथ निर्यात करें।';
 
   @override
   String get exporting => 'निर्यात हो रहा है...';
@@ -3672,7 +3810,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get pdfWillInclude => 'PDF में होगा:';
 
   @override
-  String get carpenterNameAndPhoneNumberTotal => '• कारपेंटर का नाम और फ़ोन नंबर\n• कुल और कमाए गए पॉइंट्स\n• खाता बनने की तारीख\n• कुल कारपेंटर और कुल पॉइंट्स का सारांश';
+  String get carpenterNameAndPhoneNumberTotal =>
+      '• कारपेंटर का नाम और फ़ोन नंबर\n• कुल और कमाए गए पॉइंट्स\n• खाता बनने की तारीख\n• कुल कारपेंटर और कुल पॉइंट्स का सारांश';
 
   @override
   String get firebaseDuplicateCheck => 'डेटाबेस डुप्लिकेट जाँच';
@@ -3742,13 +3881,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get databaseBackup => 'डेटाबेस बैकअप';
 
   @override
-  String get createACompleteBackupOfAll => 'सभी उपयोगकर्ताओं और बिलों के डेटा का पूरा बैकअप बनाएँ।';
+  String get createACompleteBackupOfAll =>
+      'सभी उपयोगकर्ताओं और बिलों के डेटा का पूरा बैकअप बनाएँ।';
 
   @override
   String get whatWillBeBackedUp => 'किसका बैकअप होगा:';
 
   @override
-  String get allUserAccountsCarpentersAdminsAll => '• सभी उपयोगकर्ता खाते (कारपेंटर और एडमिन)\n• सभी बिल रिकॉर्ड\n• समय के साथ पूरा उपयोगकर्ता डेटा\n• डेटाबेस मेटाडेटा';
+  String get allUserAccountsCarpentersAdminsAll =>
+      '• सभी उपयोगकर्ता खाते (कारपेंटर और एडमिन)\n• सभी बिल रिकॉर्ड\n• समय के साथ पूरा उपयोगकर्ता डेटा\n• डेटाबेस मेटाडेटा';
 
   @override
   String get backingUp => 'बैकअप हो रहा है...';
@@ -3757,7 +3898,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get startBackup => 'बैकअप शुरू करें';
 
   @override
-  String get backupIsStoredInFirebaseNo => 'बैकअप सर्वर पर रखा जाता है। फ़ोन में कोई फ़ाइल नहीं सहेजी जाती।';
+  String get backupIsStoredInFirebaseNo =>
+      'बैकअप सर्वर पर रखा जाता है। फ़ोन में कोई फ़ाइल नहीं सहेजी जाती।';
 
   @override
   String get repairDetails => 'सुधार विवरण';
@@ -3766,7 +3908,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get verificationComplete => 'जाँच पूरी';
 
   @override
-  String get noPointsLostAllUsersVerified => 'कोई पॉइंट नहीं गया\nसभी उपयोगकर्ता जाँचे गए\nडेटा सही है';
+  String get noPointsLostAllUsersVerified =>
+      'कोई पॉइंट नहीं गया\nसभी उपयोगकर्ता जाँचे गए\nडेटा सही है';
 
   @override
   String get userWiseRepairResults => 'उपयोगकर्ता अनुसार सुधार परिणाम';
@@ -3799,7 +3942,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get repairFailed => 'सुधार विफल';
 
   @override
-  String get thisToolScansUserPointsData => 'यह टूल पॉइंट्स डेटा जाँचकर ठीक करता है:\n• डुप्लिकेट इतिहास प्रविष्टियाँ\n• गलत कुल पॉइंट्स\n• गलत टियर';
+  String get thisToolScansUserPointsData =>
+      'यह टूल पॉइंट्स डेटा जाँचकर ठीक करता है:\n• डुप्लिकेट इतिहास प्रविष्टियाँ\n• गलत कुल पॉइंट्स\n• गलत टियर';
 
   @override
   String get pointsRepairTool => 'पॉइंट्स सुधार टूल';
@@ -3863,7 +4007,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get scanningForIssues => 'समस्याएँ जाँची जा रही हैं...';
 
   @override
-  String get analyzingAllUserPointsData => 'सभी उपयोगकर्ताओं का पॉइंट्स डेटा जाँचा जा रहा है';
+  String get analyzingAllUserPointsData =>
+      'सभी उपयोगकर्ताओं का पॉइंट्स डेटा जाँचा जा रहा है';
 
   @override
   String get scanResultsFullDetails => 'स्कैन परिणाम - पूरा विवरण';
@@ -3910,10 +4055,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get smartDuplicateCleanup => 'स्मार्ट डुप्लिकेट सफ़ाई';
 
   @override
-  String get allCarpentersHaveUniquePhoneNumbers => 'सभी कारपेंटर के फ़ोन नंबर अलग हैं।';
+  String get allCarpentersHaveUniquePhoneNumbers =>
+      'सभी कारपेंटर के फ़ोन नंबर अलग हैं।';
 
   @override
-  String get potentialDuplicateAccountsReviewRequired => 'संभावित डुप्लिकेट खाते — जाँच ज़रूरी';
+  String get potentialDuplicateAccountsReviewRequired =>
+      'संभावित डुप्लिकेट खाते — जाँच ज़रूरी';
 
   @override
   String foundDuplicateMobileNumbers(String duplicateGroups) {
@@ -3926,7 +4073,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get allRecordsAreRetainedTheHighest => 'सभी रिकॉर्ड बने रहते हैं। सबसे ज़्यादा पॉइंट्स वाला खाता सिर्फ़ सुझाया गया मुख्य खाता है।';
+  String get allRecordsAreRetainedTheHighest =>
+      'सभी रिकॉर्ड बने रहते हैं। सबसे ज़्यादा पॉइंट्स वाला खाता सिर्फ़ सुझाया गया मुख्य खाता है।';
 
   @override
   String potentialDuplicateGroups(String duplicateGroups) {
@@ -3944,10 +4092,12 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get suggestedPrimaryAccountHighestPoints => 'सुझाया गया मुख्य खाता (सबसे ज़्यादा पॉइंट्स)';
+  String get suggestedPrimaryAccountHighestPoints =>
+      'सुझाया गया मुख्य खाता (सबसे ज़्यादा पॉइंट्स)';
 
   @override
-  String get otherMatchingAccountsManualReviewRequired => 'अन्य मिलते खाते — हाथ से जाँच ज़रूरी';
+  String get otherMatchingAccountsManualReviewRequired =>
+      'अन्य मिलते खाते — हाथ से जाँच ज़रूरी';
 
   @override
   String repairConfirmBody(String count) {
@@ -4006,7 +4156,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get permissionDeniedSuperAdmin => 'अनुमति नहीं मिली। जाँचें कि डेटाबेस नियम प्रकाशित हैं और आप सही सुपर एडमिन खाते से साइन इन हैं।';
+  String get permissionDeniedSuperAdmin =>
+      'अनुमति नहीं मिली। जाँचें कि डेटाबेस नियम प्रकाशित हैं और आप सही सुपर एडमिन खाते से साइन इन हैं।';
 
   @override
   String get roleEngineer => 'इंजीनियर';
@@ -4018,7 +4169,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get roleCustomBadge => 'कस्टम';
 
   @override
-  String get roleProtectedTooltip => 'कारपेंटर मुख्य भूमिका है, इसे हटाया नहीं जा सकता';
+  String get roleProtectedTooltip =>
+      'कारपेंटर मुख्य भूमिका है, इसे हटाया नहीं जा सकता';
 
   @override
   String rolesSummary(int active, int deleted) {
@@ -4032,7 +4184,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get roleIdHelp => 'नाम से बनती है। बाद में बदली नहीं जा सकती।';
 
   @override
-  String get roleErrInvalidName => '2–40 अक्षर रखें, जिनमें कम से कम दो अंग्रेज़ी अक्षर या अंक हों।';
+  String get roleErrInvalidName =>
+      '2–40 अक्षर रखें, जिनमें कम से कम दो अंग्रेज़ी अक्षर या अंक हों।';
 
   @override
   String get roleErrReserved => 'यह नाम एडमिन खातों के लिए आरक्षित है।';
@@ -4044,7 +4197,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get roleErrDuplicate => 'इस आईडी की भूमिका पहले से है।';
 
   @override
-  String get roleErrProtected => 'कारपेंटर मुख्य भूमिका है, इसे हटाया नहीं जा सकता।';
+  String get roleErrProtected =>
+      'कारपेंटर मुख्य भूमिका है, इसे हटाया नहीं जा सकता।';
 
   @override
   String get roleShowAll => 'सभी';
@@ -4064,7 +4218,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get deactivateBranchBody => 'जब तक आप इसे फिर सक्रिय नहीं करते, नए उपयोगकर्ता यह शाखा नहीं चुन पाएँगे और इसके सदस्य साइन इन नहीं कर पाएँगे। कोई डेटा नहीं हटेगा।';
+  String get deactivateBranchBody =>
+      'जब तक आप इसे फिर सक्रिय नहीं करते, नए उपयोगकर्ता यह शाखा नहीं चुन पाएँगे और इसके सदस्य साइन इन नहीं कर पाएँगे। कोई डेटा नहीं हटेगा।';
 
   @override
   String activateBranchTitle(String name) {
@@ -4072,7 +4227,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get activateBranchBody => 'शाखा फिर से पंजीकरण और साइन इन के लिए उपलब्ध होगी।';
+  String get activateBranchBody =>
+      'शाखा फिर से पंजीकरण और साइन इन के लिए उपलब्ध होगी।';
 
   @override
   String get branchActions => 'शाखा कार्रवाइयाँ';
@@ -4090,7 +4246,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get celebrationOff => 'बंद';
 
   @override
-  String get createAdminSubtitle => 'एक शाखा एडमिन जोड़ें जो एक शाखा के बिल और कारपेंटर संभालेगा।';
+  String get createAdminSubtitle =>
+      'एक शाखा एडमिन जोड़ें जो एक शाखा के बिल और कारपेंटर संभालेगा।';
 
   @override
   String get selectBranchRequired => 'शाखा चुनें';
@@ -4124,7 +4281,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get branchUpdated => 'शाखा अपडेट हो गई';
 
   @override
-  String get branchCodeLocked => 'कोड नहीं बदल सकता — मौजूदा सदस्य इसी से पंजीकृत हैं।';
+  String get branchCodeLocked =>
+      'कोड नहीं बदल सकता — मौजूदा सदस्य इसी से पंजीकृत हैं।';
 
   @override
   String get editLabel => 'बदलें';
@@ -4138,7 +4296,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get roleIdLocked => 'भूमिका आईडी नहीं बदल सकती — यह उपयोगकर्ता खातों में सहेजी है।';
+  String get roleIdLocked =>
+      'भूमिका आईडी नहीं बदल सकती — यह उपयोगकर्ता खातों में सहेजी है।';
 
   @override
   String get roleActions => 'भूमिका कार्रवाइयाँ';
@@ -4155,13 +4314,16 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get adminBranchChangeNote => 'एडमिन को दूसरी शाखा में ले जाने से मौजूदा शाखा की पहुँच हट जाएगी। एक शाखा में एक ही एडमिन हो सकता है।';
+  String get adminBranchChangeNote =>
+      'एडमिन को दूसरी शाखा में ले जाने से मौजूदा शाखा की पहुँच हट जाएगी। एक शाखा में एक ही एडमिन हो सकता है।';
 
   @override
-  String get editsSyncNote => 'नाम बदलाव हर सदस्य की प्रोफ़ाइल में अपने-आप कॉपी हो जाते हैं।';
+  String get editsSyncNote =>
+      'नाम बदलाव हर सदस्य की प्रोफ़ाइल में अपने-आप कॉपी हो जाते हैं।';
 
   @override
-  String get noBranchAssigned => 'आपका खाता अभी किसी शाखा से नहीं जुड़ा है। सुपर एडमिन से अपनी शाखा तय करवाएँ।';
+  String get noBranchAssigned =>
+      'आपका खाता अभी किसी शाखा से नहीं जुड़ा है। सुपर एडमिन से अपनी शाखा तय करवाएँ।';
 
   @override
   String get loadingBranch => 'आपकी शाखा लोड हो रही है…';
@@ -4218,7 +4380,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get legalAgreeSuffix => ' पढ़ ली हैं और मैं सहमत हूँ।';
 
   @override
-  String get legalAcceptToContinue => 'आगे बढ़ने के लिए कृपया नियम और शर्तें तथा गोपनीयता नीति स्वीकार करें।';
+  String get legalAcceptToContinue =>
+      'आगे बढ़ने के लिए कृपया नियम और शर्तें तथा गोपनीयता नीति स्वीकार करें।';
 
   @override
   String get legalEnglishOnly => 'यह दस्तावेज़ अंग्रेज़ी में उपलब्ध है।';
@@ -4251,7 +4414,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get notAvailable => 'उपलब्ध नहीं';
 
   @override
-  String get supportHint => 'बिल, पॉइंट्स और ऑफ़र के लिए अपनी शाखा से संपर्क करें। ऐप की समस्या के लिए ऐप सहायता से संपर्क करें।';
+  String get supportHint =>
+      'बिल, पॉइंट्स और ऑफ़र के लिए अपनी शाखा से संपर्क करें। ऐप की समस्या के लिए ऐप सहायता से संपर्क करें।';
 
   @override
   String get directions => 'रास्ता दिखाएँ';
@@ -4263,10 +4427,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileStatus => 'प्रोफ़ाइल स्थिति';
 
   @override
-  String get profileReadyForBills => 'आपकी प्रोफ़ाइल पूरी है। आप बिल जमा कर सकते हैं।';
+  String get profileReadyForBills =>
+      'आपकी प्रोफ़ाइल पूरी है। आप बिल जमा कर सकते हैं।';
 
   @override
-  String get profileMissingForBills => 'बिल जमा करने के लिए बाकी जानकारी जोड़ें।';
+  String get profileMissingForBills =>
+      'बिल जमा करने के लिए बाकी जानकारी जोड़ें।';
 
   @override
   String get requiredForBills => 'बिल के लिए ज़रूरी';
@@ -4287,7 +4453,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profilePhoto => 'प्रोफ़ाइल फ़ोटो';
 
   @override
-  String get addPhotoRequired => 'प्रोफ़ाइल फ़ोटो जोड़ें। बिल जमा करने के लिए यह ज़रूरी है।';
+  String get addPhotoRequired =>
+      'प्रोफ़ाइल फ़ोटो जोड़ें। बिल जमा करने के लिए यह ज़रूरी है।';
 
   @override
   String itemsMissing(String items) {
@@ -4369,13 +4536,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get catalogsEmpty => 'अभी कोई कैटलॉग नहीं';
 
   @override
-  String get catalogsEmptyMessage => 'Balaji Points द्वारा जोड़े जाने पर कैटलॉग यहाँ दिखेंगे।';
+  String get catalogsEmptyMessage =>
+      'Balaji Points द्वारा जोड़े जाने पर कैटलॉग यहाँ दिखेंगे।';
 
   @override
-  String get catalogLoadError => 'कैटलॉग लोड नहीं हो सके। इंटरनेट जाँचें और फिर कोशिश करें।';
+  String get catalogLoadError =>
+      'कैटलॉग लोड नहीं हो सके। इंटरनेट जाँचें और फिर कोशिश करें।';
 
   @override
-  String get catalogOpenError => 'यह कैटलॉग नहीं खुल सका। इंटरनेट जाँचें और फिर कोशिश करें।';
+  String get catalogOpenError =>
+      'यह कैटलॉग नहीं खुल सका। इंटरनेट जाँचें और फिर कोशिश करें।';
 
   @override
   String catalogShareText(String title, String url) {
@@ -4383,7 +4553,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get catalogOnlineHint => 'ऑनलाइन खुलता है। डाउनलोड दबाए बिना फ़ोन में कुछ सेव नहीं होता।';
+  String get catalogOnlineHint =>
+      'ऑनलाइन खुलता है। डाउनलोड दबाए बिना फ़ोन में कुछ सेव नहीं होता।';
 
   @override
   String catalogPageOf(int page, int total) {
@@ -4433,7 +4604,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get catalogAdminPickCover => 'कवर फ़ोटो चुनें';
 
   @override
-  String get catalogAdminCoverAuto => 'कवर न चुनने पर PDF का पहला पेज कवर बनेगा।';
+  String get catalogAdminCoverAuto =>
+      'कवर न चुनने पर PDF का पहला पेज कवर बनेगा।';
 
   @override
   String catalogAdminPdfTooLarge(String size) {
@@ -4471,10 +4643,12 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get catalogAdminCategoryNotEmpty => 'पहले इस श्रेणी के कैटलॉग हटाएँ या दूसरी श्रेणी में डालें।';
+  String get catalogAdminCategoryNotEmpty =>
+      'पहले इस श्रेणी के कैटलॉग हटाएँ या दूसरी श्रेणी में डालें।';
 
   @override
-  String get catalogAdminEmpty => 'अभी कोई कैटलॉग नहीं। पहले श्रेणी जोड़ें, फिर PDF अपलोड करें।';
+  String get catalogAdminEmpty =>
+      'अभी कोई कैटलॉग नहीं। पहले श्रेणी जोड़ें, फिर PDF अपलोड करें।';
 
   @override
   String get catalogAdminNeedCategory => 'पहले एक श्रेणी जोड़ें।';
@@ -4488,7 +4662,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get catalogAdminPermission => 'केवल ईमेल से लॉगिन किए एडमिन ही कैटलॉग बदल सकते हैं।';
+  String get catalogAdminPermission =>
+      'केवल ईमेल से लॉगिन किए एडमिन ही कैटलॉग बदल सकते हैं।';
 
   @override
   String get catalogAdminPdfRequired => 'PDF फ़ाइल चुनें।';
@@ -4515,7 +4690,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get enquiryHeroTitle => 'हम कैसे मदद कर सकते हैं?';
 
   @override
-  String get enquiryHeroSubtitle => 'अपना सवाल भेजें। हम आम तौर पर एक कार्य दिवस में जवाब देते हैं।';
+  String get enquiryHeroSubtitle =>
+      'अपना सवाल भेजें। हम आम तौर पर एक कार्य दिवस में जवाब देते हैं।';
 
   @override
   String enquiryGoesToBranch(String branch) {
@@ -4602,7 +4778,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get enquiryFailed => 'भेजा नहीं जा सका। इंटरनेट जांचें और फिर कोशिश करें।';
+  String get enquiryFailed =>
+      'भेजा नहीं जा सका। इंटरनेट जांचें और फिर कोशिश करें।';
 
   @override
   String get enquiryReachDirectly => 'या सीधे संपर्क करें';
@@ -4632,7 +4809,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get enquiryGuest => 'अतिथि';
 
   @override
-  String get enquiriesNoAccess => 'पूछताछ देखने के लिए अपने एडमिन ईमेल से साइन इन करें।';
+  String get enquiriesNoAccess =>
+      'पूछताछ देखने के लिए अपने एडमिन ईमेल से साइन इन करें।';
 
   @override
   String get contactYourBranch => 'आपकी शाखा';
@@ -4691,7 +4869,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get guestJoinTitle => 'बालाजी पॉइंट्स से जुड़ें';
 
   @override
-  String get guestJoinBody => 'कारपेंटर, आर्किटेक्ट, इंजीनियर और इंटीरियर डिज़ाइनर हर खरीद पर पॉइंट्स कमाते हैं और इनाम जीतते हैं।';
+  String get guestJoinBody =>
+      'कारपेंटर, आर्किटेक्ट, इंजीनियर और इंटीरियर डिज़ाइनर हर खरीद पर पॉइंट्स कमाते हैं और इनाम जीतते हैं।';
 
   @override
   String get guestRegister => 'अभी रजिस्टर करें';
@@ -4781,10 +4960,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get branchMapsLinkHint => 'गूगल मैप्स लिंक दर्ज करें';
 
   @override
-  String get branchMapsLinkHelp => 'गूगल मैप्स में स्टोर खोलें, शेयर दबाएँ, लिंक कॉपी करके यहाँ पेस्ट करें।';
+  String get branchMapsLinkHelp =>
+      'गूगल मैप्स में स्टोर खोलें, शेयर दबाएँ, लिंक कॉपी करके यहाँ पेस्ट करें।';
 
   @override
-  String get branchMapsLinkInvalid => 'https:// से शुरू होने वाला लिंक पेस्ट करें';
+  String get branchMapsLinkInvalid =>
+      'https:// से शुरू होने वाला लिंक पेस्ट करें';
 
   @override
   String get guestLoginMember => 'सदस्य हैं? लॉग इन करें';
@@ -4808,7 +4989,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get guestHeroTitle => 'प्लाईवुड, हार्डवेयर और फिटिंग्स — सब एक ही जगह';
 
   @override
-  String get guestHeroBody => 'नए कैटलॉग देखें, नज़दीकी शाखा खोजें और विशेषज्ञ मदद पाएँ।';
+  String get guestHeroBody =>
+      'नए कैटलॉग देखें, नज़दीकी शाखा खोजें और विशेषज्ञ मदद पाएँ।';
 
   @override
   String get guestExploreCatalogs => 'कैटलॉग देखें';
@@ -4859,7 +5041,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get guestGrowTitle => 'बालाजी पॉइंट्स के साथ अपना व्यापार बढ़ाएँ';
 
   @override
-  String get guestGrowBody => 'आपकी दुकान है? अपनी दुकान या शाखा बालाजी पॉइंट्स पर रजिस्टर करें और अपने ग्राहकों को इनाम दें।';
+  String get guestGrowBody =>
+      'आपकी दुकान है? अपनी दुकान या शाखा बालाजी पॉइंट्स पर रजिस्टर करें और अपने ग्राहकों को इनाम दें।';
 
   @override
   String get guestGrowPoint1 => 'आपके सदस्यों के लिए अपनी भूमिकाएँ';
@@ -4887,4 +5070,29 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get guestTabGuest => 'अतिथि';
+
+  @override
+  String get offersArrange => 'क्रम बदलें';
+
+  @override
+  String get offersArrangeHint =>
+      'सदस्यों को जिस क्रम में दिखाने हैं, उसी क्रम में ऑफ़र खींचें।';
+
+  @override
+  String get offersOrderSaved => 'ऑफ़र क्रम सहेजा गया';
+
+  @override
+  String get offersOrderFailed => 'क्रम सहेजा नहीं जा सका। फिर कोशिश करें।';
+
+  @override
+  String get drawerSectionExplore => 'देखें';
+
+  @override
+  String get drawerSectionSupport => 'सहायता';
+
+  @override
+  String get offerBannerChange => 'बदलें';
+
+  @override
+  String get loggingOut => 'लॉग आउट हो रहा है…';
 }

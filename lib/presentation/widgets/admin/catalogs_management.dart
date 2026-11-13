@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/admin_form_footer.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -523,6 +524,36 @@ class _CatalogFormPageState extends ConsumerState<CatalogFormPage> {
               : l10n.catalogAdminEditCatalog,
         ),
       ),
+      // Save stays fixed at the bottom: above Android's navigation bar
+      // (gestures or buttons) and above the keyboard while typing.
+      bottomNavigationBar: AdminFormFooter(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_busy) ...[
+              LinearProgressIndicator(
+                value: _progress == 0 ? null : _progress,
+                color: context.themePrimary,
+                backgroundColor: context.themeBorder,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.catalogAdminUploading(((_progress ?? 0) * 100).round()),
+                textAlign: TextAlign.center,
+                style: AppTypography.caption(color: context.themeTextSecondary),
+              ),
+              const SizedBox(height: 8),
+            ],
+            AppButton.primary(
+              label: l10n.save,
+              icon: Icons.cloud_upload_rounded,
+              isLoading: _busy,
+              onPressed: _busy ? null : _save,
+            ),
+          ],
+        ),
+      ),
       body: AbsorbPointer(
         absorbing: _busy,
         child: Form(
@@ -705,31 +736,7 @@ class _CatalogFormPageState extends ConsumerState<CatalogFormPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    if (_busy) ...[
-                      LinearProgressIndicator(
-                        value: _progress == 0 ? null : _progress,
-                        color: context.themePrimary,
-                        backgroundColor: context.themeBorder,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.catalogAdminUploading(
-                          ((_progress ?? 0) * 100).round(),
-                        ),
-                        textAlign: TextAlign.center,
-                        style: AppTypography.caption(
-                          color: context.themeTextSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                    AppButton.primary(
-                      label: l10n.save,
-                      icon: Icons.cloud_upload_rounded,
-                      isLoading: _busy,
-                      onPressed: _busy ? null : _save,
-                    ),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),

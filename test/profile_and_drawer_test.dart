@@ -120,10 +120,31 @@ void main() {
       expect(find.text('Esha Raman'), findsOneWidget);
       expect(find.text('9000000001'), findsOneWidget);
       expect(find.text('1234.5'), findsOneWidget);
-      for (final label in ['Home', 'Notifications', 'Profile', 'About Us']) {
+      // Exactly these options, in this order.
+      const items = [
+        'Home',
+        'Wallet',
+        'Notifications',
+        'Profile',
+        'Catalogs',
+        'About Us',
+        'Contact Us',
+      ];
+      for (final label in items) {
         expect(find.text(label), findsOneWidget, reason: label);
       }
+      final ys = [for (final l in items) tester.getTopLeft(find.text(l)).dy];
+      for (var i = 1; i < ys.length; i++) {
+        expect(ys[i], greaterThan(ys[i - 1]), reason: items[i]);
+      }
+      for (final label in ['Daily Spin', 'My Branch', 'Add Bill']) {
+        expect(find.text(label), findsNothing, reason: label);
+      }
       expect(find.text('Logout'), findsOneWidget);
+      // Logout is pinned at the bottom of the menu, not floating mid-way.
+      final menuBottom = tester.getRect(find.byType(Drawer)).bottom;
+      final logoutBottom = tester.getRect(find.text('Logout')).bottom;
+      expect(menuBottom - logoutBottom, lessThan(80));
     });
 
     for (final (name, size, scale, dark, locale) in [

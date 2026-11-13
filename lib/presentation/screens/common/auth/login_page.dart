@@ -2,6 +2,7 @@ import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:balaji_points/presentation/widgets/shared/auth_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -346,10 +347,7 @@ class _GoogleSignInButton extends StatelessWidget {
             ? SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: scheme.primary,
-                ),
+                child: AppLoader(color: scheme.primary, strokeWidth: 2),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,

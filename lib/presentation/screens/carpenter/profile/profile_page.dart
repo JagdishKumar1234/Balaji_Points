@@ -1,9 +1,10 @@
 import 'package:balaji_points/core/profile/profile_completeness.dart';
 import 'package:balaji_points/services/branch/branch_support_service.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
-import 'package:balaji_points/providers/branch_celebration_provider.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:balaji_points/presentation/screens/carpenter/home/home_page.dart'
+    show memberLogout;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,16 +16,13 @@ import 'package:balaji_points/core/layout/carpenter_shell_layout.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/providers/locale_provider.dart';
 import 'package:balaji_points/providers/theme_provider.dart';
-import 'package:balaji_points/providers/loading_provider.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/carpenter/member_identity.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_button.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/screens/carpenter/profile/widgets/profile_widgets.dart';
-import 'package:balaji_points/services/notifications/fcm_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/providers/home_provider.dart';
-import 'package:balaji_points/providers/wallet_provider.dart';
 import 'package:balaji_points/services/user/user_service.dart';
 import 'package:balaji_points/services/user/user_points_sync_service.dart';
 
@@ -41,7 +39,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     with WidgetsBindingObserver {
   final UserService _userService = UserService();
   final SessionService _sessionService = SessionService();
-  final FCMService _fcmService = FCMService();
 
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
@@ -132,74 +129,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     return full.isEmpty ? AppLocalizations.of(context)!.user : full;
   }
 
-  Future<void> _handleLogout(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-        title: Text(l10n.logout, style: AppTypography.h4()),
-        content: Text(
-          l10n.logoutConfirmation,
-          style: AppTypography.bodyMedium(color: context.themeTextSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(
-              l10n.no,
-              style: AppTypography.labelLarge(
-                color: context.themeTextSecondary,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.themeError,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-            ),
-            child: Text(
-              l10n.yes,
-              style: AppTypography.labelLarge(
-                color: AppColors.white,
-              ).copyWith(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldLogout == true && context.mounted) {
-      ref.read(loadingProvider.notifier).start();
-      try {
-        await _fcmService.deleteToken();
-        ref.read(carpenterPointsProvider.notifier).resetForLogout();
-        // The next person to log in on this phone may be in another branch.
-        ref.invalidate(branchCelebrationEnabledProvider);
-        ref.invalidate(celebrationPopupShownProvider);
-        ref.invalidate(homeProvider);
-        ref.invalidate(walletProvider);
-        ref.invalidate(walletBillsProvider);
-        await _sessionService.clearSession();
-        if (context.mounted) context.go('/login');
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${l10n.logoutFailed}: ${e.toString()}'),
-              backgroundColor: context.themeError,
-            ),
-          );
-        }
-      } finally {
-        if (context.mounted) {
-          ref.read(loadingProvider.notifier).stop();
-        }
-      }
-    }
-  }
+  /// Same logout as the Home side menu (confirm, loader, clean up).
+  Future<void> _handleLogout(BuildContext context) =>
+      memberLogout(context, ref);
 
   Future<void> _makePhoneCall(BuildContext context, String number) async {
     final uri = Uri(scheme: 'tel', path: number);
