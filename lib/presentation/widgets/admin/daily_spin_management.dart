@@ -161,8 +161,11 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           ),
           const SizedBox(height: 14),
           _wheelCard(),
-          const SizedBox(height: 14),
-          _TodaysWinner(group: _group, date: _today),
+          // Hidden while the wheel turns, so the result is not spoiled.
+          if (!_isSpinning) ...[
+            const SizedBox(height: 14),
+            _TodaysWinner(group: _group, date: _today),
+          ],
           const SizedBox(height: 14),
           TodaysEligibleCarpenters(
             key: ValueKey(_group),
