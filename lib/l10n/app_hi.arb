@@ -1823,5 +1823,10 @@
   "usersFilterTier": "टियर",
   "usersFilterRole": "सदस्य प्रकार",
   "usersFilterReset": "रीसेट",
-  "usersFilterButton": "सदस्य फ़िल्टर करें"
+  "usersFilterButton": "सदस्य फ़िल्टर करें",
+  "spinWheelTitle": "डेली बाय डेली विन",
+  "spinWheelSubtitle": "आज का भाग्यशाली विजेता चुनने के लिए घुमाएँ",
+  "spinEligibleToday": "आज पात्र",
+  "spinTodayWinnerLabel": "आज का विजेता",
+  "spinThisMonth": "इस महीने"
 }

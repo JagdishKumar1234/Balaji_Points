@@ -449,6 +449,13 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
               _AlertsBell(onTap: () => _openSection('notifications')),
             if (!_showDashboard && _selectedSection == 'users')
               const UsersFilterButton(),
+            if (!_showDashboard && _selectedSection == 'spin')
+              IconButton(
+                key: const ValueKey('admin-spin-history'),
+                icon: const Icon(Icons.history_rounded),
+                tooltip: AppLocalizations.of(context)!.viewSpinHistory,
+                onPressed: () => context.push('/admin/spin-history'),
+              ),
             if (_showDashboard && !_phone)
               _AdminMoreMenu(onLogout: _handleLogout)
             else if (_selectedSection == 'notifications')

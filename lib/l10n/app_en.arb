@@ -3075,21 +3075,54 @@
   "send": "Send",
   "sendNotificationTo": "Send to",
   "sendNotificationMembers": "{count, plural, =1{1 member} other{{count} members}}",
-  "@sendNotificationMembers": {"placeholders": {"count": {"type": "int"}}},
+  "@sendNotificationMembers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sendNotificationCategory": "Category",
   "sendNotificationOpens": "Members who tap it go to: {action}",
-  "@sendNotificationOpens": {"placeholders": {"action": {"type": "String"}}},
+  "@sendNotificationOpens": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "sendNotificationTitle": "Title",
   "sendNotificationTitleHint": "Enter title",
   "sendNotificationMessage": "Message",
   "sendNotificationMessageHint": "Enter message",
   "sendNotificationButton": "{count, plural, =0{Send} =1{Send to 1 member} other{Send to {count} members}}",
-  "@sendNotificationButton": {"placeholders": {"count": {"type": "int"}}},
+  "@sendNotificationButton": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sendNotificationConfirmTitle": "Send notification?",
   "sendNotificationConfirm": "{count, plural, =1{1 member will get a push notification on their phone.} other{{count} members will get a push notification on their phone.}}",
-  "@sendNotificationConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@sendNotificationConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sendNotificationDone": "{count, plural, =1{Sent to 1 member} other{Sent to {count} members}} ({pushed} phones reached)",
-  "@sendNotificationDone": {"placeholders": {"count": {"type": "int"}, "pushed": {"type": "int"}}},
+  "@sendNotificationDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "pushed": {
+        "type": "int"
+      }
+    }
+  },
   "sendNotificationFailed": "Could not send. Check your connection and try again.",
   "notifEarlier": "Earlier",
   "notifCatGeneral": "Announcement",
@@ -3140,5 +3173,10 @@
   "usersFilterTier": "Tier",
   "usersFilterRole": "Member type",
   "usersFilterReset": "Reset",
-  "usersFilterButton": "Filter members"
+  "usersFilterButton": "Filter members",
+  "spinWheelTitle": "Daily Buy Daily Win",
+  "spinWheelSubtitle": "Spin to pick today's lucky winner",
+  "spinEligibleToday": "Eligible today",
+  "spinTodayWinnerLabel": "Today's winner",
+  "spinThisMonth": "This month"
 }

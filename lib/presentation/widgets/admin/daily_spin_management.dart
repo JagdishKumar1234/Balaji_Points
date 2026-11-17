@@ -1,19 +1,28 @@
-import 'package:balaji_points/services/branch/daily_winner_scope.dart';
-import 'package:balaji_points/core/firebase/app_firestore.dart';
-import 'package:balaji_points/core/design/app_radius.dart';
-import 'package:flutter/material.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
-import 'package:balaji_points/services/branch/current_branch_service.dart';
-import 'package:balaji_points/l10n/app_localizations.dart';
+import 'dart:math' as math;
+
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:go_router/go_router.dart';
+import 'package:balaji_points/core/design/app_radius.dart';
+import 'package:balaji_points/core/design/app_typography.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/core/spin/spin_prizes.dart';
+import 'package:balaji_points/l10n/app_localizations.dart';
+import 'package:balaji_points/presentation/widgets/admin/spin/prize_wheel.dart';
+import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
+import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:balaji_points/services/spin/daily_spin_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
 import 'todays_eligible_carpenters.dart';
 
+/// Admin Daily Spin: pick a group, spin the prize wheel, see today's
+/// winner, who qualifies today and this month's winners. Only the admin
+/// spins; members see the result.
 class DailySpinManagement extends StatefulWidget {
   const DailySpinManagement({super.key});
 
@@ -22,59 +31,32 @@ class DailySpinManagement extends StatefulWidget {
 }
 
 class _DailySpinManagementState extends State<DailySpinManagement>
-    with TickerProviderStateMixin {
-  bool _isSpinning = false;
-  String? _winnerName;
+    with SingleTickerProviderStateMixin {
+  final _spin = DailySpinService();
+  final _random = math.Random();
 
   /// Each role group has its own draw, once a day.
   LeaderboardGroup _group = LeaderboardGroup.trade;
-  final _spin = DailySpinService();
+  bool _isSpinning = false;
+
+  late final AnimationController _wheel = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 4200),
+  );
+  double _from = 0;
+  double _to = 0;
+  late Future<bool> _canSpin = _canSpinToday();
+
   static String get _today => DailyWinnerScope.dayKey(DateTime.now());
-  AnimationController? _spinAnimationController;
-  AnimationController? _pulseAnimationController;
-  Animation<double>? _spinAnimation;
-  Animation<double>? _pulseAnimation;
 
-  @override
-  void initState() {
-    super.initState();
-    _spinAnimationController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
-    _pulseAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _spinAnimation = Tween<double>(begin: 0, end: 8 * 3.14159).animate(
-      CurvedAnimation(
-        parent: _spinAnimationController!,
-        curve: Curves.easeInOutCubic,
-      ),
-    );
-
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
-      CurvedAnimation(
-        parent: _pulseAnimationController!,
-        curve: Curves.easeInOut,
-      ),
-    );
-  }
+  double get _angle =>
+      _from + (_to - _from) * Curves.easeOutCubic.transform(_wheel.value);
 
   @override
   void dispose() {
-    _spinAnimationController?.dispose();
-    _pulseAnimationController?.dispose();
+    _wheel.dispose();
     super.dispose();
   }
-
-  /// Today's winner for this branch and the selected group, or null.
-  Future<Map<String, dynamic>?> _todaysGroupWinner() => _spin.winnerOn(
-    branchId: CurrentBranchService.adminBranchId,
-    group: _group,
-    date: _today,
-  );
 
   Future<bool> _canSpinToday() => _spin.canSpin(
     branchId: CurrentBranchService.adminBranchId,
@@ -82,564 +64,227 @@ class _DailySpinManagementState extends State<DailySpinManagement>
     date: _today,
   );
 
-  Future<void> _spinWheel() async {
-    final canSpin = await _canSpinToday();
-    if (!canSpin) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.schedule_rounded, color: context.themeOnSecondary),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context)!.spinGroupDoneToday,
-                    style: TextStyle(color: context.themeOnSecondary),
-                  ),
-                ),
-              ],
+  void _selectGroup(LeaderboardGroup g) => setState(() {
+    _group = g;
+    _canSpin = _canSpinToday();
+  });
+
+  /// Turns the wheel several times and stops on a random slice.
+  void _startWheel() {
+    const turn = 2 * math.pi;
+    final slice = PrizeWheel.angleFor(
+      _random.nextInt(spinPrizes.length),
+      spinPrizes.length,
+    );
+    final current = _angle % turn;
+    final target = (slice % turn + turn) % turn;
+    _from = current;
+    _to = current + 6 * turn + ((target - current) % turn + turn) % turn;
+    _wheel
+      ..reset()
+      ..forward();
+  }
+
+  void _snack(String text, {Color? color, IconData? icon}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, color: AppColors.white),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: Text(text, style: const TextStyle(color: AppColors.white)),
             ),
-            backgroundColor: context.themeSecondary,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-          ),
-        );
-      }
+          ],
+        ),
+        backgroundColor: color ?? AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+      ),
+    );
+  }
+
+  Future<void> _spinWheel() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (!await _canSpinToday()) {
+      _snack(l10n.spinGroupDoneToday, icon: Icons.schedule_rounded);
+      setState(() => _canSpin = Future.value(false));
       return;
     }
     if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-
-    setState(() {
-      _isSpinning = true;
-      _winnerName = null;
-    });
-
-    _spinAnimationController?.reset();
-    _spinAnimationController?.forward();
+    setState(() => _isSpinning = true);
+    _startWheel();
 
     try {
-      final branchId = CurrentBranchService.adminBranchId ?? '';
       final results = await Future.wait([
-        _spin.spin(branchId: branchId, group: _group, date: _today),
-        // Let the wheel turn for its full animation.
-        Future<void>.delayed(const Duration(seconds: 3)),
+        _spin.spin(
+          branchId: CurrentBranchService.adminBranchId ?? '',
+          group: _group,
+          date: _today,
+        ),
+        // Let the wheel finish turning.
+        Future<void>.delayed(_wheel.duration!),
       ]);
       final winner = results.first as SpinCandidate?;
+      if (!mounted) return;
       if (winner == null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n.spinNoQualifiedToday,
-                style: TextStyle(color: context.themeOnSecondary),
-              ),
-              backgroundColor: context.themeSecondary,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-            ),
-          );
-          setState(() => _isSpinning = false);
-        }
-        return;
-      }
-      final carpenterName = winner.name;
-
-      if (mounted) {
-        setState(() {
-          _winnerName = carpenterName;
-          _isSpinning = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.celebration_rounded, color: AppColors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppText.section(
-                    AppLocalizations.of(
-                      context,
-                    )!.isTodaySWinner('$carpenterName'),
-                    color: AppColors.white,
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-            duration: const Duration(seconds: 4),
-          ),
+        _snack(l10n.spinNoQualifiedToday, icon: Icons.info_outline_rounded);
+      } else {
+        _snack(
+          l10n.isTodaySWinner(winner.name),
+          color: AppColors.success,
+          icon: Icons.celebration_rounded,
         );
       }
     } catch (e) {
+      _snack(l10n.error2(e.toString()), color: AppColors.error);
+    } finally {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_rounded, color: AppColors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context)!.error2('${e.toString()}'),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: context.themeError,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-          ),
-        );
-        setState(() => _isSpinning = false);
+        setState(() {
+          _isSpinning = false;
+          _canSpin = _canSpinToday();
+        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ColoredBox(
       color: context.themeBackground,
-      child: CustomScrollView(
-        slivers: [
-          // Modern Header
-          SliverToBoxAdapter(
-            child: Container(
-              decoration: BoxDecoration(
-                color: context.themeContentColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.black.withValues(alpha: 0.15),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        children: [
+          _GroupSwitch(
+            group: _group,
+            enabled: !_isSpinning,
+            onChanged: _selectGroup,
+          ),
+          const SizedBox(height: 14),
+          _wheelCard(),
+          const SizedBox(height: 14),
+          _TodaysWinner(group: _group, date: _today),
+          const SizedBox(height: 14),
+          TodaysEligibleCarpenters(
+            key: ValueKey(_group),
+            group: _group,
+            date: _today,
+          ),
+          const SizedBox(height: 14),
+          _MonthWinners(group: _group),
+        ],
+      ),
+    );
+  }
+
+  Widget _wheelCard() {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      key: const ValueKey('admin-spin-card'),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.primary, AppColors.primaryLight],
+        ),
+        borderRadius: AppRadius.all24,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.18),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+      child: Column(
+        children: [
+          Text(
+            l10n.spinWheelTitle,
+            textAlign: TextAlign.center,
+            style: AppTypography.section(
+              color: AppColors.gold,
+            ).copyWith(fontSize: 22, letterSpacing: 0.5),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            l10n.spinWheelSubtitle,
+            textAlign: TextAlign.center,
+            style: AppTypography.bodyMedium().copyWith(
+              color: AppColors.white.withValues(alpha: 0.85),
+            ),
+          ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, c) {
+              final size = math.min(c.maxWidth - 8, 320.0);
+              return AnimatedBuilder(
+                animation: _wheel,
+                builder: (_, __) => PrizeWheel(angle: _angle, size: size),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          FutureBuilder<bool>(
+            future: _canSpin,
+            builder: (context, snap) {
+              final loading = snap.connectionState != ConnectionState.done;
+              final canSpin = snap.data ?? false;
+              return Column(
+                children: [
+                  if (!loading) _StatusChip(canSpin: canSpin),
+                  const SizedBox(height: 14),
+                  _spinButton(
+                    enabled: canSpin && !_isSpinning && !loading,
+                    label: loading
+                        ? l10n.loading
+                        : (_isSpinning ? l10n.spinning : l10n.spinNow),
                   ),
                 ],
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.white.withValues(alpha: 0.2),
-                              borderRadius: AppRadius.all16,
-                            ),
-                            child: const Icon(
-                              Icons.casino_rounded,
-                              color: AppColors.white,
-                              size: 32,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AppText.hero(
-                                  AppLocalizations.of(context)!.dailySpin,
-                                  color: AppColors.white,
-                                ),
-                                AppText.body(
-                                  AppLocalizations.of(
-                                    context,
-                                  )!.selectALuckyWinner,
-                                  color: AppColors.white.withValues(alpha: 0.9),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.history_rounded,
-                              color: AppColors.white,
-                              size: 24,
-                            ),
-                            onPressed: () => GoRouter.of(
-                              context,
-                            ).push('/admin/spin-history'),
-                            tooltip: AppLocalizations.of(
-                              context,
-                            )!.viewSpinHistory,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Group switch: each group has its own draw.
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-              child: _buildGroupSwitch(),
-            ),
-          ),
-
-          // Spin Wheel Section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: _buildSpinSection(),
-            ),
-          ),
-
-          // Today's Eligible Carpenters
-          SliverToBoxAdapter(
-            child: TodaysEligibleCarpenters(
-              key: ValueKey(_group),
-              group: _group,
-              date: _today,
-            ),
-          ),
-
-          // Today's Winners
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: _buildTodaysWinners(),
-            ),
-          ),
-
-          // Monthly Winners
-          SliverPadding(
-            padding: const EdgeInsets.all(24),
-            sliver: SliverToBoxAdapter(child: _buildMonthlyWinners()),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildGroupSwitch() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SegmentedButton<LeaderboardGroup>(
-          segments: [
-            for (final g in LeaderboardGroup.values)
-              ButtonSegment(value: g, label: Text(g.shortLabel(context))),
-          ],
-          selected: {_group},
-          showSelectedIcon: false,
-          onSelectionChanged: _isSpinning
-              ? null
-              : (s) => setState(() {
-                  _group = s.first;
-                  _winnerName = null;
-                }),
-        ),
-        const SizedBox(height: 6),
-        AppText.bodySmall(
-          AppLocalizations.of(context)!.spinGroupHint,
-          color: context.themeTextSecondary,
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSpinSection() {
-    return FutureBuilder<bool>(
-      future: _canSpinToday(),
-      builder: (context, snapshot) {
-        final canSpin = snapshot.data ?? false;
-
-        return Container(
-          decoration: BoxDecoration(
-            color: context.themeSurface,
-            borderRadius: AppRadius.all24,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
-          child: Column(
-            children: [
-              // Spinning Wheel Animation
-              if (_spinAnimation != null)
-                AnimatedBuilder(
-                  animation: _spinAnimation!,
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: _spinAnimation!.value,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              context.themeSecondary,
-                              AppColors.warning,
-                              context.themeError,
-                            ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.warning.withValues(alpha: 0.5),
-                              blurRadius: 30,
-                              spreadRadius: _isSpinning ? 10 : 5,
-                            ),
-                          ],
-                        ),
-                        child: Stack(
-                          children: [
-                            // Wheel segments
-                            ...List.generate(8, (index) {
-                              final angle = (index * 45) * (3.14159 / 180);
-                              return Positioned.fill(
-                                child: Transform.rotate(
-                                  angle: angle,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        right: BorderSide(
-                                          color: AppColors.white.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                          width: 2,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }),
-                            // Center
-                            Center(
-                              child: Container(
-                                width: 120,
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.black.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      blurRadius: 10,
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: _isSpinning
-                                      ? const Icon(
-                                          Icons.autorenew_rounded,
-                                          size: 48,
-                                          color: AppColors.warning,
-                                        )
-                                      : Icon(
-                                          Icons.stars_rounded,
-                                          size: 56,
-                                          color: AppColors.warning,
-                                        ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              if (_spinAnimation == null)
-                Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: context.themeTextSecondary,
-                  ),
-                  child: const Center(child: AppLoader()),
-                ),
-
-              const SizedBox(height: 32),
-
-              // Winner Display
-              if (_winnerName != null && !_isSpinning)
-                TweenAnimationBuilder<double>(
-                  duration: const Duration(milliseconds: 500),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: context.themeSurface,
-                          borderRadius: AppRadius.all16,
-                          border: Border.all(
-                            color: AppColors.warning.withValues(alpha: 0.5),
-                            width: 2,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            const Icon(
-                              Icons.celebration_rounded,
-                              size: 48,
-                              color: AppColors.warning,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              AppLocalizations.of(
-                                context,
-                              )!.winner2('$_winnerName'),
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: context.themeContentColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-              if (_winnerName == null || _isSpinning)
-                const SizedBox(height: 24),
-
-              // Status Badge
-              FutureBuilder<Map<String, dynamic>?>(
-                future: _todaysGroupWinner(),
-                builder: (context, lastSpinSnapshot) {
-                  final statusText = canSpin
-                      ? AppLocalizations.of(context)!.readyToSpin
-                      : AppLocalizations.of(context)!.spinGroupDoneToday;
-
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: canSpin
-                          ? AppColors.successSoft
-                          : context.themeSoftSurface,
-                      borderRadius: AppRadius.md12,
-                      border: Border.all(
-                        color: canSpin
-                            ? AppColors.success
-                            : context.themeSecondary,
-                        width: 2,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          canSpin
-                              ? Icons.check_circle_rounded
-                              : Icons.schedule_rounded,
-                          color: canSpin
-                              ? AppColors.successText
-                              : context.themeSecondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        // Long messages wrap instead of overflowing.
-                        Flexible(
-                          child: AppText.section(
-                            statusText,
-                            textAlign: TextAlign.center,
-                            color: canSpin
-                                ? AppColors.successText
-                                : context.themeSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 32),
-
-              // Spin Button: full width so the label never overflows a
-              // narrow phone; the pulse stays inside the card.
-              if (_pulseAnimation != null)
-                AnimatedBuilder(
-                  animation: _pulseAnimation!,
-                  builder: (context, child) => Transform.scale(
-                    scale: canSpin && !_isSpinning
-                        ? _pulseAnimation!.value
-                        : 1.0,
-                    child: child,
-                  ),
-                  child: _spinButton(canSpin: canSpin),
-                )
-              else
-                _spinButton(canSpin: false, loading: true),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _spinButton({required bool canSpin, bool loading = false}) {
-    final l10n = AppLocalizations.of(context)!;
-    final label = loading
-        ? l10n.loading
-        : (_isSpinning ? l10n.spinning : l10n.spinNow);
+  Widget _spinButton({required bool enabled, required String label}) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
+      child: FilledButton(
         key: const ValueKey('admin-spin-button'),
-        onPressed: loading || _isSpinning || !canSpin ? null : _spinWheel,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: context.themePrimary,
-          foregroundColor: AppColors.white,
-          disabledBackgroundColor: context.themeSoftSurface,
-          disabledForegroundColor: context.themeTextSecondary,
-          minimumSize: const Size.fromHeight(56),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-          elevation: canSpin && !_isSpinning ? 6 : 0,
-          shadowColor: context.themePrimary.withValues(alpha: 0.5),
+        onPressed: enabled ? _spinWheel : null,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.gold,
+          foregroundColor: AppColors.primary,
+          disabledBackgroundColor: AppColors.white.withValues(alpha: 0.12),
+          disabledForegroundColor: AppColors.white.withValues(alpha: 0.6),
+          minimumSize: const Size.fromHeight(54),
+          shape: const StadiumBorder(),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (_isSpinning)
-              SizedBox(
-                width: 24,
-                height: 24,
-                child: AppLoader(
-                  color: context.themeTextSecondary,
-                  strokeWidth: 2,
-                ),
+              const SizedBox(
+                width: 22,
+                height: 22,
+                child: AppLoader(color: AppColors.primary, strokeWidth: 2),
               )
             else
-              const Icon(Icons.casino_rounded, size: 26),
+              const Icon(Icons.casino_rounded, size: 24),
             const SizedBox(width: 10),
             Flexible(
               child: Text(
                 label,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
                   letterSpacing: 1,
                 ),
               ),
@@ -649,372 +294,377 @@ class _DailySpinManagementState extends State<DailySpinManagement>
       ),
     );
   }
+}
 
-  Widget _buildTodaysWinners() {
-    final today = DateTime.now();
-    final todayStr =
-        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+/// Carpenter & Interior / Architect & Engineer.
+class _GroupSwitch extends StatelessWidget {
+  const _GroupSwitch({
+    required this.group,
+    required this.enabled,
+    required this.onChanged,
+  });
 
+  final LeaderboardGroup group;
+  final bool enabled;
+  final ValueChanged<LeaderboardGroup> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SegmentedButton<LeaderboardGroup>(
+          segments: [
+            for (final g in LeaderboardGroup.values)
+              ButtonSegment(value: g, label: Text(g.shortLabel(context))),
+          ],
+          selected: {group},
+          showSelectedIcon: false,
+          onSelectionChanged: enabled ? (s) => onChanged(s.first) : null,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          AppLocalizations.of(context)!.spinGroupHint,
+          textAlign: TextAlign.center,
+          style: AppTypography.caption(color: context.themeTextSecondary),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.canSpin});
+  final bool canSpin;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: context.themeSurface,
-        borderRadius: AppRadius.all16,
-        border: Border.all(color: context.themeBorder),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppColors.white.withValues(alpha: 0.1),
+        borderRadius: AppRadius.pill,
+        border: Border.all(
+          color: canSpin
+              ? AppColors.gold
+              : AppColors.white.withValues(alpha: 0.3),
+        ),
       ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.today_rounded,
-                color: context.themeContentColor,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                AppLocalizations.of(context)!.todaySWinners,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: context.themeTextPrimary,
-                ),
-              ),
-            ],
+          Icon(
+            canSpin ? Icons.check_circle_rounded : Icons.schedule_rounded,
+            color: canSpin ? AppColors.gold : AppColors.white,
+            size: 18,
           ),
-          const SizedBox(height: 16),
-          StreamBuilder<QuerySnapshot>(
-            stream: appFirestore
-                .collection('daily_prize_winners')
-                .where('date', isEqualTo: todayStr)
-                .snapshots(),
-            builder: (context, snapshot) {
-              // This branch's winners only.
-              final branchDocs = (snapshot.data?.docs ?? [])
-                  .where(
-                    (doc) => DailyWinnerScope.belongsTo(
-                      doc.data() as Map<String, dynamic>?,
-                      CurrentBranchService.adminBranchId,
-                      group: _group,
-                    ),
-                  )
-                  .toList();
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: AppLoader(),
-                  ),
-                );
-              }
-
-              if (branchDocs.isEmpty) {
-                return Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: context.themeSoftSurface,
-                    borderRadius: AppRadius.md12,
-                  ),
-                  child: Center(
-                    child: AppText.body(
-                      AppLocalizations.of(context)!.noWinnersYetToday,
-                      color: context.themeTextSecondary,
-                    ),
-                  ),
-                );
-              }
-
-              return Column(
-                children: branchDocs.map((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: context.themeSoftSurface,
-                      borderRadius: AppRadius.md12,
-                      border: Border.all(
-                        color: AppColors.warning.withValues(alpha: 0.4),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: context.themeSoftSurface,
-                            image:
-                                data['carpenterPhoto'] != null &&
-                                    data['carpenterPhoto'].toString().isNotEmpty
-                                ? DecorationImage(
-                                    image: NetworkImage(data['carpenterPhoto']),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                          ),
-                          child:
-                              data['carpenterPhoto'] == null ||
-                                  data['carpenterPhoto'].toString().isEmpty
-                              ? Icon(
-                                  Icons.person_rounded,
-                                  color: context.themeTextSecondary,
-                                )
-                              : null,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            data['carpenterName'] ??
-                                AppLocalizations.of(context)!.unknown,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: context.themeTextPrimary,
-                            ),
-                          ),
-                        ),
-                        const Icon(
-                          Icons.emoji_events_rounded,
-                          color: AppColors.warning,
-                          size: 32,
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              );
-            },
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              canSpin ? l10n.readyToSpin : l10n.spinGroupDoneToday,
+              textAlign: TextAlign.center,
+              style: AppTypography.label(color: AppColors.white),
+            ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildMonthlyWinners() {
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final firstDayStr =
-        '${firstDayOfMonth.year}-${firstDayOfMonth.month.toString().padLeft(2, '0')}-01';
+/// Shared card frame for the sections under the wheel.
+class _Section extends StatelessWidget {
+  const _Section({
+    required this.icon,
+    required this.title,
+    required this.child,
+    this.trailing,
+  });
 
+  final IconData icon;
+  final String title;
+  final Widget child;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.themeSurface,
+        color: context.themeCard,
         borderRadius: AppRadius.all16,
         border: Border.all(color: context.themeBorder),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 12, 12, 14),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.calendar_month_rounded,
-                    color: context.themeContentColor,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    AppLocalizations.of(context)!.monthlyWinners,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: context.themeTextPrimary,
-                    ),
-                  ),
-                ],
-              ),
-              ElevatedButton.icon(
-                onPressed: () =>
-                    GoRouter.of(context).push('/admin/spin-history'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.themePrimary,
-                  foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
-                icon: const Icon(Icons.history_rounded, size: 18),
-                label: Text(
-                  AppLocalizations.of(context)!.fullHistory,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              Icon(icon, size: 20, color: context.themeContentColor),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTypography.section(color: context.themeTextPrimary),
                 ),
               ),
+              if (trailing != null) trailing!,
             ],
           ),
-          const SizedBox(height: 16),
-          StreamBuilder<QuerySnapshot>(
-            stream: appFirestore
-                .collection('daily_prize_winners')
-                .where('date', isGreaterThanOrEqualTo: firstDayStr)
-                .orderBy('date', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              // This branch's winners only.
-              final branchDocs = (snapshot.data?.docs ?? [])
-                  .where(
-                    (doc) => DailyWinnerScope.belongsTo(
-                      doc.data() as Map<String, dynamic>?,
-                      CurrentBranchService.adminBranchId,
-                      group: _group,
-                    ),
-                  )
-                  .toList();
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: AppLoader(),
-                  ),
-                );
-              }
+          const SizedBox(height: 10),
+          child,
+        ],
+      ),
+    );
+  }
+}
 
-              if (branchDocs.isEmpty) {
-                return Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: context.themeSoftSurface,
-                    borderRadius: AppRadius.md12,
-                  ),
-                  child: Center(
-                    child: Text(
-                      AppLocalizations.of(context)!.noWinnersThisMonthYet,
-                      style: TextStyle(color: context.themeTextSecondary),
-                    ),
-                  ),
-                );
-              }
+Widget _avatar(BuildContext context, String? url, {double size = 44}) {
+  final valid = url != null && url.trim().startsWith('http');
+  return Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: AppColors.primary,
+      border: Border.all(color: AppColors.gold, width: 1.5),
+    ),
+    clipBehavior: Clip.antiAlias,
+    child: valid
+        ? Image.network(
+            url.trim(),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) =>
+                const Icon(Icons.person_rounded, color: AppColors.gold),
+          )
+        : const Icon(Icons.person_rounded, color: AppColors.gold),
+  );
+}
 
-              final Map<String, List<Map<String, dynamic>>> groupedWinners = {};
-              for (var doc in branchDocs) {
-                final data = doc.data() as Map<String, dynamic>;
-                final date = data['date'] as String? ?? '';
-                if (date.isNotEmpty) {
-                  if (!groupedWinners.containsKey(date)) {
-                    groupedWinners[date] = [];
-                  }
-                  groupedWinners[date]!.add(data);
-                }
-              }
+Widget _emptyNote(BuildContext context, String text) => Container(
+  padding: const EdgeInsets.all(14),
+  decoration: BoxDecoration(
+    color: context.themeSoftSurface,
+    borderRadius: AppRadius.md12,
+  ),
+  child: Text(
+    text,
+    textAlign: TextAlign.center,
+    style: AppTypography.bodyMedium().copyWith(
+      color: context.themeTextSecondary,
+    ),
+  ),
+);
 
-              final sortedDates = groupedWinners.keys.toList()
-                ..sort((a, b) => b.compareTo(a));
+/// Today's winner of the selected group in this branch.
+class _TodaysWinner extends StatelessWidget {
+  const _TodaysWinner({required this.group, required this.date});
+  final LeaderboardGroup group;
+  final String date;
 
-              return Column(
-                children: sortedDates.map((date) {
-                  final winners = groupedWinners[date]!;
-                  final dateObj = DateTime.parse(date);
-                  final formattedDate =
-                      '${dateObj.day} ${_getMonthName(dateObj.month)} ${dateObj.year}';
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: context.themeSoftSurface,
-                      borderRadius: AppRadius.md12,
-                      border: Border.all(color: context.themeBorder),
-                    ),
-                    child: ExpansionTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(8),
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: appFirestore
+          .collection('daily_prize_winners')
+          .where('date', isEqualTo: date)
+          .snapshots(),
+      builder: (context, snap) {
+        final winners = (snap.data?.docs ?? [])
+            .map((d) => d.data())
+            .where(
+              (d) => DailyWinnerScope.belongsTo(
+                d,
+                CurrentBranchService.adminBranchId,
+                group: group,
+              ),
+            )
+            .toList();
+        return _Section(
+          icon: Icons.emoji_events_rounded,
+          title: l10n.spinTodayWinnerLabel,
+          child: snap.connectionState == ConnectionState.waiting
+              ? const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Center(child: AppLoader()),
+                )
+              : winners.isEmpty
+              ? _emptyNote(context, l10n.noWinnersYetToday)
+              : Column(
+                  children: [
+                    for (final w in winners)
+                      Container(
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: context.themeSecondary.withValues(alpha: 0.1),
-                          borderRadius: AppRadius.sm8,
+                          color: context.themeGoldSoft,
+                          borderRadius: AppRadius.md12,
+                          border: Border.all(color: AppColors.gold),
                         ),
-                        child: Icon(
-                          Icons.calendar_today_rounded,
-                          color: context.themeContentColor,
-                          size: 20,
+                        child: Row(
+                          children: [
+                            _avatar(
+                              context,
+                              w['carpenterPhoto'] as String?,
+                              size: 52,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                (w['carpenterName'] as String?)
+                                            ?.trim()
+                                            .isNotEmpty ==
+                                        true
+                                    ? w['carpenterName'] as String
+                                    : l10n.unknown,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.labelLarge().copyWith(
+                                  fontSize: 17,
+                                  color: context.themeTextPrimary,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.celebration_rounded,
+                              color: AppColors.gold,
+                              size: 30,
+                            ),
+                          ],
                         ),
                       ),
-                      title: AppText.section(
-                        formattedDate,
-                        color: context.themeTextPrimary,
-                      ),
-                      subtitle: AppText.body(
-                        AppLocalizations.of(
-                          context,
-                        )!.winnersCount(winners.length),
-                        color: context.themeTextSecondary,
-                      ),
-                      children: winners.map((winner) {
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: context.themeBorder,
-                            backgroundImage:
-                                winner['carpenterPhoto']
-                                        ?.toString()
-                                        .isNotEmpty ==
-                                    true
-                                ? NetworkImage(winner['carpenterPhoto'])
-                                : null,
-                            child:
-                                winner['carpenterPhoto']?.toString().isEmpty ??
-                                    true
-                                ? Icon(
-                                    Icons.person_rounded,
-                                    color: context.themeTextSecondary,
-                                  )
-                                : null,
-                          ),
-                          title: AppText.label(
-                            winner['carpenterName'] ??
-                                AppLocalizations.of(context)!.unknown,
-                          ),
-                          trailing: const Icon(
-                            Icons.emoji_events_rounded,
-                            color: AppColors.warning,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                }).toList(),
-              );
-            },
+                  ],
+                ),
+        );
+      },
+    );
+  }
+}
+
+/// This month's winners of the selected group, newest first.
+class _MonthWinners extends StatelessWidget {
+  const _MonthWinners({required this.group});
+  final LeaderboardGroup group;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final firstDay = DateFormat('yyyy-MM-01').format(now);
+    final locale = Localizations.localeOf(context).toString();
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: appFirestore
+          .collection('daily_prize_winners')
+          .where('date', isGreaterThanOrEqualTo: firstDay)
+          .orderBy('date', descending: true)
+          .snapshots(),
+      builder: (context, snap) {
+        final winners = (snap.data?.docs ?? [])
+            .map((d) => d.data())
+            .where(
+              (d) => DailyWinnerScope.belongsTo(
+                d,
+                CurrentBranchService.adminBranchId,
+                group: group,
+              ),
+            )
+            .toList();
+        return _Section(
+          icon: Icons.calendar_month_rounded,
+          title: l10n.spinThisMonth,
+          trailing: TextButton(
+            key: const ValueKey('admin-spin-full-history'),
+            onPressed: () => GoRouter.of(context).push('/admin/spin-history'),
+            child: Text(l10n.fullHistory),
           ),
+          child: snap.connectionState == ConnectionState.waiting
+              ? const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Center(child: AppLoader()),
+                )
+              : winners.isEmpty
+              ? _emptyNote(context, l10n.noWinnersThisMonthYet)
+              : Column(
+                  children: [
+                    for (final (i, w) in winners.indexed) ...[
+                      if (i > 0)
+                        Divider(height: 1, color: context.themeDivider),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            _DateBadge(
+                              date: DateTime.tryParse(
+                                w['date'] as String? ?? '',
+                              ),
+                              locale: locale,
+                            ),
+                            const SizedBox(width: 12),
+                            _avatar(context, w['carpenterPhoto'] as String?),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                (w['carpenterName'] as String?)
+                                            ?.trim()
+                                            .isNotEmpty ==
+                                        true
+                                    ? w['carpenterName'] as String
+                                    : l10n.unknown,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.label(
+                                  color: context.themeTextPrimary,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.emoji_events_rounded,
+                              color: AppColors.gold,
+                              size: 22,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+        );
+      },
+    );
+  }
+}
+
+class _DateBadge extends StatelessWidget {
+  const _DateBadge({required this.date, required this.locale});
+  final DateTime? date;
+  final String locale;
+
+  @override
+  Widget build(BuildContext context) {
+    final d = date;
+    return Container(
+      width: 46,
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: context.themeSoftSurface,
+        borderRadius: AppRadius.sm8,
+        border: Border.all(color: context.themeBorder),
+      ),
+      child: Column(
+        children: [
+          Text(
+            d == null ? '–' : '${d.day}',
+            style: AppTypography.section(color: context.themeTextPrimary),
+          ),
+          if (d != null)
+            Text(
+              DateFormat.MMM(locale).format(d),
+              style: AppTypography.caption(color: context.themeTextSecondary),
+            ),
         ],
       ),
     );
-  }
-
-  String _getMonthName(int month) {
-    final months = [
-      AppLocalizations.of(context)!.jan,
-      AppLocalizations.of(context)!.feb,
-      AppLocalizations.of(context)!.mar,
-      AppLocalizations.of(context)!.apr,
-      AppLocalizations.of(context)!.may,
-      AppLocalizations.of(context)!.jun,
-      AppLocalizations.of(context)!.jul,
-      AppLocalizations.of(context)!.aug,
-      AppLocalizations.of(context)!.sep,
-      AppLocalizations.of(context)!.oct,
-      AppLocalizations.of(context)!.nov,
-      AppLocalizations.of(context)!.dec,
-    ];
-    return months[month - 1];
   }
 }

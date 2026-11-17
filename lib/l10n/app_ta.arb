@@ -1823,5 +1823,10 @@
   "usersFilterTier": "நிலை",
   "usersFilterRole": "உறுப்பினர் வகை",
   "usersFilterReset": "மீட்டமை",
-  "usersFilterButton": "உறுப்பினர்களை வடிகட்டு"
+  "usersFilterButton": "உறுப்பினர்களை வடிகட்டு",
+  "spinWheelTitle": "டெய்லி பை டெய்லி வின்",
+  "spinWheelSubtitle": "இன்றைய அதிர்ஷ்ட வெற்றியாளரைத் தேர்ந்தெடுக்கச் சுழற்றுங்கள்",
+  "spinEligibleToday": "இன்று தகுதியானவர்கள்",
+  "spinTodayWinnerLabel": "இன்றைய வெற்றியாளர்",
+  "spinThisMonth": "இந்த மாதம்"
 }
