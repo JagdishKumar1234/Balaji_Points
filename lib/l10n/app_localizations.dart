@@ -9858,6 +9858,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Review requests'**
   String get adminNotifActRequest;
+
+  /// No description provided for @adminTabBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills'**
+  String get adminTabBills;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

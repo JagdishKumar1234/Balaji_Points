@@ -5343,4 +5343,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get adminNotifActRequest => 'கோரிக்கைகளைப் பார்';
+
+  @override
+  String get adminTabBills => 'பில்கள்';
 }

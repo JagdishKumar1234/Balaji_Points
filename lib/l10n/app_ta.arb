@@ -1817,5 +1817,6 @@
   "adminNotifCatBill": "புதிய பில்",
   "adminNotifCatRequest": "கணக்கு கோரிக்கை",
   "adminNotifActBill": "பில்களைப் பார்",
-  "adminNotifActRequest": "கோரிக்கைகளைப் பார்"
+  "adminNotifActRequest": "கோரிக்கைகளைப் பார்",
+  "adminTabBills": "பில்கள்"
 }

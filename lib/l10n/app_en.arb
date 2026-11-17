@@ -3134,5 +3134,6 @@
   "adminNotifCatBill": "New bill",
   "adminNotifCatRequest": "Account request",
   "adminNotifActBill": "Review bills",
-  "adminNotifActRequest": "Review requests"
+  "adminNotifActRequest": "Review requests",
+  "adminTabBills": "Bills"
 }

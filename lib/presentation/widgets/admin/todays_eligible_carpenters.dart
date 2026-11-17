@@ -143,10 +143,7 @@ class TodaysEligibleCarpenters extends StatelessWidget {
             color: context.themeTextMuted,
           ),
           const SizedBox(height: 16),
-          AppText.label(
-            group.shortLabel(context),
-            textAlign: TextAlign.center,
-          ),
+          AppText.label(group.shortLabel(context), textAlign: TextAlign.center),
           const SizedBox(height: 8),
           AppText.body(
             AppLocalizations.of(context)!.spinNoQualifiedToday,

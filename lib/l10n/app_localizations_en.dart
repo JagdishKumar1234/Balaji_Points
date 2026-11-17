@@ -5353,4 +5353,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminNotifActRequest => 'Review requests';
+
+  @override
+  String get adminTabBills => 'Bills';
 }

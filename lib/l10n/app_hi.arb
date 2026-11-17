@@ -1817,5 +1817,6 @@
   "adminNotifCatBill": "नया बिल",
   "adminNotifCatRequest": "खाता अनुरोध",
   "adminNotifActBill": "बिल देखें",
-  "adminNotifActRequest": "अनुरोध देखें"
+  "adminNotifActRequest": "अनुरोध देखें",
+  "adminTabBills": "बिल"
 }

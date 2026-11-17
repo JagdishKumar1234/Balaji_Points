@@ -47,10 +47,14 @@ void main() {
     final source = File(
       'lib/presentation/screens/admin/admin_home_page.dart',
     ).readAsStringSync();
-    expect(
-      source,
-      contains('if (_showDashboard)\n              _AdminMoreMenu('),
-    );
+    // Phones: theme and logout only in the More tab; wide screens: only in
+    // the dashboard menu. Never on a section screen.
+    expect(source, contains('if (_showDashboard && !_phone)'));
     expect(source, isNot(contains('_AdminThemeToggle(')));
+    final more = File(
+      'lib/presentation/widgets/admin/admin_more_page.dart',
+    ).readAsStringSync();
+    expect(more, contains('onTap: onLogout'));
+    expect(more, contains('toggleTheme()'));
   });
 }

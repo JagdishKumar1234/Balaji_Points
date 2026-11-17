@@ -42,6 +42,11 @@ import 'firebase_duplicate_checker_screen.dart';
 import 'smart_duplicate_cleanup_screen.dart';
 import 'send_greeting_page.dart';
 import 'send_notification_page.dart';
+import '../../widgets/admin/admin_bottom_nav_bar.dart';
+import '../../widgets/admin/admin_more_page.dart';
+import '../../widgets/admin/admin_tab_pages.dart';
+import 'package:balaji_points/core/layout/responsive.dart';
+import 'package:balaji_points/providers/admin_counts_provider.dart';
 import '../../widgets/shared/responsive_role_navigation.dart';
 
 class AdminHomePage extends ConsumerStatefulWidget {
@@ -108,6 +113,27 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     'newUserRegistered',
   ];
 
+  /// Where Back goes from the open section: 'more' when it was opened from
+  /// the More tab, otherwise the dashboard.
+  String? _origin;
+
+  /// Sections that are a bottom tab of their own on phones.
+  static const _tabRoots = {'pending', 'history', 'users', 'more'};
+
+  bool get _phone => !context.isWideScreen;
+
+  bool get _isTabRoot =>
+      _phone && !_showDashboard && _tabRoots.contains(_selectedSection);
+
+  AdminTab? get _currentTab {
+    if (_showDashboard) return AdminTab.home;
+    return switch (_selectedSection) {
+      'pending' || 'history' => AdminTab.bills,
+      'users' => AdminTab.members,
+      _ => AdminTab.more,
+    };
+  }
+
   void _openSection(String section) {
     // Account requests is its own screen (the super admin opens it too).
     if (section == 'requests') {
@@ -115,6 +141,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       return;
     }
     setState(() {
+      _origin = !_tabRoots.contains(section) && _selectedSection == 'more'
+          ? 'more'
+          : null;
       _showDashboard = false;
       _selectedSection = section;
     });
@@ -124,7 +153,33 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     setState(() {
       _showDashboard = true;
       _selectedSection = null;
+      _origin = null;
     });
+  }
+
+  /// Back from a section: to More if it came from there, else the dashboard.
+  void _goBack() {
+    if (_origin == 'more') {
+      setState(() {
+        _selectedSection = 'more';
+        _origin = null;
+      });
+    } else {
+      _backToDashboard();
+    }
+  }
+
+  void _onTab(AdminTab tab) {
+    switch (tab) {
+      case AdminTab.home:
+        _backToDashboard();
+      case AdminTab.bills:
+        _openSection('pending');
+      case AdminTab.members:
+        _openSection('users');
+      case AdminTab.more:
+        _openSection('more');
+    }
   }
 
   void _onRailSelected(int index) {
@@ -273,6 +328,13 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     }
   }
 
+  /// Open enquiries for the More badge (none when they cannot be read).
+  int _openEnquiries() {
+    final async = ref.watch(enquiriesProvider(adminEnquiriesKey()));
+    if (async.hasError) return 0;
+    return async.asData?.value.where((e) => e.isOpen).length ?? 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -285,9 +347,9 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             return;
           }
 
-          // From a section, Back returns to the dashboard.
+          // From a section, Back returns to where it was opened from.
           if (!_showDashboard) {
-            _backToDashboard();
+            _goBack();
             return;
           }
 
@@ -303,11 +365,13 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           elevation: 0,
           scrolledUnderElevation: 0,
           titleSpacing: _showDashboard ? 0 : null,
-          leading: _showDashboard
+          // Tab screens on phones have no back arrow: the tab bar is there.
+          automaticallyImplyLeading: false,
+          leading: _showDashboard || _isTabRoot
               ? null
               : IconButton(
                   icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 22),
-                  onPressed: _backToDashboard,
+                  onPressed: _goBack,
                 ),
           title: _showDashboard
               ? Padding(
@@ -374,10 +438,11 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                   color: context.themeTextPrimary,
                 ),
           centerTitle: !_showDashboard,
-          // Theme and logout live only on the dashboard, in one menu.
-          // Section screens show just their own action (if any).
+          // Theme and logout: in the More tab on phones; wide screens (no
+          // tab bar) keep them in the dashboard menu. Section screens show
+          // only their own action (if any).
           actions: [
-            if (_showDashboard)
+            if (_showDashboard && !_phone)
               _AdminMoreMenu(onLogout: _handleLogout)
             else if (_selectedSection == 'notifications')
               IconButton(
@@ -394,6 +459,22 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
             ),
           ),
         ),
+        // Phones: admin tab bar, hidden while the keyboard is open so forms
+        // keep their room.
+        bottomNavigationBar:
+            _phone && MediaQuery.viewInsetsOf(context).bottom == 0
+            ? AdminBottomNavBar(
+                current: _currentTab,
+                onTab: _onTab,
+                onAddBill: () => context.push('/admin/add-bill'),
+                billsBadge:
+                    ref.watch(adminPendingBillsCountProvider).value ?? 0,
+                membersBadge: ref.watch(adminRequestsCountProvider).value ?? 0,
+                moreBadge:
+                    (ref.watch(adminAlertsCountProvider).value ?? 0) +
+                    _openEnquiries(),
+              )
+            : null,
         body: Container(
           color: context.themeBackground,
           child: Column(
@@ -421,7 +502,11 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                         // The Scaffold already shrinks for the keyboard;
                         // adding viewInsets here counted it twice and
                         // squeezed every admin form to nothing while typing.
-                        SizedBox(height: MediaQuery.paddingOf(context).bottom),
+                        // On phones the tab bar clears the system bar.
+                        if (!_phone)
+                          SizedBox(
+                            height: MediaQuery.paddingOf(context).bottom,
+                          ),
                       ],
                     ),
                   ),
@@ -497,6 +582,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return AppLocalizations.of(context)!.sendNotification;
       case 'greeting':
         return AppLocalizations.of(context)!.sendGreeting;
+      case 'more':
+        return AppLocalizations.of(context)!.navMore;
       case 'catalogs':
         return AppLocalizations.of(context)!.catalogs;
       case 'enquiries':
@@ -541,12 +628,33 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
   Widget _buildSectionContent(String section) {
     switch (section) {
       case 'pending':
-        return const PendingBillsList();
       case 'history':
-        return const BillHistoryList();
+        if (_phone) {
+          return AdminBillsTab(
+            key: ValueKey(section),
+            initial: section == 'history' ? 1 : 0,
+            pendingCount: ref.watch(adminPendingBillsCountProvider).value ?? 0,
+          );
+        }
+        return section == 'pending'
+            ? const PendingBillsList()
+            : const BillHistoryList();
+      case 'more':
+        return AdminMorePage(
+          onOpenSection: _openSection,
+          onLogout: _handleLogout,
+          alertsBadge: ref.watch(adminAlertsCountProvider).value ?? 0,
+          enquiriesBadge: _openEnquiries(),
+        );
       case 'offers':
         return const OffersManagement();
       case 'users':
+        if (_phone) {
+          return AdminMembersTab(
+            requestsCount: ref.watch(adminRequestsCountProvider).value ?? 0,
+            onOpenRequests: () => _openSection('requests'),
+          );
+        }
         return const UsersList();
       case 'notifications':
         return AdminNotificationsPage(

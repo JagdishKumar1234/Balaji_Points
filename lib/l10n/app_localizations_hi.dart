@@ -5342,4 +5342,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get adminNotifActRequest => 'अनुरोध देखें';
+
+  @override
+  String get adminTabBills => 'बिल';
 }

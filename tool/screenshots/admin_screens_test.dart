@@ -14,7 +14,9 @@ import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/models/enquiry.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/screens/admin/admin_notifications_page.dart';
+import 'package:balaji_points/presentation/widgets/admin/admin_bottom_nav_bar.dart';
 import 'package:balaji_points/presentation/widgets/admin/admin_dashboard.dart';
+import 'package:balaji_points/presentation/widgets/admin/admin_more_page.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/services/platform/enquiry_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -117,7 +119,7 @@ void main() {
 
   for (final dark in [false, true]) {
     final mode = dark ? 'dark' : 'light';
-    for (final screen in ['grid', 'list', 'reorder', 'notifications']) {
+    for (final screen in ['grid', 'list', 'reorder', 'notifications', 'more']) {
       testWidgets('$screen $mode', (tester) async {
         SharedPreferences.setMockInitialValues({
           if (screen == 'list') 'admin_dashboard_list_view': true,
@@ -134,9 +136,16 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
 
         final key = GlobalKey();
-        final Widget body = screen == 'notifications'
-            ? const AdminNotificationsPage(embedded: true)
-            : AdminDashboard(onOpenSection: (_) {});
+        final Widget body = switch (screen) {
+          'notifications' => const AdminNotificationsPage(embedded: true),
+          'more' => AdminMorePage(
+            onOpenSection: (_) {},
+            onLogout: () {},
+            alertsBadge: 4,
+            enquiriesBadge: 1,
+          ),
+          _ => AdminDashboard(onOpenSection: (_) {}),
+        };
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -162,6 +171,17 @@ void main() {
                     ),
                   ),
                   body: body,
+                  bottomNavigationBar: AdminBottomNavBar(
+                    current: switch (screen) {
+                      'more' || 'notifications' => AdminTab.more,
+                      _ => AdminTab.home,
+                    },
+                    onTab: (_) {},
+                    onAddBill: () {},
+                    billsBadge: 2,
+                    membersBadge: 1,
+                    moreBadge: 5,
+                  ),
                 ),
               ),
             ),
