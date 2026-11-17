@@ -54,7 +54,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
       ),
     );
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
       CurvedAnimation(
         parent: _pulseAnimationController!,
         curve: Curves.easeInOut,
@@ -368,7 +368,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
               ),
             ],
           ),
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
           child: Column(
             children: [
               // Spinning Wheel Animation
@@ -575,103 +575,78 @@ class _DailySpinManagementState extends State<DailySpinManagement>
 
               const SizedBox(height: 32),
 
-              // Spin Button
+              // Spin Button: full width so the label never overflows a
+              // narrow phone; the pulse stays inside the card.
               if (_pulseAnimation != null)
                 AnimatedBuilder(
                   animation: _pulseAnimation!,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: canSpin && !_isSpinning
-                          ? _pulseAnimation!.value
-                          : 1.0,
-                      child: ElevatedButton(
-                        onPressed: _isSpinning || !canSpin ? null : _spinWheel,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: canSpin
-                              ? context.themePrimary
-                              : context.themeTextSecondary,
-                          foregroundColor: AppColors.white,
-                          disabledBackgroundColor: context.themeSoftSurface,
-                          disabledForegroundColor: context.themeTextSecondary,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 48,
-                            vertical: 20,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppRadius.all16,
-                          ),
-                          elevation: _isSpinning ? 0 : 8,
-                          shadowColor: context.themePrimary.withValues(
-                            alpha: 0.5,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (_isSpinning)
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: AppLoader(
-                                  color: context.themeTextSecondary,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            else
-                              const Icon(Icons.casino_rounded, size: 28),
-                            const SizedBox(width: 12),
-                            Text(
-                              _isSpinning
-                                  ? AppLocalizations.of(context)!.spinning
-                                  : AppLocalizations.of(context)!.spinNow,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              if (_pulseAnimation == null)
-                ElevatedButton(
-                  onPressed: null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.themeSoftSurface,
-                    foregroundColor: context.themeTextSecondary,
-                    disabledBackgroundColor: context.themeSoftSurface,
-                    disabledForegroundColor: context.themeTextSecondary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 20,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppRadius.all16,
-                    ),
+                  builder: (context, child) => Transform.scale(
+                    scale: canSpin && !_isSpinning
+                        ? _pulseAnimation!.value
+                        : 1.0,
+                    child: child,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.casino_rounded, size: 28),
-                      SizedBox(width: 12),
-                      Text(
-                        AppLocalizations.of(context)!.loading,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                  child: _spinButton(canSpin: canSpin),
+                )
+              else
+                _spinButton(canSpin: false, loading: true),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _spinButton({required bool canSpin, bool loading = false}) {
+    final l10n = AppLocalizations.of(context)!;
+    final label = loading
+        ? l10n.loading
+        : (_isSpinning ? l10n.spinning : l10n.spinNow);
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        key: const ValueKey('admin-spin-button'),
+        onPressed: loading || _isSpinning || !canSpin ? null : _spinWheel,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: context.themePrimary,
+          foregroundColor: AppColors.white,
+          disabledBackgroundColor: context.themeSoftSurface,
+          disabledForegroundColor: context.themeTextSecondary,
+          minimumSize: const Size.fromHeight(56),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+          elevation: canSpin && !_isSpinning ? 6 : 0,
+          shadowColor: context.themePrimary.withValues(alpha: 0.5),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_isSpinning)
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: AppLoader(
+                  color: context.themeTextSecondary,
+                  strokeWidth: 2,
+                ),
+              )
+            else
+              const Icon(Icons.casino_rounded, size: 26),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
