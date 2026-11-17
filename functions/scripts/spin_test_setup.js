@@ -63,6 +63,7 @@ async function deleteWhere(col, field, value) {
       bills: await deleteWhere("bills", "branchId", BRANCH),
       winners: await deleteWhere("daily_winners", "branchId", BRANCH),
       history: await deleteWhere("daily_prize_winners", "branchId", BRANCH),
+      notices: await deleteWhere("spin_notices", "branchId", BRANCH),
       logs: await deleteWhere("notification_logs", "branchId", BRANCH),
       queue: await deleteWhere("notification_queue", "branchId", BRANCH),
     };

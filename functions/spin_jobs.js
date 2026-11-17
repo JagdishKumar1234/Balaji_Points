@@ -130,22 +130,29 @@ async function notifySpinResult(db, messaging, docId, rec) {
     result.duplicate = true;
   }
 
-  // Everyone else in the group: one shared record (not shown to the winner).
-  const resultLog = db.collection("notification_logs")
-      .doc(`spinResult_${docId}`);
-  if (await createOnce(resultLog, {
-    userId: null, isBroadcast: true, type: "spinResult", category: "dailySpin",
-    title: texts.others.title, body: texts.others.body, branchId,
-    targetRoles: spin.GROUP_ROLES[group], excludeUserIds: [winnerId],
-    data, recipients: audience.otherIds.length,
-    sentAt: FieldValue.serverTimestamp(), pushStatus: "sending",
+  // Everyone else in the group: a personal record each, so every app
+  // version (also those from before role filtering) shows it only to them.
+  // spin_notices/{docId} makes sure a retried trigger sends it once.
+  if (await createOnce(db.collection("spin_notices").doc(docId), {
+    branchId, group, winnerId, recipients: audience.otherIds.length,
+    createdAt: FieldValue.serverTimestamp(),
   })) {
+    for (const ids of chunk(audience.otherIds, 400)) {
+      const batch = db.batch();
+      for (const uid of ids) {
+        batch.set(db.collection("notification_logs")
+            .doc(`spinResult_${docId}_${uid}`), {
+          userId: uid, type: "spinResult", category: "dailySpin",
+          title: texts.others.title, body: texts.others.body, branchId,
+          data, sentAt: FieldValue.serverTimestamp(),
+        });
+      }
+      await batch.commit();
+    }
     const r = await pushAll(messaging, audience.otherTokens, texts.others,
-        {...data, type: "spinResult", logId: resultLog.id});
+        {...data, type: "spinResult"});
     r.dead.forEach((t) => dead.add(t));
     result.others = r.sent;
-    await resultLog.update({pushStatus: "sent", pushSent: r.sent,
-      pushFailed: r.failed});
   }
 
   await dropDeadTokens(db, users.docs, dead);
@@ -190,6 +197,9 @@ async function sendSpinReminders(db, messaging, opts = {}) {
     const log = db.collection("notification_logs")
         .doc(`spinReminder_${branchId}_${day}`);
     const created = await createOnce(log, {
+      // Not a member id: app versions from before admin reminders hide it
+      // from members; the admin list shows it by type and branch.
+      userId: "branch_admins",
       type: "spinReminder", isBroadcast: true, branchId,
       title: msg.title, body: msg.body, status: "admin_broadcast",
       data: {section: "spin", date: day},

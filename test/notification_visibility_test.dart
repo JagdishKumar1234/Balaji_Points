@@ -196,7 +196,11 @@ void main() {
     });
 
     test('spin reminders are for the branch admin only', () {
-      final reminder = {'type': 'spinReminder', 'branchId': _karur};
+      final reminder = {
+        'type': 'spinReminder',
+        'userId': 'branch_admins',
+        'branchId': _karur,
+      };
       expect(admin(reminder), isTrue);
       expect(admin(reminder, branch: _erode), isFalse);
       expect(member(reminder), isFalse);
