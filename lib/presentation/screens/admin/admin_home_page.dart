@@ -374,19 +374,16 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                   color: context.themeTextPrimary,
                 ),
           centerTitle: !_showDashboard,
+          // Theme and logout live only on the dashboard, in one menu.
+          // Section screens show just their own action (if any).
           actions: [
-            // Theme toggle — same animated icon as carpenter home
-            _AdminThemeToggle(fgColor: context.themeTextPrimary),
-            if (!_showDashboard && _selectedSection == 'notifications')
+            if (_showDashboard)
+              _AdminMoreMenu(onLogout: _handleLogout)
+            else if (_selectedSection == 'notifications')
               IconButton(
                 icon: const Icon(Icons.delete_outline_rounded, size: 24),
                 onPressed: _deleteAllAdminNotifications,
                 tooltip: AppLocalizations.of(context)!.deleteAllNotifications2,
-              )
-            else
-              IconButton(
-                icon: const Icon(Icons.logout_rounded, size: 24),
-                onPressed: _handleLogout,
               ),
           ],
           bottom: PreferredSize(
@@ -552,7 +549,10 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       case 'users':
         return const UsersList();
       case 'notifications':
-        return const AdminNotificationsPage(embedded: true);
+        return AdminNotificationsPage(
+          embedded: true,
+          onOpenSection: _openSection,
+        );
       case 'spin':
         return const DailySpinManagement();
       case 'points-repair':
@@ -588,31 +588,56 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
 }
 
 // ---------------------------------------------------------------------------
-// Theme toggle button — reusable for admin AppBar
+// Dashboard "more" menu: theme and logout (not shown on section screens)
 // ---------------------------------------------------------------------------
 
-class _AdminThemeToggle extends ConsumerWidget {
-  final Color fgColor;
-  const _AdminThemeToggle({required this.fgColor});
+class _AdminMoreMenu extends ConsumerWidget {
+  const _AdminMoreMenu({required this.onLogout});
+  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return IconButton(
-      tooltip: isDark
-          ? AppLocalizations.of(context)!.switchToLight
-          : AppLocalizations.of(context)!.switchToDark,
-      onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
-      icon: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        transitionBuilder: (child, anim) =>
-            RotationTransition(turns: anim, child: child),
-        child: Icon(
-          isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round_rounded,
-          key: ValueKey(isDark),
-          color: fgColor,
+    return PopupMenuButton<String>(
+      tooltip: l10n.adminMoreOptions,
+      icon: Icon(Icons.more_vert_rounded, color: context.themeTextPrimary),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.md12),
+      onSelected: (value) {
+        if (value == 'theme') {
+          ref.read(themeModeProvider.notifier).toggleTheme();
+        } else if (value == 'logout') {
+          onLogout();
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'theme',
+          child: Row(
+            children: [
+              Icon(
+                isDark
+                    ? Icons.wb_sunny_rounded
+                    : Icons.nightlight_round_rounded,
+                size: 20,
+                color: context.themeContentColor,
+              ),
+              const SizedBox(width: 12),
+              Text(isDark ? l10n.switchToLight : l10n.switchToDark),
+            ],
+          ),
         ),
-      ),
+        PopupMenuItem(
+          value: 'logout',
+          child: Row(
+            children: [
+              Icon(Icons.logout_rounded, size: 20, color: context.themeError),
+              const SizedBox(width: 12),
+              Text(l10n.logout, style: TextStyle(color: context.themeError)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

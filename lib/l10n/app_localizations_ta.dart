@@ -5271,4 +5271,76 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get notifCatNormal => 'பொது';
+
+  @override
+  String get adminViewGrid => 'கட்ட காட்சி';
+
+  @override
+  String get adminViewList => 'பட்டியல் காட்சி';
+
+  @override
+  String get adminEditMenu => 'மெனு வரிசையை மாற்று';
+
+  @override
+  String get adminEditMenuHint => 'வரிசையை மாற்ற இழுக்கவும்';
+
+  @override
+  String get adminResetMenu => 'வரிசையை மீட்டமை';
+
+  @override
+  String get adminTodayGlance => 'இன்று ஒரு பார்வையில்';
+
+  @override
+  String get adminStatRequests => 'கோரிக்கைகள்';
+
+  @override
+  String get adminStatMembers => 'உறுப்பினர்கள்';
+
+  @override
+  String get adminMoreOptions => 'மேலும் விருப்பங்கள்';
+
+  @override
+  String get adminDescRequests => 'புதிய பதிவுகளை அங்கீகரி';
+
+  @override
+  String get adminDescPending => 'பரிசீலனைக்குக் காத்திருக்கும் பில்கள்';
+
+  @override
+  String get adminDescHistory => 'அங்கீகரித்த, நிராகரித்த பில்கள்';
+
+  @override
+  String get adminDescOffers => 'சலுகைகளை உருவாக்கி நிர்வகி';
+
+  @override
+  String get adminDescBroadcast => 'உறுப்பினர்களுக்குச் செய்தி அனுப்பு';
+
+  @override
+  String get adminDescGreeting => 'பண்டிகை, சிறப்பு வாழ்த்துகள்';
+
+  @override
+  String get adminDescCatalogs => 'தயாரிப்பு கேட்லாக் பதிவேற்று';
+
+  @override
+  String get adminDescEnquiries => 'உறுப்பினர், விருந்தினர் கேள்விகள்';
+
+  @override
+  String get adminDescUsers => 'உங்கள் கிளையின் உறுப்பினர்கள்';
+
+  @override
+  String get adminDescNotifications => 'புதிய பில்கள், கணக்கு கோரிக்கைகள்';
+
+  @override
+  String get adminDescSpin => 'இன்றைய அதிர்ஷ்ட ஸ்பின்';
+
+  @override
+  String get adminNotifCatBill => 'புதிய பில்';
+
+  @override
+  String get adminNotifCatRequest => 'கணக்கு கோரிக்கை';
+
+  @override
+  String get adminNotifActBill => 'பில்களைப் பார்';
+
+  @override
+  String get adminNotifActRequest => 'கோரிக்கைகளைப் பார்';
 }

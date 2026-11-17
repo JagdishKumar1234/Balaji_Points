@@ -9714,6 +9714,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Normal'**
   String get notifCatNormal;
+
+  /// No description provided for @adminViewGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid view'**
+  String get adminViewGrid;
+
+  /// No description provided for @adminViewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get adminViewList;
+
+  /// No description provided for @adminEditMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit menu order'**
+  String get adminEditMenu;
+
+  /// No description provided for @adminEditMenuHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to change the order'**
+  String get adminEditMenuHint;
+
+  /// No description provided for @adminResetMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset order'**
+  String get adminResetMenu;
+
+  /// No description provided for @adminTodayGlance.
+  ///
+  /// In en, this message translates to:
+  /// **'Today at a glance'**
+  String get adminTodayGlance;
+
+  /// No description provided for @adminStatRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get adminStatRequests;
+
+  /// No description provided for @adminStatMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get adminStatMembers;
+
+  /// No description provided for @adminMoreOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get adminMoreOptions;
+
+  /// No description provided for @adminDescRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve new sign-ups'**
+  String get adminDescRequests;
+
+  /// No description provided for @adminDescPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills waiting for review'**
+  String get adminDescPending;
+
+  /// No description provided for @adminDescHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved and rejected bills'**
+  String get adminDescHistory;
+
+  /// No description provided for @adminDescOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and manage offers'**
+  String get adminDescOffers;
+
+  /// No description provided for @adminDescBroadcast.
+  ///
+  /// In en, this message translates to:
+  /// **'Push a message to members'**
+  String get adminDescBroadcast;
+
+  /// No description provided for @adminDescGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Festival and special wishes'**
+  String get adminDescGreeting;
+
+  /// No description provided for @adminDescCatalogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload product catalogs'**
+  String get adminDescCatalogs;
+
+  /// No description provided for @adminDescEnquiries.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions from members and guests'**
+  String get adminDescEnquiries;
+
+  /// No description provided for @adminDescUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members of your branch'**
+  String get adminDescUsers;
+
+  /// No description provided for @adminDescNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'New bills and account requests'**
+  String get adminDescNotifications;
+
+  /// No description provided for @adminDescSpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Run today\'s lucky spin'**
+  String get adminDescSpin;
+
+  /// No description provided for @adminNotifCatBill.
+  ///
+  /// In en, this message translates to:
+  /// **'New bill'**
+  String get adminNotifCatBill;
+
+  /// No description provided for @adminNotifCatRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Account request'**
+  String get adminNotifCatRequest;
+
+  /// No description provided for @adminNotifActBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Review bills'**
+  String get adminNotifActBill;
+
+  /// No description provided for @adminNotifActRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Review requests'**
+  String get adminNotifActRequest;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

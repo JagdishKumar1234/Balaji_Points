@@ -5281,4 +5281,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifCatNormal => 'Normal';
+
+  @override
+  String get adminViewGrid => 'Grid view';
+
+  @override
+  String get adminViewList => 'List view';
+
+  @override
+  String get adminEditMenu => 'Edit menu order';
+
+  @override
+  String get adminEditMenuHint => 'Drag to change the order';
+
+  @override
+  String get adminResetMenu => 'Reset order';
+
+  @override
+  String get adminTodayGlance => 'Today at a glance';
+
+  @override
+  String get adminStatRequests => 'Requests';
+
+  @override
+  String get adminStatMembers => 'Members';
+
+  @override
+  String get adminMoreOptions => 'More options';
+
+  @override
+  String get adminDescRequests => 'Approve new sign-ups';
+
+  @override
+  String get adminDescPending => 'Bills waiting for review';
+
+  @override
+  String get adminDescHistory => 'Approved and rejected bills';
+
+  @override
+  String get adminDescOffers => 'Create and manage offers';
+
+  @override
+  String get adminDescBroadcast => 'Push a message to members';
+
+  @override
+  String get adminDescGreeting => 'Festival and special wishes';
+
+  @override
+  String get adminDescCatalogs => 'Upload product catalogs';
+
+  @override
+  String get adminDescEnquiries => 'Questions from members and guests';
+
+  @override
+  String get adminDescUsers => 'Members of your branch';
+
+  @override
+  String get adminDescNotifications => 'New bills and account requests';
+
+  @override
+  String get adminDescSpin => 'Run today\'s lucky spin';
+
+  @override
+  String get adminNotifCatBill => 'New bill';
+
+  @override
+  String get adminNotifCatRequest => 'Account request';
+
+  @override
+  String get adminNotifActBill => 'Review bills';
+
+  @override
+  String get adminNotifActRequest => 'Review requests';
 }

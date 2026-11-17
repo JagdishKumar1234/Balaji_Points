@@ -5270,4 +5270,76 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get notifCatNormal => 'सामान्य';
+
+  @override
+  String get adminViewGrid => 'ग्रिड व्यू';
+
+  @override
+  String get adminViewList => 'लिस्ट व्यू';
+
+  @override
+  String get adminEditMenu => 'मेनू का क्रम बदलें';
+
+  @override
+  String get adminEditMenuHint => 'क्रम बदलने के लिए खींचें';
+
+  @override
+  String get adminResetMenu => 'क्रम रीसेट करें';
+
+  @override
+  String get adminTodayGlance => 'आज एक नज़र में';
+
+  @override
+  String get adminStatRequests => 'अनुरोध';
+
+  @override
+  String get adminStatMembers => 'सदस्य';
+
+  @override
+  String get adminMoreOptions => 'और विकल्प';
+
+  @override
+  String get adminDescRequests => 'नए साइन-अप स्वीकृत करें';
+
+  @override
+  String get adminDescPending => 'समीक्षा के लिए बिल';
+
+  @override
+  String get adminDescHistory => 'स्वीकृत और अस्वीकृत बिल';
+
+  @override
+  String get adminDescOffers => 'ऑफ़र बनाएं और संभालें';
+
+  @override
+  String get adminDescBroadcast => 'सदस्यों को संदेश भेजें';
+
+  @override
+  String get adminDescGreeting => 'त्योहार और विशेष शुभकामनाएँ';
+
+  @override
+  String get adminDescCatalogs => 'प्रोडक्ट कैटलॉग अपलोड करें';
+
+  @override
+  String get adminDescEnquiries => 'सदस्यों और मेहमानों के सवाल';
+
+  @override
+  String get adminDescUsers => 'आपकी शाखा के सदस्य';
+
+  @override
+  String get adminDescNotifications => 'नए बिल और खाता अनुरोध';
+
+  @override
+  String get adminDescSpin => 'आज का लकी स्पिन चलाएँ';
+
+  @override
+  String get adminNotifCatBill => 'नया बिल';
+
+  @override
+  String get adminNotifCatRequest => 'खाता अनुरोध';
+
+  @override
+  String get adminNotifActBill => 'बिल देखें';
+
+  @override
+  String get adminNotifActRequest => 'अनुरोध देखें';
 }
