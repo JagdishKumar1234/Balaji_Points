@@ -51,7 +51,10 @@ class NotificationTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final (soft, ink) = _tone(context);
     final action = category.action(l10n);
-    final isAnnouncement = type == 'announcement' || type == 'greeting';
+    // Admin messages stand out with a gold edge, except plain "Normal" ones.
+    final isAnnouncement =
+        (type == 'announcement' || type == 'greeting') &&
+        category != NotificationCategory.normal;
 
     return Material(
       color: context.themeCard,

@@ -5267,4 +5267,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get notifActAccount => 'प्रोफ़ाइल देखें';
+
+  @override
+  String get notifCatNormal => 'सामान्य';
 }

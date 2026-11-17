@@ -1792,5 +1792,6 @@
   "notifActAddBill": "பில் சேர்",
   "notifActWallet": "வாலட்டைத் திற",
   "notifActBranch": "கிளையைப் பார்",
-  "notifActAccount": "சுயவிவரத்தைப் பார்"
+  "notifActAccount": "சுயவிவரத்தைப் பார்",
+  "notifCatNormal": "பொது"
 }

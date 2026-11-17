@@ -9708,6 +9708,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View profile'**
   String get notifActAccount;
+
+  /// No description provided for @notifCatNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get notifCatNormal;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

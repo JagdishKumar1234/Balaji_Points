@@ -5278,4 +5278,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifActAccount => 'View profile';
+
+  @override
+  String get notifCatNormal => 'Normal';
 }

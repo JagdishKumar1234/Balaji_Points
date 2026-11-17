@@ -24,9 +24,9 @@ test("bad requests are refused", () => {
   assert.ok(r.parseRequest({...ok, body: "x".repeat(501)}).error);
 });
 
-test("missing category means general", () => {
+test("missing category means normal", () => {
   const {value} = r.parseRequest({...ok, category: undefined});
-  assert.strictEqual(value.category, "general");
+  assert.strictEqual(value.category, "normal");
 });
 
 test("only the branch's admin or the super admin may send", () => {

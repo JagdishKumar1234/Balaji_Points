@@ -5268,4 +5268,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get notifActAccount => 'சுயவிவரத்தைப் பார்';
+
+  @override
+  String get notifCatNormal => 'பொது';
 }

@@ -3109,5 +3109,6 @@
   "notifActAddBill": "Add a bill",
   "notifActWallet": "Open wallet",
   "notifActBranch": "View branch",
-  "notifActAccount": "View profile"
+  "notifActAccount": "View profile",
+  "notifCatNormal": "Normal"
 }

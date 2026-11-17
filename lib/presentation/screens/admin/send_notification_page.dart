@@ -34,7 +34,7 @@ class _SendNotificationPageState extends State<SendNotificationPage> {
   final _title = TextEditingController();
   final _body = TextEditingController();
   final Set<String> _roles = {...RoleBroadcastService.memberRoles};
-  NotificationCategory _category = NotificationCategory.general;
+  NotificationCategory _category = NotificationCategory.normal;
   bool _sending = false;
 
   /// Approved members of this branch, kept live for the recipient count.

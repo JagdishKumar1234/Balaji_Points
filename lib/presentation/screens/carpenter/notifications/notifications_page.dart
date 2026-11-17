@@ -15,6 +15,8 @@ import 'package:go_router/go_router.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'dart:async';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:balaji_points/core/notifications/notification_category.dart';
 import 'package:balaji_points/presentation/screens/carpenter/notifications/widgets/notification_tile.dart';
 
@@ -49,6 +51,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
   /// Category chip picked above the list; null shows everything.
   NotificationCategory? _filter;
 
+  /// Swiped away but maybe not yet gone from Firestore. A dismissed
+  /// Dismissible must leave the tree at once, or Flutter throws.
+  final Set<String> _dismissedIds = {};
+
   /// The list last shown, so returning to this screen needs no loader. Keyed by
   /// user, and only used once the session confirms who is logged in.
   static String? _savedKey;
@@ -82,8 +88,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final userRole = await _sessionService.getUserRole();
     final myPhone = await _sessionService.getPhoneNumber();
     final myBranchId = await _sessionService.getBranchId();
+    final hidden = await _loadHidden(userId);
     if (!mounted) return;
     setState(() {
+      _dismissedIds.addAll(hidden);
       _userId = userId;
       _userRole = userRole;
       _myPhone = myPhone;
@@ -265,9 +273,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             : 'unknown';
         // Only the same bill's notice twice in an hour is a duplicate;
         // other notifications are each kept (announcements share a type).
-        final uniqueKey = billId == null
-            ? doc.id
-            : '$type-$billId-$hourKey';
+        final uniqueKey = billId == null ? doc.id : '$type-$billId-$hourKey';
 
         if (seen.contains(uniqueKey)) {
           debugPrint('   🔄 Skipping duplicate notification: $uniqueKey');
@@ -355,7 +361,56 @@ class _NotificationsPageState extends State<NotificationsPage> {
     super.dispose();
   }
 
-  Future<void> _deleteNotification(String notificationId) async {
+  /// Shared notifications (admin messages, greetings, offers) are one record
+  /// for the whole branch: a member "deleting" one only hides it on this
+  /// phone, never for everyone else.
+  static String _hiddenKey(String userId) => 'hidden_notifications_$userId';
+
+  static Future<Set<String>> _loadHidden(String? userId) async {
+    if (userId == null) return {};
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return (prefs.getStringList(_hiddenKey(userId)) ?? const []).toSet();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> _hideForMe(Iterable<String> ids) async {
+    final userId = _userId;
+    if (userId == null) return;
+    if (mounted) setState(() => _dismissedIds.addAll(ids));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final all = {
+        ...?prefs.getStringList(_hiddenKey(userId)),
+        ...ids,
+      }.toList();
+      // Keep the newest few hundred; older records drop out of the list.
+      final keep = all.length > 300 ? all.sublist(all.length - 300) : all;
+      await prefs.setStringList(_hiddenKey(userId), keep);
+    } catch (_) {}
+  }
+
+  static bool _isShared(Map<String, dynamic>? data) =>
+      data?['isBroadcast'] == true ||
+      ((data?['userId'] as String?) ?? '').trim().isEmpty;
+
+  Future<void> _deleteNotification(QueryDocumentSnapshot doc) async {
+    final notificationId = doc.id;
+    if (!_resolvedIsAdmin && _isShared(doc.data() as Map<String, dynamic>?)) {
+      await _hideForMe([notificationId]);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.notificationDeleted),
+            backgroundColor: context.themePrimary,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
     try {
       await FirebaseFirestore.instance
           .collection('notification_logs')
@@ -373,6 +428,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       }
     } catch (e) {
       debugPrint('Error deleting notification: $e');
+      // Not deleted: show it again.
+      if (mounted) setState(() => _dismissedIds.remove(notificationId));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -481,6 +538,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
       }
 
       final snapshot = uniqueDocs.values.toList();
+
+      // A member's shared notifications are hidden on this phone only.
+      if (!_resolvedIsAdmin) {
+        final shared = (_savedList ?? const <QueryDocumentSnapshot>[])
+            .where((d) => _isShared(d.data() as Map<String, dynamic>?))
+            .map((d) => d.id);
+        await _hideForMe(shared);
+      }
 
       // Delete all notifications in batch
       final batch = FirebaseFirestore.instance.batch();
@@ -688,7 +753,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             );
                           }
 
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          if (!snapshot.hasData ||
+                              snapshot.data!.every(
+                                (d) => _dismissedIds.contains(d.id),
+                              )) {
                             return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -748,8 +816,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   /// Category chips, then the cards grouped under Today / Yesterday /
   /// Earlier. Swipe left deletes one.
-  Widget _buildList(List<QueryDocumentSnapshot> all) {
+  Widget _buildList(List<QueryDocumentSnapshot> source) {
     final l10n = AppLocalizations.of(context)!;
+    final all = source.where((d) => !_dismissedIds.contains(d.id)).toList();
     final present = <NotificationCategory>{
       for (final d in all)
         NotificationCategory.of(d.data() as Map<String, dynamic>?),
@@ -885,7 +954,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
             size: 26,
           ),
         ),
-        onDismissed: (_) => _deleteNotification(doc.id),
+        onDismissed: (_) {
+          setState(() => _dismissedIds.add(doc.id));
+          _deleteNotification(doc);
+        },
         confirmDismiss: (_) async =>
             await showDialog<bool>(
               context: context,

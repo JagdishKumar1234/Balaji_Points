@@ -8,7 +8,7 @@ const MEMBER_ROLES = ["carpenter", "interior_designer", "architect",
   "engineer"];
 
 /** Category ids the app knows; each opens its own screen in the app. */
-const CATEGORIES = ["general", "offer", "catalog", "dailySpin", "addBill",
+const CATEGORIES = ["normal", "general", "offer", "catalog", "dailySpin", "addBill",
   "wallet", "festival", "branch"];
 
 const MAX_TITLE = 80;
@@ -36,7 +36,7 @@ function parseRequest(data) {
   const branchId = String(d.branchId || "").trim();
   const title = String(d.title || "").trim();
   const body = String(d.body || "").trim();
-  const category = String(d.category || "general").trim();
+  const category = String(d.category || "normal").trim();
   const roles = Array.isArray(d.roles) ?
     [...new Set(d.roles.map((r) => String(r).trim().toLowerCase()))] : [];
 

@@ -113,6 +113,7 @@ void main() {
 
   test('categories: admin choices match the server list', () {
     expect(NotificationCategory.sendable.map((c) => c.id).toList(), [
+      'normal',
       'general',
       'offer',
       'festival',
