@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'dart:ui' as ui;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,7 +35,7 @@ class CatalogPdfInfo {
 /// file is deleted after the record points at the new one.
 class CatalogAdminService {
   CatalogAdminService({FirebaseFirestore? db, FirebaseStorage? storage})
-    : _db = db ?? FirebaseFirestore.instance,
+    : _db = db ?? appFirestore,
       _storage = storage;
 
   final FirebaseFirestore _db;

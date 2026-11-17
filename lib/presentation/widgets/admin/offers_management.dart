@@ -1,4 +1,5 @@
 import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/services/platform/offer_visibility.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -103,7 +104,7 @@ class _OffersManagementState extends State<OffersManagement> {
     return Scaffold(
       backgroundColor: context.themeSoftSurface,
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('offers').snapshots(),
+        stream: appFirestore.collection('offers').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(

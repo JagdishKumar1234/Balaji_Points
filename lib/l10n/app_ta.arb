@@ -1818,5 +1818,10 @@
   "adminNotifCatRequest": "கணக்கு கோரிக்கை",
   "adminNotifActBill": "பில்களைப் பார்",
   "adminNotifActRequest": "கோரிக்கைகளைப் பார்",
-  "adminTabBills": "பில்கள்"
+  "adminTabBills": "பில்கள்",
+  "usersFilterSort": "வரிசைப்படுத்து",
+  "usersFilterTier": "நிலை",
+  "usersFilterRole": "உறுப்பினர் வகை",
+  "usersFilterReset": "மீட்டமை",
+  "usersFilterButton": "உறுப்பினர்களை வடிகட்டு"
 }

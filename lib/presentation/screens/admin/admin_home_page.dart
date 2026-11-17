@@ -1,4 +1,5 @@
 import 'package:balaji_points/services/platform/enquiry_service.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/presentation/widgets/admin/enquiries_management.dart';
 import 'package:balaji_points/services/notifications/notification_visibility.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
@@ -30,6 +31,7 @@ import '../../widgets/admin/pending_bills_list.dart';
 import '../../widgets/admin/offers_management.dart';
 import '../../widgets/admin/catalogs_management.dart';
 import '../../widgets/admin/users_list.dart';
+import '../../widgets/admin/users_list/users_filters.dart';
 import '../../widgets/admin/daily_spin_management.dart';
 import '../../widgets/admin/bill_history_list.dart';
 import 'admin_notifications_page.dart';
@@ -276,7 +278,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     );
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await appFirestore
           .collection('notification_logs')
           .where('type', whereIn: _adminNotificationTypes)
           .get();
@@ -291,7 +293,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       // Firestore batch limit is 500 writes.
       const batchSize = 450;
       for (int i = 0; i < docs.length; i += batchSize) {
-        final batch = FirebaseFirestore.instance.batch();
+        final batch = appFirestore.batch();
         final chunk = docs.sublist(
           i,
           i + batchSize < docs.length ? i + batchSize : docs.length,
@@ -442,6 +444,11 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
           // tab bar) keep them in the dashboard menu. Section screens show
           // only their own action (if any).
           actions: [
+            // Home: notifications bell with the alerts count.
+            if (_showDashboard)
+              _AlertsBell(onTap: () => _openSection('notifications')),
+            if (!_showDashboard && _selectedSection == 'users')
+              const UsersFilterButton(),
             if (_showDashboard && !_phone)
               _AdminMoreMenu(onLogout: _handleLogout)
             else if (_selectedSection == 'notifications')
@@ -551,6 +558,10 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
   }
 
   String _sectionTitle(String section) {
+    // On phones Pending and History are one Bills tab.
+    if (_phone && (section == 'pending' || section == 'history')) {
+      return AppLocalizations.of(context)!.adminTabBills;
+    }
     switch (section) {
       case 'pending':
         return AppLocalizations.of(context)!.pendingBills;
@@ -595,10 +606,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
 
   Widget _usersCountTitle() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .forAdminBranch()
-          .snapshots(),
+      stream: appFirestore.collection('users').forAdminBranch().snapshots(),
       builder: (context, snapshot) {
         final docs = snapshot.data?.docs ?? const [];
         // Match UsersList filtering:
@@ -692,6 +700,39 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
       default:
         return const SizedBox.shrink();
     }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Home app bar: notifications bell with a count badge
+// ---------------------------------------------------------------------------
+
+class _AlertsBell extends ConsumerWidget {
+  const _AlertsBell({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(adminAlertsCountProvider).value ?? 0;
+    final l10n = AppLocalizations.of(context)!;
+    return IconButton(
+      key: const ValueKey('admin-alerts-bell'),
+      tooltip: count > 0 ? '${l10n.notifications}, $count' : l10n.notifications,
+      onPressed: onTap,
+      icon: Badge(
+        isLabelVisible: count > 0,
+        backgroundColor: AppColors.gold,
+        textColor: AppColors.primary,
+        label: Text(count > 99 ? '99+' : '$count'),
+        child: Icon(
+          count > 0
+              ? Icons.notifications_active_rounded
+              : Icons.notifications_none_rounded,
+          color: context.themeTextPrimary,
+          size: 26,
+        ),
+      ),
+    );
   }
 }
 

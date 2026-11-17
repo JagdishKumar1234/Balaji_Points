@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
@@ -27,10 +28,7 @@ class UsersListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .forAdminBranch()
-          .snapshots(),
+      stream: appFirestore.collection('users').forAdminBranch().snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: AppLoader(color: context.themePrimary));
@@ -147,7 +145,8 @@ class UsersListView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 1.2,
+              // Fixed height: the card's content never gets cut off.
+              mainAxisExtent: 168,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
             ),

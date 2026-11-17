@@ -1,4 +1,5 @@
 import 'package:balaji_points/services/branch/current_branch_service.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
@@ -155,7 +156,7 @@ class _DailySpinHistoryScreenState extends State<DailySpinHistoryScreen> {
     final startingDayOfWeek = firstDay.weekday;
 
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
+      stream: appFirestore
           .collection('daily_prize_winners')
           .orderBy('timestamp', descending: true)
           .snapshots(),

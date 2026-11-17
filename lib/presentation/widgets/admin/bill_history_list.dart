@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/points/points_rate.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class BillHistoryList extends StatefulWidget {
 }
 
 class _BillHistoryListState extends State<BillHistoryList> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = appFirestore;
   final Map<String, bool> _expanded = {};
   final Map<String, Map<String, dynamic>?> _carpenterCache = {};
 

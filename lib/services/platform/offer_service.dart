@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +10,7 @@ import '../notifications/notification_service.dart';
 
 class OfferService {
   OfferService({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? appFirestore;
 
   final FirebaseFirestore _firestore;
 

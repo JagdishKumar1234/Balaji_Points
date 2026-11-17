@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,8 +18,7 @@ import '../../core/models/catalog.dart';
 /// No PDF is ever loaded here; only the small records. A PDF is fetched only
 /// when the member taps View, and is not kept by the app.
 class CatalogService {
-  CatalogService([FirebaseFirestore? db])
-    : _db = db ?? FirebaseFirestore.instance;
+  CatalogService([FirebaseFirestore? db]) : _db = db ?? appFirestore;
 
   final FirebaseFirestore _db;
 

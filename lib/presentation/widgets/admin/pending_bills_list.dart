@@ -1,4 +1,5 @@
 import 'package:balaji_points/services/auth/role_service.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/presentation/widgets/shared/full_screen_image_viewer.dart';
@@ -32,7 +33,7 @@ class PendingBillsList extends StatefulWidget {
 
 class _PendingBillsListState extends State<PendingBillsList> {
   final BillService _billService = BillService();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = appFirestore;
 
   final Map<String, bool> _expanded = {};
   final Map<String, Map<String, dynamic>?> _carpenterCache = {};
@@ -1908,27 +1909,31 @@ class _PendingBillsListState extends State<PendingBillsList> {
                   );
                 },
               ),
-              // Floating Action Button
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: FloatingActionButton.extended(
-                  onPressed: () {
-                    context.push('/admin/add-bill');
-                  },
-                  backgroundColor: context.themePrimary,
-                  foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
-                  icon: const Icon(Icons.add_rounded, color: AppColors.white),
-                  label: Text(
-                    AppLocalizations.of(context)!.addBill,
-                    style: AppTypography.labelLarge().copyWith(
-                      color: AppColors.white,
-                      fontSize: 16,
+              // Add Bill: phones use the raised button in the admin tab
+              // bar; only wide screens (no tab bar) show this one.
+              if (context.isWideScreen)
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: FloatingActionButton.extended(
+                    onPressed: () {
+                      context.push('/admin/add-bill');
+                    },
+                    backgroundColor: context.themePrimary,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: AppRadius.all16,
+                    ),
+                    icon: const Icon(Icons.add_rounded, color: AppColors.white),
+                    label: Text(
+                      AppLocalizations.of(context)!.addBill,
+                      style: AppTypography.labelLarge().copyWith(
+                        color: AppColors.white,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

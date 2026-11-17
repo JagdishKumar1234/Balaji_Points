@@ -1,6 +1,6 @@
 import 'package:balaji_points/core/points/points_rate.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/points/leaderboard_group.dart';
-import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
@@ -71,7 +71,7 @@ class _SearchHeaderState extends State<SearchHeader> {
 
     try {
       // This admin's branch only (never every branch's members).
-      final query = await FirebaseFirestore.instance
+      final query = await appFirestore
           .collection('users')
           .forAdminBranch()
           .get();
@@ -129,7 +129,7 @@ class _SearchHeaderState extends State<SearchHeader> {
 
       for (var userDoc in users) {
         final userId = userDoc.id;
-        final billsSnapshot = await FirebaseFirestore.instance
+        final billsSnapshot = await appFirestore
             .collection('bills')
             .where('carpenterId', isEqualTo: userId)
             .get();
@@ -373,167 +373,7 @@ class _SearchHeaderState extends State<SearchHeader> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          // Filters Row (Sort + Tier)
-          SizedBox(
-            height: 44,
-            child: Row(
-              children: [
-                // Sort Dropdown
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: context.themeSoftSurface,
-                    borderRadius: AppRadius.md12,
-                    border: Border.all(
-                      color: context.themePrimary.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: widget.selectedSort,
-                      icon: Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color: context.themeContentColor,
-                      ),
-                      style: AppTypography.labelLarge().copyWith(
-                        fontSize: 13,
-                        color: context.themeTextPrimary,
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'points',
-                          child: Text(
-                            AppLocalizations.of(context)!.sortByPoints,
-                            style: TextStyle(color: context.themeTextPrimary),
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'name',
-                          child: Text(
-                            AppLocalizations.of(context)!.sortByName,
-                            style: TextStyle(color: context.themeTextPrimary),
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'recent',
-                          child: Text(
-                            AppLocalizations.of(context)!.recentJoins,
-                            style: TextStyle(color: context.themeTextPrimary),
-                          ),
-                        ),
-                      ],
-                      onChanged: widget.onSortChanged,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Tier Filter
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.themeSoftSurface,
-                      borderRadius: AppRadius.md12,
-                      border: Border.all(
-                        color: context.themePrimary.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: widget.selectedTier,
-                        icon: Icon(
-                          Icons.arrow_drop_down_rounded,
-                          color: context.themeContentColor,
-                        ),
-                        style: AppTypography.labelLarge().copyWith(
-                          fontSize: 13,
-                          color: context.themeTextPrimary,
-                        ),
-                        isExpanded: true,
-                        items: widget.tiers
-                            .map(
-                              (tier) => DropdownMenuItem(
-                                value: tier,
-                                child: Text(
-                                  AppLocalizations.of(context)!.tier('$tier'),
-                                  style: TextStyle(
-                                    color: context.themeTextPrimary,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: widget.onTierChanged,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Group / role filter
-          Container(
-            height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: context.themeSoftSurface,
-              borderRadius: AppRadius.md12,
-              border: Border.all(
-                color: context.themePrimary.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<MemberRoleFilter>(
-                key: const ValueKey('member-role-filter'),
-                value: widget.roleFilter,
-                isExpanded: true,
-                icon: Icon(
-                  Icons.arrow_drop_down_rounded,
-                  color: context.themeContentColor,
-                ),
-                style: AppTypography.labelLarge().copyWith(
-                  fontSize: 13,
-                  color: context.themeTextPrimary,
-                ),
-                items: [
-                  for (final f in MemberRoleFilter.options)
-                    DropdownMenuItem(
-                      value: f,
-                      child: Padding(
-                        // Roles are indented under their group.
-                        padding: EdgeInsets.only(
-                          left: f.roleValue != null ? 16 : 0,
-                        ),
-                        child: Text(
-                          memberRoleFilterLabel(context, f),
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: context.themeTextPrimary,
-                            fontWeight: f.roleValue != null
-                                ? FontWeight.w400
-                                : FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-                onChanged: (f) {
-                  if (f != null) widget.onRoleFilterChanged(f);
-                },
-              ),
-            ),
-          ),
+          // Sort, tier and member type: the filter button in the app bar.
         ],
       ),
     );

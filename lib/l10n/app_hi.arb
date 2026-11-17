@@ -1818,5 +1818,10 @@
   "adminNotifCatRequest": "खाता अनुरोध",
   "adminNotifActBill": "बिल देखें",
   "adminNotifActRequest": "अनुरोध देखें",
-  "adminTabBills": "बिल"
+  "adminTabBills": "बिल",
+  "usersFilterSort": "क्रम",
+  "usersFilterTier": "टियर",
+  "usersFilterRole": "सदस्य प्रकार",
+  "usersFilterReset": "रीसेट",
+  "usersFilterButton": "सदस्य फ़िल्टर करें"
 }

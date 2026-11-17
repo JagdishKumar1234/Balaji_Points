@@ -1,4 +1,5 @@
 import 'package:balaji_points/services/branch/daily_winner_scope.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
@@ -716,7 +717,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           ),
           const SizedBox(height: 16),
           StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
+            stream: appFirestore
                 .collection('daily_prize_winners')
                 .where('date', isEqualTo: todayStr)
                 .snapshots(),
@@ -890,7 +891,7 @@ class _DailySpinManagementState extends State<DailySpinManagement>
           ),
           const SizedBox(height: 16),
           StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
+            stream: appFirestore
                 .collection('daily_prize_winners')
                 .where('date', isGreaterThanOrEqualTo: firstDayStr)
                 .orderBy('date', descending: true)

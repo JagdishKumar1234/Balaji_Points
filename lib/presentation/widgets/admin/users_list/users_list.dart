@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'users_filters.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
-import 'package:balaji_points/core/points/leaderboard_group.dart';
 import 'search_header.dart';
 import 'users_list_view.dart';
 import 'add_carpenter_dialog.dart';
 
-class UsersList extends StatefulWidget {
+class UsersList extends ConsumerStatefulWidget {
   const UsersList({super.key});
 
   @override
-  State<UsersList> createState() => _UsersListState();
+  ConsumerState<UsersList> createState() => _UsersListState();
 }
 
-class _UsersListState extends State<UsersList> {
+class _UsersListState extends ConsumerState<UsersList> {
   String _searchQuery = '';
-  String _selectedTier = 'All';
-  String _selectedSort = 'points';
-  MemberRoleFilter _roleFilter = MemberRoleFilter.all;
-  final List<String> _tiers = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
   bool _isExporting = false;
   late TextEditingController _searchController;
 
@@ -46,6 +43,9 @@ class _UsersListState extends State<UsersList> {
 
   @override
   Widget build(BuildContext context) {
+    // Sort, tier and member type come from the app bar filter button.
+    final filters = ref.watch(usersFiltersProvider);
+    final notifier = ref.read(usersFiltersProvider.notifier);
     return Scaffold(
       backgroundColor: context.themeBackground,
       resizeToAvoidBottomInset: true,
@@ -59,21 +59,20 @@ class _UsersListState extends State<UsersList> {
             SearchHeader(
               searchController: _searchController,
               searchQuery: _searchQuery,
-              selectedTier: _selectedTier,
-              selectedSort: _selectedSort,
-              roleFilter: _roleFilter,
-              onRoleFilterChanged: (f) => setState(() => _roleFilter = f),
-              tiers: _tiers,
+              selectedTier: filters.tier,
+              selectedSort: filters.sort,
+              roleFilter: filters.role,
+              onRoleFilterChanged: (f) =>
+                  notifier.update(filters.copyWith(role: f)),
+              tiers: UsersFilters.tiers,
               isExporting: _isExporting,
               onSearchChanged: (value) {
                 setState(() => _searchQuery = value.toLowerCase());
               },
-              onTierChanged: (tier) {
-                setState(() => _selectedTier = tier ?? 'All');
-              },
-              onSortChanged: (sort) {
-                setState(() => _selectedSort = sort ?? 'points');
-              },
+              onTierChanged: (tier) =>
+                  notifier.update(filters.copyWith(tier: tier ?? 'All')),
+              onSortChanged: (sort) =>
+                  notifier.update(filters.copyWith(sort: sort ?? 'points')),
               onAddPressed: _showAddCarpenterDialog,
               onExportPressed: () async {
                 // Export logic will be handled by SearchHeader
@@ -83,9 +82,9 @@ class _UsersListState extends State<UsersList> {
             Expanded(
               child: UsersListView(
                 searchQuery: _searchQuery,
-                selectedTier: _selectedTier,
-                selectedSort: _selectedSort,
-                roleFilter: _roleFilter,
+                selectedTier: filters.tier,
+                selectedSort: filters.sort,
+                roleFilter: filters.role,
               ),
             ),
           ],

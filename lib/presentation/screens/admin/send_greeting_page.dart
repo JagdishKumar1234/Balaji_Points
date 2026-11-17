@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/design/app_colors.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/design/app_radius.dart';
 import 'package:balaji_points/core/design/app_spacing.dart';
 import 'package:balaji_points/core/logger.dart';
@@ -31,7 +32,7 @@ class SendGreetingPage extends StatefulWidget {
 class _SendGreetingPageState extends State<SendGreetingPage> {
   final _messageController = TextEditingController();
   final _imageUrlController = TextEditingController();
-  final _firestore = FirebaseFirestore.instance;
+  final _firestore = appFirestore;
   final _storage = FirebaseStorage.instance;
   final _imagePicker = ImagePicker();
   final _session = SessionService();

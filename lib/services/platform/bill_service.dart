@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
 import 'package:balaji_points/core/points/points_rate.dart';
 import 'package:balaji_points/services/telemetry/telemetry.dart';
@@ -13,7 +14,7 @@ import 'image_compress_service.dart';
 
 class BillService {
   BillService({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? appFirestore;
 
   final FirebaseFirestore _firestore;
 

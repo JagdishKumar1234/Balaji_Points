@@ -3135,5 +3135,10 @@
   "adminNotifCatRequest": "Account request",
   "adminNotifActBill": "Review bills",
   "adminNotifActRequest": "Review requests",
-  "adminTabBills": "Bills"
+  "adminTabBills": "Bills",
+  "usersFilterSort": "Sort by",
+  "usersFilterTier": "Tier",
+  "usersFilterRole": "Member type",
+  "usersFilterReset": "Reset",
+  "usersFilterButton": "Filter members"
 }
