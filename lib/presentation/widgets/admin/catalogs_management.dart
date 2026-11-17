@@ -443,8 +443,6 @@ class _CatalogFormPageState extends ConsumerState<CatalogFormPage> {
     String? error;
     try {
       CatalogAdminService.validatePdf(f.bytes!);
-    } on CatalogPdfTooLarge catch (e) {
-      error = l10n.catalogAdminPdfTooLarge(formatFileSize(e.bytes));
     } on CatalogNotPdf {
       error = l10n.catalogAdminNotPdf;
     }
@@ -751,9 +749,6 @@ class _CatalogFormPageState extends ConsumerState<CatalogFormPage> {
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 String _errorText(AppLocalizations l10n, Object e) {
-  if (e is CatalogPdfTooLarge) {
-    return l10n.catalogAdminPdfTooLarge(formatFileSize(e.bytes));
-  }
   if (e is CatalogNotPdf) return l10n.catalogAdminNotPdf;
   if (e is CatalogCategoryNotEmpty) return l10n.catalogAdminCategoryNotEmpty;
   if (e is FirebaseException &&

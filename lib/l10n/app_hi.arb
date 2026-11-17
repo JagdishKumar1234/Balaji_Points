@@ -1549,7 +1549,6 @@
   "catalogAdminReplacePdf": "PDF बदलें",
   "catalogAdminPickCover": "कवर फ़ोटो चुनें",
   "catalogAdminCoverAuto": "कवर न चुनने पर PDF का पहला पेज कवर बनेगा।",
-  "catalogAdminPdfTooLarge": "यह PDF {size} का है। सीमा 25 MB है। इसे छोटा करके फिर कोशिश करें।",
   "catalogAdminNotPdf": "यह फ़ाइल PDF नहीं है।",
   "catalogAdminUploading": "अपलोड हो रहा है… {percent}%",
   "catalogAdminSaved": "कैटलॉग सेव हो गया",

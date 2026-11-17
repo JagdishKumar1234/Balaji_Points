@@ -63,8 +63,7 @@ import 'app_localizations_ta.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -72,8 +71,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -85,19 +83,18 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('hi'),
-    Locale('ta'),
+    Locale('ta')
   ];
 
   /// No description provided for @appName.
@@ -3578,13 +3575,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Page {page} of {pages} · {from}–{to} of {total}'**
-  String tablePageInfo(
-    String page,
-    String pages,
-    String from,
-    String to,
-    String total,
-  );
+  String tablePageInfo(String page, String pages, String from, String to, String total);
 
   /// No description provided for @noRows.
   ///
@@ -4040,12 +4031,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{entries} carpenters  ·  {totalPoints} points  ·  {totalReward} reward  ·  {totalBonus} bonus'**
-  String carpentersPointsRewardBonus(
-    String entries,
-    String totalPoints,
-    String totalReward,
-    String totalBonus,
-  );
+  String carpentersPointsRewardBonus(String entries, String totalPoints, String totalReward, String totalBonus);
 
   /// No description provided for @bonus.
   ///
@@ -6361,11 +6347,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{branchName}: reset {usersReset} users and deleted {historyDocumentsDeleted} history records. Accounts and bills were kept.'**
-  String resetUsersAndDeletedHistoryRecords(
-    String branchName,
-    String usersReset,
-    String historyDocumentsDeleted,
-  );
+  String resetUsersAndDeletedHistoryRecords(String branchName, String usersReset, String historyDocumentsDeleted);
 
   /// No description provided for @thisPermanentlyClearsPointsAndPoints.
   ///
@@ -6377,12 +6359,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{branchName} has {eligibleUsers} eligible users, {currentPoints} points and {historyDocuments} history items.'**
-  String hasEligibleUsersPointsAndHistory(
-    String branchName,
-    String eligibleUsers,
-    String currentPoints,
-    String historyDocuments,
-  );
+  String hasEligibleUsersPointsAndHistory(String branchName, String eligibleUsers, String currentPoints, String historyDocuments);
 
   /// No description provided for @resetBranchPoints.
   ///
@@ -8268,12 +8245,6 @@ abstract class AppLocalizations {
   /// **'If you don\'t choose a cover, the first page of the PDF is used.'**
   String get catalogAdminCoverAuto;
 
-  /// No description provided for @catalogAdminPdfTooLarge.
-  ///
-  /// In en, this message translates to:
-  /// **'This PDF is {size}. The limit is 25 MB. Compress it and try again.'**
-  String catalogAdminPdfTooLarge(String size);
-
   /// No description provided for @catalogAdminNotPdf.
   ///
   /// In en, this message translates to:
@@ -9535,8 +9506,7 @@ abstract class AppLocalizations {
   String get whatsAppNotAvailable;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -9545,28 +9515,26 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'hi', 'ta'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'hi', 'ta'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'hi':
-      return AppLocalizationsHi();
-    case 'ta':
-      return AppLocalizationsTa();
+    case 'en': return AppLocalizationsEn();
+    case 'hi': return AppLocalizationsHi();
+    case 'ta': return AppLocalizationsTa();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

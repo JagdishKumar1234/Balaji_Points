@@ -10,16 +10,6 @@ import '../../core/logger.dart';
 import '../../core/models/catalog.dart';
 import 'image_compress_service.dart';
 
-/// Largest PDF an admin can upload. Catalogs from brands are often 50-150 MB
-/// print files; those must be compressed first so members on mobile data
-/// can open them.
-const int kMaxCatalogPdfBytes = 25 * 1024 * 1024;
-
-class CatalogPdfTooLarge implements Exception {
-  const CatalogPdfTooLarge(this.bytes);
-  final int bytes;
-}
-
 class CatalogNotPdf implements Exception {
   const CatalogNotPdf();
 }
@@ -316,9 +306,6 @@ class CatalogAdminService {
 
   static void validatePdf(Uint8List bytes) {
     if (!isPdf(bytes)) throw const CatalogNotPdf();
-    if (bytes.length > kMaxCatalogPdfBytes) {
-      throw CatalogPdfTooLarge(bytes.length);
-    }
   }
 
   /// Opens the PDF on this device to count pages and draw page 1 as the

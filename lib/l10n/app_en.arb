@@ -2612,14 +2612,6 @@
   "catalogAdminReplacePdf": "Replace PDF",
   "catalogAdminPickCover": "Choose cover image",
   "catalogAdminCoverAuto": "If you don't choose a cover, the first page of the PDF is used.",
-  "catalogAdminPdfTooLarge": "This PDF is {size}. The limit is 25 MB. Compress it and try again.",
-  "@catalogAdminPdfTooLarge": {
-    "placeholders": {
-      "size": {
-        "type": "String"
-      }
-    }
-  },
   "catalogAdminNotPdf": "That file is not a PDF.",
   "catalogAdminUploading": "Uploading… {percent}%",
   "@catalogAdminUploading": {

@@ -1549,7 +1549,6 @@
   "catalogAdminReplacePdf": "PDF மாற்று",
   "catalogAdminPickCover": "அட்டைப் படம் தேர்வு செய்",
   "catalogAdminCoverAuto": "அட்டை தேர்வு செய்யாவிட்டால், PDF-இன் முதல் பக்கம் பயன்படுத்தப்படும்.",
-  "catalogAdminPdfTooLarge": "இந்த PDF {size}. வரம்பு 25 MB. சுருக்கி மீண்டும் முயலவும்.",
   "catalogAdminNotPdf": "இந்தக் கோப்பு PDF அல்ல.",
   "catalogAdminUploading": "பதிவேற்றுகிறது… {percent}%",
   "catalogAdminSaved": "கேட்லாக் சேமிக்கப்பட்டது",

@@ -150,7 +150,7 @@ void main() {
       expect(CatalogAdminService.safeFileName('???'), 'catalog');
     });
 
-    test('only real PDFs up to 25 MB are accepted', () {
+    test('only real PDFs are accepted', () {
       final pdf = Uint8List.fromList('%PDF-1.7 rest'.codeUnits);
       expect(() => CatalogAdminService.validatePdf(pdf), returnsNormally);
       expect(
@@ -158,12 +158,6 @@ void main() {
           Uint8List.fromList('<html>'.codeUnits),
         ),
         throwsA(isA<CatalogNotPdf>()),
-      );
-      final big = Uint8List(kMaxCatalogPdfBytes + 1)
-        ..setAll(0, '%PDF'.codeUnits);
-      expect(
-        () => CatalogAdminService.validatePdf(big),
-        throwsA(isA<CatalogPdfTooLarge>()),
       );
     });
   });
