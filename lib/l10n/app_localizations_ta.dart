@@ -5131,4 +5131,141 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get whatsAppNotAvailable => 'இந்த சாதனத்தில் WhatsApp ஐத் திறக்க முடியவில்லை.';
+
+  @override
+  String get sendNotification => 'அறிவிப்பு அனுப்பு';
+
+  @override
+  String get send => 'அனுப்பு';
+
+  @override
+  String get sendNotificationTo => 'யாருக்கு';
+
+  @override
+  String sendNotificationMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count உறுப்பினர்கள்',
+      one: '1 உறுப்பினர்',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sendNotificationCategory => 'வகை';
+
+  @override
+  String sendNotificationOpens(String action) {
+    return 'தட்டினால் உறுப்பினர்கள் செல்வது: $action';
+  }
+
+  @override
+  String get sendNotificationTitle => 'தலைப்பு';
+
+  @override
+  String get sendNotificationTitleHint => 'தலைப்பை உள்ளிடவும்';
+
+  @override
+  String get sendNotificationMessage => 'செய்தி';
+
+  @override
+  String get sendNotificationMessageHint => 'செய்தியை உள்ளிடவும்';
+
+  @override
+  String sendNotificationButton(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count உறுப்பினர்களுக்கு அனுப்பு',
+      one: '1 உறுப்பினருக்கு அனுப்பு',
+      zero: 'அனுப்பு',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sendNotificationConfirmTitle => 'அறிவிப்பை அனுப்பவா?';
+
+  @override
+  String sendNotificationConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count உறுப்பினர்களின் போனில் புஷ் அறிவிப்பு வரும்.',
+      one: '1 உறுப்பினரின் போனில் புஷ் அறிவிப்பு வரும்.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sendNotificationDone(int count, int pushed) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count உறுப்பினர்களுக்கு அனுப்பப்பட்டது',
+      one: '1 உறுப்பினருக்கு அனுப்பப்பட்டது',
+    );
+    return '$_temp0 ($pushed போன்களை அடைந்தது)';
+  }
+
+  @override
+  String get sendNotificationFailed => 'அனுப்ப முடியவில்லை. இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.';
+
+  @override
+  String get notifEarlier => 'முன்பு';
+
+  @override
+  String get notifCatGeneral => 'அறிவிப்பு';
+
+  @override
+  String get notifCatOffer => 'சலுகை';
+
+  @override
+  String get notifCatCatalog => 'கேட்லாக்';
+
+  @override
+  String get notifCatDailySpin => 'தினசரி ஸ்பின்';
+
+  @override
+  String get notifCatAddBill => 'பில் சேர்';
+
+  @override
+  String get notifCatWallet => 'புள்ளிகள்';
+
+  @override
+  String get notifCatFestival => 'வாழ்த்துகள்';
+
+  @override
+  String get notifCatBranch => 'கிளை';
+
+  @override
+  String get notifCatBill => 'பில்';
+
+  @override
+  String get notifCatPoints => 'புள்ளிகள்';
+
+  @override
+  String get notifCatAccount => 'கணக்கு';
+
+  @override
+  String get notifActOffer => 'சலுகைகளைப் பார்';
+
+  @override
+  String get notifActCatalog => 'கேட்லாக்கைத் திற';
+
+  @override
+  String get notifActDailySpin => 'இப்போது ஸ்பின் செய்';
+
+  @override
+  String get notifActAddBill => 'பில் சேர்';
+
+  @override
+  String get notifActWallet => 'வாலட்டைத் திற';
+
+  @override
+  String get notifActBranch => 'கிளையைப் பார்';
+
+  @override
+  String get notifActAccount => 'சுயவிவரத்தைப் பார்';
 }

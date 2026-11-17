@@ -21,10 +21,15 @@ class NotificationVisibility {
 
   /// A member's inbox: their own notifications, plus announcements for their
   /// branch or for every branch. Never another branch's, never admin alerts.
+  ///
+  /// An announcement with `targetRoles` (sent by an admin to chosen roles)
+  /// shows only to members with one of those roles. Older accounts with no
+  /// role count as carpenters. When [myRole] is unknown it is shown.
   static bool memberCanSee(
     Map<String, dynamic>? data, {
     required Set<String> myIds,
     required String? myBranchId,
+    String? myRole,
   }) {
     if (data == null) return false;
     final type = data['type'] as String? ?? '';
@@ -33,11 +38,22 @@ class NotificationVisibility {
     final userId = (data['userId'] as String? ?? '').trim();
     if (userId.isNotEmpty) return myIds.contains(userId);
 
+    if (!_roleMatches(data['targetRoles'], myRole)) return false;
+
     final branchId = (data['branchId'] as String? ?? '').trim();
     if (branchId.isNotEmpty) {
       return myBranchId != null && branchId == myBranchId;
     }
     return allBranchTypes.contains(type);
+  }
+
+  static bool _roleMatches(Object? targetRoles, String? myRole) {
+    if (targetRoles is! List || targetRoles.isEmpty || myRole == null) {
+      return true;
+    }
+    var role = myRole.trim().toLowerCase();
+    if (role.isEmpty) role = 'carpenter';
+    return targetRoles.map((r) => '$r'.toLowerCase()).contains(role);
   }
 
   /// A branch admin's inbox: admin alerts for exactly their branch. Alerts

@@ -19,6 +19,39 @@ bool admin(Map<String, dynamic> n, {String? branch = _karur}) =>
 
 void main() {
   group('a member sees', () {
+    test('role announcements only when their role was chosen', () {
+      final n = {
+        'type': 'announcement',
+        'isBroadcast': true,
+        'branchId': _karur,
+        'targetRoles': ['architect', 'engineer'],
+      };
+      bool as(String? role, {String branch = _karur}) =>
+          NotificationVisibility.memberCanSee(
+            n,
+            myIds: {'me-uid'},
+            myBranchId: branch,
+            myRole: role,
+          );
+      expect(as('architect'), isTrue);
+      expect(as('Engineer'), isTrue);
+      expect(as('carpenter'), isFalse);
+      expect(as(''), isFalse, reason: 'no role counts as carpenter');
+      expect(as('architect', branch: _erode), isFalse);
+      expect(
+        NotificationVisibility.memberCanSee(
+          {
+            ...n,
+            'targetRoles': ['carpenter'],
+          },
+          myIds: {'me-uid'},
+          myBranchId: _karur,
+          myRole: '',
+        ),
+        isTrue,
+      );
+    });
+
     test('their own notifications, by account id or phone', () {
       expect(member({'type': 'billApproved', 'userId': 'me-uid'}), isTrue);
       expect(member({'type': 'billApproved', 'userId': '9000000001'}), isTrue);

@@ -5141,4 +5141,141 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whatsAppNotAvailable => 'Could not open WhatsApp on this device.';
+
+  @override
+  String get sendNotification => 'Send Notification';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get sendNotificationTo => 'Send to';
+
+  @override
+  String sendNotificationMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sendNotificationCategory => 'Category';
+
+  @override
+  String sendNotificationOpens(String action) {
+    return 'Members who tap it go to: $action';
+  }
+
+  @override
+  String get sendNotificationTitle => 'Title';
+
+  @override
+  String get sendNotificationTitleHint => 'Enter title';
+
+  @override
+  String get sendNotificationMessage => 'Message';
+
+  @override
+  String get sendNotificationMessageHint => 'Enter message';
+
+  @override
+  String sendNotificationButton(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Send to $count members',
+      one: 'Send to 1 member',
+      zero: 'Send',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sendNotificationConfirmTitle => 'Send notification?';
+
+  @override
+  String sendNotificationConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members will get a push notification on their phone.',
+      one: '1 member will get a push notification on their phone.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sendNotificationDone(int count, int pushed) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Sent to $count members',
+      one: 'Sent to 1 member',
+    );
+    return '$_temp0 ($pushed phones reached)';
+  }
+
+  @override
+  String get sendNotificationFailed => 'Could not send. Check your connection and try again.';
+
+  @override
+  String get notifEarlier => 'Earlier';
+
+  @override
+  String get notifCatGeneral => 'Announcement';
+
+  @override
+  String get notifCatOffer => 'Offer';
+
+  @override
+  String get notifCatCatalog => 'Catalog';
+
+  @override
+  String get notifCatDailySpin => 'Daily Spin';
+
+  @override
+  String get notifCatAddBill => 'Add Bill';
+
+  @override
+  String get notifCatWallet => 'Points';
+
+  @override
+  String get notifCatFestival => 'Greetings';
+
+  @override
+  String get notifCatBranch => 'Branch';
+
+  @override
+  String get notifCatBill => 'Bill';
+
+  @override
+  String get notifCatPoints => 'Points';
+
+  @override
+  String get notifCatAccount => 'Account';
+
+  @override
+  String get notifActOffer => 'View offers';
+
+  @override
+  String get notifActCatalog => 'Open catalogs';
+
+  @override
+  String get notifActDailySpin => 'Spin now';
+
+  @override
+  String get notifActAddBill => 'Add a bill';
+
+  @override
+  String get notifActWallet => 'Open wallet';
+
+  @override
+  String get notifActBranch => 'View branch';
+
+  @override
+  String get notifActAccount => 'View profile';
 }

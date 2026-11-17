@@ -9504,6 +9504,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open WhatsApp on this device.'**
   String get whatsAppNotAvailable;
+
+  /// No description provided for @sendNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Notification'**
+  String get sendNotification;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @sendNotificationTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to'**
+  String get sendNotificationTo;
+
+  /// No description provided for @sendNotificationMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}}'**
+  String sendNotificationMembers(int count);
+
+  /// No description provided for @sendNotificationCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get sendNotificationCategory;
+
+  /// No description provided for @sendNotificationOpens.
+  ///
+  /// In en, this message translates to:
+  /// **'Members who tap it go to: {action}'**
+  String sendNotificationOpens(String action);
+
+  /// No description provided for @sendNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get sendNotificationTitle;
+
+  /// No description provided for @sendNotificationTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter title'**
+  String get sendNotificationTitleHint;
+
+  /// No description provided for @sendNotificationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get sendNotificationMessage;
+
+  /// No description provided for @sendNotificationMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter message'**
+  String get sendNotificationMessageHint;
+
+  /// No description provided for @sendNotificationButton.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Send} =1{Send to 1 member} other{Send to {count} members}}'**
+  String sendNotificationButton(int count);
+
+  /// No description provided for @sendNotificationConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send notification?'**
+  String get sendNotificationConfirmTitle;
+
+  /// No description provided for @sendNotificationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member will get a push notification on their phone.} other{{count} members will get a push notification on their phone.}}'**
+  String sendNotificationConfirm(int count);
+
+  /// No description provided for @sendNotificationDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Sent to 1 member} other{Sent to {count} members}} ({pushed} phones reached)'**
+  String sendNotificationDone(int count, int pushed);
+
+  /// No description provided for @sendNotificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send. Check your connection and try again.'**
+  String get sendNotificationFailed;
+
+  /// No description provided for @notifEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get notifEarlier;
+
+  /// No description provided for @notifCatGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get notifCatGeneral;
+
+  /// No description provided for @notifCatOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer'**
+  String get notifCatOffer;
+
+  /// No description provided for @notifCatCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog'**
+  String get notifCatCatalog;
+
+  /// No description provided for @notifCatDailySpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Spin'**
+  String get notifCatDailySpin;
+
+  /// No description provided for @notifCatAddBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Bill'**
+  String get notifCatAddBill;
+
+  /// No description provided for @notifCatWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Points'**
+  String get notifCatWallet;
+
+  /// No description provided for @notifCatFestival.
+  ///
+  /// In en, this message translates to:
+  /// **'Greetings'**
+  String get notifCatFestival;
+
+  /// No description provided for @notifCatBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get notifCatBranch;
+
+  /// No description provided for @notifCatBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill'**
+  String get notifCatBill;
+
+  /// No description provided for @notifCatPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Points'**
+  String get notifCatPoints;
+
+  /// No description provided for @notifCatAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get notifCatAccount;
+
+  /// No description provided for @notifActOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'View offers'**
+  String get notifActOffer;
+
+  /// No description provided for @notifActCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Open catalogs'**
+  String get notifActCatalog;
+
+  /// No description provided for @notifActDailySpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin now'**
+  String get notifActDailySpin;
+
+  /// No description provided for @notifActAddBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a bill'**
+  String get notifActAddBill;
+
+  /// No description provided for @notifActWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Open wallet'**
+  String get notifActWallet;
+
+  /// No description provided for @notifActBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'View branch'**
+  String get notifActBranch;
+
+  /// No description provided for @notifActAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'View profile'**
+  String get notifActAccount;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

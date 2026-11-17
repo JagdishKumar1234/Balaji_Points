@@ -33,6 +33,7 @@ const {inAppRecordFor} = require("./in_app_record");
 const {isFutureBillDate, indiaDayBounds} = require("./bill_date");
 const pinSignIn = require("./admin_pin_signin");
 const approval = require("./account_approval");
+const broadcast = require("./role_broadcast");
 
 /**
  * Verifies the authenticated caller against the configured super-admin profile.
@@ -1325,4 +1326,97 @@ exports.reviewMemberAccount = onCall(async (request) => {
   }
   console.log(`[reviewMemberAccount] ${caller.uid} ${action}d ${userId}`);
   return {ok: true, status: fields.approvalStatus};
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. sendRoleBroadcast  –  admin sends one notification to chosen roles
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.sendRoleBroadcast = onCall(async (request) => {
+  const caller = request.auth;
+  if (!caller) {
+    throw new HttpsError("unauthenticated", "Please sign in again.");
+  }
+  const {error, value} = broadcast.parseRequest(request.data);
+  if (error) throw new HttpsError("invalid-argument", error);
+  const {branchId, title, body, category, roles} = value;
+
+  const callerSnap = await db.collection("users").doc(caller.uid).get();
+  const callerData = callerSnap.exists ? callerSnap.data() : null;
+  const denied = broadcast.sendDenied(callerData, caller.token, branchId);
+  if (denied) throw new HttpsError("permission-denied", denied);
+
+  const users = await db.collection("users")
+      .where("branchId", "==", branchId).get();
+  const {userIds, tokens} = broadcast.pickRecipients(
+      users.docs.map((d) => ({id: d.id, data: d.data()})), roles);
+
+  // One inbox record for the whole audience; the app shows it to members
+  // of this branch whose role is in targetRoles.
+  const logRef = db.collection("notification_logs").doc();
+  const name = callerData ?
+    `${callerData.firstName || ""} ${callerData.lastName || ""}`.trim() : "";
+  await logRef.set({
+    userId: null,
+    isBroadcast: true,
+    type: "announcement",
+    category,
+    title,
+    body,
+    branchId,
+    targetRoles: roles,
+    data: {category, screen: "/notifications"},
+    recipients: userIds.length,
+    sentBy: caller.uid,
+    sentByName: name || "Admin",
+    sentAt: FieldValue.serverTimestamp(),
+    pushStatus: "sending",
+  });
+
+  let sent = 0;
+  let failed = 0;
+  const deadTokens = new Set();
+  for (const group of broadcast.chunk(tokens, 500)) {
+    try {
+      const res = await admin.messaging().sendEachForMulticast({
+        tokens: group,
+        notification: {title, body},
+        data: {type: "announcement", category, screen: "/notifications",
+          logId: logRef.id},
+        android: {
+          priority: "high",
+          notification: {channelId: "balaji_points_default", sound: "default"},
+        },
+        apns: {payload: {aps: {sound: "default"}}},
+      });
+      sent += res.successCount;
+      failed += res.failureCount;
+      res.responses.forEach((r, i) => {
+        const code = r.error && r.error.code;
+        if (code === "messaging/registration-token-not-registered" ||
+            code === "messaging/invalid-registration-token") {
+          deadTokens.add(group[i]);
+        }
+      });
+    } catch (err) {
+      console.error("[sendRoleBroadcast] multicast failed:", err.message);
+      failed += group.length;
+    }
+  }
+
+  // Forget tokens FCM says are gone, so later sends skip them.
+  if (deadTokens.size > 0) {
+    const batch = db.batch();
+    for (const doc of users.docs) {
+      if (deadTokens.has(doc.data().fcmToken)) {
+        batch.update(doc.ref, {fcmToken: FieldValue.delete()});
+      }
+    }
+    await batch.commit();
+  }
+
+  await logRef.update({pushStatus: "sent", pushSent: sent, pushFailed: failed});
+  console.log(`[sendRoleBroadcast] ${caller.uid} → ${branchId} ` +
+    `[${roles.join(",")}] ${userIds.length} members, ${sent} pushed`);
+  return {recipients: userIds.length, pushed: sent, failed};
 });

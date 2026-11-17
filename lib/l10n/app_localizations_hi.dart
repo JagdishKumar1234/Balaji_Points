@@ -5130,4 +5130,141 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get whatsAppNotAvailable => 'इस डिवाइस पर WhatsApp नहीं खुल सका।';
+
+  @override
+  String get sendNotification => 'सूचना भेजें';
+
+  @override
+  String get send => 'भेजें';
+
+  @override
+  String get sendNotificationTo => 'किसे भेजें';
+
+  @override
+  String sendNotificationMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count सदस्य',
+      one: '1 सदस्य',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sendNotificationCategory => 'श्रेणी';
+
+  @override
+  String sendNotificationOpens(String action) {
+    return 'टैप करने पर सदस्य जाएँगे: $action';
+  }
+
+  @override
+  String get sendNotificationTitle => 'शीर्षक';
+
+  @override
+  String get sendNotificationTitleHint => 'शीर्षक दर्ज करें';
+
+  @override
+  String get sendNotificationMessage => 'संदेश';
+
+  @override
+  String get sendNotificationMessageHint => 'संदेश दर्ज करें';
+
+  @override
+  String sendNotificationButton(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count सदस्यों को भेजें',
+      one: '1 सदस्य को भेजें',
+      zero: 'भेजें',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sendNotificationConfirmTitle => 'सूचना भेजें?';
+
+  @override
+  String sendNotificationConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count सदस्यों को उनके फ़ोन पर पुश सूचना मिलेगी।',
+      one: '1 सदस्य को उनके फ़ोन पर पुश सूचना मिलेगी।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sendNotificationDone(int count, int pushed) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count सदस्यों को भेजा गया',
+      one: '1 सदस्य को भेजा गया',
+    );
+    return '$_temp0 ($pushed फ़ोन तक पहुँचा)';
+  }
+
+  @override
+  String get sendNotificationFailed => 'भेजा नहीं जा सका। कनेक्शन जाँचें और फिर कोशिश करें।';
+
+  @override
+  String get notifEarlier => 'पहले';
+
+  @override
+  String get notifCatGeneral => 'घोषणा';
+
+  @override
+  String get notifCatOffer => 'ऑफ़र';
+
+  @override
+  String get notifCatCatalog => 'कैटलॉग';
+
+  @override
+  String get notifCatDailySpin => 'डेली स्पिन';
+
+  @override
+  String get notifCatAddBill => 'बिल जोड़ें';
+
+  @override
+  String get notifCatWallet => 'पॉइंट्स';
+
+  @override
+  String get notifCatFestival => 'शुभकामनाएँ';
+
+  @override
+  String get notifCatBranch => 'शाखा';
+
+  @override
+  String get notifCatBill => 'बिल';
+
+  @override
+  String get notifCatPoints => 'पॉइंट्स';
+
+  @override
+  String get notifCatAccount => 'खाता';
+
+  @override
+  String get notifActOffer => 'ऑफ़र देखें';
+
+  @override
+  String get notifActCatalog => 'कैटलॉग खोलें';
+
+  @override
+  String get notifActDailySpin => 'अभी स्पिन करें';
+
+  @override
+  String get notifActAddBill => 'बिल जोड़ें';
+
+  @override
+  String get notifActWallet => 'वॉलेट खोलें';
+
+  @override
+  String get notifActBranch => 'शाखा देखें';
+
+  @override
+  String get notifActAccount => 'प्रोफ़ाइल देखें';
 }

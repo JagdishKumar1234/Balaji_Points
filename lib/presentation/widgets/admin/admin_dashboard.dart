@@ -44,6 +44,11 @@ class _AdminDashboardState extends ConsumerState<AdminDashboard> {
       icon: Icons.local_offer_rounded,
     ),
     _SectionCard(
+      id: 'broadcast',
+      label: 'Send Notification',
+      icon: Icons.campaign_rounded,
+    ),
+    _SectionCard(
       id: 'greeting',
       label: 'Send Greeting',
       icon: Icons.message_rounded,
@@ -357,6 +362,7 @@ class _SectionTile extends StatelessWidget {
       'pending' => l10n.pendingBills,
       'history' => l10n.billHistory,
       'offers' => l10n.offers,
+      'broadcast' => l10n.sendNotification,
       'greeting' => l10n.sendGreeting,
       'catalogs' => l10n.catalogs,
       'users' => l10n.users,

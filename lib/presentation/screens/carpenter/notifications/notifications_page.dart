@@ -15,6 +15,9 @@ import 'package:go_router/go_router.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'dart:async';
 
+import 'package:balaji_points/core/notifications/notification_category.dart';
+import 'package:balaji_points/presentation/screens/carpenter/notifications/widgets/notification_tile.dart';
+
 enum NotificationsPageMode {
   /// Decide behavior from the logged-in user's role.
   auto,
@@ -42,6 +45,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   String? _myPhone;
   String? _myBranchId;
   bool _isLoading = true;
+
+  /// Category chip picked above the list; null shows everything.
+  NotificationCategory? _filter;
 
   /// The list last shown, so returning to this screen needs no loader. Keyed by
   /// user, and only used once the session confirms who is logged in.
@@ -239,6 +245,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           doc.data() as Map<String, dynamic>?,
           myIds: myIds,
           myBranchId: _myBranchId,
+          myRole: _userRole,
         );
       }).toList();
 
@@ -542,66 +549,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
-  IconData _getNotificationIcon(String? type) {
-    switch (type) {
-      case 'billApproved':
-        return Icons.check_circle_rounded;
-      case 'billRejected':
-        return Icons.cancel_rounded;
-      case 'pointsWithdrawn':
-        return Icons.remove_circle_rounded;
-      case 'tierUpgraded':
-        return Icons.trending_up_rounded;
-      case 'dailySpinWon':
-        return Icons.casino_rounded;
-      case 'offerRedeemed':
-        return Icons.card_giftcard_rounded;
-      case 'newOfferAvailable':
-        return Icons.notifications_active_rounded;
-      case 'pointsMilestone':
-        return Icons.emoji_events_rounded;
-      // Admin notification types
-      case 'newPendingBill':
-        return Icons.receipt_long_rounded;
-      case 'newUserRegistered':
-        return Icons.person_add_rounded;
-      case 'dailySpinReminder':
-        return Icons.casino_rounded;
-      default:
-        return Icons.notifications_rounded;
-    }
-  }
-
-  Color _getNotificationColor(String? type) {
-    switch (type) {
-      case 'billApproved':
-        return AppColors.success;
-      case 'billRejected':
-        return context.themeError;
-      case 'pointsWithdrawn':
-        return AppColors.warning;
-      case 'tierUpgraded':
-        return context.themePrimary;
-      case 'dailySpinWon':
-        return AppColors.warning;
-      case 'offerRedeemed':
-        return context.themePrimary;
-      case 'newOfferAvailable':
-        return context.themePrimary;
-      case 'pointsMilestone':
-        return context.themeGold;
-      // Admin notification types
-      case 'newPendingBill':
-        return context.themePrimary;
-      case 'newUserRegistered':
-        return AppColors.success;
-      case 'dailySpinReminder':
-        return AppColors.warning;
-      default:
-        return context.themePrimary;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -688,7 +635,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
           Expanded(
             child: Container(
-              color: theme.colorScheme.surface,
+              color: context.themeBackground,
               child: SafeArea(
                 top: false,
                 child: _mergedNotificationsStream == null
@@ -784,255 +731,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             );
                           }
 
-                          final notifications = snapshot.data!;
-
-                          return RefreshIndicator(
-                            onRefresh: () async {
-                              // Refresh is handled by StreamBuilder
-                              await Future.delayed(
-                                const Duration(milliseconds: 500),
-                              );
-                            },
-                            color: context.themePrimary,
-                            child: ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(
-                                16,
-                                16,
-                                16,
-                                120,
-                              ),
-                              itemCount: notifications.length,
-                              itemBuilder: (context, index) {
-                                final doc = notifications[index];
-                                final data = doc.data() as Map<String, dynamic>;
-
-                                final type = data['type'] as String?;
-                                final title =
-                                    data['title'] as String? ??
-                                    AppLocalizations.of(context)!.notification;
-                                final body = data['body'] as String? ?? '';
-                                final sentAt = data['sentAt'] as Timestamp?;
-                                final notificationColor = _getNotificationColor(
-                                  type,
-                                );
-
-                                return Dismissible(
-                                  key: Key(doc.id),
-                                  direction: DismissDirection.endToStart,
-                                  background: Container(
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    decoration: BoxDecoration(
-                                      color: context.themeError,
-                                      borderRadius: AppRadius.all16,
-                                    ),
-                                    alignment: Alignment.centerRight,
-                                    padding: const EdgeInsets.only(right: 24),
-                                    child: const Icon(
-                                      Icons.delete_rounded,
-                                      color: AppColors.white,
-                                      size: 26,
-                                    ),
-                                  ),
-                                  onDismissed: (direction) {
-                                    _deleteNotification(doc.id);
-                                  },
-                                  confirmDismiss: (direction) async {
-                                    return await showDialog<bool>(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: AppRadius.all16,
-                                            ),
-                                            title: Text(
-                                              AppLocalizations.of(
-                                                context,
-                                              )!.deleteNotification,
-                                            ),
-                                            content: Text(
-                                              AppLocalizations.of(
-                                                context,
-                                              )!.deleteNotificationConfirm,
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.of(
-                                                  context,
-                                                ).pop(false),
-                                                child: Text(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!.cancel,
-                                                  style: TextStyle(
-                                                    color: context
-                                                        .themeTextSecondary,
-                                                  ),
-                                                ),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () => Navigator.of(
-                                                  context,
-                                                ).pop(true),
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      context.themeError,
-                                                  foregroundColor:
-                                                      AppColors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
-                                                        ),
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!.delete,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ) ??
-                                        false;
-                                  },
-                                  // Modern iOS-style notification card
-                                  child: InkWell(
-                                    onTap: () =>
-                                        _handleNotificationTap(data, type),
-                                    borderRadius: AppRadius.all16,
-                                    child: Container(
-                                      margin: const EdgeInsets.only(bottom: 12),
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.surface,
-                                        borderRadius: AppRadius.all16,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: AppColors.black.withValues(
-                                              alpha: 0.04,
-                                            ),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                          BoxShadow(
-                                            color: AppColors.black.withValues(
-                                              alpha: 0.02,
-                                            ),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 1),
-                                          ),
-                                        ],
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: AppRadius.all16,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              left: BorderSide(
-                                                color: notificationColor,
-                                                width: 4,
-                                              ),
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(14),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                // Icon with gradient background
-                                                Container(
-                                                  width: 44,
-                                                  height: 44,
-                                                  decoration: BoxDecoration(
-                                                    color: notificationColor
-                                                        .withValues(alpha: 0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  child: Icon(
-                                                    _getNotificationIcon(type),
-                                                    color: notificationColor,
-                                                    size: 22,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                // Content
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      // Title and time row
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                              title,
-                                                              style: AppTypography.buttonMedium()
-                                                                  .copyWith(
-                                                                    fontSize:
-                                                                        15,
-                                                                    color: context
-                                                                        .themeTextPrimary,
-                                                                    letterSpacing:
-                                                                        -0.2,
-                                                                  ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 8,
-                                                          ),
-                                                          Text(
-                                                            _formatTimestamp(
-                                                              sentAt,
-                                                            ),
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors
-                                                                  .grey[400],
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(height: 4),
-                                                      // Body text
-                                                      Text(
-                                                        body,
-                                                        style:
-                                                            AppTypography.bodyMedium()
-                                                                .copyWith(
-                                                                  fontSize: 13,
-                                                                  color: Colors
-                                                                      .grey[600],
-                                                                  height: 1.3,
-                                                                ),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
+                          return _buildList(snapshot.data!);
                         },
                       ),
               ),
@@ -1043,93 +742,203 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 
-  /// Handle notification tap - navigate based on notification type and role
+  /// Category chips, then the cards grouped under Today / Yesterday /
+  /// Earlier. Swipe left deletes one.
+  Widget _buildList(List<QueryDocumentSnapshot> all) {
+    final l10n = AppLocalizations.of(context)!;
+    final present = <NotificationCategory>{
+      for (final d in all)
+        NotificationCategory.of(d.data() as Map<String, dynamic>?),
+    };
+    final filter = present.contains(_filter) ? _filter : null;
+    final shown = filter == null
+        ? all
+        : all
+              .where(
+                (d) =>
+                    NotificationCategory.of(
+                      d.data() as Map<String, dynamic>?,
+                    ) ==
+                    filter,
+              )
+              .toList();
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    String section(Timestamp? t) {
+      if (t == null) return l10n.today;
+      final d = t.toDate();
+      final day = DateTime(d.year, d.month, d.day);
+      if (day == today) return l10n.today;
+      if (today.difference(day).inDays == 1) return l10n.yesterday;
+      return l10n.notifEarlier;
+    }
+
+    final rows = <Widget>[];
+    String? lastSection;
+    for (final doc in shown) {
+      final data = doc.data() as Map<String, dynamic>;
+      final sentAt = data['sentAt'] as Timestamp?;
+      final heading = section(sentAt);
+      if (heading != lastSection) {
+        lastSection = heading;
+        rows.add(
+          Padding(
+            padding: EdgeInsets.fromLTRB(4, rows.isEmpty ? 4 : 14, 4, 8),
+            child: Text(
+              heading,
+              style: AppTypography.label(color: context.themeTextSecondary),
+            ),
+          ),
+        );
+      }
+      rows.add(_dismissibleTile(doc, data));
+    }
+
+    final chips = <NotificationCategory?>[
+      null,
+      ...NotificationCategory.values.where(present.contains),
+    ];
+
+    return Column(
+      children: [
+        if (present.length > 1)
+          SizedBox(
+            height: 52,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+              itemCount: chips.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, i) {
+                final c = chips[i];
+                final selected = c == filter;
+                return ChoiceChip(
+                  label: Text(c == null ? l10n.all : c.label(l10n)),
+                  avatar: c == null
+                      ? null
+                      : Icon(
+                          c.icon,
+                          size: 16,
+                          color: selected
+                              ? context.themeOnPrimary
+                              : context.themePrimaryLight,
+                        ),
+                  selected: selected,
+                  showCheckmark: false,
+                  selectedColor: context.themePrimary,
+                  backgroundColor: context.themeCard,
+                  side: BorderSide(
+                    color: selected
+                        ? context.themePrimary
+                        : context.themeBorder,
+                  ),
+                  labelStyle: AppTypography.label(
+                    color: selected
+                        ? context.themeOnPrimary
+                        : context.themeTextPrimary,
+                  ),
+                  onSelected: (_) => setState(() => _filter = c),
+                );
+              },
+            ),
+          ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () => Future.delayed(const Duration(milliseconds: 500)),
+            color: context.themePrimary,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+              children: rows,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _dismissibleTile(
+    QueryDocumentSnapshot doc,
+    Map<String, dynamic> data,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final type = data['type'] as String?;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Dismissible(
+        key: Key(doc.id),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          decoration: BoxDecoration(
+            color: context.themeError,
+            borderRadius: AppRadius.all16,
+          ),
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 24),
+          child: const Icon(
+            Icons.delete_rounded,
+            color: AppColors.white,
+            size: 26,
+          ),
+        ),
+        onDismissed: (_) => _deleteNotification(doc.id),
+        confirmDismiss: (_) async =>
+            await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+                title: Text(l10n.deleteNotification),
+                content: Text(l10n.deleteNotificationConfirm),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text(
+                      l10n.cancel,
+                      style: TextStyle(color: context.themeTextSecondary),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.themeError,
+                      foregroundColor: AppColors.white,
+                    ),
+                    child: Text(l10n.delete),
+                  ),
+                ],
+              ),
+            ) ??
+            false,
+        child: NotificationTile(
+          category: NotificationCategory.of(data),
+          type: type,
+          title: data['title'] as String? ?? l10n.notification,
+          body: data['body'] as String? ?? '',
+          time: _formatTimestamp(data['sentAt'] as Timestamp?),
+          onTap: () => _handleNotificationTap(data, type),
+        ),
+      ),
+    );
+  }
+
+  /// A tap opens the screen of the notification's category. Admin alerts
+  /// open the admin dashboard.
   void _handleNotificationTap(Map<String, dynamic> data, String? type) {
     try {
-      // Get screen route from notification data
-      final screenRaw = data['screen'] as String?;
-      final screen = screenRaw?.trim();
-      final normalizedScreen =
-          (screen != null &&
-              screen.isNotEmpty &&
-              screen.endsWith('/') &&
-              screen.length > 1)
-          ? screen.substring(0, screen.length - 1)
-          : screen;
-
-      // If no screen specified, stay on notifications page
-      if (normalizedScreen == null || normalizedScreen.isEmpty) {
+      if (_resolvedIsAdmin) {
+        context.go('/admin');
         return;
       }
-
-      // Navigate based on notification type and role/mode
-      if (_resolvedIsAdmin) {
-        // Admin navigation
-        switch (type) {
-          case 'newPendingBill':
-            // Navigate to admin home with pending bills tab
-            context.go('/admin');
-            break;
-          case 'newUserRegistered':
-            // Navigate to admin home with users tab
-            context.go('/admin');
-            break;
-          default:
-            // Use screen from data
-            if (normalizedScreen == '/admin') {
-              context.go('/admin');
-            } else if (normalizedScreen == '/notifications' ||
-                normalizedScreen == '/notifications/') {
-              // Admin notifications route (outside the carpenter ShellRoute)
-              context.go('/admin/notifications');
-            } else if (normalizedScreen == '/admin/notifications') {
-              context.go('/admin/notifications');
-            } else {
-              // For other screens, navigate to admin home
-              context.go('/admin');
-            }
-        }
+      final route = NotificationCategory.of(data).route;
+      if (route == null) return;
+      final category = NotificationCategory.of(data);
+      if (category.isTab) {
+        context.go(route);
       } else {
-        // Carpenter navigation
-        switch (type) {
-          case 'billApproved':
-          case 'billRejected':
-          case 'pointsWithdrawn':
-          case 'billSubmitted':
-            // Navigate to home (bills are shown there)
-            context.go('/');
-            break;
-          case 'tierUpgraded':
-          case 'pointsMilestone':
-            // Navigate to profile
-            context.go('/profile');
-            break;
-          case 'dailySpinWon':
-            // Navigate to daily spin
-            context.go('/daily-spin');
-            break;
-          case 'offerRedeemed':
-          case 'newOfferAvailable':
-            // Navigate to home (offers are shown there)
-            context.go('/');
-            break;
-          default:
-            // Use screen from data, fallback to home
-            if (normalizedScreen == '/notifications') {
-              // Already on notifications page
-              return;
-            } else if (normalizedScreen == '/profile' ||
-                normalizedScreen == '/daily-spin') {
-              context.go(normalizedScreen);
-            } else {
-              // Default to home
-              context.go('/');
-            }
-        }
+        context.push(route);
       }
     } catch (e) {
       debugPrint('Error navigating from notification: $e');
-      // On error, stay on notifications page
     }
   }
 }

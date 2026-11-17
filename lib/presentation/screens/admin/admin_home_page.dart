@@ -41,6 +41,7 @@ import 'firestore_backup_screen.dart';
 import 'firebase_duplicate_checker_screen.dart';
 import 'smart_duplicate_cleanup_screen.dart';
 import 'send_greeting_page.dart';
+import 'send_notification_page.dart';
 import '../../widgets/shared/responsive_role_navigation.dart';
 
 class AdminHomePage extends ConsumerStatefulWidget {
@@ -496,6 +497,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return AppLocalizations.of(context)!.checkFirebaseDuplicates;
       case 'smart-cleanup':
         return AppLocalizations.of(context)!.smartCleanup;
+      case 'broadcast':
+        return AppLocalizations.of(context)!.sendNotification;
       case 'greeting':
         return AppLocalizations.of(context)!.sendGreeting;
       case 'catalogs':
@@ -567,6 +570,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
         return const FirebaseDuplicateCheckerScreen();
       case 'smart-cleanup':
         return const SmartDuplicateCleanupScreen();
+      case 'broadcast':
+        return const SendNotificationPage();
       case 'greeting':
         return const SendGreetingPage(embedded: true);
       case 'catalogs':
