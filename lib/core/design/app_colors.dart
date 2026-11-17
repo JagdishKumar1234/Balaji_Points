@@ -37,6 +37,23 @@ class AppColors {
   static const Color gold = Color(0xFFC9A24B);
   static const Color goldSoft = Color(0xFFFBF0D3);
 
+  /// Daily spin wheel only: bright casino slices (the one place in the app
+  /// with many colours), plus the rim bulbs.
+  static const List<Color> spinWheelSlices = [
+    Color(0xFFE53935), // red
+    Color(0xFFFFB300), // amber
+    Color(0xFF43A047), // green
+    Color(0xFF1E88E5), // blue
+    Color(0xFF8E24AA), // purple
+    Color(0xFFFB8C00), // orange
+    Color(0xFFD81B60), // pink
+    Color(0xFF00ACC1), // cyan
+    Color(0xFF7CB342), // lime
+    Color(0xFF3949AB), // indigo
+  ];
+  static const Color spinWheelBulb = Color(0xFFFFF59D);
+  static const Color spinWheelRim = Color(0xFF7A0E1B);
+
   /// Desktop sidebar / rail background.
   static const Color navigation = primary;
 

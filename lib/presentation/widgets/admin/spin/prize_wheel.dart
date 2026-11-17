@@ -29,7 +29,7 @@ class PrizeWheel extends StatelessWidget {
   Widget build(BuildContext context) {
     final slice = 2 * math.pi / prizes.length;
     final r = size / 2;
-    final imageBox = size * 0.17;
+    final imageBox = size * 0.185;
     final imageRadius = r * 0.66;
 
     return SizedBox(
@@ -64,7 +64,12 @@ class PrizeWheel extends StatelessWidget {
                             height: imageBox,
                             child: Transform.rotate(
                               angle: a,
-                              child: _PrizePicture(prize: prizes[i]),
+                              child: _PrizePicture(
+                                prize: prizes[i],
+                                color:
+                                    AppColors.spinWheelSlices[i %
+                                        AppColors.spinWheelSlices.length],
+                              ),
                             ),
                           );
                         },
@@ -82,8 +87,10 @@ class PrizeWheel extends StatelessWidget {
               height: size * 0.22,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.white,
-                border: Border.all(color: AppColors.gold, width: 4),
+                gradient: const RadialGradient(
+                  colors: [AppColors.spinWheelBulb, AppColors.gold],
+                ),
+                border: Border.all(color: AppColors.spinWheelRim, width: 4),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.black.withValues(alpha: 0.25),
@@ -93,7 +100,7 @@ class PrizeWheel extends StatelessWidget {
               ),
               child: Icon(
                 Icons.stars_rounded,
-                color: AppColors.primary,
+                color: AppColors.spinWheelRim,
                 size: size * 0.12,
               ),
             ),
@@ -107,8 +114,11 @@ class PrizeWheel extends StatelessWidget {
 }
 
 class _PrizePicture extends StatelessWidget {
-  const _PrizePicture({required this.prize});
+  const _PrizePicture({required this.prize, required this.color});
   final SpinPrize prize;
+
+  /// The slice colour: ring around the picture.
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -119,12 +129,18 @@ class _PrizePicture extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AppColors.white,
+          border: Border.all(color: AppColors.white, width: 2),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
+              color: AppColors.black.withValues(alpha: 0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        foregroundDecoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: color, width: 2.5),
         ),
         padding: const EdgeInsets.all(5),
         child: ClipOval(
@@ -132,9 +148,8 @@ class _PrizePicture extends StatelessWidget {
             prize.asset,
             fit: BoxFit.contain,
             // Until the product photo is added, a matching tool icon.
-            errorBuilder: (_, __, ___) => FittedBox(
-              child: Icon(prize.fallbackIcon, color: AppColors.primary),
-            ),
+            errorBuilder: (_, __, ___) =>
+                FittedBox(child: Icon(prize.fallbackIcon, color: color)),
           ),
         ),
       ),
@@ -185,21 +200,29 @@ class _WheelPainter extends CustomPainter {
     final r = size.width / 2;
     final slice = 2 * math.pi / count;
 
-    // Outer rim.
-    canvas.drawCircle(c, r, Paint()..color = AppColors.primary);
-    canvas.drawCircle(c, r - 3, Paint()..color = AppColors.gold);
-    final inner = r - 12;
+    // Outer rim: dark red ring with a gold edge, like a casino wheel.
+    canvas.drawCircle(c, r, Paint()..color = AppColors.gold);
+    canvas.drawCircle(c, r - 3, Paint()..color = AppColors.spinWheelRim);
+    final inner = r - 15;
+    canvas.drawCircle(c, inner + 2, Paint()..color = AppColors.gold);
     final rect = Rect.fromCircle(center: c, radius: inner);
+    const colors = AppColors.spinWheelSlices;
 
     for (var i = 0; i < count; i++) {
       // Canvas angles start at 3 o'clock; slice 0 starts at 12 o'clock.
       final start = -math.pi / 2 + i * slice;
+      final base = colors[i % colors.length];
+      // Lighter at the centre, deeper at the rim.
       canvas.drawArc(
         rect,
         start,
         slice,
         true,
-        Paint()..color = i.isEven ? AppColors.primary : AppColors.primaryLight,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [Color.lerp(base, AppColors.white, 0.35)!, base],
+            stops: const [0.15, 1],
+          ).createShader(rect),
       );
       canvas.drawArc(
         rect,
@@ -207,20 +230,27 @@ class _WheelPainter extends CustomPainter {
         slice,
         true,
         Paint()
-          ..color = AppColors.gold
+          ..color = AppColors.white
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2,
+          ..strokeWidth = 2.5,
       );
     }
 
-    // Rim lights between slices.
+    // Rim bulbs: two per slice, glowing.
     for (var i = 0; i < count * 2; i++) {
       final a = -math.pi / 2 + i * slice / 2;
-      final p = c + Offset(math.cos(a), math.sin(a)) * (r - 6);
+      final p = c + Offset(math.cos(a), math.sin(a)) * (r - 8.5);
       canvas.drawCircle(
         p,
-        2.6,
-        Paint()..color = i.isEven ? AppColors.white : AppColors.primary,
+        5.5,
+        Paint()
+          ..color = AppColors.spinWheelBulb.withValues(alpha: 0.45)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+      );
+      canvas.drawCircle(
+        p,
+        3.2,
+        Paint()..color = i.isEven ? AppColors.spinWheelBulb : AppColors.white,
       );
     }
   }
