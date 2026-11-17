@@ -5224,7 +5224,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get notifCatCatalog => 'कैटलॉग';
 
   @override
-  String get notifCatDailySpin => 'डेली स्पिन';
+  String get notifCatDailySpin => 'स्पिन परिणाम';
 
   @override
   String get notifCatAddBill => 'बिल जोड़ें';
@@ -5254,7 +5254,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get notifActCatalog => 'कैटलॉग खोलें';
 
   @override
-  String get notifActDailySpin => 'अभी स्पिन करें';
+  String get notifActDailySpin => 'आज का विजेता देखें';
 
   @override
   String get notifActAddBill => 'बिल जोड़ें';

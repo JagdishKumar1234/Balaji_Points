@@ -5225,7 +5225,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get notifCatCatalog => 'கேட்லாக்';
 
   @override
-  String get notifCatDailySpin => 'தினசரி ஸ்பின்';
+  String get notifCatDailySpin => 'ஸ்பின் முடிவு';
 
   @override
   String get notifCatAddBill => 'பில் சேர்';
@@ -5255,7 +5255,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get notifActCatalog => 'கேட்லாக்கைத் திற';
 
   @override
-  String get notifActDailySpin => 'இப்போது ஸ்பின் செய்';
+  String get notifActDailySpin => 'இன்றைய வெற்றியாளரைப் பார்';
 
   @override
   String get notifActAddBill => 'பில் சேர்';

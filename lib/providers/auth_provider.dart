@@ -854,15 +854,20 @@ class AuthNotifier extends Notifier<AuthState> {
         );
       }
 
-      if (postLogin != null) {
-        try {
+      try {
+        if (postLogin != null) {
           await _fcm.refreshTokenAfterLogin(
             uid: postLogin.firebaseUid,
             phone: postLogin.phone,
           );
-        } catch (e) {
-          AppLogger.warning('FCM refresh after login failed: $e');
+        } else {
+          // No Firebase UID (anonymous sign-in is off on live): still save
+          // this phone's push token on the member's own record now, or
+          // pushes only start after the app is opened again.
+          await _fcm.saveTokenForUserDoc(userId);
         }
+      } catch (e) {
+        AppLogger.warning('FCM refresh after login failed: $e');
       }
 
       final role = userData['role'] as String? ?? 'carpenter';
@@ -957,15 +962,20 @@ class AuthNotifier extends Notifier<AuthState> {
         pinHash: userData['pinHash'] as String?,
       );
 
-      if (postLogin != null) {
-        try {
+      try {
+        if (postLogin != null) {
           await _fcm.refreshTokenAfterLogin(
             uid: postLogin.firebaseUid,
             phone: postLogin.phone,
           );
-        } catch (e) {
-          AppLogger.warning('FCM refresh after setup failed: $e');
+        } else {
+          // No Firebase UID (anonymous sign-in is off on live): still save
+          // this phone's push token on the member's own record now, or
+          // pushes only start after the app is opened again.
+          await _fcm.saveTokenForUserDoc(userId);
         }
+      } catch (e) {
+        AppLogger.warning('FCM refresh after setup failed: $e');
       }
 
       final user = User(

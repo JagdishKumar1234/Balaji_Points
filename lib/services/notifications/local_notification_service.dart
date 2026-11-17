@@ -192,9 +192,13 @@ class LocalNotificationService {
   void _onNotificationTapped(NotificationResponse response) {
     AppLogger.info('Notification tapped: ${response.payload}');
 
-    // Call custom callback if set (e.g., for update notifications)
-    if (onNotificationTapped != null) {
-      onNotificationTapped!(response.payload);
+    // The custom callback (app update notices) only takes web links. Push
+    // notifications shown while the app is open carry their data, not a
+    // link, and must open the Notifications list below.
+    final payload = response.payload ?? '';
+    if (onNotificationTapped != null &&
+        (payload.startsWith('http://') || payload.startsWith('https://'))) {
+      onNotificationTapped!(payload);
       return;
     }
 

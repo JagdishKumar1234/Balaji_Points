@@ -22,40 +22,18 @@ import 'app.dart';
 import 'firebase_options.dart';
 import 'core/logger.dart';
 import 'services/notifications/fcm_service.dart';
-import 'services/notifications/local_notification_service.dart';
 
 /// -------------------------------
 /// BACKGROUND FCM HANDLER (TOP LEVEL)
 /// -------------------------------
-/// This handler is called when app is in background or terminated
+/// Runs when a push arrives while the app is in the background or closed.
+/// Every push we send has a `notification` part, which Android already shows
+/// in the tray (on the channel the server picks); tapping it opens the app
+/// via onMessageOpenedApp / getInitialMessage. Showing a local copy here too
+/// put every push in the tray twice, and the copy's tap opened only Home.
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // For Android, explicitly show local notification when app is in background
-  if (message.notification != null) {
-    try {
-      final localNotificationService = LocalNotificationService();
-      await localNotificationService.initialize();
-
-      // Determine channel based on priority or type
-      String channelId = 'balaji_points_default';
-      if (message.data['type'] == 'billApproved' ||
-          message.data['type'] == 'tierUpgraded' ||
-          message.data['type'] == 'pointsWithdrawn') {
-        channelId = 'balaji_points_important';
-      }
-
-      await localNotificationService.showNotification(
-        title: message.notification!.title ?? 'Notification',
-        body: message.notification!.body ?? '',
-        payload: message.data.toString(),
-        channelId: channelId,
-      );
-    } catch (e) {
-      AppLogger.error('Background notification error', e);
-    }
-  }
 }
 
 void main() {

@@ -144,6 +144,25 @@ class FCMService {
     }
   }
 
+  /// Saves this phone's push token on users/[docId] (merge). Used after a
+  /// PIN login that has no Firebase UID.
+  Future<void> saveTokenForUserDoc(String docId) async {
+    if (docId.isEmpty) return;
+    try {
+      final token = _token ?? await _messaging.getToken();
+      if (token == null) return;
+      _token = token;
+      await _firestore.collection('users').doc(docId).set({
+        'fcmToken': token,
+        'lastTokenUpdate': FieldValue.serverTimestamp(),
+        'platform': defaultTargetPlatform.name,
+      }, SetOptions(merge: true));
+      AppLogger.info('✅ FCM token saved to users/$docId (PIN login)');
+    } catch (e) {
+      AppLogger.error('Error saving FCM token after PIN login', e);
+    }
+  }
+
   /// Call after PIN login once migration has run.
   Future<void> refreshTokenAfterLogin({
     required String uid,

@@ -5235,7 +5235,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifCatCatalog => 'Catalog';
 
   @override
-  String get notifCatDailySpin => 'Daily Spin';
+  String get notifCatDailySpin => 'Spin Result';
 
   @override
   String get notifCatAddBill => 'Add Bill';
@@ -5265,7 +5265,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifActCatalog => 'Open catalogs';
 
   @override
-  String get notifActDailySpin => 'Spin now';
+  String get notifActDailySpin => 'See today\'s winner';
 
   @override
   String get notifActAddBill => 'Add a bill';

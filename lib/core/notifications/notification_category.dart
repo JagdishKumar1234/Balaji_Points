@@ -11,7 +11,9 @@ enum NotificationCategory {
   general('general', Icons.campaign_rounded, null),
   offer('offer', Icons.local_offer_rounded, '/'),
   catalog('catalog', Icons.menu_book_rounded, '/catalogs'),
-  dailySpin('dailySpin', Icons.casino_rounded, '/daily-spin'),
+  // Members never spin (only the admin does); they see today's winner on
+  // Home.
+  dailySpin('dailySpin', Icons.emoji_events_rounded, '/'),
   addBill('addBill', Icons.receipt_long_rounded, '/add-bill'),
   wallet('wallet', Icons.account_balance_wallet_rounded, '/wallet'),
   festival('festival', Icons.celebration_rounded, '/'),

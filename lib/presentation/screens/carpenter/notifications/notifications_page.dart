@@ -263,7 +263,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
         final hourKey = sentAt != null
             ? '${sentAt.toDate().year}-${sentAt.toDate().month}-${sentAt.toDate().day}-${sentAt.toDate().hour}'
             : 'unknown';
-        final uniqueKey = '$type-${billId ?? 'none'}-$hourKey';
+        // Only the same bill's notice twice in an hour is a duplicate;
+        // other notifications are each kept (announcements share a type).
+        final uniqueKey = billId == null
+            ? doc.id
+            : '$type-$billId-$hourKey';
 
         if (seen.contains(uniqueKey)) {
           debugPrint('   🔄 Skipping duplicate notification: $uniqueKey');

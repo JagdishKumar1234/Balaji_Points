@@ -9622,7 +9622,7 @@ abstract class AppLocalizations {
   /// No description provided for @notifCatDailySpin.
   ///
   /// In en, this message translates to:
-  /// **'Daily Spin'**
+  /// **'Spin Result'**
   String get notifCatDailySpin;
 
   /// No description provided for @notifCatAddBill.
@@ -9682,7 +9682,7 @@ abstract class AppLocalizations {
   /// No description provided for @notifActDailySpin.
   ///
   /// In en, this message translates to:
-  /// **'Spin now'**
+  /// **'See today\'s winner'**
   String get notifActDailySpin;
 
   /// No description provided for @notifActAddBill.
