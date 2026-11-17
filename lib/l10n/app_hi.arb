@@ -1828,5 +1828,18 @@
   "spinWheelSubtitle": "आज का भाग्यशाली विजेता चुनने के लिए घुमाएँ",
   "spinEligibleToday": "आज पात्र",
   "spinTodayWinnerLabel": "आज का विजेता",
-  "spinThisMonth": "इस महीने"
+  "spinThisMonth": "इस महीने",
+  "spinPrizePowerDrill": "पावर ड्रिल मशीन",
+  "spinPrizeCircularSaw": "सर्कुलर सॉ मशीन",
+  "spinPrizeToolBox": "टूल बॉक्स",
+  "spinPrizeHammer": "हथौड़ा",
+  "spinPrizeScrewdriverKit": "स्क्रूड्राइवर / टूल किट",
+  "spinPrizeMeasuringTape": "मेज़रिंग टेप",
+  "spinPrizeLadder": "एल्युमिनियम सीढ़ी",
+  "spinPrizeHandPlaner": "हैंड प्लेनर",
+  "spinPrizeDrillBits": "ड्रिल बिट सेट",
+  "spinPrizeAccessoryKit": "टूल एक्सेसरी किट",
+  "spinWonPrize": "इनाम: {prize}",
+  "spinYouWon": "आपने आज का स्पिन जीता!",
+  "spinWinnerAndPrize": "{name} ने {prize} जीता!"
 }

@@ -180,8 +180,9 @@ void main() {
           for (final g in LeaderboardGroup.values) {
             final w = await spin.spin(branchId: branch, group: g, date: today);
             expect(w, isNotNull, reason: '$branch $g');
-            final user = (await db.collection('users').doc(w!.userId).get())
-                .data()!;
+            final user =
+                (await db.collection('users').doc(w!.winner.userId).get())
+                    .data()!;
             expect(user['branchId'], branch);
             expect(LeaderboardGroups.of(user['role'] as String?), g);
             // Members' home card reads exactly this document.
@@ -189,7 +190,8 @@ void main() {
                 .collection('daily_winners')
                 .doc(DailyWinnerScope.docId(branch, g, today))
                 .get();
-            expect(doc.data()!['carpenterId'], w.userId);
+            expect(doc.data()!['carpenterId'], w.winner.userId);
+            expect(doc.data()!['prizeId'], w.prize.id);
             // A second draw for the same group today is refused.
             expect(
               await spin.spin(branchId: branch, group: g, date: today),

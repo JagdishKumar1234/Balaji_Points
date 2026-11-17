@@ -3178,5 +3178,35 @@
   "spinWheelSubtitle": "Spin to pick today's lucky winner",
   "spinEligibleToday": "Eligible today",
   "spinTodayWinnerLabel": "Today's winner",
-  "spinThisMonth": "This month"
+  "spinThisMonth": "This month",
+  "spinPrizePowerDrill": "Power Drill Machine",
+  "spinPrizeCircularSaw": "Circular Saw Machine",
+  "spinPrizeToolBox": "Tool Box",
+  "spinPrizeHammer": "Hammer",
+  "spinPrizeScrewdriverKit": "Screwdriver / Tool Kit",
+  "spinPrizeMeasuringTape": "Measuring Tape",
+  "spinPrizeLadder": "Aluminium Ladder",
+  "spinPrizeHandPlaner": "Hand Planer",
+  "spinPrizeDrillBits": "Drill Bit Set",
+  "spinPrizeAccessoryKit": "Tool Accessory Kit",
+  "spinWonPrize": "Prize: {prize}",
+  "@spinWonPrize": {
+    "placeholders": {
+      "prize": {
+        "type": "String"
+      }
+    }
+  },
+  "spinYouWon": "You won today's spin!",
+  "spinWinnerAndPrize": "{name} won {prize}!",
+  "@spinWinnerAndPrize": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "prize": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -9924,6 +9924,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This month'**
   String get spinThisMonth;
+
+  /// No description provided for @spinPrizePowerDrill.
+  ///
+  /// In en, this message translates to:
+  /// **'Power Drill Machine'**
+  String get spinPrizePowerDrill;
+
+  /// No description provided for @spinPrizeCircularSaw.
+  ///
+  /// In en, this message translates to:
+  /// **'Circular Saw Machine'**
+  String get spinPrizeCircularSaw;
+
+  /// No description provided for @spinPrizeToolBox.
+  ///
+  /// In en, this message translates to:
+  /// **'Tool Box'**
+  String get spinPrizeToolBox;
+
+  /// No description provided for @spinPrizeHammer.
+  ///
+  /// In en, this message translates to:
+  /// **'Hammer'**
+  String get spinPrizeHammer;
+
+  /// No description provided for @spinPrizeScrewdriverKit.
+  ///
+  /// In en, this message translates to:
+  /// **'Screwdriver / Tool Kit'**
+  String get spinPrizeScrewdriverKit;
+
+  /// No description provided for @spinPrizeMeasuringTape.
+  ///
+  /// In en, this message translates to:
+  /// **'Measuring Tape'**
+  String get spinPrizeMeasuringTape;
+
+  /// No description provided for @spinPrizeLadder.
+  ///
+  /// In en, this message translates to:
+  /// **'Aluminium Ladder'**
+  String get spinPrizeLadder;
+
+  /// No description provided for @spinPrizeHandPlaner.
+  ///
+  /// In en, this message translates to:
+  /// **'Hand Planer'**
+  String get spinPrizeHandPlaner;
+
+  /// No description provided for @spinPrizeDrillBits.
+  ///
+  /// In en, this message translates to:
+  /// **'Drill Bit Set'**
+  String get spinPrizeDrillBits;
+
+  /// No description provided for @spinPrizeAccessoryKit.
+  ///
+  /// In en, this message translates to:
+  /// **'Tool Accessory Kit'**
+  String get spinPrizeAccessoryKit;
+
+  /// No description provided for @spinWonPrize.
+  ///
+  /// In en, this message translates to:
+  /// **'Prize: {prize}'**
+  String spinWonPrize(String prize);
+
+  /// No description provided for @spinYouWon.
+  ///
+  /// In en, this message translates to:
+  /// **'You won today\'s spin!'**
+  String get spinYouWon;
+
+  /// No description provided for @spinWinnerAndPrize.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} won {prize}!'**
+  String spinWinnerAndPrize(String name, String prize);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

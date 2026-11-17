@@ -1828,5 +1828,18 @@
   "spinWheelSubtitle": "இன்றைய அதிர்ஷ்ட வெற்றியாளரைத் தேர்ந்தெடுக்கச் சுழற்றுங்கள்",
   "spinEligibleToday": "இன்று தகுதியானவர்கள்",
   "spinTodayWinnerLabel": "இன்றைய வெற்றியாளர்",
-  "spinThisMonth": "இந்த மாதம்"
+  "spinThisMonth": "இந்த மாதம்",
+  "spinPrizePowerDrill": "பவர் டிரில் மெஷின்",
+  "spinPrizeCircularSaw": "சர்குலர் ரம்பம் மெஷின்",
+  "spinPrizeToolBox": "டூல் பாக்ஸ்",
+  "spinPrizeHammer": "சுத்தியல்",
+  "spinPrizeScrewdriverKit": "ஸ்க்ரூடிரைவர் / டூல் கிட்",
+  "spinPrizeMeasuringTape": "அளவு நாடா",
+  "spinPrizeLadder": "அலுமினிய ஏணி",
+  "spinPrizeHandPlaner": "ஹேண்ட் பிளேனர்",
+  "spinPrizeDrillBits": "டிரில் பிட் செட்",
+  "spinPrizeAccessoryKit": "டூல் துணைக்கருவி கிட்",
+  "spinWonPrize": "பரிசு: {prize}",
+  "spinYouWon": "இன்றைய ஸ்பின்னை நீங்கள் வென்றீர்கள்!",
+  "spinWinnerAndPrize": "{name} {prize} வென்றார்!"
 }

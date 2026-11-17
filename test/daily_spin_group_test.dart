@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/core/spin/spin_prizes.dart';
 import 'package:balaji_points/services/spin/daily_spin_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,7 +101,7 @@ void main() {
       group: LeaderboardGroup.trade,
       date: _today,
     );
-    expect(['i1', 'c1', 'old'], contains(w1!.userId));
+    expect(['i1', 'c1', 'old'], contains(w1!.winner.userId));
 
     // Group 1 is done for today, group 2 is not blocked.
     expect(
@@ -124,7 +125,7 @@ void main() {
       group: LeaderboardGroup.professional,
       date: _today,
     );
-    expect(['a1', 'e1'], contains(w2!.userId));
+    expect(['a1', 'e1'], contains(w2!.winner.userId));
 
     // Branch 2 is not blocked by branch 1.
     expect(
@@ -140,19 +141,29 @@ void main() {
         .collection('daily_winners')
         .doc('b1_trade_$_today')
         .get();
-    expect(day1.data()!['carpenterId'], w1.userId);
+    expect(day1.data()!['carpenterId'], w1.winner.userId);
     expect(day1.data()!['group'], 'trade');
+    // The wheel prize is saved with the winner, for the member home card.
+    expect(day1.data()!['prizeId'], w1.prize.id);
+    expect(day1.data()!['prizeName'], w1.prize.name);
+    expect(spinPrizeById(day1.data()!['prizeId'] as String?), w1.prize);
     final day2 = await db
         .collection('daily_winners')
         .doc('b1_professional_$_today')
         .get();
-    expect(day2.data()!['carpenterId'], w2.userId);
+    expect(day2.data()!['carpenterId'], w2.winner.userId);
+    expect(day2.data()!['prizeId'], w2.prize.id);
     // No group-less legacy doc is written.
     expect(
       (await db.collection('daily_winners').doc('b1_$_today').get()).exists,
       isFalse,
     );
-    expect((await db.collection('daily_prize_winners').get()).docs.length, 2);
+    final history = (await db.collection('daily_prize_winners').get()).docs;
+    expect(history.length, 2);
+    expect(
+      history.map((d) => d.data()['prizeId']),
+      containsAll([w1.prize.id, w2.prize.id]),
+    );
   });
 
   test('a group with nobody qualified cannot spin a winner', () async {
@@ -165,5 +176,15 @@ void main() {
       ),
       isNull,
     );
+  });
+
+  test('every prize can be won and is found again by its id', () {
+    expect(spinPrizes.length, 10);
+    expect(spinPrizes.map((p) => p.id).toSet().length, 10);
+    for (final p in spinPrizes) {
+      expect(spinPrizeById(p.id), p);
+    }
+    expect(spinPrizeById(null), isNull);
+    expect(spinPrizeById('old_prize'), isNull);
   });
 }

@@ -38,3 +38,11 @@ const spinPrizes = <SpinPrize>[
     Icons.inventory_2_rounded,
   ),
 ];
+
+/// The prize saved with a winner, or null for old winners (before prizes).
+SpinPrize? spinPrizeById(String? id) {
+  for (final p in spinPrizes) {
+    if (p.id == id) return p;
+  }
+  return null;
+}

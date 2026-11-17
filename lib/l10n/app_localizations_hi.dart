@@ -5375,4 +5375,47 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get spinThisMonth => 'इस महीने';
+
+  @override
+  String get spinPrizePowerDrill => 'पावर ड्रिल मशीन';
+
+  @override
+  String get spinPrizeCircularSaw => 'सर्कुलर सॉ मशीन';
+
+  @override
+  String get spinPrizeToolBox => 'टूल बॉक्स';
+
+  @override
+  String get spinPrizeHammer => 'हथौड़ा';
+
+  @override
+  String get spinPrizeScrewdriverKit => 'स्क्रूड्राइवर / टूल किट';
+
+  @override
+  String get spinPrizeMeasuringTape => 'मेज़रिंग टेप';
+
+  @override
+  String get spinPrizeLadder => 'एल्युमिनियम सीढ़ी';
+
+  @override
+  String get spinPrizeHandPlaner => 'हैंड प्लेनर';
+
+  @override
+  String get spinPrizeDrillBits => 'ड्रिल बिट सेट';
+
+  @override
+  String get spinPrizeAccessoryKit => 'टूल एक्सेसरी किट';
+
+  @override
+  String spinWonPrize(String prize) {
+    return 'इनाम: $prize';
+  }
+
+  @override
+  String get spinYouWon => 'आपने आज का स्पिन जीता!';
+
+  @override
+  String spinWinnerAndPrize(String name, String prize) {
+    return '$name ने $prize जीता!';
+  }
 }

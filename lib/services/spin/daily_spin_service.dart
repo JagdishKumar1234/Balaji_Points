@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:balaji_points/core/points/leaderboard_group.dart';
+import 'package:balaji_points/core/spin/spin_prizes.dart';
 import 'package:balaji_points/core/utils/points_utils.dart';
 import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 
@@ -32,6 +33,13 @@ class SpinCandidate {
   /// ₹ total of the bills approved today.
   final double todaySales;
   final double todayPoints;
+}
+
+/// Today's draw result: a random qualified member and a random wheel prize.
+class SpinWin {
+  const SpinWin({required this.winner, required this.prize});
+  final SpinCandidate winner;
+  final SpinPrize prize;
 }
 
 /// The admin's daily draw: one per branch **per role group** per day.
@@ -143,9 +151,10 @@ class DailySpinService {
         null;
   }
 
-  /// Picks a random candidate and saves them as [group]'s winner for [date].
-  /// Returns null when nobody qualifies or the group has already spun.
-  Future<SpinCandidate?> spin({
+  /// Picks a random qualified member and a random wheel prize, and saves
+  /// both as [group]'s result for [date]. Returns null when nobody
+  /// qualifies or the group has already spun.
+  Future<SpinWin?> spin({
     required String branchId,
     required LeaderboardGroup group,
     required String date,
@@ -156,6 +165,7 @@ class DailySpinService {
     final list = await eligible(branchId: branchId, group: group, date: date);
     if (list.isEmpty) return null;
     final winner = list[_random.nextInt(list.length)];
+    final prize = spinPrizes[_random.nextInt(spinPrizes.length)];
 
     final record = {
       'branchId': branchId,
@@ -167,6 +177,8 @@ class DailySpinService {
       'todaySales': winner.todaySales,
       'billsCount': winner.billsCount,
       'eligibleCount': list.length,
+      'prizeId': prize.id,
+      'prizeName': prize.name,
       'date': date,
       'timestamp': FieldValue.serverTimestamp(),
     };
@@ -185,6 +197,6 @@ class DailySpinService {
     });
     if (!claimed) return null;
     await _firestore.collection('daily_prize_winners').add(record);
-    return winner;
+    return SpinWin(winner: winner, prize: prize);
   }
 }

@@ -5376,4 +5376,47 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get spinThisMonth => 'இந்த மாதம்';
+
+  @override
+  String get spinPrizePowerDrill => 'பவர் டிரில் மெஷின்';
+
+  @override
+  String get spinPrizeCircularSaw => 'சர்குலர் ரம்பம் மெஷின்';
+
+  @override
+  String get spinPrizeToolBox => 'டூல் பாக்ஸ்';
+
+  @override
+  String get spinPrizeHammer => 'சுத்தியல்';
+
+  @override
+  String get spinPrizeScrewdriverKit => 'ஸ்க்ரூடிரைவர் / டூல் கிட்';
+
+  @override
+  String get spinPrizeMeasuringTape => 'அளவு நாடா';
+
+  @override
+  String get spinPrizeLadder => 'அலுமினிய ஏணி';
+
+  @override
+  String get spinPrizeHandPlaner => 'ஹேண்ட் பிளேனர்';
+
+  @override
+  String get spinPrizeDrillBits => 'டிரில் பிட் செட்';
+
+  @override
+  String get spinPrizeAccessoryKit => 'டூல் துணைக்கருவி கிட்';
+
+  @override
+  String spinWonPrize(String prize) {
+    return 'பரிசு: $prize';
+  }
+
+  @override
+  String get spinYouWon => 'இன்றைய ஸ்பின்னை நீங்கள் வென்றீர்கள்!';
+
+  @override
+  String spinWinnerAndPrize(String name, String prize) {
+    return '$name $prize வென்றார்!';
+  }
 }

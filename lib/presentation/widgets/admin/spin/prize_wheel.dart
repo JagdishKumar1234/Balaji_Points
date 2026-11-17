@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:balaji_points/core/design/app_colors.dart';
 import 'package:balaji_points/core/spin/spin_prizes.dart';
+import 'package:balaji_points/presentation/widgets/shared/spin_prize_image.dart';
 import 'package:flutter/material.dart';
 
 /// Daily Buy Daily Win wheel: one slice per prize, product pictures only
@@ -64,12 +65,7 @@ class PrizeWheel extends StatelessWidget {
                             height: imageBox,
                             child: Transform.rotate(
                               angle: a,
-                              child: _PrizePicture(
-                                prize: prizes[i],
-                                color:
-                                    AppColors.spinWheelSlices[i %
-                                        AppColors.spinWheelSlices.length],
-                              ),
+                              child: SpinPrizeImage(prize: prizes[i]),
                             ),
                           );
                         },
@@ -108,50 +104,6 @@ class PrizeWheel extends StatelessWidget {
           // Pointer.
           const Positioned(top: 0, child: _Pointer()),
         ],
-      ),
-    );
-  }
-}
-
-class _PrizePicture extends StatelessWidget {
-  const _PrizePicture({required this.prize, required this.color});
-  final SpinPrize prize;
-
-  /// The slice colour: ring around the picture.
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: prize.name,
-      image: true,
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.white,
-          border: Border.all(color: AppColors.white, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.3),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        foregroundDecoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: color, width: 2.5),
-        ),
-        padding: const EdgeInsets.all(5),
-        child: ClipOval(
-          child: Image.asset(
-            prize.asset,
-            fit: BoxFit.contain,
-            // Until the product photo is added, a matching tool icon.
-            errorBuilder: (_, __, ___) =>
-                FittedBox(child: Icon(prize.fallbackIcon, color: color)),
-          ),
-        ),
       ),
     );
   }

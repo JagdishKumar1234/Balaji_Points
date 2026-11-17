@@ -10,6 +10,7 @@ import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/presentation/widgets/admin/spin/prize_wheel.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/presentation/widgets/shared/group_labels.dart';
+import 'package:balaji_points/presentation/widgets/shared/spin_prize_image.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/services/branch/daily_winner_scope.dart';
 import 'package:balaji_points/services/spin/daily_spin_service.dart';
@@ -33,7 +34,6 @@ class DailySpinManagement extends StatefulWidget {
 class _DailySpinManagementState extends State<DailySpinManagement>
     with SingleTickerProviderStateMixin {
   final _spin = DailySpinService();
-  final _random = math.Random();
 
   /// Each role group has its own draw, once a day.
   LeaderboardGroup _group = LeaderboardGroup.trade;
@@ -69,20 +69,19 @@ class _DailySpinManagementState extends State<DailySpinManagement>
     _canSpin = _canSpinToday();
   });
 
-  /// Turns the wheel several times and stops on a random slice.
-  void _startWheel() {
+  /// Turns the wheel several times and stops on [prize]'s slice.
+  Future<void> _turnWheelTo(SpinPrize prize) async {
     const turn = 2 * math.pi;
     final slice = PrizeWheel.angleFor(
-      _random.nextInt(spinPrizes.length),
+      spinPrizes.indexOf(prize),
       spinPrizes.length,
     );
     final current = _angle % turn;
     final target = (slice % turn + turn) % turn;
     _from = current;
     _to = current + 6 * turn + ((target - current) % turn + turn) % turn;
-    _wheel
-      ..reset()
-      ..forward();
+    _wheel.reset();
+    await _wheel.forward().orCancel.catchError((_) {});
   }
 
   void _snack(String text, {Color? color, IconData? icon}) {
@@ -116,29 +115,26 @@ class _DailySpinManagementState extends State<DailySpinManagement>
     }
     if (!mounted) return;
     setState(() => _isSpinning = true);
-    _startWheel();
 
     try {
-      final results = await Future.wait([
-        _spin.spin(
-          branchId: CurrentBranchService.adminBranchId ?? '',
-          group: _group,
-          date: _today,
-        ),
-        // Let the wheel finish turning.
-        Future<void>.delayed(_wheel.duration!),
-      ]);
-      final winner = results.first as SpinCandidate?;
+      // The draw (member + prize) is saved first; the wheel then stops on
+      // the saved prize, so what the admin sees is what members see.
+      final win = await _spin.spin(
+        branchId: CurrentBranchService.adminBranchId ?? '',
+        group: _group,
+        date: _today,
+      );
       if (!mounted) return;
-      if (winner == null) {
+      if (win == null) {
         _snack(l10n.spinNoQualifiedToday, icon: Icons.info_outline_rounded);
-      } else {
-        _snack(
-          l10n.isTodaySWinner(winner.name),
-          color: AppColors.success,
-          icon: Icons.celebration_rounded,
-        );
+        return;
       }
+      await _turnWheelTo(win.prize);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (_) => _WinDialog(win: win),
+      );
     } catch (e) {
       _snack(l10n.error2(e.toString()), color: AppColors.error);
     } finally {
@@ -526,11 +522,7 @@ class _TodaysWinner extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Icon(
-                              Icons.celebration_rounded,
-                              color: AppColors.gold,
-                              size: 30,
-                            ),
+                            _PrizeBadge(prizeId: w['prizeId'] as String?),
                           ],
                         ),
                       ),
@@ -619,10 +611,10 @@ class _MonthWinners extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Icon(
-                              Icons.emoji_events_rounded,
-                              color: AppColors.gold,
-                              size: 22,
+                            _PrizeBadge(
+                              prizeId: w['prizeId'] as String?,
+                              size: 36,
+                              showName: false,
                             ),
                           ],
                         ),
@@ -663,6 +655,122 @@ class _DateBadge extends StatelessWidget {
               DateFormat.MMM(locale).format(d),
               style: AppTypography.caption(color: context.themeTextSecondary),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Shown when the wheel stops: the winner and the prize.
+class _WinDialog extends StatelessWidget {
+  const _WinDialog({required this.win});
+  final SpinWin win;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final prize = spinPrizeLabel(context, win.prize);
+    return Dialog(
+      key: const ValueKey('admin-spin-win-dialog'),
+      backgroundColor: AppColors.primary,
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.all24),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.celebration_rounded,
+              color: AppColors.gold,
+              size: 36,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.spinTodayWinnerLabel,
+              style: AppTypography.label(color: AppColors.gold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              win.winner.name,
+              textAlign: TextAlign.center,
+              style: AppTypography.section(
+                color: AppColors.white,
+              ).copyWith(fontSize: 22),
+            ),
+            const SizedBox(height: 16),
+            SpinPrizeImage(prize: win.prize, size: 120),
+            const SizedBox(height: 10),
+            Text(
+              l10n.spinWonPrize(prize),
+              textAlign: TextAlign.center,
+              style: AppTypography.labelLarge().copyWith(
+                color: AppColors.white,
+                fontSize: 17,
+              ),
+            ),
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: AppColors.primary,
+                  minimumSize: const Size.fromHeight(48),
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.done),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The prize a winner got: picture (and name), or a trophy for old
+/// winners from before the prize wheel.
+class _PrizeBadge extends StatelessWidget {
+  const _PrizeBadge({
+    required this.prizeId,
+    this.size = 52,
+    this.showName = true,
+  });
+
+  final String? prizeId;
+  final double size;
+  final bool showName;
+
+  @override
+  Widget build(BuildContext context) {
+    final prize = spinPrizeById(prizeId);
+    if (prize == null) {
+      return Icon(
+        Icons.emoji_events_rounded,
+        color: AppColors.gold,
+        size: size * 0.6,
+      );
+    }
+    final image = Tooltip(
+      message: spinPrizeLabel(context, prize),
+      child: SpinPrizeImage(prize: prize, size: size),
+    );
+    if (!showName) return image;
+    return SizedBox(
+      width: 84,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          image,
+          const SizedBox(height: 4),
+          Text(
+            spinPrizeLabel(context, prize),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.caption(color: context.themeTextPrimary),
+          ),
         ],
       ),
     );

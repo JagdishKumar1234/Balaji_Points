@@ -5386,4 +5386,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spinThisMonth => 'This month';
+
+  @override
+  String get spinPrizePowerDrill => 'Power Drill Machine';
+
+  @override
+  String get spinPrizeCircularSaw => 'Circular Saw Machine';
+
+  @override
+  String get spinPrizeToolBox => 'Tool Box';
+
+  @override
+  String get spinPrizeHammer => 'Hammer';
+
+  @override
+  String get spinPrizeScrewdriverKit => 'Screwdriver / Tool Kit';
+
+  @override
+  String get spinPrizeMeasuringTape => 'Measuring Tape';
+
+  @override
+  String get spinPrizeLadder => 'Aluminium Ladder';
+
+  @override
+  String get spinPrizeHandPlaner => 'Hand Planer';
+
+  @override
+  String get spinPrizeDrillBits => 'Drill Bit Set';
+
+  @override
+  String get spinPrizeAccessoryKit => 'Tool Accessory Kit';
+
+  @override
+  String spinWonPrize(String prize) {
+    return 'Prize: $prize';
+  }
+
+  @override
+  String get spinYouWon => 'You won today\'s spin!';
+
+  @override
+  String spinWinnerAndPrize(String name, String prize) {
+    return '$name won $prize!';
+  }
 }

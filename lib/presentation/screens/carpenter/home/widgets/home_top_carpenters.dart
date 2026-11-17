@@ -1,3 +1,6 @@
+import 'package:balaji_points/core/spin/spin_prizes.dart';
+import 'package:balaji_points/presentation/widgets/shared/spin_prize_image.dart';
+import 'package:balaji_points/core/firebase/app_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:balaji_points/services/branch/current_branch_service.dart';
 import 'package:balaji_points/services/branch/daily_winner_scope.dart';
@@ -173,6 +176,7 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
     final hasProfile = ref.watch(
       homeProvider.select((s) => s.userData != null),
     );
+    final myId = ref.watch(homeProvider.select((s) => s.userDocId));
     final group = LeaderboardGroups.of(role);
     if (!hasProfile || group == null || branchId == null || branchId.isEmpty) {
       return _WinnerCardShell(
@@ -182,7 +186,7 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
     }
 
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
+      stream: appFirestore
           .collection('daily_winners')
           .doc(DailyWinnerScope.docId(branchId, group, _todayKey))
           .snapshots(),
@@ -272,6 +276,13 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
             ? AppLocalizations.of(context)!.carpenter
             : name;
         final hasPhoto = photo.isNotEmpty;
+        final l10n = AppLocalizations.of(context)!;
+        // The wheel prize saved with the winner (none on old winners).
+        final prize = spinPrizeById(data['prizeId'] as String?);
+        final isMe =
+            myId != null &&
+            myId.isNotEmpty &&
+            (data['carpenterId'] as String? ?? '') == myId;
 
         return _WinnerCardShell(
           isDark: isDark,
@@ -331,9 +342,12 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.todaysWinnerYourGroup(group.shortLabel(context)),
+                      isMe
+                          ? l10n.spinYouWon
+                          : l10n.todaysWinnerYourGroup(
+                              group.shortLabel(context),
+                            ),
+                      key: const ValueKey('home-spin-winner-label'),
                       style: AppTypography.overline(
                         color: AppColors.warning,
                       ).copyWith(letterSpacing: 0.8),
@@ -341,34 +355,43 @@ class HomeTodaysWinnerCard extends ConsumerWidget {
                     const SizedBox(height: 3),
                     Text(
                       displayName,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTypography.h5(color: context.themeTextPrimary),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.selectedViaDailySpin(_todayKey),
-                      style: AppTypography.caption(
-                        color: context.themeTextSecondary,
-                      ),
+                      prize != null
+                          ? l10n.spinWonPrize(spinPrizeLabel(context, prize))
+                          : l10n.selectedViaDailySpin(_todayKey),
+                      key: const ValueKey('home-spin-prize'),
+                      style: prize != null
+                          ? AppTypography.label(color: context.themeTextPrimary)
+                          : AppTypography.caption(
+                              color: context.themeTextSecondary,
+                            ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
 
-              // Crown
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.warning.withValues(alpha: 0.14),
-                  borderRadius: AppRadius.md12,
+              // The prize picture (crown for old winners with no prize).
+              if (prize != null)
+                SpinPrizeImage(prize: prize, size: 64)
+              else
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.warning.withValues(alpha: 0.14),
+                    borderRadius: AppRadius.md12,
+                  ),
+                  child: const Icon(
+                    Icons.workspace_premium_rounded,
+                    color: AppColors.warning,
+                    size: 24,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.workspace_premium_rounded,
-                  color: AppColors.warning,
-                  size: 24,
-                ),
-              ),
             ],
           ),
         );
