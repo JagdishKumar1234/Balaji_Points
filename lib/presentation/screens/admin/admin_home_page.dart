@@ -421,11 +421,10 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
                               ? AdminDashboard(onOpenSection: _openSection)
                               : _buildSectionContent(_selectedSection!),
                         ),
-                        SizedBox(
-                          height:
-                              MediaQuery.of(context).viewInsets.bottom +
-                              MediaQuery.of(context).padding.bottom,
-                        ),
+                        // The Scaffold already shrinks for the keyboard;
+                        // adding viewInsets here counted it twice and
+                        // squeezed every admin form to nothing while typing.
+                        SizedBox(height: MediaQuery.paddingOf(context).bottom),
                       ],
                     ),
                   ),

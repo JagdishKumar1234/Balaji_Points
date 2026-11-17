@@ -528,7 +528,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
             .collection('notification_logs')
             .where('isBroadcast', isEqualTo: true)
             .get();
-        allDocs.addAll(broadcastSnapshot.docs);
+        // Only this admin's branch (the rules refuse any other).
+        allDocs.addAll(broadcastSnapshot.docs.visibleToAdmin());
       }
 
       // Remove duplicates by document ID

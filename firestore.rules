@@ -508,6 +508,9 @@ service cloud.firestore {
     // ============================================
     // NOTIFICATION LOGS COLLECTION
     // ============================================
+    function isPersonalLog(d) {
+      return d.get('userId', null) is string && d.get('userId', '') != '';
+    }
     match /notification_logs/{logId} {
       // Allow creating notification logs (for analytics)
       allow create: if request.resource.data.type != null
@@ -519,17 +522,16 @@ service cloud.firestore {
       allow get: if true;
       allow list: if true;
 
-      // Allow users to delete notifications
-      // Users can delete:
-      // 1. Their own notifications (userId exists)
-      // 2. Broadcast notifications (isBroadcast == true) - these are visible to all users
-      // Since this is PIN-based auth, we allow delete if:
-      // - The notification has a userId field (user-specific notification)
-      // - OR the notification is a broadcast (isBroadcast == true)
-      // The app handles security by only showing relevant notifications to users
-      // Note: Using 'hasAll' and 'get' to safely check for field existence
-      allow delete: if ('userId' in resource.data && resource.data.userId != null)
-                   || ('isBroadcast' in resource.data && resource.data.isBroadcast == true);
+      // Delete:
+      // - A personal notification (has a userId): its member deletes it.
+      //   Members sign in by PIN with no Firebase Auth, so this stays open.
+      // - A shared one (admin message, greeting, offer, admin alert; no
+      //   userId): only the admin of its branch or the super admin. A
+      //   member's "delete" of a shared one only hides it on their phone;
+      //   it must never vanish for the whole branch.
+      allow delete: if isPersonalLog(resource.data)
+                   || isEnquirySuperAdmin()
+                   || isEnquiryBranchAdmin(resource.data.get('branchId', ''));
     }
 
     // ============================================

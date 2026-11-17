@@ -123,6 +123,8 @@ class _SendNotificationPageState extends State<SendNotificationPage> {
       if (!mounted) return;
       _title.clear();
       _body.clear();
+      // Done: don't reopen the keyboard on the emptied message box.
+      FocusManager.instance.primaryFocus?.unfocus();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
@@ -205,137 +207,148 @@ class _SendNotificationPageState extends State<SendNotificationPage> {
       stream: _members,
       builder: (context, snap) {
         final count = _countFor(snap.data);
-        return Scaffold(
-          backgroundColor: context.themeBackground,
-          bottomNavigationBar: AdminFormFooter(
-            child: AppButton.primary(
-              label: l10n.sendNotificationButton(count),
-              icon: Icons.send_rounded,
-              isLoading: _sending,
-              onPressed: _canSend && count > 0 ? () => _send(count) : null,
-            ),
-          ),
-          body: AbsorbPointer(
-            absorbing: _sending,
-            child: CustomScrollView(
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _label(
-                          l10n.sendNotificationTo,
-                          trailing: Text(
-                            l10n.sendNotificationMembers(count),
-                            style: AppTypography.label(
-                              color: context.themePrimaryLight,
-                            ),
-                          ),
-                        ),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 6,
-                          children: [
-                            _chip(
-                              label: l10n.allMembers,
-                              selected: _allRoles,
-                              onTap: () => setState(() {
-                                if (_allRoles) {
-                                  _roles.clear();
-                                } else {
-                                  _roles.addAll(
-                                    RoleBroadcastService.memberRoles,
-                                  );
-                                }
-                              }),
-                            ),
-                            for (final r in RoleBroadcastService.memberRoles)
-                              _chip(
-                                label: _roleLabel(l10n, r),
-                                selected: _roles.contains(r),
-                                onTap: () => setState(() {
-                                  if (!_roles.remove(r)) _roles.add(r);
-                                }),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _label(l10n.sendNotificationCategory),
-                        SizedBox(
-                          height: 40,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: NotificationCategory.sendable.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(width: 8),
-                            itemBuilder: (context, i) {
-                              final c = NotificationCategory.sendable[i];
-                              return _chip(
-                                label: c.label(l10n),
-                                icon: c.icon,
-                                selected: c == _category,
-                                onTap: () => setState(() => _category = c),
-                              );
-                            },
-                          ),
-                        ),
-                        if (_category.route != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 6),
-                            child: Text(
-                              l10n.sendNotificationOpens(
-                                _category.action(l10n) ?? '',
-                              ),
-                              style: AppTypography.caption(
-                                color: context.themeTextMuted,
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _title,
-                          textCapitalization: TextCapitalization.sentences,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(
-                              RoleBroadcastService.maxTitle,
-                            ),
-                          ],
-                          decoration: InputDecoration(
-                            labelText: l10n.sendNotificationTitle,
-                            hintText: l10n.sendNotificationTitleHint,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Expanded(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(minHeight: 110),
-                            child: TextField(
-                              controller: _body,
-                              expands: true,
-                              maxLines: null,
-                              textAlignVertical: TextAlignVertical.top,
-                              textCapitalization: TextCapitalization.sentences,
-                              maxLength: RoleBroadcastService.maxBody,
-                              decoration: InputDecoration(
-                                labelText: l10n.sendNotificationMessage,
-                                hintText: l10n.sendNotificationMessageHint,
-                                alignLabelWithHint: true,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        // The admin screen around this page already leaves room for the
+        // system bar and the keyboard; don't add that space a second time.
+        return MediaQuery.removeViewInsets(
+          context: context,
+          removeBottom: true,
+          child: MediaQuery.removePadding(
+            context: context,
+            removeBottom: true,
+            child: _scaffold(context, l10n, count),
           ),
         );
       },
+    );
+  }
+
+  Widget _scaffold(BuildContext context, AppLocalizations l10n, int count) {
+    return Scaffold(
+      backgroundColor: context.themeBackground,
+      bottomNavigationBar: AdminFormFooter(
+        child: AppButton.primary(
+          label: l10n.sendNotificationButton(count),
+          icon: Icons.send_rounded,
+          isLoading: _sending,
+          onPressed: _canSend && count > 0 ? () => _send(count) : null,
+        ),
+      ),
+      body: AbsorbPointer(
+        absorbing: _sending,
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _label(
+                      l10n.sendNotificationTo,
+                      trailing: Text(
+                        l10n.sendNotificationMembers(count),
+                        style: AppTypography.label(
+                          color: context.themePrimaryLight,
+                        ),
+                      ),
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      children: [
+                        _chip(
+                          label: l10n.allMembers,
+                          selected: _allRoles,
+                          onTap: () => setState(() {
+                            if (_allRoles) {
+                              _roles.clear();
+                            } else {
+                              _roles.addAll(RoleBroadcastService.memberRoles);
+                            }
+                          }),
+                        ),
+                        for (final r in RoleBroadcastService.memberRoles)
+                          _chip(
+                            label: _roleLabel(l10n, r),
+                            selected: _roles.contains(r),
+                            onTap: () => setState(() {
+                              if (!_roles.remove(r)) _roles.add(r);
+                            }),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _label(l10n.sendNotificationCategory),
+                    SizedBox(
+                      height: 40,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: NotificationCategory.sendable.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
+                        itemBuilder: (context, i) {
+                          final c = NotificationCategory.sendable[i];
+                          return _chip(
+                            label: c.label(l10n),
+                            icon: c.icon,
+                            selected: c == _category,
+                            onTap: () => setState(() => _category = c),
+                          );
+                        },
+                      ),
+                    ),
+                    if (_category.route != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          l10n.sendNotificationOpens(
+                            _category.action(l10n) ?? '',
+                          ),
+                          style: AppTypography.caption(
+                            color: context.themeTextMuted,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _title,
+                      textCapitalization: TextCapitalization.sentences,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(
+                          RoleBroadcastService.maxTitle,
+                        ),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: l10n.sendNotificationTitle,
+                        hintText: l10n.sendNotificationTitleHint,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 110),
+                        child: TextField(
+                          controller: _body,
+                          expands: true,
+                          maxLines: null,
+                          textAlignVertical: TextAlignVertical.top,
+                          textCapitalization: TextCapitalization.sentences,
+                          maxLength: RoleBroadcastService.maxBody,
+                          decoration: InputDecoration(
+                            labelText: l10n.sendNotificationMessage,
+                            hintText: l10n.sendNotificationMessageHint,
+                            alignLabelWithHint: true,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
