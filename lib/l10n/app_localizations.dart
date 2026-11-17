@@ -10002,6 +10002,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} won {prize}!'**
   String spinWinnerAndPrize(String name, String prize);
+
+  /// No description provided for @adminNotifCatSpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin reminders'**
+  String get adminNotifCatSpin;
+
+  /// No description provided for @adminNotifActSpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Spin'**
+  String get adminNotifActSpin;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

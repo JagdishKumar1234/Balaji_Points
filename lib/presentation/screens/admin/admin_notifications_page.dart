@@ -19,7 +19,8 @@ import 'package:balaji_points/presentation/widgets/carpenter/home_nav_bar.dart';
 /// categories (NotificationCategory) and are not affected.
 enum AdminNotificationCategory {
   bill('newPendingBill', Icons.receipt_long_rounded, 'pending'),
-  request('newUserRegistered', Icons.how_to_reg_rounded, 'requests');
+  request('newUserRegistered', Icons.how_to_reg_rounded, 'requests'),
+  spin('spinReminder', Icons.casino_rounded, 'spin');
 
   const AdminNotificationCategory(this.type, this.icon, this.section);
 
@@ -40,11 +41,13 @@ enum AdminNotificationCategory {
   String label(AppLocalizations l10n) => switch (this) {
     bill => l10n.adminNotifCatBill,
     request => l10n.adminNotifCatRequest,
+    spin => l10n.adminNotifCatSpin,
   };
 
   String action(AppLocalizations l10n) => switch (this) {
     bill => l10n.adminNotifActBill,
     request => l10n.adminNotifActRequest,
+    spin => l10n.adminNotifActSpin,
   };
 }
 

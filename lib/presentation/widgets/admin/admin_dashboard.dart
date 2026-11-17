@@ -152,7 +152,7 @@ class _AdminDashboardState extends ConsumerState<AdminDashboard> {
                       .collection('notification_logs')
                       .where(
                         'type',
-                        whereIn: const ['newPendingBill', 'newUserRegistered'],
+                        whereIn: NotificationVisibility.adminTypes.toList(),
                       )
                       .snapshots(),
                   builder: (context, notifSnap) {

@@ -7,7 +7,11 @@ class NotificationVisibility {
   NotificationVisibility._();
 
   /// Shown only to branch admins.
-  static const adminTypes = {'newPendingBill', 'newUserRegistered'};
+  static const adminTypes = {
+    'newPendingBill',
+    'newUserRegistered',
+    'spinReminder',
+  };
 
   /// Internal records that nobody's inbox shows.
   static const hiddenTypes = {'dailySpinReminder'};
@@ -39,6 +43,12 @@ class NotificationVisibility {
     if (userId.isNotEmpty) return myIds.contains(userId);
 
     if (!_roleMatches(data['targetRoles'], myRole)) return false;
+    // A shared record can leave people out (e.g. "Today's winner is ..."
+    // is not shown to the winner, who gets their own "You won").
+    final excluded = data['excludeUserIds'];
+    if (excluded is List && excluded.any((id) => myIds.contains('$id'))) {
+      return false;
+    }
 
     final branchId = (data['branchId'] as String? ?? '').trim();
     if (branchId.isNotEmpty) {

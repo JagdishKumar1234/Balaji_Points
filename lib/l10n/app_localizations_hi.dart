@@ -5418,4 +5418,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String spinWinnerAndPrize(String name, String prize) {
     return '$name ने $prize जीता!';
   }
+
+  @override
+  String get adminNotifCatSpin => 'स्पिन रिमाइंडर';
+
+  @override
+  String get adminNotifActSpin => 'स्पिन खोलें';
 }

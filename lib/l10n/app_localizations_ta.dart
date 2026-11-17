@@ -5419,4 +5419,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String spinWinnerAndPrize(String name, String prize) {
     return '$name $prize வென்றார்!';
   }
+
+  @override
+  String get adminNotifCatSpin => 'ஸ்பின் நினைவூட்டல்கள்';
+
+  @override
+  String get adminNotifActSpin => 'ஸ்பின் திற';
 }

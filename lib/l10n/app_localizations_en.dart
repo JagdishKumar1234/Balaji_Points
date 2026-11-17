@@ -5429,4 +5429,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String spinWinnerAndPrize(String name, String prize) {
     return '$name won $prize!';
   }
+
+  @override
+  String get adminNotifCatSpin => 'Spin reminders';
+
+  @override
+  String get adminNotifActSpin => 'Open Spin';
 }

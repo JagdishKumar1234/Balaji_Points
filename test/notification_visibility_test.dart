@@ -149,6 +149,60 @@ void main() {
     });
   });
 
+  group('daily spin result', () {
+    final shared = {
+      'type': 'spinResult',
+      'category': 'dailySpin',
+      'userId': null,
+      'branchId': _karur,
+      'targetRoles': ['carpenter', 'interior_designer'],
+      'excludeUserIds': ['winner-uid'],
+    };
+
+    test('the rest of the group sees "Today\'s winner is ..."', () {
+      expect(member(shared), isTrue);
+    });
+
+    test('the winner sees only their own "You won", not the shared one', () {
+      bool winner(Map<String, dynamic> n) =>
+          NotificationVisibility.memberCanSee(
+            n,
+            myIds: {'winner-uid'},
+            myBranchId: _karur,
+            myRole: 'interior_designer',
+          );
+      expect(winner(shared), isFalse);
+      expect(
+        winner({
+          'type': 'spinWinner',
+          'userId': 'winner-uid',
+          'branchId': _karur,
+        }),
+        isTrue,
+      );
+    });
+
+    test('the other group and other branches do not see it', () {
+      expect(
+        NotificationVisibility.memberCanSee(
+          shared,
+          myIds: {'me-uid'},
+          myBranchId: _karur,
+          myRole: 'architect',
+        ),
+        isFalse,
+      );
+      expect(member(shared, branch: _erode), isFalse);
+    });
+
+    test('spin reminders are for the branch admin only', () {
+      final reminder = {'type': 'spinReminder', 'branchId': _karur};
+      expect(admin(reminder), isTrue);
+      expect(admin(reminder, branch: _erode), isFalse);
+      expect(member(reminder), isFalse);
+    });
+  });
+
   group('a branch admin sees', () {
     test('admin alerts for their own branch', () {
       expect(admin({'type': 'newPendingBill', 'branchId': _karur}), isTrue);

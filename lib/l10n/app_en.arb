@@ -3208,5 +3208,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "adminNotifCatSpin": "Spin reminders",
+  "adminNotifActSpin": "Open Spin"
 }

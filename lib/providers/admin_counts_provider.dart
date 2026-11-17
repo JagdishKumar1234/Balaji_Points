@@ -47,7 +47,7 @@ final adminAlertsCountProvider = StreamProvider.autoDispose<int>((ref) {
   if (branch == null || branch.isEmpty) return Stream.value(0);
   return appFirestore
       .collection('notification_logs')
-      .where('type', whereIn: const ['newPendingBill', 'newUserRegistered'])
+      .where('type', whereIn: NotificationVisibility.adminTypes.toList())
       .snapshots()
       .map(
         (s) => s.docs

@@ -1841,5 +1841,7 @@
   "spinPrizeAccessoryKit": "टूल एक्सेसरी किट",
   "spinWonPrize": "इनाम: {prize}",
   "spinYouWon": "आपने आज का स्पिन जीता!",
-  "spinWinnerAndPrize": "{name} ने {prize} जीता!"
+  "spinWinnerAndPrize": "{name} ने {prize} जीता!",
+  "adminNotifCatSpin": "स्पिन रिमाइंडर",
+  "adminNotifActSpin": "स्पिन खोलें"
 }

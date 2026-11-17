@@ -110,10 +110,8 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage>
     ),
   ];
 
-  static const List<String> _adminNotificationTypes = [
-    'newPendingBill',
-    'newUserRegistered',
-  ];
+  static final List<String> _adminNotificationTypes =
+      NotificationVisibility.adminTypes.toList();
 
   /// Where Back goes from the open section: 'more' when it was opened from
   /// the More tab, otherwise the dashboard.

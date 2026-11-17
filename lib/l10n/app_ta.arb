@@ -1841,5 +1841,7 @@
   "spinPrizeAccessoryKit": "டூல் துணைக்கருவி கிட்",
   "spinWonPrize": "பரிசு: {prize}",
   "spinYouWon": "இன்றைய ஸ்பின்னை நீங்கள் வென்றீர்கள்!",
-  "spinWinnerAndPrize": "{name} {prize} வென்றார்!"
+  "spinWinnerAndPrize": "{name} {prize} வென்றார்!",
+  "adminNotifCatSpin": "ஸ்பின் நினைவூட்டல்கள்",
+  "adminNotifActSpin": "ஸ்பின் திற"
 }

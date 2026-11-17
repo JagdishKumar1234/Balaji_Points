@@ -10,6 +10,8 @@
  *  5. onBranchRenamed / onRoleRenamed – copy renamed branch / role names onto users
  *  6. onMemberSignUp             – mark a new member sign-up pending + push the branch admin
  *  7. reviewMemberAccount        – the member's branch admin approves or rejects a sign-up
+ *  8. onDailyWinnerCreated       – push the spin winner and the rest of their group
+ *  9. spinReminder               – 6 PM IST: remind branch admins of draws not done
  *
  * Branch-isolation contract (applied in every trigger that touches user data):
  *   bill.branchId  must equal  user.branchId
@@ -34,6 +36,8 @@ const {isFutureBillDate, indiaDayBounds} = require("./bill_date");
 const pinSignIn = require("./admin_pin_signin");
 const approval = require("./account_approval");
 const broadcast = require("./role_broadcast");
+const spinJobs = require("./spin_jobs");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
 
 /**
  * Verifies the authenticated caller against the configured super-admin profile.
@@ -1420,3 +1424,32 @@ exports.sendRoleBroadcast = onCall(async (request) => {
     `[${roles.join(",")}] ${userIds.length} members, ${sent} pushed`);
   return {recipients: userIds.length, pushed: sent, failed};
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. onDailyWinnerCreated – the admin's daily draw was saved: the winner gets
+//    "You won today's spin!", the rest of their group "Today's winner: ...".
+// ─────────────────────────────────────────────────────────────────────────────
+exports.onDailyWinnerCreated = onDocumentCreated(
+    "daily_winners/{docId}",
+    async (event) => {
+      const rec = event.data && event.data.data();
+      if (!rec) return null;
+      const res = await spinJobs.notifySpinResult(
+          db, admin.messaging(), event.params.docId, rec);
+      console.log(`[onDailyWinnerCreated] ${event.params.docId}`,
+          JSON.stringify(res));
+      return null;
+    },
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9. spinReminder – every evening, branch admins hear about groups that have
+//    qualified members (a bill approved today) but no draw yet.
+// ─────────────────────────────────────────────────────────────────────────────
+exports.spinReminder = onSchedule(
+    {schedule: "0 18 * * *", timeZone: "Asia/Kolkata"},
+    async () => {
+      const res = await spinJobs.sendSpinReminders(db, admin.messaging());
+      console.log("[spinReminder]", JSON.stringify(res));
+    },
+);
