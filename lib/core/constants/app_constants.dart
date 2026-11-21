@@ -13,6 +13,10 @@ class AppConstants {
   // Company and support contact: the same everywhere in the app.
   // (Store names like "Sri Balaji Plywood and Hardware" are branches.)
   static const String companyName = 'Balaji Points';
+
+  /// The store behind the app, shown as "Powered by …" on the splash and
+  /// sign-in screens. A store name, so it is not translated.
+  static const String poweredByName = 'Sri Balaji Plywood & Hardware';
   static const String supportEmail = 'aaijitechstudio@gmail.com';
   // Two support numbers, always shown together, in this order.
   static const String supportPhone = '9680777735';

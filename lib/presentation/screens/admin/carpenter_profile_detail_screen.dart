@@ -9,6 +9,9 @@ import 'package:balaji_points/presentation/widgets/shared/role_label.dart';
 import 'package:balaji_points/presentation/widgets/shared/status_chip.dart';
 import 'package:balaji_points/services/auth/role_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:balaji_points/providers/loading_provider.dart';
+import 'package:balaji_points/services/user/member_account_service.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_loader.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +23,8 @@ import 'package:balaji_points/presentation/widgets/shared/app_text.dart';
 import 'package:balaji_points/presentation/widgets/shared/app_card.dart';
 import 'package:balaji_points/services/branch/branch_service.dart';
 import 'package:balaji_points/services/auth/pin_auth_service.dart';
+import 'package:balaji_points/services/auth/session_service.dart';
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:balaji_points/services/platform/bill_service.dart';
 import 'package:balaji_points/core/layout/responsive.dart';
 import 'package:intl/intl.dart';
@@ -32,18 +37,18 @@ import 'package:url_launcher/url_launcher.dart';
 /// `users` record, `user_points` (the source of truth for points and tier,
 /// updated with each approval) and their `bills`. The three streams are
 /// opened once, so changing a filter never reloads the data.
-class CarpenterProfileDetailScreen extends StatefulWidget {
+class CarpenterProfileDetailScreen extends ConsumerStatefulWidget {
   final String carpenterId;
 
   const CarpenterProfileDetailScreen({required this.carpenterId, super.key});
 
   @override
-  State<CarpenterProfileDetailScreen> createState() =>
+  ConsumerState<CarpenterProfileDetailScreen> createState() =>
       _CarpenterProfileDetailScreenState();
 }
 
 class _CarpenterProfileDetailScreenState
-    extends State<CarpenterProfileDetailScreen> {
+    extends ConsumerState<CarpenterProfileDetailScreen> {
   late final Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream;
   late final Stream<DocumentSnapshot<Map<String, dynamic>>> _pointsStream;
   late final Stream<QuerySnapshot<Map<String, dynamic>>> _billsStream;
@@ -53,9 +58,18 @@ class _CarpenterProfileDetailScreenState
   String? _siteFilter;
   DateTimeRange? _range;
 
+  /// Only the member's branch admin may change branch or role (the server
+  /// checks too); the super admin does not see the button.
+  bool _isBranchAdmin = false;
+
   @override
   void initState() {
     super.initState();
+    SessionService().getUserRole().then((role) {
+      final isAdmin =
+          (role ?? '').trim().toLowerCase() == AppConstants.roleAdmin;
+      if (mounted && isAdmin) setState(() => _isBranchAdmin = true);
+    });
     final db = appFirestore;
     _userStream = db.collection('users').doc(widget.carpenterId).snapshots();
     _pointsStream = db
@@ -307,6 +321,99 @@ class _CarpenterProfileDetailScreenState
     if (picked != null) setState(() => _range = picked);
   }
 
+  /// Asks Yes / No, then deletes the member on the
+  /// server and leaves this screen.
+  Future<void> _deleteMember(String phone, String name) async {
+    final l10n = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => _DeleteMemberDialog(
+        message: l10n.deleteMemberConfirm(
+          name.isEmpty ? l10n.member : name,
+          phone,
+        ),
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final errorColor = context.themeError;
+    try {
+      await ref.withLoader(
+        () => MemberAccountService().deleteMember(widget.carpenterId),
+        message: l10n.deleteMemberDeleting,
+      );
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.memberAccountDeleted)),
+      );
+      if (mounted) await navigator.maybePop();
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.deleteMemberFailed(MemberAccountService.errorText(e)),
+          ),
+          backgroundColor: errorColor,
+        ),
+      );
+    }
+  }
+
+  /// Branch admin fixes a member's branch and/or role (server call). A new
+  /// role recalculates the member's points; a new branch moves them, so the
+  /// screen is closed afterwards.
+  Future<void> _changeBranchRole(Map<String, dynamic> userData) async {
+    final l10n = AppLocalizations.of(context)!;
+    final choice = await showDialog<({String branchId, String role})>(
+      context: context,
+      builder: (_) => _ChangeBranchRoleDialog(
+        currentBranchId: (userData['branchId'] ?? '').toString().trim(),
+        currentBranchName:
+            (userData['branchName'] ?? userData['branchId'] ?? '').toString(),
+        currentRole: (userData['role'] ?? '').toString().trim().toLowerCase(),
+      ),
+    );
+    if (choice == null || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final errorColor = context.themeError;
+    try {
+      final result = await ref.withLoader(
+        () => MemberAccountService().changeBranchRole(
+          userId: widget.carpenterId,
+          branchId: choice.branchId,
+          role: choice.role,
+        ),
+        message: l10n.changeBranchRoleSaving,
+      );
+      final total = result.totalPoints;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            total != null
+                ? l10n.changeBranchRoleDonePoints(
+                    PointsUtils.formatPoints(total),
+                  )
+                : l10n.changeBranchRoleDone,
+          ),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      if (result.branchChanged && mounted) await navigator.maybePop();
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.changeBranchRoleFailed(MemberAccountService.errorText(e)),
+          ),
+          backgroundColor: errorColor,
+        ),
+      );
+    }
+  }
+
   void _clearFilters() => setState(() {
     _statusFilter = 'all';
     _siteFilter = null;
@@ -364,6 +471,26 @@ class _CarpenterProfileDetailScreenState
                   onPressed: () =>
                       _showEditDialog(context, widget.carpenterId, userData),
                 ),
+                if (_isBranchAdmin) ...[
+                  const SizedBox(width: 8),
+                  OutlinedButton.icon(
+                    key: const Key('changeBranchRoleButton'),
+                    icon: const Icon(Icons.swap_horiz_rounded),
+                    label: Text(l10n.changeBranchRole),
+                    onPressed: () => _changeBranchRole(userData),
+                  ),
+                ],
+                const SizedBox(width: 8),
+                OutlinedButton.icon(
+                  key: const Key('deleteMemberButton'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: context.themeError,
+                    side: BorderSide(color: context.themeError),
+                  ),
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  label: Text(l10n.deleteAccount),
+                  onPressed: () => _deleteMember(phone, name),
+                ),
                 const SizedBox(width: 12),
               ] else ...[
                 IconButton(
@@ -377,6 +504,22 @@ class _CarpenterProfileDetailScreenState
                   tooltip: l10n.edit,
                   onPressed: () =>
                       _showEditDialog(context, widget.carpenterId, userData),
+                ),
+                if (_isBranchAdmin)
+                  IconButton(
+                    key: const Key('changeBranchRoleButton'),
+                    icon: const Icon(Icons.swap_horiz_rounded),
+                    tooltip: l10n.changeBranchRole,
+                    onPressed: () => _changeBranchRole(userData),
+                  ),
+                IconButton(
+                  key: const Key('deleteMemberButton'),
+                  icon: Icon(
+                    Icons.delete_outline_rounded,
+                    color: context.themeError,
+                  ),
+                  tooltip: l10n.deleteAccount,
+                  onPressed: () => _deleteMember(phone, name),
                 ),
               ],
             ],
@@ -712,9 +855,6 @@ class _CarpenterProfileDetailScreenState
     final phoneController = TextEditingController(
       text: userData['phone'] ?? '',
     );
-    final branchIdController = TextEditingController(
-      text: userData['branchId'] ?? '',
-    );
 
     await showDialog(
       context: context,
@@ -761,17 +901,6 @@ class _CarpenterProfileDetailScreenState
                 ),
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: branchIdController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.branchId,
-                  hintText: AppLocalizations.of(context)!.hintBranchId,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -805,7 +934,6 @@ class _CarpenterProfileDetailScreenState
                       'firstName': firstNameController.text,
                       'lastName': lastNameController.text,
                       'phone': newPhone,
-                      'branchId': branchIdController.text,
                     });
 
                 if (mounted) {
@@ -853,7 +981,6 @@ class _CarpenterProfileDetailScreenState
       firstNameController.dispose();
       lastNameController.dispose();
       phoneController.dispose();
-      branchIdController.dispose();
     });
   }
 
@@ -1682,6 +1809,290 @@ class _PointsEntryCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Plain Yes / No confirm before a member account is deleted.
+class _DeleteMemberDialog extends StatelessWidget {
+  const _DeleteMemberDialog({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      icon: Icon(Icons.warning_amber_rounded, color: context.themeError),
+      title: Text(l10n.deleteMemberTitle),
+      content: SingleChildScrollView(child: Text(message)),
+      actions: [
+        TextButton(
+          key: const Key('deleteMemberNoButton'),
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(l10n.no),
+        ),
+        FilledButton(
+          key: const Key('deleteMemberConfirmButton'),
+          style: FilledButton.styleFrom(
+            backgroundColor: AppColors.error,
+            foregroundColor: AppColors.white,
+          ),
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(l10n.yesDelete),
+        ),
+      ],
+    );
+  }
+}
+
+/// Branch admin picks a new branch and/or role for a member. Loads the
+/// active branches and the four member roles with their points rates, and
+/// explains what will happen before saving. Pops `(branchId, role)`.
+class _ChangeBranchRoleDialog extends StatefulWidget {
+  const _ChangeBranchRoleDialog({
+    required this.currentBranchId,
+    required this.currentBranchName,
+    required this.currentRole,
+  });
+
+  final String currentBranchId;
+  final String currentBranchName;
+
+  /// Lower-case role id; empty for older accounts (carpenters).
+  final String currentRole;
+
+  @override
+  State<_ChangeBranchRoleDialog> createState() =>
+      _ChangeBranchRoleDialogState();
+}
+
+class _ChangeBranchRoleDialogState extends State<_ChangeBranchRoleDialog> {
+  List<Map<String, dynamic>>? _branches;
+  List<AppRole>? _roles;
+  bool _failed = false;
+  late String _branchId = widget.currentBranchId;
+  late String _role = widget.currentRole.isEmpty
+      ? AppConstants.roleCarpenter
+      : widget.currentRole;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() => _failed = false);
+    try {
+      final results = await Future.wait([
+        BranchService().listActiveBranches(),
+        RoleService().listSignupRoles(),
+      ]);
+      final branches = results[0] as List<Map<String, dynamic>>;
+      final all = results[1] as List<AppRole>;
+      final roles = <AppRole>[
+        for (final id in AppRole.builtInIds)
+          all.firstWhere(
+            (r) => r.id == id,
+            orElse: () => AppRole.builtInDefault(id)!,
+          ),
+      ];
+      if (!mounted) return;
+      if (branches.isEmpty) {
+        setState(() => _failed = true);
+        return;
+      }
+      setState(() {
+        _branches = branches;
+        _roles = roles;
+        if (!branches.any((b) => b['id'] == _branchId)) {
+          _branchId = widget.currentBranchId;
+        }
+      });
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
+    }
+  }
+
+  AppRole? _roleById(String id) {
+    for (final r in _roles ?? const <AppRole>[]) {
+      if (r.id == id) return r;
+    }
+    return AppRole.builtInDefault(id);
+  }
+
+  String _branchName(String id) {
+    for (final b in _branches ?? const <Map<String, dynamic>>[]) {
+      if (b['id'] == id) return (b['name'] ?? id).toString();
+    }
+    return id == widget.currentBranchId ? widget.currentBranchName : id;
+  }
+
+  bool get _branchChanged => _branchId != widget.currentBranchId;
+  bool get _roleChanged =>
+      widget.currentRole.isEmpty || _role != widget.currentRole;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final loading = _branches == null && !_failed;
+    final currentRole = _roleById(
+      widget.currentRole.isEmpty
+          ? AppConstants.roleCarpenter
+          : widget.currentRole,
+    );
+    final newRole = _roleById(_role);
+    final branches = _branches ?? const <Map<String, dynamic>>[];
+    final hasCurrentBranch = branches.any(
+      (b) => b['id'] == widget.currentBranchId,
+    );
+
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.all16),
+      title: Text(l10n.changeBranchRoleTitle),
+      content: SizedBox(
+        width: 420,
+        child: loading
+            ? SizedBox(
+                height: 120,
+                child: Center(child: AppLoader(color: context.themePrimary)),
+              )
+            : _failed
+            ? Text(l10n.changeBranchRoleLoadFailed)
+            : SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.changeBranchRoleHelp),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.changeBranchRoleCurrent(
+                        widget.currentBranchName,
+                        currentRole?.name ?? widget.currentRole,
+                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      key: const Key('changeBranchField'),
+                      initialValue: _branchId,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.branch,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: [
+                        if (!hasCurrentBranch)
+                          DropdownMenuItem(
+                            value: widget.currentBranchId,
+                            child: Text(widget.currentBranchName),
+                          ),
+                        for (final b in branches)
+                          DropdownMenuItem(
+                            value: b['id'] as String,
+                            child: Text(
+                              (b['name'] ?? b['id']).toString(),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                      onChanged: (v) {
+                        if (v != null) setState(() => _branchId = v);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      key: const Key('changeRoleField'),
+                      initialValue: _role,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.role,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: [
+                        for (final r in _roles!)
+                          DropdownMenuItem(
+                            value: r.id,
+                            child: Text(
+                              '${r.name} · ${PointsRate.label(r.rupeesPerPoint)}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                      onChanged: (v) {
+                        if (v != null) setState(() => _role = v);
+                      },
+                    ),
+                    if (_roleChanged && !_branchChanged && newRole != null) ...[
+                      const SizedBox(height: 12),
+                      _Note(
+                        icon: Icons.calculate_outlined,
+                        text: l10n.changeRolePointsNote(
+                          PointsRate.rupees(newRole.rupeesPerPoint),
+                          PointsRate.rupees(
+                            currentRole?.rupeesPerPoint ??
+                                PointsRate.defaultRupeesPerPoint,
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (_branchChanged) ...[
+                      const SizedBox(height: 12),
+                      _Note(
+                        icon: Icons.warning_amber_rounded,
+                        text: l10n.changeBranchMoveNote(_branchName(_branchId)),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        if (_failed)
+          TextButton(onPressed: _load, child: Text(l10n.retry))
+        else
+          FilledButton(
+            key: const Key('changeBranchRoleSave'),
+            onPressed: !loading && (_branchChanged || _roleChanged)
+                ? () =>
+                      Navigator.pop(context, (branchId: _branchId, role: _role))
+                : null,
+            child: Text(l10n.save),
+          ),
+      ],
+    );
+  }
+}
+
+class _Note extends StatelessWidget {
+  const _Note({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.themePrimary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.themePrimary.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: context.themePrimary),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text)),
+        ],
       ),
     );
   }

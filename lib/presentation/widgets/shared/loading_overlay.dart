@@ -20,27 +20,32 @@ class LoadingOverlay extends ConsumerWidget {
       child: Stack(
         children: [
           ModalBarrier(color: AppColors.black.withValues(alpha: 0.35)),
+          // The overlay sits above the Navigator, outside any Material, so
+          // text here had Flutter's yellow "no Material" underline.
           Center(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: context.themeCard,
-                borderRadius: AppRadius.all16,
-                border: Border.all(color: context.themeBorder, width: 1),
-                boxShadow: context.themeShadow,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // The app's one loader widget, here at its large size.
-                  const AppLoader(size: 40, strokeWidth: 3),
-                  const SizedBox(height: 16),
-                  AppText.body(
-                    ref.watch(loadingMessageProvider) ??
-                        AppLocalizations.of(context)!.loading,
-                    color: context.themeTextPrimary,
-                  ),
-                ],
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: context.themeCard,
+                  borderRadius: AppRadius.all16,
+                  border: Border.all(color: context.themeBorder, width: 1),
+                  boxShadow: context.themeShadow,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // The app's one loader widget, here at its large size.
+                    const AppLoader(size: 40, strokeWidth: 3),
+                    const SizedBox(height: 16),
+                    AppText.body(
+                      ref.watch(loadingMessageProvider) ??
+                          AppLocalizations.of(context)!.loading,
+                      color: context.themeTextPrimary,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

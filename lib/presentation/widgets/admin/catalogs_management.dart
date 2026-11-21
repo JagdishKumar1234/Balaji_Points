@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:balaji_points/presentation/widgets/shared/admin_form_footer.dart';
 import 'package:flutter/services.dart';
@@ -417,6 +418,7 @@ class _CatalogFormPageState extends ConsumerState<CatalogFormPage> {
       widget.existing?.categoryId ?? widget.categories.first.id;
 
   PlatformFile? _pdf;
+  CatalogPdfSource? _pdfSource;
   PlatformFile? _cover;
   double? _progress;
   String? _pdfError;
@@ -433,22 +435,37 @@ class _CatalogFormPageState extends ConsumerState<CatalogFormPage> {
 
   Future<void> _pickPdf() async {
     final l10n = AppLocalizations.of(context)!;
+    // Phones and desktop: take the file's path and stream it from disk.
+    // Reading a 100 MB+ catalog into memory fails on phones (the picker
+    // then hands back no data and nothing happened). Web only has bytes.
     final res = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
-      withData: true,
+      withData: kIsWeb,
     );
     final f = res?.files.single;
-    if (f == null || f.bytes == null) return;
+    if (f == null) return;
+    final source = kIsWeb
+        ? (f.bytes == null ? null : CatalogPdfSource.bytes(f.bytes!))
+        : (f.path == null ? null : CatalogPdfSource.file(f.path!));
     String? error;
-    try {
-      CatalogAdminService.validatePdf(f.bytes!);
-    } on CatalogNotPdf {
-      error = l10n.catalogAdminNotPdf;
+    if (source == null) {
+      error = l10n.catalogAdminPdfUnreadable;
+    } else {
+      try {
+        CatalogAdminService.validatePdf(await source.head(8));
+      } on CatalogNotPdf {
+        error = l10n.catalogAdminNotPdf;
+      } catch (e) {
+        AppLogger.error('Catalog PDF could not be read', e);
+        error = l10n.catalogAdminPdfUnreadable;
+      }
     }
+    if (!mounted) return;
     setState(() {
       _pdfError = error;
       _pdf = error == null ? f : null;
+      _pdfSource = error == null ? source : null;
       if (error == null && _title.text.trim().isEmpty) {
         _title.text = f.name.replaceAll(
           RegExp(r'\.pdf$', caseSensitive: false),
@@ -486,7 +503,7 @@ class _CatalogFormPageState extends ConsumerState<CatalogFormPage> {
             description: _desc.text,
             year: int.tryParse(_year.text.trim()) ?? 0,
             sortOrder: int.tryParse(_order.text.trim()),
-            pdfBytes: _pdf?.bytes,
+            pdf: _pdfSource,
             coverBytes: _cover?.bytes,
             onProgress: (p) {
               if (mounted) setState(() => _progress = p);

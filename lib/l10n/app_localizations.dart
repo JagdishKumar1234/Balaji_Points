@@ -10014,6 +10014,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open Spin'**
   String get adminNotifActSpin;
+
+  /// No description provided for @deleteMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this account?'**
+  String get deleteMemberTitle;
+
+  /// No description provided for @deleteMemberConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({phone}) will be removed for good:\n\n• Account and sign-in\n• Points and points history\n• All bills\n• Offer redemptions\n\nThis cannot be undone.'**
+  String deleteMemberConfirm(String name, String phone);
+
+  /// No description provided for @deleteMemberDeleting.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting account…'**
+  String get deleteMemberDeleting;
+
+  /// No description provided for @memberAccountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted.'**
+  String get memberAccountDeleted;
+
+  /// No description provided for @deleteMemberFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the account: {error}'**
+  String deleteMemberFailed(String error);
+
+  /// No description provided for @catalogAdminPdfUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'This PDF could not be read on this device. Copy it to the phone\'s storage (not a cloud drive) and pick it again.'**
+  String get catalogAdminPdfUnreadable;
+
+  /// No description provided for @changeBranchRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Change branch / role'**
+  String get changeBranchRole;
+
+  /// No description provided for @changeBranchRoleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change branch or role'**
+  String get changeBranchRoleTitle;
+
+  /// No description provided for @changeBranchRoleHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this when the member chose the wrong branch or role at sign-up.'**
+  String get changeBranchRoleHelp;
+
+  /// No description provided for @changeBranchRoleCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Now: {branch} · {role}'**
+  String changeBranchRoleCurrent(String branch, String role);
+
+  /// No description provided for @changeRolePointsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Points for all bills will be recalculated at {newRate} = 1 point (now {oldRate} = 1 point). Pending bills use the new rate too.'**
+  String changeRolePointsNote(String newRate, String oldRate);
+
+  /// No description provided for @changeBranchMoveNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The member moves to {branch} and starts there with 0 points. Their approved bills and points history stay with your branch as records. Pending bills move to {branch} for its admin to approve.'**
+  String changeBranchMoveNote(String branch);
+
+  /// No description provided for @changeBranchRoleSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving changes…'**
+  String get changeBranchRoleSaving;
+
+  /// No description provided for @changeBranchRoleDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch / role updated.'**
+  String get changeBranchRoleDone;
+
+  /// No description provided for @changeBranchRoleDonePoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated. Points recalculated, new total: {points}.'**
+  String changeBranchRoleDonePoints(String points);
+
+  /// No description provided for @changeBranchRoleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not change the account: {error}'**
+  String changeBranchRoleFailed(String error);
+
+  /// No description provided for @changeBranchRoleLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load branches and roles. Check your connection and try again.'**
+  String get changeBranchRoleLoadFailed;
+
+  /// No description provided for @yesDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, delete'**
+  String get yesDelete;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

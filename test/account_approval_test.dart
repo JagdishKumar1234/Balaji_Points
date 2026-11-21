@@ -223,7 +223,11 @@ void main() {
     ).readAsStringSync();
     expect(screen, isNot(contains('super_admin')));
     final fn = File('functions/index.js').readAsStringSync();
-    final review = fn.substring(fn.indexOf('exports.reviewMemberAccount'));
+    // Only the reviewMemberAccount function itself (up to the next export).
+    final start = fn.indexOf('exports.reviewMemberAccount');
+    final next = fn.indexOf('exports.', start + 1);
+    final review = fn.substring(start, next < 0 ? fn.length : next);
+    expect(review, contains('reviewDenied'));
     expect(review, isNot(contains('requireSuperAdmin')));
   });
 }

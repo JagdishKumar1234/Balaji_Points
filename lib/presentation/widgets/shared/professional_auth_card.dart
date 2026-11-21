@@ -1,3 +1,4 @@
+import 'package:balaji_points/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:balaji_points/l10n/app_localizations.dart';
 import 'package:balaji_points/core/design/app_colors.dart';
@@ -248,7 +249,7 @@ class AuthFooter extends StatelessWidget {
 
                 Flexible(
                   child: Text(
-                    companyName,
+                    AppConstants.poweredByName,
                     style: AppTypography.bodyMedium(
                       color: context.themeTextPrimary,
                     ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.3),

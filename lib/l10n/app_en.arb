@@ -3210,5 +3210,81 @@
     }
   },
   "adminNotifCatSpin": "Spin reminders",
-  "adminNotifActSpin": "Open Spin"
+  "adminNotifActSpin": "Open Spin",
+  "deleteMemberTitle": "Delete this account?",
+  "deleteMemberConfirm": "{name} ({phone}) will be removed for good:\n\n• Account and sign-in\n• Points and points history\n• All bills\n• Offer redemptions\n\nThis cannot be undone.",
+  "deleteMemberDeleting": "Deleting account…",
+  "memberAccountDeleted": "Account deleted.",
+  "deleteMemberFailed": "Could not delete the account: {error}",
+  "@deleteMemberConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "@deleteMemberFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogAdminPdfUnreadable": "This PDF could not be read on this device. Copy it to the phone's storage (not a cloud drive) and pick it again.",
+  "changeBranchRole": "Change branch / role",
+  "changeBranchRoleTitle": "Change branch or role",
+  "changeBranchRoleHelp": "Use this when the member chose the wrong branch or role at sign-up.",
+  "changeBranchRoleCurrent": "Now: {branch} · {role}",
+  "changeRolePointsNote": "Points for all bills will be recalculated at {newRate} = 1 point (now {oldRate} = 1 point). Pending bills use the new rate too.",
+  "changeBranchMoveNote": "The member moves to {branch} and starts there with 0 points. Their approved bills and points history stay with your branch as records. Pending bills move to {branch} for its admin to approve.",
+  "changeBranchRoleSaving": "Saving changes…",
+  "changeBranchRoleDone": "Branch / role updated.",
+  "changeBranchRoleDonePoints": "Updated. Points recalculated, new total: {points}.",
+  "changeBranchRoleFailed": "Could not change the account: {error}",
+  "changeBranchRoleLoadFailed": "Could not load branches and roles. Check your connection and try again.",
+  "@changeBranchRoleCurrent": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "@changeRolePointsNote": {
+    "placeholders": {
+      "newRate": {
+        "type": "String"
+      },
+      "oldRate": {
+        "type": "String"
+      }
+    }
+  },
+  "@changeBranchMoveNote": {
+    "placeholders": {
+      "branch": {
+        "type": "String"
+      }
+    }
+  },
+  "@changeBranchRoleDonePoints": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "@changeBranchRoleFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "yesDelete": "Yes, delete"
 }

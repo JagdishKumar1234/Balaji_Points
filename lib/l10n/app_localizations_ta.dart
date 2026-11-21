@@ -5425,4 +5425,72 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get adminNotifActSpin => 'ஸ்பின் திற';
+
+  @override
+  String get deleteMemberTitle => 'இந்தக் கணக்கை நீக்கவா?';
+
+  @override
+  String deleteMemberConfirm(String name, String phone) {
+    return '$name ($phone) நிரந்தரமாக நீக்கப்படும்:\n\n• கணக்கு மற்றும் உள்நுழைவு\n• புள்ளிகள் மற்றும் புள்ளி வரலாறு\n• அனைத்து பில்கள்\n• சலுகை பெறுதல்கள்\n\nஇதைத் திரும்பப் பெற முடியாது.';
+  }
+
+  @override
+  String get deleteMemberDeleting => 'கணக்கு நீக்கப்படுகிறது…';
+
+  @override
+  String get memberAccountDeleted => 'கணக்கு நீக்கப்பட்டது.';
+
+  @override
+  String deleteMemberFailed(String error) {
+    return 'கணக்கை நீக்க முடியவில்லை: $error';
+  }
+
+  @override
+  String get catalogAdminPdfUnreadable => 'இந்த PDF-ஐ இந்தச் சாதனத்தில் படிக்க முடியவில்லை. அதை போனின் சேமிப்பகத்திற்கு நகலெடுத்து (கிளவுட் டிரைவ் அல்ல) மீண்டும் தேர்வு செய்யவும்.';
+
+  @override
+  String get changeBranchRole => 'கிளை / பங்கை மாற்று';
+
+  @override
+  String get changeBranchRoleTitle => 'கிளை அல்லது பங்கை மாற்று';
+
+  @override
+  String get changeBranchRoleHelp => 'பதிவின் போது உறுப்பினர் தவறான கிளை அல்லது பங்கைத் தேர்ந்தெடுத்திருந்தால் இதைப் பயன்படுத்தவும்.';
+
+  @override
+  String changeBranchRoleCurrent(String branch, String role) {
+    return 'இப்போது: $branch · $role';
+  }
+
+  @override
+  String changeRolePointsNote(String newRate, String oldRate) {
+    return 'அனைத்து பில்களின் புள்ளிகளும் $newRate = 1 புள்ளி என மீண்டும் கணக்கிடப்படும் (இப்போது $oldRate = 1 புள்ளி). நிலுவையில் உள்ள பில்களுக்கும் புதிய விகிதம் பொருந்தும்.';
+  }
+
+  @override
+  String changeBranchMoveNote(String branch) {
+    return 'உறுப்பினர் $branch க்கு மாறி அங்கு 0 புள்ளிகளுடன் தொடங்குவார். அங்கீகரிக்கப்பட்ட பில்கள் மற்றும் புள்ளி வரலாறு பதிவுகளாக உங்கள் கிளையிலேயே இருக்கும். நிலுவை பில்கள் $branch க்கு மாறும்; அதன் நிர்வாகி அங்கீகரிப்பார்.';
+  }
+
+  @override
+  String get changeBranchRoleSaving => 'மாற்றங்கள் சேமிக்கப்படுகின்றன…';
+
+  @override
+  String get changeBranchRoleDone => 'கிளை / பங்கு புதுப்பிக்கப்பட்டது.';
+
+  @override
+  String changeBranchRoleDonePoints(String points) {
+    return 'புதுப்பிக்கப்பட்டது. புள்ளிகள் மீண்டும் கணக்கிடப்பட்டன, புதிய மொத்தம்: $points.';
+  }
+
+  @override
+  String changeBranchRoleFailed(String error) {
+    return 'கணக்கை மாற்ற முடியவில்லை: $error';
+  }
+
+  @override
+  String get changeBranchRoleLoadFailed => 'கிளைகள் மற்றும் பங்குகளை ஏற்ற முடியவில்லை. இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.';
+
+  @override
+  String get yesDelete => 'ஆம், நீக்கு';
 }

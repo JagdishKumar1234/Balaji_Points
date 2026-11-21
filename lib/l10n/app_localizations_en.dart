@@ -5435,4 +5435,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminNotifActSpin => 'Open Spin';
+
+  @override
+  String get deleteMemberTitle => 'Delete this account?';
+
+  @override
+  String deleteMemberConfirm(String name, String phone) {
+    return '$name ($phone) will be removed for good:\n\n• Account and sign-in\n• Points and points history\n• All bills\n• Offer redemptions\n\nThis cannot be undone.';
+  }
+
+  @override
+  String get deleteMemberDeleting => 'Deleting account…';
+
+  @override
+  String get memberAccountDeleted => 'Account deleted.';
+
+  @override
+  String deleteMemberFailed(String error) {
+    return 'Could not delete the account: $error';
+  }
+
+  @override
+  String get catalogAdminPdfUnreadable => 'This PDF could not be read on this device. Copy it to the phone\'s storage (not a cloud drive) and pick it again.';
+
+  @override
+  String get changeBranchRole => 'Change branch / role';
+
+  @override
+  String get changeBranchRoleTitle => 'Change branch or role';
+
+  @override
+  String get changeBranchRoleHelp => 'Use this when the member chose the wrong branch or role at sign-up.';
+
+  @override
+  String changeBranchRoleCurrent(String branch, String role) {
+    return 'Now: $branch · $role';
+  }
+
+  @override
+  String changeRolePointsNote(String newRate, String oldRate) {
+    return 'Points for all bills will be recalculated at $newRate = 1 point (now $oldRate = 1 point). Pending bills use the new rate too.';
+  }
+
+  @override
+  String changeBranchMoveNote(String branch) {
+    return 'The member moves to $branch and starts there with 0 points. Their approved bills and points history stay with your branch as records. Pending bills move to $branch for its admin to approve.';
+  }
+
+  @override
+  String get changeBranchRoleSaving => 'Saving changes…';
+
+  @override
+  String get changeBranchRoleDone => 'Branch / role updated.';
+
+  @override
+  String changeBranchRoleDonePoints(String points) {
+    return 'Updated. Points recalculated, new total: $points.';
+  }
+
+  @override
+  String changeBranchRoleFailed(String error) {
+    return 'Could not change the account: $error';
+  }
+
+  @override
+  String get changeBranchRoleLoadFailed => 'Could not load branches and roles. Check your connection and try again.';
+
+  @override
+  String get yesDelete => 'Yes, delete';
 }

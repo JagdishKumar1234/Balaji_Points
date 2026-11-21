@@ -12,6 +12,8 @@
  *  7. reviewMemberAccount        – the member's branch admin approves or rejects a sign-up
  *  8. onDailyWinnerCreated       – push the spin winner and the rest of their group
  *  9. spinReminder               – 6 PM IST: remind branch admins of draws not done
+ * 10. deleteMemberAccount        – branch admin deletes a member with their data
+ * 11. changeMemberBranchRole     – branch admin fixes a member's branch / role
  *
  * Branch-isolation contract (applied in every trigger that touches user data):
  *   bill.branchId  must equal  user.branchId
@@ -35,6 +37,8 @@ const {inAppRecordFor} = require("./in_app_record");
 const {isFutureBillDate, indiaDayBounds} = require("./bill_date");
 const pinSignIn = require("./admin_pin_signin");
 const approval = require("./account_approval");
+const memberDelete = require("./member_delete");
+const memberMove = require("./member_move");
 const broadcast = require("./role_broadcast");
 const spinJobs = require("./spin_jobs");
 const {onSchedule} = require("firebase-functions/v2/scheduler");
@@ -1453,3 +1457,377 @@ exports.spinReminder = onSchedule(
       console.log("[spinReminder]", JSON.stringify(res));
     },
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9. deleteMemberAccount  –  admin permanently deletes a member account
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Deletes every document in [refs] in batches.
+ * @param {Array<object>} refs - Document references.
+ * @return {Promise<number>} How many were deleted.
+ */
+async function deleteRefs(refs) {
+  const unique = [...new Map(refs.map((r) => [r.path, r])).values()];
+  for (let i = 0; i < unique.length; i += 450) {
+    const batch = db.batch();
+    for (const ref of unique.slice(i, i + 450)) batch.delete(ref);
+    await batch.commit();
+  }
+  return unique.length;
+}
+
+/**
+ * Documents in [collection] whose [field] is one of [values].
+ * @param {string} collection - Collection name.
+ * @param {string} field - Field to match.
+ * @param {Array<string>} values - Values (any count).
+ * @return {Promise<Array<object>>} Matching document snapshots.
+ */
+async function docsWhereIn(collection, field, values) {
+  const docs = [];
+  for (let i = 0; i < values.length; i += 30) {
+    const snap = await db.collection(collection)
+        .where(field, "in", values.slice(i, i + 30)).get();
+    docs.push(...snap.docs);
+  }
+  return docs;
+}
+
+exports.deleteMemberAccount = onCall({timeoutSeconds: 120}, async (request) => {
+  const caller = request.auth;
+  if (!caller) {
+    throw new HttpsError("unauthenticated", "Please sign in again.");
+  }
+  const userId = String((request.data || {}).userId || "").trim();
+  if (!userId || userId.includes("/")) {
+    throw new HttpsError("invalid-argument", "Choose an account to delete.");
+  }
+
+  let isSuper = false;
+  try {
+    await requireSuperAdmin(request);
+    isSuper = true;
+  } catch (_) {
+    isSuper = false;
+  }
+  const callerSnap = await db.collection("users").doc(caller.uid).get();
+  const callerData = callerSnap.exists ? callerSnap.data() : null;
+  const targetRef = db.collection("users").doc(userId);
+  const targetSnap = await targetRef.get();
+  const target = targetSnap.exists ? targetSnap.data() : null;
+
+  const denied = memberDelete.deleteDenied(callerData, target, isSuper);
+  if (denied) {
+    const code = target ? "permission-denied" : "not-found";
+    throw new HttpsError(code, denied);
+  }
+
+  const branchId = String(target.branchId || "").trim();
+  const phone = memberDelete.normalizePhone(target.phone);
+  const keys = memberDelete.memberKeys(userId, target);
+
+  try {
+    // Points, history, redemptions: keyed by doc id, phone or uid.
+    const pointsRefs = keys.map((k) => db.collection("user_points").doc(k));
+    const pointsSnaps = await db.getAll(...pointsRefs);
+    const history = [
+      ...await docsWhereIn("points_history", "userId", keys),
+      ...await docsWhereIn("points_history", "carpenterId", keys),
+    ];
+    const redemptions =
+      await docsWhereIn("offer_redemptions", "carpenterId", keys);
+
+    // Bills of this branch only (the phone may also exist in another one).
+    const billDocs = [...await docsWhereIn("bills", "carpenterId", keys)];
+    if (phone) {
+      const byPhone = await db.collection("bills")
+          .where("carpenterPhone", "==", phone).get();
+      billDocs.push(...byPhone.docs);
+    }
+    const bills = billDocs.filter(
+        (d) => memberDelete.billBelongsToBranch(d.data(), branchId));
+
+    const counts = {
+      points: await deleteRefs(
+          pointsSnaps.filter((s) => s.exists).map((s) => s.ref)),
+      history: await deleteRefs(history.map((d) => d.ref)),
+      redemptions: await deleteRefs(redemptions.map((d) => d.ref)),
+      bills: await deleteRefs(bills.map((d) => d.ref)),
+    };
+    if (phone) {
+      await db.collection("pending_users").doc(phone).delete().catch(() => {});
+    }
+
+    // Firebase sign-in accounts (email / Google members). PIN-only members
+    // have none. Only uids that belong to this member are touched.
+    let signIns = 0;
+    for (const uid of new Set([userId, String(target.uid || "").trim()])) {
+      if (!uid || uid === caller.uid) continue;
+      try {
+        await admin.auth().deleteUser(uid);
+        signIns++;
+      } catch (error) {
+        if (error.code !== "auth/user-not-found" &&
+            error.code !== "auth/invalid-uid") {
+          throw error;
+        }
+      }
+    }
+    counts.signIns = signIns;
+
+    // Last: the profile itself (onUserDeleted then finds nothing left).
+    await targetRef.delete();
+
+    console.log(`[deleteMemberAccount] ${caller.uid} deleted ${userId} ` +
+        `(branch ${branchId}) ${JSON.stringify(counts)}`);
+    return {ok: true, ...counts};
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    console.error("deleteMemberAccount failed", error);
+    throw new HttpsError("internal", "Unable to delete the account.");
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 10. changeMemberBranchRole  –  branch admin changes a member's branch/role
+// ─────────────────────────────────────────────────────────────────────────────
+// For members who picked the wrong branch or role at sign-up. Only the
+// member's own branch admin may call it (not the super admin).
+// - New role (same branch): every bill is recalculated at the new role's
+//   rate, and the total changes by the difference.
+// - New branch: the member starts at 0 points. Approved/rejected bills and
+//   history stay with the old branch as its records; pending bills move
+//   (at the new role's rate if the role changed too).
+// The users doc is written last, so a failed call can simply be repeated.
+
+exports.changeMemberBranchRole = onCall({timeoutSeconds: 120}, async (request) => {
+  const caller = request.auth;
+  if (!caller) {
+    throw new HttpsError("unauthenticated", "Please sign in again.");
+  }
+  const data = request.data || {};
+  const userId = String(data.userId || "").trim();
+  if (!userId || userId.includes("/")) {
+    throw new HttpsError("invalid-argument", "Choose an account to change.");
+  }
+
+  const callerSnap = await db.collection("users").doc(caller.uid).get();
+  const callerData = callerSnap.exists ? callerSnap.data() : null;
+  const targetRef = db.collection("users").doc(userId);
+  const targetSnap = await targetRef.get();
+  const target = targetSnap.exists ? targetSnap.data() : null;
+
+  const denied = memberMove.changeDenied(callerData, target);
+  if (denied) {
+    throw new HttpsError(target ? "permission-denied" : "not-found", denied);
+  }
+  const plan = memberMove.planChange(target, data.branchId, data.role);
+  if (plan.error) throw new HttpsError("invalid-argument", plan.error);
+
+  const oldBranch = String(target.branchId || "").trim();
+  const newBranch = String(data.branchId).trim();
+  const newRole = String(data.role).trim().toLowerCase();
+  const userFields = {};
+
+  if (plan.branchChanged) {
+    const branchSnap = await db.collection("branches").doc(newBranch).get();
+    const branch = branchSnap.exists ? branchSnap.data() : null;
+    if (!branch || branch.isActive !== true) {
+      throw new HttpsError("invalid-argument", "That branch is not active.");
+    }
+    const name = branch.name || newBranch;
+    Object.assign(userFields, {
+      branchId: newBranch,
+      branchCode: String(branch.branchCode || "").trim() || newBranch,
+      branchName: name,
+      branchShortName: branch.shortName || name,
+    });
+  }
+
+  let rate = null;
+  if (plan.roleChanged) {
+    const roleSnap = await db.collection("roles").doc(newRole).get();
+    const roleDoc = roleSnap.exists ? roleSnap.data() : null;
+    if (roleDoc && roleDoc.isActive === false && newRole !== "carpenter") {
+      throw new HttpsError("invalid-argument", "That role is not active.");
+    }
+    const defaults = {
+      carpenter: ["Carpenter", ""], interior_designer: ["Interior designer", ""],
+      architect: ["Architect", "Ar."], engineer: ["Engineer", "Er."],
+    }[newRole];
+    Object.assign(userFields, {
+      role: newRole,
+      roleId: newRole,
+      roleName: (roleDoc && roleDoc.name) || defaults[0],
+      roleAbbreviation: roleDoc && typeof roleDoc.abbreviation === "string" ?
+        roleDoc.abbreviation : defaults[1],
+    });
+    rate = await rupeesPerPointForRole(newRole);
+  }
+
+  const phone = memberDelete.normalizePhone(target.phone);
+  const keys = memberDelete.memberKeys(userId, target);
+
+  try {
+    // Bills of this member in the current branch (or, when a branch move
+    // is repeated after a failure, pending bills already moved).
+    const billDocs = [...await docsWhereIn("bills", "carpenterId", keys)];
+    if (phone) {
+      const byPhone = await db.collection("bills")
+          .where("carpenterPhone", "==", phone).get();
+      billDocs.push(...byPhone.docs);
+    }
+    const bills = [...new Map(billDocs.map((d) => [d.id, d])).values()]
+        .filter((d) => memberDelete.billBelongsToBranch(d.data(), oldBranch) ||
+          (plan.branchChanged &&
+            String(d.data().branchId || "").trim() === newBranch));
+
+    const writes = []; // [ref, fields]
+    const newPointsByBill = new Map();
+    let billsRecalculated = 0;
+    let oldBillPoints = 0;
+    let newBillPoints = 0;
+    for (const doc of bills) {
+      const bill = doc.data();
+      const status = String(bill.status || "pending").toLowerCase();
+      // A branch move starts the member at 0: approved and rejected bills
+      // stay with the old branch as its records; only pending bills move
+      // so the new branch admin can approve them.
+      if (plan.branchChanged && status !== "pending") continue;
+      const fields = {};
+      if (rate) {
+        const r = memberMove.billForRate(bill, rate);
+        if (r.fields) {
+          Object.assign(fields, r.fields);
+          billsRecalculated++;
+        }
+        if (status === "approved") {
+          newPointsByBill.set(doc.id, r.points);
+          oldBillPoints += Number(bill.pointsEarned) || 0;
+          newBillPoints += r.points;
+        }
+      }
+      if (plan.branchChanged) fields.branchId = newBranch;
+      if (Object.keys(fields).length) writes.push([doc.ref, fields]);
+    }
+
+    // user_points (keyed by doc id, phone or uid).
+    const pointsSnaps = (await db.getAll(
+        ...keys.map((k) => db.collection("user_points").doc(k))))
+        .filter((s) => s.exists);
+    let primaryTotal = null;
+    let previousPoints = 0;
+    for (const snap of pointsSnaps) {
+      const d = snap.data();
+      let fields;
+      if (plan.branchChanged) {
+        // New branch: 0 points. The old total is kept for the record
+        // (not again on a repeat, when it is already 0 here).
+        const alreadyMoved = String(d.branchId || "").trim() === newBranch;
+        if (!alreadyMoved && primaryTotal === null) {
+          previousPoints = Number(d.totalPoints) || 0;
+        }
+        fields = {
+          pointsHistory: [],
+          totalPoints: 0,
+          tier: memberMove.tierFor(0),
+          branchId: newBranch,
+          lastUpdated: FieldValue.serverTimestamp(),
+        };
+        if (!alreadyMoved) {
+          fields.previousBranchPoints = {
+            branchId: oldBranch,
+            totalPoints: Number(d.totalPoints) || 0,
+            movedAt: FieldValue.serverTimestamp(),
+          };
+        }
+        if (primaryTotal === null) primaryTotal = 0;
+      } else {
+        // Same branch, new role: re-point every approved bill entry.
+        const {history, delta} = memberMove.rewriteHistory(
+            d.pointsHistory, newPointsByBill, null);
+        const total = memberMove.newTotal(d.totalPoints, delta);
+        fields = {
+          pointsHistory: history,
+          totalPoints: total,
+          tier: memberMove.tierFor(total),
+          lastUpdated: FieldValue.serverTimestamp(),
+        };
+        if (primaryTotal === null) primaryTotal = total;
+      }
+      writes.push([snap.ref, fields]);
+    }
+
+    // points_history documents get the recalculated points (role change in
+    // the same branch). On a branch move they stay as the old branch's log.
+    if (!plan.branchChanged && newPointsByBill.size) {
+      const historyDocs = [
+        ...await docsWhereIn("points_history", "userId", keys),
+        ...await docsWhereIn("points_history", "carpenterId", keys),
+      ];
+      for (const doc of new Map(historyDocs.map((d) => [d.id, d])).values()) {
+        const h = doc.data();
+        if (h.billId && newPointsByBill.has(h.billId)) {
+          writes.push([doc.ref, {points: newPointsByBill.get(h.billId)}]);
+        }
+      }
+    }
+
+    for (let i = 0; i < writes.length; i += 450) {
+      const batch = db.batch();
+      for (const [ref, fields] of writes.slice(i, i + 450)) {
+        batch.update(ref, fields);
+      }
+      await batch.commit();
+    }
+
+    // Last: the profile itself.
+    if (plan.branchChanged) {
+      if (primaryTotal === null) {
+        previousPoints = Number(target.totalPoints) || 0;
+      }
+      userFields.totalPoints = 0;
+      userFields.tier = memberMove.tierFor(0);
+    } else if (rate) {
+      const total = primaryTotal !== null ? primaryTotal :
+        memberMove.newTotal(target.totalPoints, newBillPoints - oldBillPoints);
+      userFields.totalPoints = total;
+      userFields.tier = memberMove.tierFor(total);
+    }
+    const name = callerData ?
+      `${callerData.firstName || ""} ${callerData.lastName || ""}`.trim() : "";
+    userFields.lastBranchRoleChange = {
+      by: caller.uid,
+      byName: name || "Branch admin",
+      at: FieldValue.serverTimestamp(),
+      fromBranchId: oldBranch,
+      toBranchId: plan.branchChanged ? newBranch : oldBranch,
+      fromRole: String(target.role || "carpenter").trim().toLowerCase(),
+      toRole: plan.roleChanged ? newRole :
+        String(target.role || "carpenter").trim().toLowerCase(),
+      ...(plan.branchChanged ? {previousPoints} : {}),
+    };
+    userFields.lastUpdated = FieldValue.serverTimestamp();
+    await targetRef.update(userFields);
+
+    const result = {
+      ok: true,
+      branchChanged: plan.branchChanged,
+      roleChanged: plan.roleChanged,
+      bills: bills.length,
+      billsRecalculated,
+      totalPoints: userFields.totalPoints !== undefined ?
+        userFields.totalPoints : null,
+      rupeesPerPoint: rate,
+    };
+    console.log(`[changeMemberBranchRole] ${caller.uid} changed ${userId} ` +
+        JSON.stringify({from: [oldBranch, target.role],
+          to: [newBranch, newRole], ...result}));
+    return result;
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    console.error("changeMemberBranchRole failed", error);
+    throw new HttpsError("internal", "Unable to change the account.");
+  }
+});

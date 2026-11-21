@@ -1,4 +1,5 @@
 import 'package:balaji_points/core/firebase/app_firestore.dart';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,36 @@ class CatalogNotPdf implements Exception {
 
 class CatalogCategoryNotEmpty implements Exception {
   const CatalogCategoryNotEmpty();
+}
+
+/// The PDF an admin picked: in memory (web) or a file on the device (phones
+/// and desktop). Large catalogs (100 MB+) must come as a file: reading them
+/// into memory fails on phones, so they are streamed from disk instead.
+class CatalogPdfSource {
+  const CatalogPdfSource.bytes(Uint8List this.bytes) : path = null;
+  const CatalogPdfSource.file(String this.path) : bytes = null;
+
+  final Uint8List? bytes;
+  final String? path;
+
+  Future<int> length() async => bytes?.length ?? await File(path!).length();
+
+  /// The first [n] bytes (for the %PDF check).
+  Future<Uint8List> head(int n) async {
+    if (bytes != null) {
+      return Uint8List.sublistView(
+        bytes!,
+        0,
+        bytes!.length < n ? bytes!.length : n,
+      );
+    }
+    final raf = await File(path!).open();
+    try {
+      return await raf.read(n);
+    } finally {
+      await raf.close();
+    }
+  }
 }
 
 /// Page count and a first-page cover, read on the admin's device.
@@ -126,8 +157,8 @@ class CatalogAdminService {
 
   // ── Catalogs ────────────────────────────────────────────────────────────
 
-  /// Adds a catalog ([existing] null; [pdfBytes] required) or edits one.
-  /// Passing [pdfBytes] when editing replaces the PDF. [coverBytes] is an
+  /// Adds a catalog ([existing] null; [pdf] required) or edits one.
+  /// Passing [pdf] when editing replaces the PDF. [coverBytes] is an
   /// optional photo; without it a new PDF's first page becomes the cover.
   Future<String> saveCatalog({
     Catalog? existing,
@@ -137,17 +168,17 @@ class CatalogAdminService {
     String description = '',
     int year = 0,
     int? sortOrder,
-    Uint8List? pdfBytes,
+    CatalogPdfSource? pdf,
     Uint8List? coverBytes,
     void Function(double progress)? onProgress,
   }) async {
-    if (existing == null && pdfBytes == null) {
+    if (existing == null && pdf == null) {
       throw ArgumentError('A new catalog needs a PDF');
     }
-    if (pdfBytes != null) validatePdf(pdfBytes);
+    if (pdf != null) validatePdf(await pdf.head(8));
 
     final id = existing?.id ?? _catalogs.doc().id;
-    final version = (existing?.version ?? 0) + (pdfBytes != null ? 1 : 0);
+    final version = (existing?.version ?? 0) + (pdf != null ? 1 : 0);
     final stamp = DateTime.now().millisecondsSinceEpoch;
     final cleanTitle = title.trim();
     final data = <String, dynamic>{
@@ -177,15 +208,15 @@ class CatalogAdminService {
     final oldPaths = <String>[];
     Uint8List? cover = coverBytes;
 
-    if (pdfBytes != null) {
+    if (pdf != null) {
       onProgress?.call(0);
-      final info = await inspectPdf(pdfBytes);
+      final info = await inspectPdf(pdf);
       cover ??= info.cover;
       final path = 'catalogs/$id/v$version.pdf';
       final fileName = '${safeFileName(cleanTitle)}.pdf';
       data['pdfUrl'] = await _upload(
         path,
-        pdfBytes,
+        pdf,
         SettableMetadata(
           contentType: 'application/pdf',
           contentDisposition: 'attachment; filename="$fileName"',
@@ -195,7 +226,7 @@ class CatalogAdminService {
       );
       data['pdfPath'] = path;
       data['fileName'] = fileName;
-      data['sizeBytes'] = pdfBytes.length;
+      data['sizeBytes'] = await pdf.length();
       data['pages'] = info.pages;
       if (existing != null && existing.pdfPath.isNotEmpty) {
         oldPaths.add(existing.pdfPath);
@@ -211,7 +242,7 @@ class CatalogAdminService {
       final path = 'catalogs/$id/cover_$stamp.${png ? 'png' : 'jpg'}';
       data['coverUrl'] = await _upload(
         path,
-        small,
+        CatalogPdfSource.bytes(small),
         SettableMetadata(
           contentType: png ? 'image/png' : 'image/jpeg',
           cacheControl: 'public, max-age=86400',
@@ -274,14 +305,18 @@ class CatalogAdminService {
 
   // ── Storage ─────────────────────────────────────────────────────────────
 
+  /// Uploads from memory or, for a file, streams it from disk (resumable
+  /// upload in chunks, so a 160 MB catalog never sits in memory).
   Future<String> _upload(
     String path,
-    Uint8List bytes,
+    CatalogPdfSource source,
     SettableMetadata meta, {
     void Function(double)? onProgress,
   }) async {
     final ref = _bucket.ref(path);
-    final task = ref.putData(bytes, meta);
+    final task = source.bytes != null
+        ? ref.putData(source.bytes!, meta)
+        : ref.putFile(File(source.path!), meta);
     final sub = onProgress == null
         ? null
         : task.snapshotEvents.listen((s) {
@@ -311,11 +346,13 @@ class CatalogAdminService {
 
   /// Opens the PDF on this device to count pages and draw page 1 as the
   /// cover. A PDF that cannot be read is rejected before any upload.
-  static Future<CatalogPdfInfo> inspectPdf(Uint8List bytes) async {
+  static Future<CatalogPdfInfo> inspectPdf(CatalogPdfSource pdf) async {
     await pdfrxFlutterInitialize(dismissPdfiumWasmWarnings: true);
     final PdfDocument doc;
     try {
-      doc = await PdfDocument.openData(bytes, sourceName: 'catalog-upload');
+      doc = pdf.bytes != null
+          ? await PdfDocument.openData(pdf.bytes!, sourceName: 'catalog-upload')
+          : await PdfDocument.openFile(pdf.path!);
     } catch (e) {
       AppLogger.error('Catalog PDF could not be opened', e);
       throw const CatalogNotPdf();

@@ -5424,4 +5424,72 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get adminNotifActSpin => 'स्पिन खोलें';
+
+  @override
+  String get deleteMemberTitle => 'यह खाता हटाएँ?';
+
+  @override
+  String deleteMemberConfirm(String name, String phone) {
+    return '$name ($phone) हमेशा के लिए हटा दिया जाएगा:\n\n• खाता और साइन-इन\n• पॉइंट्स और पॉइंट्स इतिहास\n• सभी बिल\n• ऑफ़र रिडेम्पशन\n\nइसे वापस नहीं किया जा सकता।';
+  }
+
+  @override
+  String get deleteMemberDeleting => 'खाता हटाया जा रहा है…';
+
+  @override
+  String get memberAccountDeleted => 'खाता हटा दिया गया।';
+
+  @override
+  String deleteMemberFailed(String error) {
+    return 'खाता नहीं हटाया जा सका: $error';
+  }
+
+  @override
+  String get catalogAdminPdfUnreadable => 'यह PDF इस डिवाइस पर पढ़ी नहीं जा सकी। इसे फ़ोन की स्टोरेज में कॉपी करें (क्लाउड ड्राइव नहीं) और फिर से चुनें।';
+
+  @override
+  String get changeBranchRole => 'शाखा / भूमिका बदलें';
+
+  @override
+  String get changeBranchRoleTitle => 'शाखा या भूमिका बदलें';
+
+  @override
+  String get changeBranchRoleHelp => 'जब सदस्य ने साइन-अप के समय गलत शाखा या भूमिका चुनी हो, तब इसका उपयोग करें।';
+
+  @override
+  String changeBranchRoleCurrent(String branch, String role) {
+    return 'अभी: $branch · $role';
+  }
+
+  @override
+  String changeRolePointsNote(String newRate, String oldRate) {
+    return 'सभी बिलों के पॉइंट्स $newRate = 1 पॉइंट पर फिर से गिने जाएँगे (अभी $oldRate = 1 पॉइंट)। लंबित बिल भी नई दर से गिने जाएँगे।';
+  }
+
+  @override
+  String changeBranchMoveNote(String branch) {
+    return 'सदस्य $branch में चला जाएगा और वहाँ 0 पॉइंट्स से शुरू करेगा। उसके मंज़ूर बिल और पॉइंट्स इतिहास रिकॉर्ड के रूप में आपकी शाखा में रहेंगे। लंबित बिल $branch में जाएँगे, जहाँ उसका एडमिन उन्हें मंज़ूर करेगा।';
+  }
+
+  @override
+  String get changeBranchRoleSaving => 'बदलाव सहेजे जा रहे हैं…';
+
+  @override
+  String get changeBranchRoleDone => 'शाखा / भूमिका अपडेट हो गई।';
+
+  @override
+  String changeBranchRoleDonePoints(String points) {
+    return 'अपडेट हो गया। पॉइंट्स फिर से गिने गए, नया कुल: $points।';
+  }
+
+  @override
+  String changeBranchRoleFailed(String error) {
+    return 'खाता नहीं बदला जा सका: $error';
+  }
+
+  @override
+  String get changeBranchRoleLoadFailed => 'शाखाएँ और भूमिकाएँ लोड नहीं हो सकीं। कनेक्शन जाँचें और फिर कोशिश करें।';
+
+  @override
+  String get yesDelete => 'हाँ, हटाएँ';
 }

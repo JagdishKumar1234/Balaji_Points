@@ -18,7 +18,8 @@ import 'package:balaji_points/presentation/widgets/shared/auth_background.dart';
 import 'package:balaji_points/services/auth/biometric_service.dart';
 import 'package:balaji_points/services/auth/session_service.dart';
 import 'package:balaji_points/services/auth/account_approval_service.dart';
-import 'package:balaji_points/providers/auth_provider.dart' show AuthPendingApproval;
+import 'package:balaji_points/providers/auth_provider.dart'
+    show AuthPendingApproval;
 import 'package:balaji_points/config/routes.dart' show navigatorKey;
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:balaji_points/services/notifications/fcm_service.dart';
@@ -229,7 +230,7 @@ class SplashView extends StatelessWidget {
                                 entrance(
                                   Text(
                                     '${l10n?.poweredBy ?? 'Powered by'}\n'
-                                    '${l10n?.companyName ?? AppConstants.companyName}',
+                                    '${AppConstants.poweredByName}',
                                     textAlign: TextAlign.center,
                                     // Sits on the navy curve of AuthBackground.
                                     style: AppTypography.labelMedium(

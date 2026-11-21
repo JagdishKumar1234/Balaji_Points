@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:balaji_points/core/models/catalog.dart';
@@ -159,6 +160,42 @@ void main() {
         ),
         throwsA(isA<CatalogNotPdf>()),
       );
+    });
+  });
+
+  group('CatalogPdfSource (large catalogs come as a file)', () {
+    test('a 120 MB file is checked by its first bytes, not loaded', () async {
+      final dir = await Directory.systemTemp.createTemp('catalog_test');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/big.pdf');
+      final raf = await file.open(mode: FileMode.write);
+      await raf.writeFrom('%PDF-1.7\n'.codeUnits);
+      await raf.setPosition(120 * 1024 * 1024 - 1);
+      await raf.writeByte(0x0A);
+      await raf.close();
+
+      final source = CatalogPdfSource.file(file.path);
+      expect(await source.length(), 120 * 1024 * 1024);
+      final head = await source.head(8);
+      expect(head.length, 8);
+      expect(() => CatalogAdminService.validatePdf(head), returnsNormally);
+    });
+
+    test('a non-PDF file is refused', () async {
+      final dir = await Directory.systemTemp.createTemp('catalog_test');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/x.pdf')..writeAsStringSync('<html>');
+      final head = await CatalogPdfSource.file(file.path).head(8);
+      expect(
+        () => CatalogAdminService.validatePdf(head),
+        throwsA(isA<CatalogNotPdf>()),
+      );
+    });
+
+    test('bytes source: head never runs past the end', () async {
+      final source = CatalogPdfSource.bytes(Uint8List.fromList([1, 2, 3]));
+      expect(await source.head(8), [1, 2, 3]);
+      expect(await source.length(), 3);
     });
   });
 
